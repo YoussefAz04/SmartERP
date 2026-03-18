@@ -1,0 +1,101 @@
+{
+    "data": [
+        {
+            "img": "assets/img/products/stock-img-01.png",
+            "productName": "Lenovo 3rd Generation",
+            "reference": "PT001",
+            "customerName": "walk-in-customer",
+            "status": "Sent",
+            "grandTotal": "$550"
+        },
+        {
+            "img": "assets/img/products/stock-img-06.png",
+            "productName": "Bold V3.2",
+            "reference": "PT002",
+            "customerName": "walk-in-customer",
+            "status": "Sent",
+            "grandTotal": "$430"
+        },
+        {
+            "img": "assets/img/products/stock-img-02.png",
+            "productName": "Nike Jordan",
+            "reference": "PT003",
+            "customerName": "walk-in-customer",
+            "status": "Ordered",
+            "grandTotal": "$260"
+        },
+        {
+            "img": "assets/img/products/stock-img-03.png",
+            "productName": "Apple Series 5 Watch",
+            "reference": "PT004",
+            "customerName": "John Smith",
+            "status": "Pending",
+            "grandTotal": "$470"
+        },
+        {
+            "img": "assets/img/products/stock-img-04.png",
+            "productName": "Amazon Echo Dot",
+            "reference": "PT005",
+            "customerName": "Harley Stanley",
+            "status": "Pending",
+            "grandTotal": "$380"
+        },
+        {
+            "img": "assets/img/products/stock-img-05.png",
+            "productName": "Lobar Handy",
+            "reference": "PT006",
+            "customerName": "Egbert Caldwell",
+            "status": "Sent",
+            "grandTotal": "$190"
+        },
+        {
+            "img": "assets/img/products/expire-product-01.png",
+            "productName": "Red Premium Handy",
+            "reference": "PT007",
+            "customerName": "walk-in-customer",
+            "status": "Pending",
+            "grandTotal": "$540"
+        },
+        {
+            "img": "assets/img/products/expire-product-02.png",
+            "productName": "Iphone 14 Pro",
+            "reference": "PT008",
+            "customerName": "Benjamin",
+            "status": "Ordered",
+            "grandTotal": "$610"
+        },
+        {
+            "img": "assets/img/products/stock-img-03.png",
+            "productName": "Black Slim 200",
+            "reference": "PT009",
+            "customerName": "walk-in-customer",
+            "status": "Pending",
+            "grandTotal": "$220"
+        },
+        {
+            "img": "assets/img/products/stock-img-04.png",
+            "productName": "Woodcraft Sandal",
+            "reference": "PT010",
+            "customerName": "Nydia Fitzgerald",
+            "status": "Sent",
+            "grandTotal": "$460"
+        },
+        {
+            "img": "assets/img/products/stock-img-01.png",
+            "productName": "Lobar Handy",
+            "reference": "PT011",
+            "customerName": "Thomas",
+            "status": "Pending",
+            "grandTotal": "$250"
+        },
+        {
+            "img": "assets/img/products/stock-img-02.png",
+            "productName": "Iphone 15 Pro",
+            "reference": "PT012",
+            "customerName": "Benjamin",
+            "status": "Sent",
+            "grandTotal": "$550"
+        }
+    ],
+    "totalData": 12
+}

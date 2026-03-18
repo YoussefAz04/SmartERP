@@ -1,0 +1,59 @@
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Modifier l'entreprise</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #equipeForm="ngForm">
+
+        <div class="mb-3">
+          <label for="nom" class="form-label">Nom</label>
+          <input type="text" id="nom" class="form-control" name="nom" [(ngModel)]="equipedetails.nom" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Raison Sociale</label>
+          <input type="text" id="description" class="form-control" name="description" [(ngModel)]="equipedetails.description" required>
+        </div>
+
+
+
+
+
+
+
+        <div class="mb-3">
+          <label for="dateCreation" class="form-label">Date de Création</label>
+          <input type="date" id="dateCreation" class="form-control" name="dateCreation" [(ngModel)]="equipedetails.dateCreation">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Liste des Membres</label>
+
+          <div *ngFor="let membre of equipedetails.membres; let i = index" class="border rounded p-3 mb-3 bg-light shadow-sm">
+            <h6 class="text-primary">Membre {{ i + 1 }}</h6>
+            <br>
+
+
+            <p class="mb-1  text-dark">
+              <strong>Titre :</strong> {{ membre.membreTitre }}
+            </p>
+
+            <p class="mb-1  text-dark">
+              <strong>Description :</strong> {{ membre.description }}
+            </p>
+
+            <p class="mb-0  text-dark">
+              <strong >Spécialité :</strong> {{ membre.specialite }}
+            </p>
+          </div>
+        </div>
+
+
+
+
+        <button type="submit" class="btn btn-primary" [disabled]="!equipeForm.form.valid" *ngIf="permissionEquipe.update">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+.theme-toggle-icon {
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.theme-toggle-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle-icon .icon-moon {
+  font-size: 24px;
+  color: #555;
+}
+
+.theme-toggle-icon .icon-moon.active {
+  color: #ffc107; /* Jaune doré pour indiquer actif */
+}

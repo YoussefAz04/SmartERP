@@ -1,0 +1,10 @@
+<div *ngFor="let module of moduleAffecterListe" class="field-checkbox">
+  <p-checkbox
+    [(ngModel)]="selectModule"
+    [label]="module.title"
+    name="group"
+    [value]="module"
+     />
+</div>
+<button (click)="affecterModule()">affecter les modules</button>
+

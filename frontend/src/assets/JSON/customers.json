@@ -1,0 +1,114 @@
+{
+    "data": [
+        {
+           
+            "customerName": "Thomas",
+            "code": "201",
+            "img":"assets/img/users/user-23.jpg",
+            "customer": "Thomas",
+            "email": "thomasexmple.com",
+            "phone": "+12163547758",
+            "country": "Germany",
+            "isSelected": false
+        },
+        {
+           
+            "customerName": "Rose",
+            "code": "201",
+            "img":"assets/img/users/user-15.jpg",
+            "customer": "Rose",
+            "email": "roseexmple.com",
+            "phone": "+11367529510",
+            "country": "USA",
+            "isSelected": false
+        },
+        {
+            
+            "customerName": "Benjamin",
+            "code": "203",
+            "img":"assets/img/users/user-16.jpg",
+            "customer": "Benjamin",
+            "email": "benjaminexmple.com",
+            "phone": "+15362789414",
+            "country": "Japan",
+            "isSelected": false
+        },
+        {
+           
+            "customerName": "Kaitlin",
+            "code": "204",
+            "img":"assets/img/users/user-17.jpg",
+            "customer": "Kaitlin",
+            "email": "kaitlinexmple.com",
+            "phone": "+18513094627",
+            "country": "Austria",
+            "isSelected": false
+        },
+        {
+            "customerName": "Lilly",
+            "code": "205",
+            "img":"assets/img/users/user-18.jpg",
+            "customer": "Lilly",
+            "email": "lillyexmple.com",
+            "phone": "+14678219025",
+            "country": "India",
+            "isSelected": false
+        },
+        {
+           
+            "customerName": "Freda",
+            "code": "206",
+            "img":"assets/img/users/user-19.jpg",
+            "customer": "Freda",
+            "email": "fredaexmple.com",
+            "phone": "+10913278319",
+            "country": "France",
+            "isSelected": false
+        },
+        {
+            
+            "customerName": "Walk-in-Customer",
+            "code": "01",
+            "img":"assets/img/users/user-20.jpg",
+            "customer": "Walk-in-Customer",
+            "email": "customer01exmple.com",
+            "phone": "+19125852947",
+            "country": "Belgium",
+            "isSelected": false
+        },
+        {
+           
+            "customerName": "Maybelle",
+            "code": "207",
+            "img":"assets/img/users/user-21.jpg",
+            "customer": "Maybelle",
+            "email": "maybelleexmple.com",
+            "phone": "+19125852947",
+            "country": "Italy",
+            "isSelected": false
+        },
+        {
+           
+            "customerName": "Ellen",
+            "code": "208",
+            "img":"assets/img/users/user-22.jpg",
+            "customer": "Ellen",
+            "email": "ellenexmple.com",
+            "phone": "+19756194733",
+            "country": "Canada",
+            "isSelected": false
+        },
+        {
+           
+            "customerName": "Walk-in-Customer",
+            "code": "02",
+            "img":"assets/img/users/user-23.jpg",
+            "customer": "Walk-in-Customer",
+            "email": "customer02exmple.com",
+            "phone": "+19167850925",
+            "country": "Greece",
+            "isSelected": false
+        }
+    ],
+    "totalData": 10
+  }

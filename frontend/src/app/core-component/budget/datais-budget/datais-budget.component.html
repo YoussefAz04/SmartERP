@@ -1,0 +1,78 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Modifier Budget</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="['/dashboard']">Dashboard</a></li>
+        <li class="breadcrumb-item active">Modifier Budget</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Détails du Budget</h5>
+      </div>
+      <div class="card-body">
+        <form *ngIf="budget" (ngSubmit)="onSubmit()">
+
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Nom</label>
+                <input type="text" class="form-control" [(ngModel)]="budget.nom" name="nom">
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Montant</label>
+                <input type="number" class="form-control" [(ngModel)]="budget.montant" name="montant">
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Date Début</label>
+                <input type="date" class="form-control" [(ngModel)]="budget.dateDebut" name="dateDebut">
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Date Fin</label>
+                <input type="date" class="form-control" [(ngModel)]="budget.dateFin" name="dateFin">
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>ID Projet</label>
+                <input type="number" class="form-control" [(ngModel)]="budget.idProjet" name="idProjet">
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="button" class="btn btn-cancel me-2" (click)="router.navigate(['/budget/Budget'])">
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-submit" *ngIf="permissionBudget.update">
+              Enregistrer
+            </button>
+          </div>
+        </form>
+
+        <div *ngIf="!budget" class="text-center p-3">
+          Chargement du budget...
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

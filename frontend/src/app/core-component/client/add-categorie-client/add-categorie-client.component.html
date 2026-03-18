@@ -1,0 +1,45 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Vertical Form</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Vertical Form</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Ajouter une sous Categorie Client</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="categorieClientForm" (ngSubmit)="createCategorieClient()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Nom de Categorie</label>
+                <input type="text" formControlName="nom" class="form-control" />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea formControlName="description" class="form-control" rows="4"></textarea>
+            </div>
+          </div>
+
+          <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary" [disabled]="!categorieClientForm.valid">
+              Créer sous module
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

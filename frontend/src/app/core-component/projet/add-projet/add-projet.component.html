@@ -1,0 +1,75 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Vertical Form</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink] = "routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Vertical Form</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-header  ">
+        <h5 class="card-title mb-0">Ajouter un Projet</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
+          <div class="row g-4">
+            <!-- Colonne gauche -->
+            <div class="col-lg-6">
+              <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <input type="text" class="form-control" formControlName="nom" placeholder="Nom du projet">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea formControlName="description" class="form-control" rows="4" placeholder="Décrivez le projet..."></textarea>
+              </div>
+            </div>
+
+            <!-- Colonne droite -->
+            <div class="col-lg-6">
+              <div class="mb-3">
+                <label for="dateDebut" class="form-label">Date de début</label>
+                <input type="date" id="dateDebut" formControlName="dateDebut" class="form-control">
+              </div>
+
+              <div class="mb-3">
+                <label for="dateFin" class="form-label">Date de fin</label>
+                <input type="date" id="dateFin" formControlName="dateFin" class="form-control">
+              </div>
+
+              <div class="mb-3">
+                <label for="statut" class="form-label">Statut du projet</label>
+                <select id="statut" formControlName="statut" class="form-select">
+                  <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="categorieId" class="form-label">Catégorie du projet</label>
+                <select id="categorieId" formControlName="categorieId" class="form-select">
+                  <option *ngFor="let c of categorieProjet" [value]="c.id">{{ c.nom }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Boutons -->
+          <div class="d-flex justify-content-end mt-4">
+            <button type="button" class="btn btn-secondary me-2">Annuler</button>
+            <button type="submit" class="btn btn-primary">Soumettre</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

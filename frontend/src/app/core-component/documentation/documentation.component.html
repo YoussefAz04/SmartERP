@@ -1,0 +1,268 @@
+<!-- documentation.component.html -->
+<div class="documentation-container" tabindex="0">
+
+  <!-- Header Controls Panel -->
+  <div class="controls-panel">
+    <div class="panel-header">
+      <h3>🔍 Annotation PDF</h3>
+      <div class="header-buttons">
+        <button class="btn btn-secondary" (click)="showFileUpload = !showFileUpload">
+          📁 Changer de fichier
+        </button>
+        <button class="btn btn-primary" (click)="sendZonesToBackend()"
+                [disabled]="selectedZones.length === 0 || isProcessing">
+          <span *ngIf="!isProcessing">🚀 Extraire le texte</span>
+          <span *ngIf="isProcessing">⏳ Traitement...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div *ngIf="showFileUpload" class="file-upload-section">
+      <label for="pdfFile" class="file-upload-label">
+        <span>📎 Sélectionner un fichier PDF</span>
+        <input type="file" id="pdfFile" accept=".pdf" (change)="onFileSelected($event)" hidden>
+      </label>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="controls-buttons">
+      <button class="btn btn-success" (click)="exportZones()" [disabled]="selectedZones.length === 0">
+        💾 Exporter zones
+      </button>
+      <label for="importZones" class="btn btn-info" [class.disabled]="isProcessing">
+        📥 Importer zones
+        <input type="file" id="importZones" accept=".json" (change)="importZones($event)" hidden>
+      </label>
+      <button class="btn btn-danger" (click)="clearAllZones()" [disabled]="selectedZones.length === 0">
+        🗑️ Effacer tout
+      </button>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instruction-panel">
+      <p class="instruction-text">
+        <strong>Instructions :</strong><br>
+        • Cliquez et glissez pour sélectionner une zone<br>
+        • <kbd>Échap</kbd> pour annuler • <kbd>Ctrl+Z</kbd> pour annuler la dernière zone<br>
+        • <kbd>Ctrl+E</kbd> pour extraire • <kbd>Ctrl+A</kbd> pour tout effacer
+      </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-panel" *ngIf="selectedZones.length > 0">
+      <div class="stat-item">
+        <span class="stat-label">Zones :</span>
+        <span class="stat-value">{{ selectedZones.length }}</span>
+      </div>
+      <div class="stat-item" *ngIf="totalPages > 0">
+        <span class="stat-label">Pages :</span>
+        <span class="stat-value">{{ totalPages }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Viewer Container -->
+  <div class="pdf-viewer-wrapper">
+
+    <!-- PDF Controls -->
+    <div class="pdf-controls" *ngIf="pdfLoaded">
+      <div class="navigation-controls">
+        <button class="btn-icon" (click)="previousPage()" [disabled]="currentPage <= 1">
+          ⬅️
+        </button>
+        <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+        <button class="btn-icon" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+          ➡️
+        </button>
+      </div>
+
+      <div class="zoom-controls">
+        <button class="btn-icon" (click)="zoomOut()" [disabled]="zoomLevel <= 0.5">
+          🔍-
+        </button>
+        <span class="zoom-info">{{ (zoomLevel * 100) | number:'1.0-0' }}%</span>
+        <button class="btn-icon" (click)="zoomIn()" [disabled]="zoomLevel >= 3">
+          🔍+
+        </button>
+        <button class="btn-icon" (click)="resetZoom()" [disabled]="zoomLevel === 1">
+          🎯
+        </button>
+      </div>
+    </div>
+
+    <!-- PDF Container -->
+    <div class="pdf-container"
+         #pdfContainer
+         (mousedown)="startSelection($event)"
+         (mousemove)="drawSelection($event)"
+         (mouseup)="endSelection($event)">
+
+      <!-- Loading State -->
+      <div *ngIf="!pdfLoaded && !pdfError" class="pdf-loading">
+        <div class="loading-spinner"></div>
+        <p>Chargement du PDF...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="pdfError" class="pdf-error">
+        <div class="error-icon">⚠️</div>
+        <h4>Erreur de chargement</h4>
+        <p>{{ errorMessage }}</p>
+        <div class="error-suggestions">
+          <h5>Solutions possibles :</h5>
+          <ul>
+            <li>Vérifiez que le fichier PDF existe et est accessible</li>
+            <li>Essayez de sélectionner un autre fichier PDF</li>
+            <li>Vérifiez les permissions du fichier</li>
+            <li>Consultez la console pour plus de détails</li>
+          </ul>
+        </div>
+        <button class="btn btn-primary" (click)="showFileUpload = true">
+          📁 Sélectionner un autre fichier
+        </button>
+      </div>
+
+      <!-- PDF Viewer -->
+      <pdf-viewer
+        *ngIf="!pdfError"
+        [src]="pdfSrc"
+        [render-text]="true"
+        [original-size]="false"
+        [show-all]="false"
+        [zoom]="zoomLevel"
+        [page]="currentPage"
+        [rotation]="0"
+        [fit-to-page]="false"
+        (after-load-complete)="onPdfLoadComplete($event)"
+        (error)="onPdfLoadError($event)"
+        (progress)="onPdfLoadProgress($event)">
+      </pdf-viewer>
+
+      <!-- Current selection box -->
+      <div *ngIf="selecting"
+           class="selection-box"
+           [ngStyle]="boxStyle">
+      </div>
+
+      <!-- Existing zones -->
+      <div *ngFor="let zone of selectedZones; trackBy: trackByZoneId"
+           class="zone-overlay"
+           [ngStyle]="getZoneStyle(zone)"
+           [attr.data-type]="zone.type"
+           [title]="getZoneTypeLabel(zone.type)">
+        <div class="zone-label">{{ getZoneTypeLabel(zone.type) }}</div>
+        <button class="zone-delete-btn"
+                (click)="deleteZone(zone.id)"
+                title="Supprimer cette zone">
+          ✕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone Type Selection Dialog -->
+  <div *ngIf="showZoneTypeDialog" class="dialog-overlay">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h4>🏷️ Sélectionner le type de zone</h4>
+        <button class="close-btn" (click)="cancelZoneSelection()">✕</button>
+      </div>
+
+      <div class="zone-type-grid">
+        <label *ngFor="let type of zoneTypes "
+               class="zone-type-option"
+               [class.selected]="selectedZoneType === type.value">
+          <input type="radio"
+                 name="zoneType"
+                 [value]="type.value"
+                 [(ngModel)]="selectedZoneType">
+          <div class="zone-type-preview"
+               [style.background-color]="type.color + '40'"
+               [style.border-color]="type.color">
+            <span class="zone-type-label">{{ type.label }}</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" (click)="cancelZoneSelection()">
+          ❌ Annuler
+        </button>
+        <button class="btn btn-primary"
+                (click)="confirmZoneType()"
+                [disabled]="!selectedZoneType">
+          ✅ Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Panel -->
+  <div *ngIf="showResults && extractionResults.length > 0" class="results-panel">
+    <div class="results-header">
+      <h4>📊 Résultats d'extraction</h4>
+      <button class="close-btn" (click)="showResults = false">✕</button>
+    </div>
+
+    <div class="results-content">
+      <div *ngFor="let result of extractionResults"
+           class="result-item"
+           [class.success]="result.success"
+           [class.error]="!result.success">
+        <div class="result-header">
+          <span class="result-type">{{ getZoneTypeLabel(result.type) }}</span>
+          <span class="result-status"
+                [class.success]="result.success"
+                [class.error]="!result.success">
+            {{ result.success ? '✅' : '❌' }}
+          </span>
+        </div>
+        <div class="result-content" *ngIf="result.success">
+          <pre>{{ result.text || 'Aucun texte détecté' }}</pre>
+        </div>
+        <div class="result-error" *ngIf="!result.success">
+          <span>{{ result.error || 'Erreur inconnue' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Zones List -->
+  <div class="zones-list" *ngIf="selectedZones.length > 0">
+    <div class="zones-header">
+      <h4>📋 Zones sélectionnées ({{ selectedZones.length }})</h4>
+      <button class="btn btn-sm btn-secondary" (click)="clearAllZones()">
+        🗑️ Tout effacer
+      </button>
+    </div>
+
+    <div class="zones-grid">
+      <div *ngFor="let zone of selectedZones; let i = index; trackBy: trackByZoneId"
+           class="zone-item"
+           [attr.data-index]="i">
+        <div class="zone-color-indicator" [style.background-color]="zone.color"></div>
+        <div class="zone-details">
+          <strong>{{ getZoneTypeLabel(zone.type) }}</strong>
+          <small>{{ zone.width }}×{{ zone.height }}px à ({{ zone.x }}, {{ zone.y }})</small>
+          <small *ngIf="zone.pageNumber" class="page-indicator">Page {{ zone.pageNumber }}</small>
+        </div>
+        <button class="btn-icon btn-danger"
+                (click)="deleteZone(zone.id)"
+                title="Supprimer cette zone">
+          🗑️
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Processing Overlay -->
+  <div *ngIf="isProcessing" class="processing-overlay">
+    <div class="processing-content">
+      <div class="loading-spinner large"></div>
+      <h3>Traitement en cours...</h3>
+      <p>Extraction du texte des zones sélectionnées</p>
+    </div>
+  </div>
+
+</div>

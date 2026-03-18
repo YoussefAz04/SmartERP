@@ -1,0 +1,62 @@
+<!-- Sidebar -->
+<div class="sidebar collapsed-sidebar" id="collapsed-sidebar" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')">
+  <div class="sidebar-inner slimscroll">
+    <ng-scrollbar>
+      <div id="sidebar-menu-2" class="sidebar-menu sidebar-menu-three">
+        <aside id="aside" class="ui-aside">
+          <ul class="tab nav nav-tabs" id="myTab" role="tablist">
+            @for (mainTittle of sidebarData; track mainTittle) {
+              <li class="nav-item" role="presentation">
+                <a class="tablinks nav-link" (click)="showMenu(mainTittle.tittle)" href="#home" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"  role="tab" aria-selected="true"   [class.active]="opendSubMenu[0] === mainTittle.tittle">
+                  @if (mainTittle.tittle === 'Sales') {
+                    <i class="feather icon-shopping-cart"></i>
+                  }
+                  @if (mainTittle.tittle !== 'Sales') {
+                    <img [src]="mainTittle.icon" alt="icon" />
+                  }
+                </a>
+              </li>
+            }
+          </ul>
+        </aside>
+        <div class="tab-content tab-content-four pt-2">
+
+          @for (mainTittle of sidebarData; track mainTittle) {
+            <ul class="tab-pane" [class.active]="opendSubMenu[0] === mainTittle.tittle">
+              @for (mainMenus of mainTittle.subRoutes; track mainMenus) {
+                @if (mainMenus.hasSubRoute === false) {
+                  <li>
+                    <a [routerLink]="mainMenus.route" [class.active]="mainMenus.activeRoute === activePath" routerLinkActive="active"><span> {{
+                    mainMenus.tittle }}</span>
+                  </a>
+                </li>
+              }
+              @if (mainMenus.hasSubRoute === true) {
+                <li class="submenu">
+                <a [ngClass]="{
+                    active: activePath === mainMenus.activeRoute,
+                    subdrop: opendSubMenu[1] === mainMenus.tittle
+                  }" (click)="showSubMenu(mainMenus.tittle)"><span> {{ mainMenus.tittle }}</span>
+                    <span class="menu-arrow"></span></a>
+                <ul [ngClass]="{
+                    'd-block': opendSubMenu[1] === mainMenus.tittle,
+                    'd-none': opendSubMenu[1] !== mainMenus.tittle
+                  }">
+                      @for (subDropMenus of mainMenus.subRoutes; track subDropMenus) {
+                        <li>
+                          <a [routerLink]="subDropMenus.route" routerLinkActive="active">{{ subDropMenus.tittle }}</a>
+                        </li>
+                      }
+                    </ul>
+                  </li>
+                }
+              }
+            </ul>
+          }
+
+        </div>
+      </div>
+    </ng-scrollbar>
+  </div>
+</div>
+<!-- /Sidebar -->

@@ -1,0 +1,92 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>List Membre</h4>
+      <h6>Departement Membre</h6>
+    </div>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Pdf" matTooltipPosition="above"><img
+        src="assets/img/icons/pdf.svg" alt="img"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Excel" matTooltipPosition="above"><img
+        src="assets/img/icons/excel.svg" alt="img"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Print" matTooltipPosition="above"><i
+        class="feather icon-printer feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
+        class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
+    </li>
+
+  </ul>
+  <div class="page-btn">
+    <a (click)="addMembre()"  *ngIf="permissionMembre.create" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units">
+      <i class="feather icon-plus-circle me-2"></i>Ajouter Membre
+    </a>
+  </div>
+
+</div>
+<!-- /Page Header -->
+<!-- Always responsive -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          Liste des Membres
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table text-nowrap">
+            <thead>
+            <tr>
+              <th scope="col">membreTitre</th>
+              <th scope="col">Description</th>
+              <th scope="col">specialite</th>
+              <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let membre of membres">
+              <td>
+                <div class="d-flex align-items-center">
+                    <span class="avatar avatar-xs me-2 online avatar-rounded">
+                      <img src="assets/img/avatar/avatar-3.jpg" alt="img">
+                    </span>
+                  {{ membre.membreTitre}}
+                </div>
+              </td>
+              <td>{{ membre.description }}</td>
+              <td>{{ membre.specialite }}</td>
+              <td class="action-table-data">
+                <div class="edit-delete-action">
+                  <a class="me-2 p-2 mb-0" (click)="viewMembre(membre.id)"  *ngIf="permissionMembre.view">
+                    <i class="feather icon-eye action-eye"></i>
+                  </a>
+                  <a class="p-2 me-2" [routerLink]="['/equipe/affectedUserToMembre',membre.id]">
+                    <i class="feather icon-user shield"></i>
+                  </a>
+                  <a class="me-2 confirm-text p-2 mb-0" (click)="deleteMembre(membre.id)" *ngIf="permissionMembre.delete">
+                    <i class="feather icon-trash-2 feather-trash-2"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- /Always responsive -->

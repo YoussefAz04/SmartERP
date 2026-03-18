@@ -1,0 +1,11 @@
+.custom-chart {
+    display: flex;
+    justify-content: center;
+    canvas {
+      display: flex !important;
+      justify-content: center;
+      height: 400px !important;
+      width: 400px !important;
+    }
+  }
+  

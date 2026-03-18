@@ -1,0 +1,61 @@
+{
+  "data": [
+    {
+      "employee": "Mitchum Daniel\n                                    Database Administrator",
+      "employeeID": "POS001",
+      "email": "mir34345@example.com",
+      "salary": "$30,000",
+      "status": "Paid",
+      "img": "assets/img/users/user-01.jpg"
+    },
+    {
+      "employee": "Susan Lopez\n                                    Curator",
+      "employeeID": "POS002",
+      "email": "susanopez@example.com",
+      "salary": "$20,000",
+      "status": "Paid",
+      "img": "assets/img/users/user-02.jpg"
+    },
+    {
+      "employee": "Robert\n                                    System Administrator",
+      "employeeID": "POS003",
+      "email": "robertgman@example.com",
+      "salary": "$25,000",
+      "status": "UnPaid",
+      "img": "assets/img/users/user-03.jpg"
+    },
+    {
+      "employee": "Janet Hembre\n                                    Administrative Officer",
+      "employeeID": "POS004",
+      "email": "janetembre@example.com",
+      "salary": "$23,000",
+      "status": "Paid",
+      "img": "assets/img/users/user-04.jpg"
+    },
+    {
+      "employee": "Russell Belle\n                                    Technician",
+      "employeeID": "POS005",
+      "email": "russellbelle@example.com",
+      "salary": "$35,000",
+      "status": "Paid",
+      "img": "assets/img/users/user-05.jpg"
+    },
+    {
+      "employee": "Edward Muniz\n                                    Office Support Secretary",
+      "employeeID": "POS006",
+      "email": "edward@example.com",
+      "salary": "$28,000",
+      "status": "UnPaid",
+      "img": "assets/img/users/user-06.jpg"
+    },
+    {
+      "employee": "Susan Moore\n                                    Tech Lead",
+      "employeeID": "POS007",
+      "email": "susanmoore@example.com",
+      "salary": "$27,000",
+      "status": "Paid",
+      "img": "assets/img/users/user-07.jpg"
+    }
+  ],
+  "totalData": 7
+}

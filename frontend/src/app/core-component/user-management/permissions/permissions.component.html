@@ -1,0 +1,189 @@
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Gestion des Permissions</h4>
+      <h6>Gérez les permissions par module avec drag & drop</h6>
+    </div>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" title="Actualiser"
+         (click)="refreshPermissions()">
+        <i class="feather icon-rotate-ccw feather-rotate-ccw"></i>
+      </a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" title="Export">
+        <i class="feather icon-download"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<div class="row">
+  <!-- Permissions Disponibles -->
+  <div class="col-lg-6 mb-4">
+    <div class="card permission-container">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-list text-primary me-2"></i>
+          <h5 class="mb-0">Permissions Disponibles</h5>
+          <span class="badge bg-secondary ms-2">{{ availableCount }}</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Barre de recherche -->
+        <div class="search-box mb-3">
+          <input type="text"
+                 class="form-control"
+                 placeholder=" Rechercher un module ou permission..."
+                 [(ngModel)]="availableSearchTerm">
+        </div>
+
+        <!-- Zone de drop -->
+        <div class="permissions-drop-zone"
+             cdkDropList
+             #availableList="cdkDropList"
+             [cdkDropListData]="availableModules"
+             [cdkDropListConnectedTo]="[assignedList]"
+             (cdkDropListDropped)="onDropContainer($event)"
+             [style.min-height.px]="400">
+
+          <!-- Message si vide -->
+          <div class="empty-state text-center py-5" *ngIf="filteredAvailableModules.length === 0">
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+            <h6 class="text-muted">Aucune permission disponible</h6>
+            <p class="text-muted">Toutes les permissions sont déjà attribuées</p>
+          </div>
+
+          <!-- Cartes de modules -->
+          <div class="module-card mb-3"
+               *ngFor="let module of filteredAvailableModules; trackBy: trackByModuleId"
+               cdkDrag
+               [cdkDragData]="module">
+
+            <!-- Header du module -->
+            <div class="module-header d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-white">{{ module.moduleTitle }}</span>
+              <button class="btn btn-sm btn-outline-light"
+                      (click)="toggleAllModulePermissions(module.moduleId, false)"
+                      [attr.title]="'Sélectionner toutes les permissions'">
+                <i class="fas fa-check-double"></i>
+              </button>
+            </div>
+
+            <!-- Grille des permissions -->
+            <div class="permissions-grid p-3">
+              <div class="permission-item"
+                   *ngFor="let permission of module.permissions; trackBy: trackByPermission"
+                   cdkDrag
+                   [cdkDragData]="permission"
+                   (click)="movePermission(permission, true)"
+                   [title]="'Cliquer pour assigner cette permission'">
+
+                <div class="permission-badge" [ngClass]="getPermissionClass(permission.permissionType)">
+                  <i [class]="getPermissionIcon(permission.permissionType)"></i>
+                  {{ permission.permissionType | titlecase }}
+                </div>
+                <i class="fas fa-grip-vertical text-muted mt-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Permissions Attribuées -->
+  <div class="col-lg-6 mb-4">
+    <div class="card permission-container">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-check-circle text-success me-2"></i>
+          <h5 class="mb-0">Permissions Attribuées</h5>
+          <span class="badge bg-success ms-2">{{ assignedCount }}</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Barre de recherche -->
+        <div class="search-box mb-3">
+          <input type="text"
+                 class="form-control"
+                 placeholder="🔍 Rechercher dans les permissions attribuées..."
+                 [(ngModel)]="assignedSearchTerm">
+        </div>
+
+        <!-- Zone de drop -->
+        <div class="permissions-drop-zone"
+             cdkDropList
+             #assignedList="cdkDropList"
+             [cdkDropListData]="assignedModules"
+             [cdkDropListConnectedTo]="[availableList]"
+             (cdkDropListDropped)="onDropContainer($event)"
+             [style.min-height.px]="400">
+
+          <!-- Message si vide -->
+          <div class="empty-state text-center py-5" *ngIf="filteredAssignedModules.length === 0">
+            <i class="fas fa-shield-alt fa-3x text-muted mb-3"></i>
+            <h6 class="text-muted">Aucune permission attribuée</h6>
+            <p class="text-muted">Glissez-déposez des permissions ici</p>
+          </div>
+
+          <!-- Cartes de modules -->
+          <div class="module-card mb-3"
+               *ngFor="let module of filteredAssignedModules; trackBy: trackByModuleId"
+               cdkDrag
+               [cdkDragData]="module">
+
+            <!-- Header du module -->
+            <div class="module-header d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-white">{{ module.moduleTitle }}</span>
+              <button class="btn btn-sm btn-outline-light"
+                      (click)="toggleAllModulePermissions(module.moduleId, true)"
+                      [attr.title]="'Retirer toutes les permissions'">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <!-- Grille des permissions -->
+            <div class="permissions-grid p-3">
+              <div class="permission-item selected"
+                   *ngFor="let permission of module.permissions; trackBy: trackByPermission"
+                   cdkDrag
+                   [cdkDragData]="permission"
+                   (click)="movePermission(permission, false)"
+                   [title]="'Cliquer pour retirer cette permission'">
+
+                <div class="permission-badge" [ngClass]="getPermissionClass(permission.permissionType)">
+                  <i [class]="getPermissionIcon(permission.permissionType)"></i>
+                  {{ permission.permissionType | titlecase }}
+                </div>
+                <i class="fas fa-grip-vertical text-muted mt-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="card-footer">
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button"
+                  class="btn btn-secondary"
+                  (click)="resetPermissions()">
+            <i class="fas fa-undo me-2"></i>
+            Annuler
+          </button>
+          <button type="button"
+                  class="btn btn-primary"
+                  (click)="savePermissions()">
+            <i class="fas fa-save me-2"></i>
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

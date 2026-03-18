@@ -1,0 +1,59 @@
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Modifier le projet</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #projetForm="ngForm">
+
+        <!-- Nom -->
+        <div class="mb-3">
+          <label for="nom" class="form-label">Nom</label>
+          <input type="text" id="nom" class="form-control" name="nom"
+                 [(ngModel)]="projet.nom" required>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" class="form-control" name="description"
+                    [(ngModel)]="projet.description" rows="3"></textarea>
+        </div>
+
+        <!-- Date Début -->
+        <div class="mb-3">
+          <label for="dateDebut" class="form-label">Date de début</label>
+          <input type="date" id="dateDebut" class="form-control" name="dateDebut"
+                 [(ngModel)]="projet.dateDebut" required>
+        </div>
+
+        <!-- Date Fin -->
+        <div class="mb-3">
+          <label for="dateFin" class="form-label">Date de fin</label>
+          <input type="date" id="dateFin" class="form-control" name="dateFin"
+                 [(ngModel)]="projet.dateFin" required>
+        </div>
+
+        <!-- Statut -->
+        <div class="mb-3">
+          <label for="statut" class="form-label">Statut</label>
+          <select id="statut" class="form-select" name="statut"
+                  [(ngModel)]="projet.statut" required>
+            <option [ngValue]="StatutProjet.EN_ATTENTE">En attente</option>
+            <option [ngValue]="StatutProjet.EN_COURS">En cours</option>
+            <option [ngValue]="StatutProjet.TERMINE">Terminé</option>
+            <option [ngValue]="StatutProjet.ANNULE">Annulé</option>
+          </select>
+        </div>
+
+
+
+
+        <button type="submit" class="btn btn-primary"
+                [disabled]="!projetForm.form.valid">
+          Enregistrer
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

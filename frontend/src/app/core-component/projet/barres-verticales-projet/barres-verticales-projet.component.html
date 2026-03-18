@@ -1,0 +1,69 @@
+<div class="chart-container">
+  <div class="chart-header">
+    <h3 class="chart-title">
+      <i class="chart-icon"></i>
+      Nombre de tâches par projet
+    </h3>
+    <div class="chart-subtitle">
+      sur {{ projetsTaches.length }} projet{{ projetsTaches.length > 1 ? 's' : '' }}
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <div *ngIf="hasError && !isLoading" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <p class="error-message">Erreur lors du chargement des données</p>
+    <button class="retry-button" (click)="retry()">Réessayer</button>
+  </div>
+
+  <!-- Graphique en barres -->
+  <div *ngIf="!isLoading && !hasError" class="chart-content">
+    <div *ngIf="projetsTaches.length === 0" class="empty-state">
+      <div class="empty-icon">📋</div>
+      <p>Aucun projet trouvé</p>
+    </div>
+
+    <div *ngIf="projetsTaches.length > 0" class="bar-chart">
+      <div class="y-axis">
+
+
+      <div class="chart-area">
+        <div class="grid-lines">
+          <div class="grid-line" *ngFor="let line of [0,1,2,3,4]"></div>
+        </div>
+
+        <div class="bars-container">
+          <div
+            *ngFor="let pt of projetsTaches;"
+            class="bar-wrapper"
+            [attr.data-value]="pt.nombreTaches"
+          >
+            <div class="bar-background">
+              <div
+                class="bar"
+                [style.height.%]="pt.percentage"
+                [class.bar-zero]="pt.nombreTaches === 0"
+              >
+                <div class="bar-value">{{ pt.nombreTaches }}</div>
+              </div>
+            </div>
+            <div class="bar-label">
+              <div class="project-id">Projet {{ pt.projetId }}</div>
+              <div class="task-count">
+                {{ pt.nombreTaches }} tâche{{ pt.nombreTaches > 1 ? 's' : '' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

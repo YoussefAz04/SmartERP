@@ -1,0 +1,107 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Formulaire Dépense</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Ajouter Dépense</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Ajouter une Dépense</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="depenseForm" (ngSubmit)="submit()">
+          <div class="row">
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Description</label>
+                <input type="text" class="form-control" formControlName="description"
+                       [class.is-invalid]="f['description'].invalid && f['description'].touched">
+                <div class="invalid-feedback" *ngIf="f['description'].invalid && f['description'].touched">
+                  <div *ngIf="f['description'].errors?.['required']">La description est requise</div>
+                  <div *ngIf="f['description'].errors?.['minlength']">La description doit contenir au moins 3 caractères</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Montant</label>
+                <input type="number" class="form-control" formControlName="montant" step="0.01"
+                       [class.is-invalid]="f['montant'].invalid && f['montant'].touched">
+                <div class="invalid-feedback" *ngIf="f['montant'].invalid && f['montant'].touched">
+                  <div *ngIf="f['montant'].errors?.['required']">Le montant est requis</div>
+                  <div *ngIf="f['montant'].errors?.['min']">Le montant doit être supérieur à 0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Date Dépense</label>
+                <input type="date" class="form-control" formControlName="dateDepense"
+                       [class.is-invalid]="f['dateDepense'].invalid && f['dateDepense'].touched">
+                <div class="invalid-feedback" *ngIf="f['dateDepense'].invalid && f['dateDepense'].touched">
+                  <div *ngIf="f['dateDepense'].errors?.['required']">La date est requise</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Budget</label>
+                <select class="form-select" formControlName="idBudget"
+                        [class.is-invalid]="f['idBudget'].invalid && f['idBudget'].touched">
+                  <option value="">Sélectionnez un budget</option>
+                  <option *ngFor="let b of budgets" [value]="b.id">
+                    {{ b.nom }} - {{ b.montant | number:'1.0-2' }} DT
+                  </option>
+                </select>
+                <div class="invalid-feedback" *ngIf="f['idBudget'].invalid && f['idBudget'].touched">
+                  <div *ngIf="f['idBudget'].errors?.['required']">Le budget est requis</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Catégorie</label>
+                <select class="form-select" formControlName="idCategorie"
+                        [class.is-invalid]="f['idCategorie'].invalid && f['idCategorie'].touched">
+                  <option value="">Sélectionnez une catégorie</option>
+                  <option *ngFor="let c of categories" [value]="c.id">{{ c.nom }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="f['idCategorie'].invalid && f['idCategorie'].touched">
+                  <div *ngIf="f['idCategorie'].errors?.['required']">La catégorie est requise</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="button" class="btn btn-cancel me-2"
+                    (click)="router.navigate(['budget/listdepense'])">
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-submit"
+                    [disabled]="depenseForm.invalid || loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,75 @@
+{
+  "data": [
+    {
+      "brand": "Lenevo",
+      "createdOn": "25 May 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-01.png"
+      
+    },
+    {
+      "brand": "Boat",
+      "createdOn": "24 Jun 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-02.png"
+    },
+    {
+      "brand": "Nike",
+      "createdOn": "23 Jul 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-03.png"
+    },
+    {
+      "brand": "Apple",
+      "createdOn": "22 Aug 2023",
+      "status": "Active",
+      "img": "assets/img/brand/brand-icon-04.png"
+    },
+    {
+      "brand": "Amazon",
+      "createdOn": "21 Sep 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-05.png"
+    },
+    {
+      "brand": "Woodmart",
+      "createdOn": "20 Sep 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-06.png"
+    },
+    {
+      "brand": "Versace",
+      "createdOn": "20 Sep 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-07.png"
+    },
+    {
+      "brand": "Lava",
+      "createdOn": "20 Sep 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-08.png"
+    },
+    {
+      "brand": "Bently",
+      "createdOn": "20 Sep 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-09.png"
+    },
+    {
+      "brand": "Nilkamal",
+      "createdOn": "20 Sep 2023",
+      "status": "Active",
+      "isSelected": false,
+      "img": "assets/img/brand/brand-icon-10.png"
+    }
+  ],
+  "totalData": 10
+}

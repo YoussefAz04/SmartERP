@@ -1,0 +1,268 @@
+<div class="row">
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-widget w-100">
+      <div class="dash-widgetimg">
+        <span><img src="assets/img/icons/dash1.svg" alt="img"></span>
+      </div>
+      <div class="dash-widgetcontent">
+        <h5> $<span class="counters"  data-count="307144" [countUp]="307144" [options]="{ duration: 10 }">$307144</span></h5>
+        <h6>Total Purchase Due</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-widget dash1 w-100">
+      <div class="dash-widgetimg">
+        <span><img src="assets/img/icons/dash2.svg" alt="img"></span>
+      </div>
+      <div class="dash-widgetcontent">
+        <h5> $<span class="counters" data-count="4385.00" [countUp]="4385.00" [options]="{ duration: 10 }">$4385</span></h5>
+        <h6>Total Sales Due</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-widget dash2 w-100">
+      <div class="dash-widgetimg">
+        <span><img src="assets/img/icons/dash3.svg" alt="img"></span>
+      </div>
+      <div class="dash-widgetcontent">
+        <h5> $<span class="counters" data-count="385656.50" [countUp]="385656.50" [options]="{ duration: 10 }">$385656</span></h5>
+        <h6>Total Sale Amount</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-widget dash3 w-100">
+      <div class="dash-widgetimg">
+        <span><img src="assets/img/icons/dash4.svg" alt="img"></span>
+      </div>
+      <div class="dash-widgetcontent">
+        <h5> $<span class="counters" data-count="40000.00" [countUp]="40000.00" [options]="{ duration: 10 }">$400</span></h5>
+        <h6>Total Expense Amount</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-count">
+      <div class="dash-counts">
+        <h4>100</h4>
+        <h5>Customers</h5>
+      </div>
+      <div class="dash-imgs">
+        <i class="feather icon-user"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-count das1">
+      <div class="dash-counts">
+        <h4>110</h4>
+        <h5>Suppliers</h5>
+      </div>
+      <div class="dash-imgs">
+        <i class="feather icon-user-check"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-count das2">
+      <div class="dash-counts">
+        <h4>150</h4>
+        <h5>Purchase Invoice</h5>
+      </div>
+      <div class="dash-imgs">
+        <img src="assets/img/icons/file-text-icon-01.svg" class="img-fluid" alt="icon">
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+    <div class="dash-count das3">
+      <div class="dash-counts">
+        <h4>170</h4>
+        <h5>Sales Invoice</h5>
+      </div>
+      <div class="dash-imgs">
+        <i class="feather icon-file"></i>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Button trigger modal -->
+
+<div class="row">
+  <div class="col-xl-7 col-sm-12 col-12 d-flex">
+    <div class="card flex-fill">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Purchase & Sales</h5>
+        <div class="graph-sets">
+          <ul class="mb-0">
+            <li>
+              <span>Sales</span>
+            </li>
+            <li>
+              <span>Purchase</span>
+            </li>
+          </ul>
+          <div class="dropdown dropdown-wraper">
+            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              2023
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li>
+                <a href="javascript:void(0);" class="dropdown-item">2023</a>
+              </li>
+              <li>
+                <a href="javascript:void(0);" class="dropdown-item">2022</a>
+              </li>
+              <li>
+                <a href="javascript:void(0);" class="dropdown-item">2021</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="sales_charts">
+          <apx-chart
+            [series]="chartOptions.series"
+            [chart]="chartOptions.chart"
+            [dataLabels]="chartOptions.dataLabels"
+            [plotOptions]="chartOptions.plotOptions"
+            [yaxis]="chartOptions.yaxis"
+            [xaxis]="chartOptions.xaxis"
+            [colors]="chartOptions.colors"
+          ></apx-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-5 col-sm-12 col-12 d-flex">
+    <div class="card flex-fill default-cover mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Recent Products</h4>
+        <div class="view-all-link">
+          <a href="javascript:void(0);" class="view-all d-flex align-items-center">
+            View All<span class="ps-2 d-flex align-items-center"><i class="feather icon-arrow-right feather-16"></i></span>
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive dataview">
+          <table class="table dashboard-recent-products">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Products</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td class="productimgname">
+                  <a [routerLink]="routes.productList" class="product-img">
+                    <img src="assets/img/products/stock-img-01.png" alt="product">
+                  </a>
+                  <a [routerLink]="routes.productList">Lenevo 3rd Generation</a>
+                </td>
+                <td>$12500</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td class="productimgname">
+                  <a [routerLink]="routes.productList" class="product-img">
+                    <img src="assets/img/products/stock-img-06.png" alt="product">
+                  </a>
+                  <a [routerLink]="routes.productList">Bold V3.2</a>
+                </td>
+                <td>$1600</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td class="productimgname">
+                  <a [routerLink]="routes.productList" class="product-img">
+                    <img src="assets/img/products/stock-img-02.png" alt="product">
+                  </a>
+                  <a [routerLink]="routes.productList">Nike Jordan</a>
+                </td>
+                <td>$2000</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td class="productimgname">
+                  <a [routerLink]="routes.productList" class="product-img">
+                    <img src="assets/img/products/stock-img-03.png" alt="product">
+                  </a>
+                  <a [routerLink]="routes.productList">Apple Series 5 Watch</a>
+                </td>
+                <td>$800</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title">Expired Products</h4>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive dataview ">
+      <table class="table dashboard-expired-products" matSort matSortActive="Sno"
+        matSortDirection="asc" matSortDisableClear>
+        <thead>
+          <tr>
+            <th class="no-sort">
+                <label class="checkboxs"  (click)="selectAll(initChecked)">
+                  <input type="checkbox" id="select-all" [(ngModel)]="initChecked" >
+                  <span class="checkmarks"></span>
+                </label>
+              </th>
+            <th  mat-sort-header="product">Product</th>
+            <th  mat-sort-header="sku">SKU</th>
+            <th  mat-sort-header="date">Manufactured Date</th>
+            <th  mat-sort-header="expireddate">Expired Date</th>
+            <th class="no-sort">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (data of tableData; track data; let i = $index) {
+            <tr>
+              <td>
+                  <label class="checkboxs">
+                    <input type="checkbox" [(ngModel)]="data.isSelected">
+                    <span class="checkmarks"></span>
+                  </label>
+                </td>
+              <td>
+                <div class="productimgname">
+                  <a href="javascript:void(0);" class="product-img stock-img">
+                    <img [src]="data.img" alt="product">
+                  </a>
+                  <a href="javascript:void(0);">{{data.product}} </a>
+                </div>
+              </td>
+              <td><a href="javascript:void(0);">{{data.sku}}</a></td>
+              <td>{{data.manufacturedDate}}</td>
+              <td>{{data.expiredDate}}</td>
+              <td class="action-table-data">
+                <div class="edit-delete-action">
+                  <a class="me-2 p-2" href="javascript:void(0);">
+                    <i class="feather icon-edit feather-edit"></i>
+                  </a>
+                  <a class=" confirm-text p-2" href="javascript:void(0);" (click)="confirmColor()">
+                    <i  class="feather icon-trash-2 feather-trash-2"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          }
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

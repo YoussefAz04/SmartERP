@@ -1,0 +1,64 @@
+<div [ngClass]="{
+  'expand-menu': miniSidebar === true && expandMenu === true && layoutMode !== 'horizontal_mode' && layoutMode !== 'modern_mode',
+  'mini-sidebar': miniSidebar === true && layoutMode !== 'horizontal_mode' && layoutMode !== 'modern_mode',
+  'menu-opened': mobileSidebar === true,
+  'slide-nav': mobileSidebar === true,
+}">
+  @if (loading$ | async) {
+  <div id="global-loader">
+    <div class="whirly-loader"> </div>
+  </div>
+  }
+  <!-- Main Wrapper -->
+  @if (page !== 'coming-soon' && page !== 'under-maintenance') {
+  <div class="main-wrapper" [ngClass]="{
+        'light': themeMode === 'light_mode',
+        'dark': themeMode === 'dark_mode',
+        'default': layoutMode === 'default_mode',
+        'box': layoutMode === 'box_mode',
+        'collapsed': layoutMode === 'collapsed_mode',
+        'horizontal': layoutMode === 'horizontal_mode',
+        'modern': layoutMode === 'modern_mode',
+        'nav-light': navigationColor === 'light_color',
+        'nav-grey': navigationColor === 'grey_color',
+        'nav-dark': navigationColor === 'dark_color',
+        'main-chat-blk': page === 'chat',
+      }" [class.header-collapse]="isCollapsed">
+    <app-header></app-header>
+    @if (page !== 'pos') {
+    <app-sidebar-one> </app-sidebar-one>
+    }
+    @if (layoutMode === 'collapsed_mode') {
+    <app-sidebar-two></app-sidebar-two>
+    }
+    @if (layoutMode === 'horizontal_mode' || layoutMode === 'modern_mode') {
+    <app-sidebar-three></app-sidebar-three>
+    }
+    <div class="page-wrapper" [ngClass]="{
+            'ms-0': sideBaractivePath === true,
+            'pos-pg-wrapper' : page === 'pos',
+            'cardhead': page === 'ui-counter',
+            'notes-page-wrapper' : page === 'file-archived' || page === 'file-document' || page === 'file-archived' || page === 'file-favourites' || page === 'file-recent' || page === 'file-manager'||page === 'file-shared' || page === 'todo' || page === 'notes' || page === 'qrcode' || page === 'file-manager-deleted',
+            'file-manager': page === 'file-shared' || page === 'file-archived' || page === 'file-document' || page === 'file-archived' || page === 'file-favourites' || page === 'file-recent' || page === 'file-manager' || page === 'file-manager-deleted',
+            'chat-page-wrapper' : page === 'chat',
+          }">
+      <div class="content" [ngClass]="{
+            'settings-content':last === 'bank-settings-grid' || last === 'bank-settings-list' || last === 'email-settings' || base === 'settings' || last === 'storage-settings',
+            'pos-design p-0':page === 'pos'
+          }">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+    <!-- Main Wrapper -->
+<!--    <app-layout [ngClass]="{'d-none': page === 'pos'}"></app-layout>-->
+  </div>
+  }
+  <!-- Main Wrapper -->
+
+  @if (page === 'coming-soon' || page === 'under-maintenance') {
+  <div class="main-wrapper">
+    <router-outlet></router-outlet>
+  </div>
+  }
+
+</div>

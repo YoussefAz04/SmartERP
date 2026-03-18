@@ -1,0 +1,50 @@
+{
+    "data": [
+        {
+            "img1": "assets/img/icons/pay.svg",
+            "supplier": "Lavi",
+            "date": "12 Jul 2023",
+            "refNo": "#4237300",
+            "totalAmount": "$30,000",
+            "discount": "10",
+            "taxAmount": "$457"
+        },
+        {
+            "img1": "assets/img/icons/stripe.svg",
+            "supplier": "Anthony",
+            "date": "18 Aug 2023",
+            "refNo": "#5628954",
+            "totalAmount": "$45,000",
+            "discount": "12",
+            "taxAmount": "$265"
+        },
+        {
+            "img1": "assets/img/icons/razorpay.svg",
+            "supplier": "Colleen",
+            "date": "27 Aug 2023",
+            "refNo": "#8745239",
+            "totalAmount": "$26,000",
+            "discount": "08",
+            "taxAmount": "$980"
+        },
+        {
+            "img1": "assets/img/icons/pay.svg",
+            "supplier": "Victor",
+            "date": "05 Sep 2023",
+            "refNo": "#9814586",
+            "totalAmount": "$18,000",
+            "discount": "15",
+            "taxAmount": "$561"
+        },
+        {
+            "img1": "assets/img/icons/pay.svg",
+            "supplier": "Tracy",
+            "date": "23 Sep 2023",
+            "refNo": "#7590325",
+            "totalAmount": "$52,000",
+            "discount": "20",
+            "taxAmount": "$382"
+        }
+    ],
+    "totalData": 5
+}

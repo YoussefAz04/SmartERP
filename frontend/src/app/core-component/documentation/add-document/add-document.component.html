@@ -1,0 +1,50 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Ajouter un département</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Départements</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title">Ajouter un document</h4>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="documentForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label for="nom" class="form-label">Nom du document</label>
+        <input id="nom" type="text" formControlName="nom" class="form-control" />
+      </div>
+
+      <div class="mb-3">
+        <label for="type" class="form-label">Type</label>
+        <input id="type" type="text" formControlName="type" class="form-control" />
+      </div>
+
+      <div class="mb-3">
+        <label for="categorieId" class="form-label">Catégorie</label>
+        <select id="categorieId" formControlName="categorieId" class="form-select">
+          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="file" class="form-label">Choisir un fichier</label>
+        <input id="file" type="file" (change)="onFileSelected($event)" class="form-control" required />
+      </div>
+
+
+
+      <button type="submit" class="btn btn-primary" [disabled]="documentForm.invalid">Ajouter</button>
+    </form>
+
+
+  </div>
+</div>

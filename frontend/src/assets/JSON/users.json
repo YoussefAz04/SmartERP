@@ -1,0 +1,95 @@
+{
+  "data": [
+    {
+      "img": "assets/img/users/user-23.jpg",
+      "userName": "Thomas",
+      "phone": "+12163547758",
+      "email": "thomas@example.com",
+      "role": "Admin",
+      "createdOn": "19 Jan 2023",
+      "status": "Inactive"
+    },
+    {
+      "img": "assets/img/users/user-24.jpg",
+      "userName": "Rose",
+      "phone": "+11367529510",
+      "email": "rose@example.com",
+      "role": "Manager",
+      "createdOn": "23 Jan 2023",
+      "status": "Active"
+    },
+    {
+      "img": "assets/img/users/user-25.jpg",
+      "userName": "Benjamin",
+      "phone": "+15362789414",
+      "email": "benjamin@example.com",
+      "role": "Salesman",
+      "createdOn": "07 Feb 2023",
+      "status": "Active"
+    },
+    {
+      "img": "assets/img/users/user-26.jpg",
+      "userName": "Kaitlin",
+      "phone": "+18513094627",
+      "email": "kaitlin@example.com",
+      "role": "Supervisor",
+      "createdOn": "18 Feb 2023",
+      "status": "Active"
+    },
+    {
+      "img": "assets/img/users/user-27.jpg",
+      "userName": "Lilly",
+      "phone": "+14678219025",
+      "email": "lilly@example.com",
+      "role": "Store Keeper",
+      "createdOn": "16 Mar 2023",
+      "status": "Inactive"
+    },
+    {
+      "img": "assets/img/users/user-28.jpg",
+      "userName": "Freda",
+      "phone": "+10913278319",
+      "email": "freda@example.com",
+      "role": "Purchase",
+      "createdOn": "29 Mar 2023",
+      "status": "Inactive"
+    },
+    {
+      "img": "assets/img/users/user-29.jpg",
+      "userName": "Alwin",
+      "phone": "+19125852947",
+      "email": "alwin@example.com",
+      "role": "Delivery Biker",
+      "createdOn": "03 Apr 2023",
+      "status": "Active"
+    },
+    {
+      "img": "assets/img/users/user-30.jpg",
+      "userName": "Maybelle",
+      "phone": "+13671835209",
+      "email": "maybelle@example.com",
+      "role": "Maintenance",
+      "createdOn": "13 Apr 2023",
+      "status": "Active"
+    },
+    {
+      "img": "assets/img/users/user-31.jpg",
+      "userName": "Ellen",
+      "phone": "+19756194733",
+      "email": "ellen@example.com",
+      "role": "Quality Analyst",
+      "createdOn": "17 May 2023",
+      "status": "Active"
+    },
+    {
+      "img": "assets/img/users/user-22.jpg",
+      "userName": "Grace",
+      "phone": "+19167850925",
+      "email": "grace@example.com",
+      "role": "Accountant",
+      "createdOn": "21 May 2023",
+      "status": "Active"
+    }
+  ],
+  "totalData": 10
+}

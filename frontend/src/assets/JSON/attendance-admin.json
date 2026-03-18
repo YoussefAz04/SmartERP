@@ -1,0 +1,73 @@
+{
+    "data": [
+      {
+        "name": "Mitchum Daniel",
+        "img": "assets/img/users/user-01.jpg",
+        "posting":"Administrator",
+        "empId": "POS001",
+        "Date": "15 Jan 2023",
+        "shift": "Regular",
+        "clockIn":"09:15 AM",
+        "Production": "9h 22m",
+        "overTime": "1h 13m",
+        "isSelected": false,
+        "totalhours": "10h 15m"
+        
+      },
+      {
+        "name": "Janet Hembre",
+        "img": "assets/img/users/user-06.jpg",
+        "posting":"Administrative",
+        "empId": "POS003",
+        "Date": "15 Jan 2023",
+        "shift": "Regular",
+        "clockIn":"09:07 AM",
+        "Production": "9h 55m",
+        "overTime": "0h 50m",
+        "isSelected": false,
+        "totalhours": "10h 50m"
+      },
+      {
+        "name": "Robert Grossman",
+        "img": "assets/img/users/user-03.jpg",
+        "posting":"Administrator",
+        "empId": "POS005",
+        "Date": "15 Jan 2023",
+        "shift": "Regular",
+        "clockIn":"09:02 AM",
+        "Production": "9h 20m",
+        "overTime": "1h 03m",
+        "isSelected": false,
+        "totalhours": "10h 03m"
+      },
+      {
+        "name": "Edward Muniz",
+        "img": "assets/img/users/user-05.jpg",
+        "posting":"Secretary",
+        "empId": "POS006",
+        "Date": "15 Jan 2023",
+        "shift": "Regular",
+        "clockIn":"09:08 AM",
+        "Production": "9h 30m",
+        "overTime": "1h 55m",
+        "isSelected": false,
+        "totalhours": "10h 55m"
+      },
+      {
+        "name": "Susan Moore",
+        "img": "assets/img/users/user-02.jpg",
+        "posting":"Tech Lead",
+        "empId": "POS007",
+        "Date": "15 Jan 2023",
+        "shift": "Regular",
+        "clockIn":"09:13 AM",
+        "Production": "9h 40m",
+        "overTime": "1h 52m",
+        "isSelected": false,
+        "totalhours": "10h 52m"
+      }
+     
+    ],
+    "totalData": 5
+  }
+  

@@ -1,0 +1,14 @@
+<div class="pie-chart-container text-center">
+  <h3 class="mb-4">Répartition des projets par statut</h3>
+
+  <div class="chart-wrapper d-flex justify-content-center">
+    <canvas
+      baseChart
+      [data]="pieChartData"
+      [type]="pieChartType"
+      [options]="pieChartOptions"
+      width="400"
+      height="400">
+    </canvas>
+  </div>
+</div>

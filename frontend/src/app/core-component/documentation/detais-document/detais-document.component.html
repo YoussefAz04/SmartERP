@@ -1,0 +1,51 @@
+<div class="container mt-4" *ngIf="documentDetais">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Modifier le document</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()">
+
+        <div class="mb-3">
+          <label for="nom" class="form-label">Nom</label>
+          <input type="text" id="nom" class="form-control" [(ngModel)]="documentDetais.nom" name="nom" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="type" class="form-label">Type</label>
+          <input type="text" id="type" class="form-control" [(ngModel)]="documentDetais.type" name="type" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Date d'ajout</label>
+          <input type="date" class="form-control" [(ngModel)]="documentDetais.dateAjout" name="dateAjout">
+        </div>
+
+        <div class="mb-3" *ngIf="documentDetais.categorieDocument">
+          <label class="form-label">Catégorie</label>
+          <input type="text" class="form-control" [value]="documentDetais.categorieDocument.nom" disabled>
+        </div>
+
+        <div class="mb-3" *ngIf="documentDetais.fileChemin?.urLPdf">
+          <label class="form-label">Aperçu du document PDF</label>
+          <div class="border rounded" style="height: 600px;">
+            <iframe
+              [src]="getPdfViewerUrl(documentDetais.fileChemin?.urLPdf || '')"
+              width="100%"
+              height="100%"
+              style="border: none;">
+            </iframe>
+          </div>
+        </div>
+
+
+        <button  type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!documentDetais" class="text-center mt-4">
+  <div class="spinner-border text-primary" role="status"></div>
+  <p>Chargement en cours...</p>
+</div>

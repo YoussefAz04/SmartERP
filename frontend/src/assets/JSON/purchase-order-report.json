@@ -1,0 +1,82 @@
+{
+  "data": [
+    {
+      "img": "assets/img/products/product1.jpg",
+      "productName": "Macbook pro",
+      "purchasedAmount": "38698.00",
+      "purchasedQty": "1248",
+      "instockQty": "1356"
+    },
+    {
+      "img": "assets/img/products/product2.jpg",
+      "productName": "Orange",
+      "purchasedAmount": "36080.00",
+      "purchasedQty": "110",
+      "instockQty": "131"
+    },
+    {
+      "img": "assets/img/products/product3.jpg",
+      "productName": "Pineapple",
+      "purchasedAmount": "21000.00",
+      "purchasedQty": "106",
+      "instockQty": "131"
+    },
+    {
+      "img": "assets/img/products/product4.jpg",
+      "productName": "Strawberry",
+      "purchasedAmount": "11000.00",
+      "purchasedQty": "105",
+      "instockQty": "100"
+    },
+    {
+      "img": "assets/img/products/product5.jpg",
+      "productName": "Sunglasses",
+      "purchasedAmount": "10600.00",
+      "purchasedQty": "105",
+      "instockQty": "100"
+    },
+    {
+      "img": "assets/img/products/product6.jpg",
+      "productName": "Unpaired gray",
+      "purchasedAmount": "9984.00",
+      "purchasedQty": "50",
+      "instockQty": "50"
+    },
+    {
+      "img": "assets/img/products/product7.jpg",
+      "productName": "Avocat",
+      "purchasedAmount": "4500.00",
+      "purchasedQty": "41",
+      "instockQty": "29"
+    },
+    {
+      "img": "assets/img/products/product8.jpg",
+      "productName": "Banana",
+      "purchasedAmount": "900.00",
+      "purchasedQty": "28",
+      "instockQty": "24"
+    },
+    {
+      "img": "assets/img/products/product9.jpg",
+      "productName": "Earphones",
+      "purchasedAmount": "500.00",
+      "purchasedQty": "20",
+      "instockQty": "11"
+    },
+    {
+      "img": "assets/img/products/product10.jpg",
+      "productName": "Banana",
+      "purchasedAmount": "900.00",
+      "purchasedQty": "28",
+      "instockQty": "24"
+    },
+    {
+      "img": "assets/img/products/product11.jpg",
+      "productName": "Earphones",
+      "purchasedAmount": "500.00",
+      "purchasedQty": "20",
+      "instockQty": "11"
+    }
+  ],
+  "totalData": 11
+}

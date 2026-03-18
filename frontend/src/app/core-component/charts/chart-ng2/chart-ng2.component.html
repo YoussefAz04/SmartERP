@@ -1,0 +1,152 @@
+<div class="cardhead">
+
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Charts</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a [routerLink]="routes.dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Ng2 Chart</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
+    <div class="row">
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Bar Chart</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo">
+                        <canvas baseChart id="chartBar1" class="chart h-300" [data]="barChartData">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Transparency</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo">
+                        <canvas baseChart id="chartBar2" class="chart h-300" [data]="transparencyChartData">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Line Chart</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo">
+                        <canvas baseChart class="chart h-300" [type]="'line'" [data]="barChartData"
+                            [options]="{ responsive: true }">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Scatter Chart</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo">
+                        <canvas baseChart class="chart h-300" [type]="'scatter'" [data]="barChartData"
+                            [options]="{ responsive: true }">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Radar Chart</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo custom-chart">
+                        <canvas baseChart class="chart h-300" [type]="'radar'" [data]="barChartData"
+                            [options]="{ responsive: true }">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Doughnut Chart</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo custom-chart">
+                        <canvas baseChart class="chart h-300" [type]="'doughnut'" [data]="barChartData"
+                            [options]="{ responsive: true }">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Pie Chart</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo custom-chart">
+                        <canvas baseChart class="chart h-300" [type]="'pie'" [data]="pieChartData"
+                            [options]="{ responsive: true }">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+
+        <!-- Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Polar Area Chart</div>
+                </div>
+                <div class="card-body">
+                    <div class="chartjs-wrapper-demo custom-chart">
+                        <canvas baseChart class="chart h-300" [type]="'polarArea'" [data]="barChartData"
+                            [options]="{ responsive: true }">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Chart -->
+    </div>
+</div>

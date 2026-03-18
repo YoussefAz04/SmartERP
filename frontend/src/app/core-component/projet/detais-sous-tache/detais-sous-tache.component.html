@@ -1,0 +1,72 @@
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Detais une Sous-Tâche</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #sousTacheForm="ngForm">
+
+        <!-- Titre -->
+        <div class="mb-3">
+          <label for="titre" class="form-label">Titre</label>
+          <input type="text" id="titre" class="form-control" name="titre"
+                 [(ngModel)]="sousTache.titre" required>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" class="form-control" name="description"
+                    [(ngModel)]="sousTache.description" rows="3"></textarea>
+        </div>
+
+        <!-- Type -->
+        <div class="mb-3">
+          <label for="type" class="form-label">Type</label>
+          <select id="type" class="form-select" name="type"
+                  [(ngModel)]="sousTache.type" required>
+            <option [ngValue]="TypeSousTache.TECHNIQUE">Technique</option>
+            <option [ngValue]="TypeSousTache.DOCUMENTATION">Documentation</option>
+            <option [ngValue]="TypeSousTache.TEST">Test</option>
+            <option [ngValue]="TypeSousTache.REVUE">Revue</option>
+          </select>
+        </div>
+
+        <!-- Date début -->
+        <div class="mb-3">
+          <label for="dateDebut" class="form-label">Date de début</label>
+          <input type="date" id="dateDebut" class="form-control" name="dateDebut"
+                 [(ngModel)]="sousTache.dateDebut" required>
+        </div>
+
+        <!-- Date fin -->
+        <div class="mb-3">
+          <label for="dateFin" class="form-label">Date de fin</label>
+          <input type="date" id="dateFin" class="form-control" name="dateFin"
+                 [(ngModel)]="sousTache.dateFin" required>
+        </div>
+
+        <!-- Progression -->
+        <div class="mb-3">
+          <label for="progres" class="form-label">Progression (%)</label>
+          <input type="number" id="progres" class="form-control" name="progres"
+                 [(ngModel)]="sousTache.progres" min="0" max="100" required>
+        </div>
+
+        <!-- Durée -->
+        <div class="mb-3">
+          <label for="duree" class="form-label">Durée (en heures)</label>
+          <input type="number" id="duree" class="form-control" name="duree"
+                 [(ngModel)]="sousTache.duree" required>
+        </div>
+
+        <!-- Bouton submit -->
+        <button type="submit" class="btn btn-primary"
+                [disabled]="!sousTacheForm.form.valid" *ngIf="permissionTaches.update">
+          Enregistrer
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>

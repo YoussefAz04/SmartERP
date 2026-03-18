@@ -1,0 +1,115 @@
+{
+    "data": [
+      {
+       
+        "purchaseDate": "19 Jan 2023",
+        "product": "Lenovo 3rd Generation",
+        "purchaseAmount": "$1500",
+        "purchaseQty": "50",
+        "paid": "$1500",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/stock-img-01.png"
+      },
+      {
+        
+        "purchaseDate": "24 Jan 2023",
+        "product": "Bold V3.2",
+        "purchaseAmount": "$1200",
+        "purchaseQty": "20",
+        "paid": "$1200",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/stock-img-06.png"
+      },
+      {
+        
+        "purchaseDate": "03 Feb 2023",
+        "product": "Nike Jordan",
+        "purchaseAmount": "$2000",
+        "purchaseQty": "30",
+        "paid": "$2000",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/stock-img-02.png"
+      },
+      {
+       
+        "purchaseDate": "15 Feb 2023",
+        "product": "Apple Series 5 Watch",
+        "purchaseAmount": "$800",
+        "purchaseQty": "80",
+        "paid": "$800",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/stock-img-03.png"
+      },
+      {
+       
+        "purchaseDate": "12 Mar 2023",
+        "product": "Amazon Echo Dot",
+        "purchaseAmount": "$500",
+        "purchaseQty": "70",
+        "paid": "$500",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/stock-img-04.png"
+      },
+      {
+        
+        "purchaseDate": "25 Mar 2023",
+        "product": "Lobar Handy",
+        "purchaseAmount": "$400",
+        "purchaseQty": "100",
+        "paid": "$400",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/stock-img-05.png"
+      },
+      {
+       
+        "purchaseDate": "02 Apr 2023",
+        "product": "Red Premium Handy",
+        "purchaseAmount": "$300",
+        "purchaseQty": "120",
+        "paid": "$300",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/expire-product-01.png"
+      },
+      {
+        
+        "purchaseDate": "19 Apr 2023",
+        "product": "Iphone 14 Pro",
+        "purchaseAmount": "$1800",
+        "purchaseQty": "40",
+        "paid": "$1800",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/expire-product-02.png"
+      },
+      {
+        
+        "purchaseDate": "11 May 2023",
+        "product": "Black Slim 200",
+        "purchaseAmount": "$700",
+        "purchaseQty": "300",
+        "paid": "$700",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/expire-product-03.png"
+      },
+      {
+       
+        "purchaseDate": "27 May 2023",
+        "product": "Woodcraft Sandal",
+        "purchaseAmount": "$600",
+        "purchaseQty": "200",
+        "paid": "$600",
+        "balance": "$0.00",
+        "status": "Received",
+        "img":"assets/img/products/expire-product-04.png"
+      }
+    ],
+    "totalData": 10
+  }

@@ -1,0 +1,82 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Vertical Form</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink] = "routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Vertical Form</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Ajouter une entreprise</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="entrepriseFormGroup" (ngSubmit)="createEntreprise()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <input type="text" formControlName="nom" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Raison sociale</label>
+                <input type="text" formControlName="raisonSociale" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea formControlName="description" class="form-control" rows="4"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Secteur d'activité</label>
+                <input type="text" formControlName="secteurActivite" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Statut juridique</label>
+                <input type="text" formControlName="statutJuridique" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">N° Identification Fiscale</label>
+                <input type="text" formControlName="numeroIdentificationFiscale" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Registre de commerce</label>
+                <input type="text" formControlName="registreCommerce" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Site web</label>
+                <input type="url" formControlName="siteWeb" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Date de création</label>
+                <input type="date" formControlName="dateCreation" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Date dernière modification</label>
+                <input type="date" formControlName="dateDerniereModification" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+          <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary" [disabled]="!entrepriseFormGroup.valid">
+              Créer l'entreprise
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

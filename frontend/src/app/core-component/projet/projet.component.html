@@ -1,0 +1,439 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>List Projet</h4>
+      <h6>Departement Projet</h6>
+    </div>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Pdf" matTooltipPosition="above"><img
+        src="assets/img/icons/pdf.svg" alt="img"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Excel" matTooltipPosition="above"><img
+        src="assets/img/icons/excel.svg" alt="img"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Print" matTooltipPosition="above"><i
+        class="feather icon-printer feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
+        class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
+    </li>
+  </ul>
+  <div class="page-btn" *ngIf="permissionProjet.create">
+    <a (click)="addProjet()" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units" >
+      <i class="feather icon-plus-circle me-2"></i>Ajouter Projet
+    </a>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="kanban-board flex flex-row gap-6 overflow-auto mt-4">
+
+  <!-- Colonne EN ATTENTE -->
+  <div class="kanban-column bg-gray-100 p-4 rounded-lg shadow min-w-[600px] flex-shrink-0">
+    <h3 class="text-center text-lg font-bold text-yellow-600 mb-4">🕒 EN ATTENTE</h3>
+    <div
+      cdkDropList
+      #listEN_ATTENTE="cdkDropList"
+      [cdkDropListData]="projetListEN_ATTENTE"
+      [cdkDropListConnectedTo]="[listEN_COURS, listTERMINE, listANNULE]"
+      class="kanban-list grid grid-cols-2 gap-3 min-h-[200px]"
+      (cdkDropListDropped)="drop($event)">
+
+      <div class="kanban-card bg-white p-3 rounded shadow hover:shadow-md transition w-full"
+           *ngFor="let projet of projetListEN_ATTENTE; trackBy: trackProjet"
+           cdkDrag>
+         <div (dblclick)="detaisProjet(projet.id)" *ngIf="permissionProjet.view">
+
+
+           <div class="project-header mb-3" >
+             <div class="project-title flex justify-between items-start mb-2">
+               <h2 class="text-sm font-semibold truncate mr-2">{{ projet.nom }}</h2>
+               <span class="status-badge text-xs px-2 py-1 rounded flex-shrink-0"
+                     [ngClass]="'status-' + projet.statut.toLowerCase()">
+              {{ projet.statut }}
+            </span>
+             </div>
+             <p class="project-description text-xs text-gray-600 line-clamp-2">{{ projet.description }}</p>
+           </div>
+
+           <!-- Informations du projet (compactes) -->
+           <div class="project-info mb-3 space-y-1">
+             <div class="info-item flex items-center text-xs">
+               <i class="icon mr-1">📅</i>
+               <span class="label mr-1">Début:</span>
+               <span class="value font-medium">{{ projet.dateDebut | date:'dd/MM/yyyy' }}</span>
+             </div>
+             <div class="info-item flex items-center text-xs">
+               <i class="icon mr-1">🏁</i>
+               <span class="label mr-1">Fin:</span>
+               <span class="value font-medium">{{ projet.dateFin | date:'dd/MM/yyyy' }}</span>
+             </div>
+           </div>
+           <a [routerLink]="['/projet/ganttProjet', projet.id]"
+              class="text-blue-500 hover:text-blue-700"
+              title="Voir dans le Gantt">
+             <i _ngcontent-ng-c2075090376=""
+                data-bs-toggle="tooltip"
+                title="Voir dans le Gantt"
+                class="ion-pie-graph"
+                style="padding-left:80% ;  font-size: 18px;"
+             ></i>
+           </a>
+
+           <!-- Section des tâches (compacte) -->
+           <div class="tasks-section">
+             <div class="tasks-header flex justify-between items-center mb-2">
+               <h3 class="text-xs font-semibold">Tâches</h3>
+               <span class="tasks-count text-xs bg-gray-200 px-2 py-1 rounded"
+                     *ngIf="projet.taches && projet.taches.length > 0">
+              {{ projet.taches.length }}
+            </span>
+             </div>
+
+
+
+             <ng-container *ngIf="projet.taches && projet.taches.length > 0; else noTasks">
+               <div class="tasks-list max-h-24 overflow-y-auto space-y-1">
+                 <div *ngFor="let tache of projet.taches" class="task-item border-l-2 border-blue-200 pl-2 py-1">
+                   <div class="task-header flex justify-between items-start mb-1">
+                     <h4 class="task-title text-xs font-medium truncate mr-1">{{ tache.titre }}</h4>
+
+                     <span class="priority-badge text-xs px-1 py-0.5 rounded flex-shrink-0"
+                           [ngClass]="'priority-' + tache.priorite.toLowerCase()">
+                    {{ tache.priorite }}
+                  </span>
+                   </div>
+                   <p class="task-description text-xs text-gray-500 line-clamp-1 mb-1">{{ tache.description }}</p>
+                   <div class="task-meta flex justify-between items-center">
+                  <span class="task-status text-xs px-1 py-0.5 rounded"
+                        [ngClass]="'task-status-' + tache.statut.toLowerCase()">
+                    {{ tache.statut }}
+                  </span>
+                     <div class="task-dates text-xs text-gray-400">
+                       {{ tache.dateDebut | date:'dd/MM' }} - {{ tache.dateFin | date:'dd/MM' }}
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </ng-container>
+
+             <ng-template #noTasks>
+               <div class="no-tasks text-center py-2">
+                 <i class="icon text-sm">📝</i>
+                 <p class="text-xs text-gray-500 mt-1">Aucune tâche</p>
+               </div>
+             </ng-template>
+           </div>
+
+         </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne EN COURS -->
+  <div class="kanban-column bg-gray-100 p-4 rounded-lg shadow min-w-[600px] flex-shrink-0">
+    <h3 class="text-center text-lg font-bold text-blue-600 mb-4">⚙️ EN COURS</h3>
+    <div
+      cdkDropList
+      #listEN_COURS="cdkDropList"
+      [cdkDropListData]="projetListEN_COURS"
+      [cdkDropListConnectedTo]="[listEN_ATTENTE, listTERMINE, listANNULE]"
+      class="kanban-list grid grid-cols-2 gap-3 min-h-[200px]"
+      (cdkDropListDropped)="drop($event)">
+
+      <div class="kanban-card bg-white p-3 rounded shadow hover:shadow-md transition w-full"
+           *ngFor="let projet of projetListEN_COURS; trackBy: trackProjet"
+           cdkDrag>
+
+        <div (dblclick)="detaisProjet(projet.id)">
+          <div class="project-header mb-3">
+            <div class="project-title flex justify-between items-start mb-2">
+              <h2 class="text-sm font-semibold truncate mr-2">{{ projet.nom }}</h2>
+              <span class="status-badge text-xs px-2 py-1 rounded flex-shrink-0"
+                    [ngClass]="'status-' + projet.statut.toLowerCase()">
+              {{ projet.statut }}
+            </span>
+            </div>
+            <p class="project-description text-xs text-gray-600 line-clamp-2">{{ projet.description }}</p>
+          </div>
+
+          <!-- Informations du projet (compactes) -->
+          <div class="project-info mb-3 space-y-1">
+            <div class="info-item flex items-center text-xs">
+              <i class="icon mr-1">📅</i>
+              <span class="label mr-1">Début:</span>
+              <span class="value font-medium">{{ projet.dateDebut | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item flex items-center text-xs">
+              <i class="icon mr-1">🏁</i>
+              <span class="label mr-1">Fin:</span>
+              <span class="value font-medium">{{ projet.dateFin | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <a [routerLink]="['/projet/ganttProjet', projet.id]"
+             class="text-blue-500 hover:text-blue-700"
+             title="Voir dans le Gantt">
+            <i _ngcontent-ng-c2075090376=""
+               data-bs-toggle="tooltip"
+               title="Voir dans le Gantt"
+               class="ion-pie-graph"
+               style="padding-left:80% ;  font-size: 18px;"
+            ></i>
+          </a>
+
+          <!-- Section des tâches (compacte) -->
+          <div class="tasks-section">
+            <div class="tasks-header flex justify-between items-center mb-2">
+              <h3 class="text-xs font-semibold">Tâches</h3>
+              <span class="tasks-count text-xs bg-gray-200 px-2 py-1 rounded"
+                    *ngIf="projet.taches && projet.taches.length > 0">
+              {{ projet.taches.length }}
+            </span>
+            </div>
+
+            <ng-container *ngIf="projet.taches && projet.taches.length > 0; else noTasks">
+              <div class="tasks-list max-h-24 overflow-y-auto space-y-1">
+                <div *ngFor="let tache of projet.taches" class="task-item border-l-2 border-blue-200 pl-2 py-1">
+                  <div class="task-header flex justify-between items-start mb-1">
+                    <h4 class="task-title text-xs font-medium truncate mr-1">{{ tache.titre }}</h4>
+                    <span class="priority-badge text-xs px-1 py-0.5 rounded flex-shrink-0"
+                          [ngClass]="'priority-' + tache.priorite.toLowerCase()">
+                    {{ tache.priorite }}
+                  </span>
+                  </div>
+                  <p class="task-description text-xs text-gray-500 line-clamp-1 mb-1">{{ tache.description }}</p>
+                  <div class="task-meta flex justify-between items-center">
+                  <span class="task-status text-xs px-1 py-0.5 rounded"
+                        [ngClass]="'task-status-' + tache.statut.toLowerCase()">
+                    {{ tache.statut }}
+                  </span>
+                    <div class="task-dates text-xs text-gray-400">
+                      {{ tache.dateDebut | date:'dd/MM' }} - {{ tache.dateFin | date:'dd/MM' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #noTasks>
+              <div class="no-tasks text-center py-2">
+                <i class="icon text-sm">📝</i>
+                <p class="text-xs text-gray-500 mt-1">Aucune tâche</p>
+              </div>
+            </ng-template>
+          </div>
+
+      </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne TERMINÉ -->
+  <div class="kanban-column bg-gray-100 p-4 rounded-lg shadow min-w-[600px] flex-shrink-0">
+    <h3 class="text-center text-lg font-bold text-green-600 mb-4">✅ TERMINÉ</h3>
+    <div
+      cdkDropList
+      #listTERMINE="cdkDropList"
+      [cdkDropListData]="projetListTERMINE"
+      [cdkDropListConnectedTo]="[listEN_ATTENTE, listEN_COURS, listANNULE]"
+      class="kanban-list grid grid-cols-2 gap-3 min-h-[200px]"
+      (cdkDropListDropped)="drop($event)">
+
+      <div class="kanban-card bg-white p-3 rounded shadow hover:shadow-md transition w-full"
+           *ngFor="let projet of projetListTERMINE; trackBy: trackProjet"
+           cdkDrag>
+        <div (dblclick)="detaisProjet(projet.id)">
+          <div class="project-header mb-3">
+            <div class="project-title flex justify-between items-start mb-2">
+              <h2 class="text-sm font-semibold truncate mr-2">{{ projet.nom }}</h2>
+              <span class="status-badge text-xs px-2 py-1 rounded flex-shrink-0"
+                    [ngClass]="'status-' + projet.statut.toLowerCase()">
+              {{ projet.statut }}
+            </span>
+            </div>
+            <p class="project-description text-xs text-gray-600 line-clamp-2">{{ projet.description }}</p>
+          </div>
+
+          <!-- Informations du projet (compactes) -->
+          <div class="project-info mb-3 space-y-1">
+            <div class="info-item flex items-center text-xs">
+              <i class="icon mr-1">📅</i>
+              <span class="label mr-1">Début:</span>
+              <span class="value font-medium">{{ projet.dateDebut | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item flex items-center text-xs">
+              <i class="icon mr-1">🏁</i>
+              <span class="label mr-1">Fin:</span>
+              <span class="value font-medium">{{ projet.dateFin | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <a [routerLink]="['/projet/ganttProjet', projet.id]"
+             class="text-blue-500 hover:text-blue-700"
+             title="Voir dans le Gantt">
+            <i _ngcontent-ng-c2075090376=""
+               data-bs-toggle="tooltip"
+               title="Voir dans le Gantt"
+               class="ion-pie-graph"
+               style="padding-left:80% ;  font-size: 18px;"
+            ></i>
+          </a>
+          <!-- Section des tâches (compacte) -->
+          <div class="tasks-section">
+            <div class="tasks-header flex justify-between items-center mb-2">
+              <h3 class="text-xs font-semibold">Tâches</h3>
+              <span class="tasks-count text-xs bg-gray-200 px-2 py-1 rounded"
+                    *ngIf="projet.taches && projet.taches.length > 0">
+              {{ projet.taches.length }}
+            </span>
+            </div>
+
+            <ng-container *ngIf="projet.taches && projet.taches.length > 0; else noTasks">
+              <div class="tasks-list max-h-24 overflow-y-auto space-y-1">
+                <div *ngFor="let tache of projet.taches" class="task-item border-l-2 border-blue-200 pl-2 py-1">
+                  <div class="task-header flex justify-between items-start mb-1">
+                    <h4 class="task-title text-xs font-medium truncate mr-1">{{ tache.titre }}</h4>
+                    <span class="priority-badge text-xs px-1 py-0.5 rounded flex-shrink-0"
+                          [ngClass]="'priority-' + tache.priorite.toLowerCase()">
+                    {{ tache.priorite }}
+                  </span>
+                  </div>
+                  <p class="task-description text-xs text-gray-500 line-clamp-1 mb-1">{{ tache.description }}</p>
+                  <div class="task-meta flex justify-between items-center">
+                  <span class="task-status text-xs px-1 py-0.5 rounded"
+                        [ngClass]="'task-status-' + tache.statut.toLowerCase()">
+                    {{ tache.statut }}
+                  </span>
+                    <div class="task-dates text-xs text-gray-400">
+                      {{ tache.dateDebut | date:'dd/MM' }} - {{ tache.dateFin | date:'dd/MM' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #noTasks>
+              <div class="no-tasks text-center py-2">
+                <i class="icon text-sm">📝</i>
+                <p class="text-xs text-gray-500 mt-1">Aucune tâche</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne ANNULÉ -->
+  <div class="kanban-column bg-gray-100 p-4 rounded-lg shadow min-w-[600px] flex-shrink-0">
+    <h3 class="text-center text-lg font-bold text-red-600 mb-4">❌ ANNULÉ</h3>
+    <div
+      cdkDropList
+      #listANNULE="cdkDropList"
+      [cdkDropListData]="projetListANNULE"
+      [cdkDropListConnectedTo]="[listEN_ATTENTE, listEN_COURS, listTERMINE]"
+      class="kanban-list grid grid-cols-2 gap-3 min-h-[200px]"
+      (cdkDropListDropped)="drop($event)">
+
+      <div class="kanban-card bg-white p-3 rounded shadow hover:shadow-md transition w-full"
+           *ngFor="let projet of projetListANNULE; trackBy: trackProjet"
+           cdkDrag>
+
+        <div (dblclick)="detaisProjet(projet.id)">
+          <div class="project-header mb-3">
+            <div class="project-title flex justify-between items-start mb-2">
+              <h2 class="text-sm font-semibold truncate mr-2">{{ projet.nom }}</h2>
+              <span class="status-badge text-xs px-2 py-1 rounded flex-shrink-0"
+                    [ngClass]="'status-' + projet.statut.toLowerCase()">
+              {{ projet.statut }}
+            </span>
+            </div>
+            <p class="project-description text-xs text-gray-600 line-clamp-2">{{ projet.description }}</p>
+          </div>
+
+          <!-- Informations du projet (compactes) -->
+          <div class="project-info mb-3 space-y-1">
+            <div class="info-item flex items-center text-xs">
+              <i class="icon mr-1">📅</i>
+              <span class="label mr-1">Début:</span>
+              <span class="value font-medium">{{ projet.dateDebut | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item flex items-center text-xs">
+              <i class="icon mr-1">🏁</i>
+              <span class="label mr-1">Fin:</span>
+              <span class="value font-medium">{{ projet.dateFin | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+          <a [routerLink]="['/projet/ganttProjet', projet.id]"
+             class="text-blue-500 hover:text-blue-700"
+             title="Voir dans le Gantt">
+            <i _ngcontent-ng-c2075090376=""
+               data-bs-toggle="tooltip"
+               title="Voir dans le Gantt"
+               class="ion-pie-graph"
+               style="padding-left:80% ;  font-size: 18px;"
+            ></i>
+          </a>
+          <!-- Section des tâches (compacte) -->
+          <div class="tasks-section">
+            <div class="tasks-header flex justify-between items-center mb-2">
+              <h3 class="text-xs font-semibold">Tâches</h3>
+              <span class="tasks-count text-xs bg-gray-200 px-2 py-1 rounded"
+                    *ngIf="projet.taches && projet.taches.length > 0">
+              {{ projet.taches.length }}
+            </span>
+            </div>
+
+            <ng-container *ngIf="projet.taches && projet.taches.length > 0; else noTasks">
+              <div class="tasks-list max-h-24 overflow-y-auto space-y-1">
+                <div *ngFor="let tache of projet.taches" class="task-item border-l-2 border-blue-200 pl-2 py-1">
+                  <div class="task-header flex justify-between items-start mb-1">
+                    <h4 class="task-title text-xs font-medium truncate mr-1">{{ tache.titre }}</h4>
+                    <span class="priority-badge text-xs px-1 py-0.5 rounded flex-shrink-0"
+                          [ngClass]="'priority-' + tache.priorite.toLowerCase()">
+                    {{ tache.priorite }}
+                  </span>
+                  </div>
+                  <p class="task-description text-xs text-gray-500 line-clamp-1 mb-1">{{ tache.description }}</p>
+                  <div class="task-meta flex justify-between items-center">
+                  <span class="task-status text-xs px-1 py-0.5 rounded"
+                        [ngClass]="'task-status-' + tache.statut.toLowerCase()">
+                    {{ tache.statut }}
+                  </span>
+                    <div class="task-dates text-xs text-gray-400">
+                      {{ tache.dateDebut | date:'dd/MM' }} - {{ tache.dateFin | date:'dd/MM' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #noTasks>
+              <div class="no-tasks text-center py-2">
+                <i class="icon text-sm">📝</i>
+                <p class="text-xs text-gray-500 mt-1">Aucune tâche</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+
+</div>

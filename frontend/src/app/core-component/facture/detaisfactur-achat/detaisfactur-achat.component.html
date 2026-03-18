@@ -1,0 +1,103 @@
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Modifier la Facture d'Achat</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #factureForm="ngForm" *ngIf="factureDetais">
+
+        <div class="mb-3">
+          <label for="dateAchat" class="form-label">Date Achat</label>
+          <input type="text" id="dateAchat" class="form-control" name="dateAchat" [(ngModel)]="factureDetais.dateAchat" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="referance" class="form-label">Référence</label>
+          <input type="text" id="referance" class="form-control" name="referance" [(ngModel)]="factureDetais.referance" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="montantTotal" class="form-label">Montant Total</label>
+          <input type="number" id="montantTotal" class="form-control" name="montantTotal" [(ngModel)]="factureDetais.montantTotal" required>
+        </div>
+
+        <div class="mb-3 row">
+          <div class="col">
+            <label for="montantHT" class="form-label">Montant HT</label>
+            <input type="number" id="montantHT" class="form-control" name="montantHT" [(ngModel)]="factureDetais.montantHT">
+          </div>
+          <div class="col">
+            <label for="montantTVA" class="form-label">Montant TVA</label>
+            <input type="number" id="montantTVA" class="form-control" name="montantTVA" [(ngModel)]="factureDetais.montantTVA">
+          </div>
+          <div class="col">
+            <label for="montantTTC" class="form-label">Montant TTC</label>
+            <input type="number" id="montantTTC" class="form-control" name="montantTTC" [(ngModel)]="factureDetais.montantTTC">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="remise" class="form-label">Remise</label>
+          <input type="number" id="remise" class="form-control" name="remise" [(ngModel)]="factureDetais.remise">
+        </div>
+
+        <div class="mb-3">
+          <label for="modePaiement" class="form-label">Mode de Paiement</label>
+          <input type="text" id="modePaiement" class="form-control" name="modePaiement" [(ngModel)]="factureDetais.modePaiement">
+        </div>
+
+        <div class="mb-3">
+          <label for="statut" class="form-label">Statut</label>
+          <input type="text" id="statut" class="form-control" name="statut" [(ngModel)]="factureDetais.statut">
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" rows="3" class="form-control" name="description" [(ngModel)]="factureDetais.description"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="cheminFichier" class="form-label">Chemin Fichier</label>
+          <input type="text" id="cheminFichier" class="form-control" name="cheminFichier" [(ngModel)]="factureDetais.cheminFichier">
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="!factureForm.form.valid">Enregistrer</button>
+
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Ton formulaire ici ... -->
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Les détails de la Facture d'Achat</h5>
+    </div>
+
+    <div class="card-body">
+      <div *ngIf="factureDetais.detaisFactureAchat">
+        <h5 class="mb-3">Détails de la Facture</h5>
+        <table class="table table-hover mb-0 align-middle">
+          <thead class="table-light">
+          <tr>
+            <th>Article</th>
+            <th>Quantité</th>
+            <th>Prix Unitaire HT</th>
+            <th>TVA</th>
+            <th>Total TTC</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>{{ factureDetais.detaisFactureAchat.article }}</td>
+            <td>{{ factureDetais.detaisFactureAchat.quantite }}</td>
+            <td>{{ factureDetais.detaisFactureAchat.prixUnitaireHT | number: '1.2-2' }}</td>
+            <td>{{ factureDetais.detaisFactureAchat.tva | number: '1.2-2' }} %</td>
+            <td>{{ factureDetais.detaisFactureAchat.totalTTC | number: '1.2-2' }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

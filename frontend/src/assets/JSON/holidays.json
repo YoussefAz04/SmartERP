@@ -1,0 +1,53 @@
+{
+    "data": [
+        {
+           
+            "name": "Newyear",
+            "date": "01 Jan 2024",
+            "duration": "1 Day",
+            "createdOn": "04 Aug 2023",
+            "status": "Active",
+            "action": ""
+        },
+        {
+           
+            "name": "Pongal",
+            "date": "14 Jan 2024",
+            "duration": "1 Day",
+            "createdOn": "31 Jan 2022",
+            "status": "Active",
+            "action": ""
+        },
+        {
+            
+            "name": "Republic Day",
+            "date": "25 Jan 2024",
+            "duration": "1 Day",
+            "createdOn": "21 July 2023",
+            "status": "Active",
+            "action": ""
+        },
+        {
+           
+            "name": "Worker’s Day",
+            "date": "01 May 2024",
+            "duration": "1 Day",
+            "createdOn": "15 May 2023",
+            "status": "Active",
+            "action": ""
+        },
+        {
+           
+            "name": "Deepavali",
+            "date": "14 Oct 2024",
+            "duration": "1 Day",
+            "createdOn": "04 Aug 2023",
+            "status": "Active",
+            "action": ""
+        }
+     
+     
+    ],
+    "totalData": 5
+  }
+  

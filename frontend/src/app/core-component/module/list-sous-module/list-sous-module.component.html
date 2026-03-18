@@ -1,0 +1,85 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>List Sous-Module</h4>
+      <h6>Gestion des sous-modules</h6>
+    </div>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Pdf"><img
+        src="assets/img/icons/pdf.svg" alt="pdf"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Excel"><img
+        src="assets/img/icons/excel.svg" alt="excel"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Print"><i
+        class="feather icon-printer feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh"><i
+        class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
+    </li>
+  </ul>
+  <div class="page-btn">
+    <a (click)="addModule()" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-sous-module">
+      <i class="feather icon-plus-circle me-2"></i>Ajouter Sous-Module
+    </a>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<!-- Always responsive -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          Liste des sous-modules
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table text-nowrap">
+            <thead>
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Titre Sous-Module</th>
+              <th scope="col">Lien</th>
+              <th scope="col" >Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let sm of sousModuleListe">
+              <td>{{ sm.id }}</td>
+              <td>{{ sm.titreSousModule }}</td>
+              <td>
+                <a [href]="sm.link" target="_blank" class="text-primary">{{ sm.link }}</a>
+              </td>
+              <td class="action-table-data text-end">
+                <div class="edit-delete-action">
+                  <a class="p-2 me-2" (click)="editModule(sm.id)">
+                    <i class="feather icon-edit action-edit"></i>
+                  </a>
+                  <a class="me-2 confirm-text p-2 mb-0" (click)="deleteModule(sm.id)">
+                    <i class="feather icon-trash-2 feather-trash-2"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="sousModuleListe.length === 0">
+              <td colspan="4" class="text-center text-muted py-3">
+                Aucun sous-module trouvé
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Always responsive -->

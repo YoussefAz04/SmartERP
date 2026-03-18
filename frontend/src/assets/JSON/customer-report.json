@@ -1,0 +1,105 @@
+{
+  "data": [
+    {
+      "customerId": "CT_0001",
+      "customerName": "Thomas",
+      "amount": "$1800",
+      "paid": "$1800",
+      "dueAmount": "$0.00",
+      "status": "Completed",
+      "paymentStatus": "Paid",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0002",
+      "customerName": "Rose",
+      "amount": "$120",
+      "paid": "$0.00",
+      "dueAmount": "$120",
+      "status": "Completed",
+      "paymentStatus": "Unpaid",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0003",
+      "customerName": "Benjamin",
+      "amount": "$2000",
+      "paid": "$2000",
+      "dueAmount": "$0.00",
+      "status": "Completed",
+      "paymentStatus": "Paid",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0004",
+      "customerName": "Kaitlin",
+      "amount": "$1300",
+      "paid": "$1300",
+      "dueAmount": "$1300",
+      "status": "Completed",
+      "paymentStatus": "Overdue",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0005",
+      "customerName": "Lilly",
+      "amount": "$400",
+      "paid": "$0.00",
+      "dueAmount": "$400",
+      "status": "Completed",
+      "paymentStatus": "Unpaid",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0006",
+      "customerName": "Freda",
+      "amount": "$700",
+      "paid": "$700",
+      "dueAmount": "$700",
+      "status": "Completed",
+      "paymentStatus": "Overdue",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0007",
+      "customerName": "Alwin",
+      "amount": "$800",
+      "paid": "$800",
+      "dueAmount": "$0.00",
+      "status": "Completed",
+      "paymentStatus": "Paid",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0008",
+      "customerName": "Maybelle",
+      "amount": "$300",
+      "paid": "$300",
+      "dueAmount": "$0.00",
+      "status": "Completed",
+      "paymentStatus": "Paid",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0009",
+      "customerName": "Ellen",
+      "amount": "$120",
+      "paid": "$120",
+      "dueAmount": "$0.00",
+      "status": "Completed",
+      "paymentStatus": "Paid",
+      "isSelected": false
+    },
+    {
+      "customerId": "CT_0010",
+      "customerName": "Grace",
+      "amount": "$600",
+      "paid": "$600",
+      "dueAmount": "$0.00",
+      "status": "Completed",
+      "paymentStatus": "Paid",
+      "isSelected": false
+    }
+  ],
+  "totalData": 10
+}

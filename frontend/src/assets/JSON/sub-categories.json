@@ -1,0 +1,145 @@
+{
+  "data": [
+    {
+      "image": "assets/img/products/product1.jpg",
+      "category": "Computers",
+      "parentCategory": "Computers",
+      "categoryCode": "CT001",
+      "description": "Computers Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product2.jpg",
+      "category": "Fruits",
+      "parentCategory": "Fruits",
+      "categoryCode": "CT002",
+      "description": "Fruits Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product3.jpg",
+      "category": "Fruits",
+      "parentCategory": "Fruits",
+      "categoryCode": "CT003",
+      "description": "Fruits Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product4.jpg",
+      "category": "Fruits",
+      "parentCategory": "Fruits",
+      "categoryCode": "CT004",
+      "description": "Fruits Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product5.jpg",
+      "category": "Accessories",
+      "parentCategory": "Accessories",
+      "categoryCode": "CT005",
+      "description": "Accessories Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product6.jpg",
+      "category": "Shoes",
+      "parentCategory": "Shoes",
+      "categoryCode": "CT006",
+      "description": "Shoes Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product7.jpg",
+      "category": "Fruits",
+      "parentCategory": "Fruits",
+      "categoryCode": "CT007",
+      "description": "Fruits Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product7.jpg",
+      "category": "Fruits",
+      "parentCategory": "Fruits",
+      "categoryCode": "CT008",
+      "description": "Fruits Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product8.jpg",
+      "category": "Computers",
+      "parentCategory": "Computers",
+      "categoryCode": "CT009",
+      "description": "Computers Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product9.jpg",
+      "category": "Health Care",
+      "parentCategory": "Health Care",
+      "categoryCode": "CT0010",
+      "description": "Health Care Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product9.jpg",
+      "category": "Fruits",
+      "parentCategory": "Fruits",
+      "categoryCode": "CT004",
+      "description": "Fruits Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product10.jpg",
+      "category": "Accessories",
+      "parentCategory": "Accessories",
+      "categoryCode": "CT005",
+      "description": "Accessories Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product11.jpg",
+      "category": "Shoes",
+      "parentCategory": "Shoes",
+      "categoryCode": "CT006",
+      "description": "Shoes Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    },
+    {
+      "image": "assets/img/products/product12.jpg",
+      "category": "Fruits",
+      "parentCategory": "Fruits",
+      "categoryCode": "CT007",
+      "description": "Fruits Description",
+      "createdBy": "Admin",
+      "isSelected": false,
+      "action": ""
+    }
+  ],
+  "totalData": 14
+}

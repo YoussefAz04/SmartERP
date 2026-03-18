@@ -1,0 +1,109 @@
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Ajouter une Facture de Vente</h5>
+    </div>
+
+    <div class="card-body">
+      <form [formGroup]="factureForm" (ngSubmit)="onSubmit()">
+
+        <!-- Infos facture -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>Date Achat <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" formControlName="dateAchat">
+            <div *ngIf="factureForm.get('dateAchat')?.invalid && factureForm.get('dateAchat')?.touched" class="text-danger">
+              La date d'achat est obligatoire
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label>Référence <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="referance">
+            <div *ngIf="factureForm.get('referance')?.invalid && factureForm.get('referance')?.touched" class="text-danger">
+              La référence est obligatoire
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label>Remise (%)</label>
+            <input type="number" class="form-control" formControlName="remise" (input)="updateTotal()">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label>Mode de Paiement</label>
+            <input type="text" class="form-control" formControlName="modePaiement">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label>Statut</label>
+            <input type="text" class="form-control" formControlName="statut">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label>Description</label>
+          <textarea class="form-control" formControlName="description"></textarea>
+        </div>
+
+        <!-- Détail facture -->
+        <h6 class="mt-3">Détail de la Facture</h6>
+        <div formGroupName="detaisFactureDeVente" class="row">
+          <div class="col-md-3 mb-3">
+            <label>Article <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="article">
+            <div *ngIf="factureForm.get('detaisFactureDeVente.article')?.invalid && factureForm.get('detaisFactureDeVente.article')?.touched" class="text-danger">
+              Article obligatoire
+            </div>
+          </div>
+
+          <div class="col-md-2 mb-3">
+            <label>Quantité</label>
+            <input type="number" class="form-control" formControlName="quantite" (input)="updateTotal()">
+          </div>
+
+          <div class="col-md-2 mb-3">
+            <label>Prix HT</label>
+            <input type="number" class="form-control" formControlName="prixUnitaireHT" (input)="updateTotal()">
+          </div>
+
+          <div class="col-md-2 mb-3">
+            <label>TVA (%)</label>
+            <input type="number" class="form-control" formControlName="tva" (input)="updateTotal()">
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label>Total TTC</label>
+            <input type="number" class="form-control" formControlName="totalTTC" >
+          </div>
+        </div>
+
+        <!-- Totaux globaux -->
+        <h6 class="mt-3">Résumé</h6>
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            <label>Montant HT</label>
+            <input type="number" class="form-control" formControlName="montantHT" >
+          </div>
+          <div class="col-md-3 mb-3">
+            <label>Montant TVA</label>
+            <input type="number" class="form-control" formControlName="montantTVA" >
+          </div>
+          <div class="col-md-3 mb-3">
+            <label>Montant TTC</label>
+            <input type="number" class="form-control" formControlName="montantTTC" >
+          </div>
+          <div class="col-md-3 mb-3">
+            <label>Total (Remise appliquée)</label>
+            <input type="number" class="form-control" formControlName="montantTotal" >
+          </div>
+        </div>
+
+        <!-- Bouton submit -->
+        <button type="submit" class="btn btn-primary" [disabled]="factureForm.invalid">
+          <i class="bi bi-save"></i> Enregistrer
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Vertical Form</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink] = "routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Vertical Form</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Ajouter une Client
+        </h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+
+
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>nom</label>
+                <input type="text" class="form-control" formControlName="nom">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>prenom</label>
+                <input type="text" class="form-control" formControlName="prenom">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>telephone</label>
+                <input type="text" class="form-control" formControlName="telephone">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>Email</label>
+                <input type="email" class="form-control" formControlName="email">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>adresse</label>
+                <input type="text" class="form-control" formControlName="adresse">
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="input-blocks">
+                <label>secteurActivite</label>
+                <input type="text" class="form-control" formControlName="secteurActivite">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Categorie</label>
+              <select class="form-select" formControlName="categorieId">
+                <option *ngFor="let e of categories" [value]="e.id">{{ e.nom }}</option>
+              </select>
+            </div>
+
+
+
+
+
+
+          </div>
+
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="button" class="btn btn-cancel me-2">Cancel</button>
+            <button type="submit" class="btn btn-submit" >Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

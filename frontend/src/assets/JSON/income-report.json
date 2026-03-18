@@ -1,0 +1,59 @@
+{
+    "data": [
+        {
+           
+            "date": "01 Jan 2024",
+            "incomeCategory": "Printing",
+            "user": "Mitchum Daniel",
+            "paymentMethod": "assets/img/icons/pay.svg",
+            "amount": "$21,144",
+            "isSelected": false,
+            "userImg":"assets/img/users/user-01.jpg"
+            
+        },
+        {
+            
+            "date": "14 Jan 2024",
+            "incomeCategory": "Utilities",
+            "user": "Susan Lopez",
+            "paymentMethod": "assets/img/icons/stripe.svg",
+            "amount": "$17,477",
+            "isSelected": false,
+            "userImg":"assets/img/users/user-02.jpg"
+        },
+        {
+            
+            "date": "25 Jan 2024",
+            "incomeCategory": "Travel",
+            "user": "Robert Grossman",
+            "paymentMethod": "assets/img/icons/razorpay.svg",
+            "amount": "$22,744",
+            "isSelected": false,
+            "userImg":"assets/img/users/user-03.jpg"
+        },
+        {
+           
+            "date": "01 May 2024",
+            "incomeCategory": "Purchase",
+            "user": "Russell Belle",
+            "paymentMethod": "assets/img/icons/stripe.svg",
+            "amount": "$20,474",
+            "isSelected": false,
+            "userImg":"assets/img/users/user-01.jpg"
+        },
+        {
+           
+            "date": "14 Oct 2024",
+            "incomeCategory": "Printing",
+            "user": "Edward K. Muniz",
+            "paymentMethod": "assets/img/icons/pay.svg",
+            "amount": "$14,174",
+            "isSelected": false,
+            "userImg":"assets/img/users/user-01.jpg"
+        }
+     
+     
+    ],
+    "totalData": 5
+  }
+  

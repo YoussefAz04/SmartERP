@@ -1,0 +1,308 @@
+<div class="page-header justify-content-between">
+  <div class="page-title">
+    <h4>Tax Reports</h4>
+    <h6>Manage your Tax Reports</h6>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Pdf" matTooltipPosition="above"><img
+      src="assets/img/icons/pdf.svg" alt="img"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Excel" matTooltipPosition="above"><img
+      src="assets/img/icons/excel.svg" alt="img"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Print" matTooltipPosition="above"><i
+      class="feather icon-printer feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
+      class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a (click)="toggleCollapse()" data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Collapse"
+        matTooltipPosition="above" id="collapse-header"> @if (!isCollapsed) {
+        <i class="feather icon-chevron-up feather-chevron-up"></i>
+      }
+      @if (isCollapsed) {
+        <i class="feather icon-chevron-down feather-chevron-down"></i>
+      }</a>
+    </li>
+  </ul>
+</div>
+
+<!-- /product list -->
+<div class="card table-list-card">
+  <div class="card-body">
+    <div class="tabs-set">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="purchase-tab" data-bs-toggle="tab" data-bs-target="#purchase2"
+            type="button" role="tab" aria-controls="purchase2" aria-selected="true">Purchase Tax
+          Report</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales2" type="button"
+          role="tab" aria-controls="sales2" aria-selected="false">Sales Tax Report</button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="purchase2" role="tabpanel" aria-labelledby="purchase-tab">
+          <div class="table-top">
+            <div class="search-set">
+              <div class="search-input">
+                <a href="javascript:void(0);" class="btn btn-searchset"><i
+                class="feather icon-search feather-search"></i></a>
+                <div class="dataTables_filter">
+                  <label>
+                    <input [(ngModel)]="searchDataValue" [ngModelOptions]="{standalone: true}"
+                      (ngModelChange)="searchData(searchDataValue)" type="search"
+                      class="form-control" placeholder="Search..." />
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="search-path">
+                <div class="d-flex align-items-center">
+                  <a class="btn btn-filter" id="filter_search" (click)="openFilter1()"
+                    [ngClass]="{'setclose': filter1 === true}">
+                    <i class="feather icon-filter filter-icon"></i>
+                    <span><img src="assets/img/icons/closes.svg" alt="img"></span>
+                  </a>
+                  <a href="javascript:void(0);" class="me-3 layout-box"><i
+                  class="feather icon-layout feather-search"></i></a>
+                </div>
+
+              </div>
+              <div class="form-sort">
+                <i class="feather icon-sliders info-img"></i>
+                <mat-select [(ngModel)]="selectedValue1" [ngModelOptions]="{standalone: true}"
+                  class="select space-select" placeholder="Sort by Date">
+                  <mat-option value="Sort by Date">Sort by Date</mat-option>
+                  <mat-option value="Newest">Newest</mat-option>
+                  <mat-option value="Oldest">Oldest</mat-option>
+                </mat-select>
+              </div>
+            </div>
+            <!-- /Filter -->
+            <div class="card" id="filter_inputs" [ngClass]="{'d-block': filter1, 'd-none': !filter1}">
+              <div class="card-body pb-0">
+                <div class="row">
+                  <div class="col-lg-2 col-sm-6 col-12">
+                    <div class="input-blocks">
+                      <i class="feather icon-zap info-img"></i>
+                      <mat-select [(ngModel)]="selectedValue2" [ngModelOptions]="{standalone: true}"
+                        class="select space-select" placeholder="Choose Category">
+                        <mat-option value="Choose Category">Choose Category</mat-option>
+                        <mat-option value="Computers">Computers</mat-option>
+                      </mat-select>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 col-sm-6 col-12">
+                    <div class="input-blocks">
+                      <i class="feather icon-credit-card info-img"></i>
+                      <mat-select [(ngModel)]="selectedValue3" [ngModelOptions]="{standalone: true}"
+                        class="select space-select" placeholder="Payment Method">
+                        <mat-option value="Payment Method">Payment Method</mat-option>
+                        <mat-option value="Complete">Complete</mat-option>
+                        <mat-option value="Inprogress">Inprogress</mat-option>
+                      </mat-select>
+                    </div>
+                  </div>
+                  <div class="col-lg-3 col-sm-6 col-12">
+                    <div class="input-blocks">
+                      <div class="position-relative daterange-wraper">
+                        <input type="text" class="form-control" name="datetimes"
+                          placeholder="From Date - To Date" bsDaterangepicker [(ngModel)]="bsRangeValue">
+                          <i class="feather icon-calendar feather-14 info-img"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-12 ms-auto">
+                      <div class="input-blocks">
+                        <a class="btn btn-filters ms-auto"> <i
+                        class="feather icon-search feather-search"></i> Search </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /Filter -->
+              <div class="table-responsive">
+                <table matSort (matSortChange)="sortData($event)" class="table datanew">
+                  <thead>
+                    <tr>
+                      <th>
+                        <label class="checkboxs"  (click)="selectAll(initChecked)">
+                          <input type="checkbox" id="select-all"
+                          [(ngModel)]="initChecked"> 
+                          <span class="checkmarks"></span>
+                        </label>
+                      </th>
+                      <th mat-sort-header="supplier">Supplier</th>
+                      <th mat-sort-header="date">Date</th>
+                      <th mat-sort-header="refNo">Ref No</th>
+                      <th mat-sort-header="totalAmount">Total Amount</th>
+                      <th mat-sort-header="paymentMethod">Payment Method</th>
+                      <th mat-sort-header="discount">Discount</th>
+                      <th mat-sort-header="taxAmount">Tax Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (data of tableData; track data) {
+                      <tr>
+                      <td>
+                  <label class="checkboxs">
+                    <input type="checkbox" [(ngModel)]="data.isSelected">
+                    <span class="checkmarks"></span>
+                  </label>
+                </td>
+                        <td>{{data.supplier}}</td>
+                        <td>{{data.date}}</td>
+                        <td class="ref-number">{{data.refNo}}</td>
+                        <td>{{data.totalAmount}}</td>
+                        <td class="payment-info">
+                          <a href="javascript:void(0);"> <img [src]="data.img1" alt="Pay">
+                          </a>
+                        </td>
+                        <td>{{data.discount}}</td>
+                        <td>{{data.taxAmount}}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <app-custom-pagination></app-custom-pagination>
+            </div>
+            <div class="tab-pane fade" id="sales2" role="tabpanel" aria-labelledby="sales-tab">
+              <div class="table-top">
+                <div class="search-set">
+                  <div class="search-input">
+                    <a href="javascript:void(0);" class="btn btn-searchset"><i
+                    class="feather icon-search feather-search"></i></a>
+                    <div class="dataTables_filter">
+                      <label>
+                        <input [(ngModel)]="searchDataValue" [ngModelOptions]="{standalone: true}"
+                          (ngModelChange)="searchData(searchDataValue)" type="search"
+                          class="form-control" placeholder="Search..." />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="search-path">
+                    <a class="btn btn-filter" id="filter_search2" (click)="openFilter2()"
+                      [ngClass]="{'setclose': filter2 === true}">
+                      <i class="feather icon-filter filter-icon"></i>
+                      <span><img src="assets/img/icons/closes.svg" alt="img"></span>
+                    </a>
+                  </div>
+                  <div class="form-sort">
+                    <i class="feather icon-sliders info-img"></i>
+                    <mat-select [(ngModel)]="selectedValue4" [ngModelOptions]="{standalone: true}"
+                      class="select space-select" placeholder="Sort by Date">
+                      <mat-option value="Sort by Date">Sort by Date</mat-option>
+                      <mat-option value="Newest">Newest</mat-option>
+                      <mat-option value="Oldest">Oldest</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                <!-- /Filter -->
+                <div class="card" id="filter_inputs2" [ngClass]="{'d-block': filter2, 'd-none': !filter2}">
+                  <div class="card-body pb-0">
+                    <div class="row">
+                      <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="input-blocks">
+                          <i class="feather icon-zap info-img"></i>
+                          <mat-select [(ngModel)]="selectedValue5" [ngModelOptions]="{standalone: true}"
+                            class="select space-select" placeholder="Choose Category">
+                            <mat-option value="Choose Category">Choose Category</mat-option>
+                            <mat-option value="Computers">Computers</mat-option>
+                          </mat-select>
+                        </div>
+                      </div>
+                      <div class="col-lg-2 col-sm-6 col-12">
+                        <div class="input-blocks">
+                          <i class="feather icon-credit-card info-img"></i>
+                          <mat-select [(ngModel)]="selectedValue6" [ngModelOptions]="{standalone: true}"
+                            class="select space-select" placeholder="Payment Method">
+                            <mat-option value="Payment Method">Payment Method</mat-option>
+                            <mat-option value="Complete">Complete</mat-option>
+                            <mat-option value="Inprogress">Inprogress</mat-option>
+                          </mat-select>
+                        </div>
+                      </div>
+                      <div class="col-lg-3 col-sm-6 col-12">
+                        <div class="input-blocks">
+                          <i class="feather icon-calendar info-img"></i>
+                          <div class="input-groupicon date-input1">
+                            <input type="text" class="datetimepicker" bsDatepicker
+                              placeholder="From Date - To Date" container=".date-input1">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-6 col-12 ms-auto">
+                          <div class="input-blocks">
+                            <a class="btn btn-filters ms-auto"> <i
+                            class="feather icon-search feather-search"></i> Search </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /Filter -->
+                  <div class="table-responsive">
+                    <table matSort (matSortChange)="sortData($event)" class="table datanew">
+                      <thead>
+                        <tr>
+                          <th>
+                            <label class="checkboxs">
+                              <input type="checkbox">
+                              <span class="checkmarks"></span>
+                            </label>
+                          </th>
+                          <th mat-sort-header="customer">Customer</th>
+                          <th mat-sort-header="date">Date</th>
+                          <th mat-sort-header="invoiceNumber">Invoice Number</th>
+                          <th mat-sort-header="totalAmount">Total Amount</th>
+                          <th mat-sort-header="paymentMethod">Payment Method</th>
+                          <th mat-sort-header="discount">Discount</th>
+                          <th mat-sort-header="taxAmount">Tax Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (data of tableData2; track data) {
+                          <tr>
+                            <td>
+                              <label class="checkboxs">
+                                <input type="checkbox">
+                                <span class="checkmarks"></span>
+                              </label>
+                            </td>
+                            <td class="userimgname">
+                              <a href="javascript:void(0);" class="product-img">
+                                <img [src]="data.img1" alt="product">
+                              </a>
+                              <a href="javascript:void(0);">{{data.customer}}</a>
+                            </td>
+                            <td>{{data.date}}</td>
+                            <td class="ref-number">{{data.invoiceNumber}}</td>
+                            <td>{{data.totalAmount}}</td>
+                            <td class="payment-info">
+                              <a href="javascript:void(0);"> <img [src]="data.img2" alt="Pay">
+                              </a>
+                            </td>
+                            <td>{{data.discount}}</td>
+                            <td>{{data.taxAmount}}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                  <app-custom-pagination></app-custom-pagination>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /product list -->

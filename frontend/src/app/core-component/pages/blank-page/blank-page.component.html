@@ -1,0 +1,21 @@
+<div class="page-header">
+  <div class="page-title">
+    <h4>Blank Page</h4>
+    <h6>Sub Title</h6>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
+      class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a (click)="toggleCollapse()" data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Collapse" matTooltipPosition="above"
+        id="collapse-header"> @if (!isCollapsed) {
+        <i class="feather icon-chevron-up feather-chevron-up"></i>
+      }
+      @if (isCollapsed) {
+        <i class="feather icon-chevron-down feather-chevron-down"></i>
+      }</a>
+    </li>
+  </ul>
+</div>

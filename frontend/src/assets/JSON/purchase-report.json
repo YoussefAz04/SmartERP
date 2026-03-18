@@ -1,0 +1,75 @@
+{
+    "data": [
+        {
+          "productName": "Lenovo 3rd Generation",
+          "purchaseAmount": "$5000",
+          "purchaseQty": "500",
+          "instockQty": "100",
+          "img": "assets/img/products/stock-img-01.png"
+        },
+        {
+          "productName": "Bold V3.2",
+          "purchaseAmount": "$1000",
+          "purchaseQty": "200",
+          "instockQty": "150",
+          "img": "assets/img/products/stock-img-02.png"
+        },
+        {
+          "productName": "Nike Jordan",
+          "purchaseAmount": "$2000",
+          "purchaseQty": "350",
+          "instockQty": "200",
+          "img": "assets/img/products/stock-img-03.png"
+        },
+        {
+          "productName": "Apple Series 5 Watch",
+          "purchaseAmount": "$500",
+          "purchaseQty": "120",
+          "instockQty": "50",
+          "img": "assets/img/products/stock-img-04.png"
+        },
+        {
+          "productName": "Amazon Echo Dot",
+          "purchaseAmount": "$100",
+          "purchaseQty": "400",
+          "instockQty": "320",
+          "img": "assets/img/products/stock-img-05.png"
+        },
+        {
+          "productName": "Lobar Handy",
+          "purchaseAmount": "$1500",
+          "purchaseQty": "170",
+          "instockQty": "80",
+          "img": "assets/img/products/stock-img-06.png"
+        },
+        {
+          "productName": "Red Premium Handy",
+          "purchaseAmount": "$800",
+          "purchaseQty": "320",
+          "instockQty": "180",
+          "img": "assets/img/products/expire-product-01.png"
+        },
+        {
+          "productName": "Iphone 14 Pro",
+          "purchaseAmount": "$1200",
+          "purchaseQty": "270",
+          "instockQty": "120",
+          "img": "assets/img/products/expire-product-02.png"
+        },
+        {
+          "productName": "Black Slim 200",
+          "purchaseAmount": "$600",
+          "purchaseQty": "180",
+          "instockQty": "70",
+          "img": "assets/img/products/expire-product-03.png"
+        },
+        {
+          "productName": "Woodcraft Sandal",
+          "purchaseAmount": "$300",
+          "purchaseQty": "450",
+          "instockQty": "300",
+          "img": "assets/img/products/expire-product-04.png"
+        }
+      ],
+      "totalData": 10
+}

@@ -1,0 +1,63 @@
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Modifier l'entreprise</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #entrepriseForm="ngForm">
+
+        <div class="mb-3">
+          <label for="nom" class="form-label">Nom</label>
+          <input type="text" id="nom" class="form-control" name="nom" [(ngModel)]="entreprise.nom" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="raisonSociale" class="form-label">Raison Sociale</label>
+          <input type="text" id="raisonSociale" class="form-control" name="raisonSociale" [(ngModel)]="entreprise.raisonSociale" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" class="form-control" name="description" [(ngModel)]="entreprise.description" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="secteurActivite" class="form-label">Secteur d'activité</label>
+          <input type="text" id="secteurActivite" class="form-control" name="secteurActivite" [(ngModel)]="entreprise.secteurActivite">
+        </div>
+
+        <div class="mb-3">
+          <label for="statutJuridique" class="form-label">Statut Juridique</label>
+          <input type="text" id="statutJuridique" class="form-control" name="statutJuridique" [(ngModel)]="entreprise.statutJuridique">
+        </div>
+
+        <div class="mb-3">
+          <label for="numeroIdentificationFiscale" class="form-label">N° Identification Fiscale</label>
+          <input type="text" id="numeroIdentificationFiscale" class="form-control" name="numeroIdentificationFiscale" [(ngModel)]="entreprise.numeroIdentificationFiscale">
+        </div>
+
+        <div class="mb-3">
+          <label for="registreCommerce" class="form-label">Registre Commerce</label>
+          <input type="text" id="registreCommerce" class="form-control" name="registreCommerce" [(ngModel)]="entreprise.registreCommerce">
+        </div>
+
+        <div class="mb-3">
+          <label for="siteWeb" class="form-label">Site Web</label>
+          <input type="url" id="siteWeb" class="form-control" name="siteWeb" [(ngModel)]="entreprise.siteWeb">
+        </div>
+
+        <div class="mb-3">
+          <label for="dateCreation" class="form-label">Date de Création</label>
+          <input type="date" id="dateCreation" class="form-control" name="dateCreation" [(ngModel)]="entreprise.dateCreation">
+        </div>
+
+        <div class="mb-3">
+          <label for="dateDerniereModification" class="form-label">Date Dernière Modification</label>
+          <input type="date" id="dateDerniereModification" class="form-control" name="dateDerniereModification" [(ngModel)]="entreprise.dateDerniereModification">
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="!entrepriseForm.form.valid" *ngIf="permissionEntreprise.update">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Ajouter un département</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Départements</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Ajouter un département</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="departementFormGroup" (ngSubmit)="createDepartement()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <input type="text" formControlName="nom" class="form-control" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Responsable</label>
+                <input type="text" formControlName="responsable" class="form-control" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" formControlName="email" class="form-control" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Téléphone</label>
+                <input type="text" formControlName="telephone" class="form-control" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea formControlName="description" class="form-control" rows="4"></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Nombre d'employés</label>
+                <input type="number" formControlName="nombreEmployes" class="form-control" min="0" />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Entreprise</label>
+                <select class="form-select" formControlName="entrepriseId">
+                  <option *ngFor="let e of entreprises" [value]="e.id">{{ e.nom }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary" [disabled]="!departementFormGroup.valid">
+              Créer le département
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

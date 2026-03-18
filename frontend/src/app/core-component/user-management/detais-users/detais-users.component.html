@@ -1,0 +1,43 @@
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Modifier l'utilisateur</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #userForm="ngForm">
+
+        <div class="mb-3">
+          <label for="username" class="form-label">Nom d'utilisateur</label>
+          <input type="text" id="username" class="form-control" name="username" [(ngModel)]="user.username" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" class="form-control" name="email" [(ngModel)]="user.email" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="enabled" class="form-label">Statut</label>
+          <select id="enabled" class="form-select" name="enabled" [(ngModel)]="user.enabled" required>
+            <option [ngValue]="true">Activé</option>
+            <option [ngValue]="false">Désactivé</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="roles" class="form-label">Rôles</label>
+          <input type="text" id="roles" class="form-control" name="roles"
+                 [(ngModel)]="user.roles" placeholder="Ex : ROLE_ADMIN, ROLE_USER">
+        </div>
+
+        <div class="mb-3">
+          <label for="entrepriseNom" class="form-label">Nom de l'entreprise</label>
+          <input type="text" id="entrepriseNom" class="form-control" name="entrepriseNom"
+                 [(ngModel)]="user.entrepriseNom" min="1" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="!userForm.form.valid" *ngIf="permissionUsers.update">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+</div>

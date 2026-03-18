@@ -1,0 +1,171 @@
+<div class="pdf-container">
+  <div class="controls">
+    <input type="file" (change)="onFileSelected($event)" accept=".pdf" />
+
+    <!-- Supprimer la sélection de type avant sélection -->
+    <!-- La sélection se fera après avoir créé la zone -->
+
+    <select [(ngModel)]="typeDeDocument" class="form-control" id="typeDeDocument">
+      <option value="">-- Sélectionner le type de document --</option>
+      <option value="CIN">Carte d'identité</option>
+      <option value="RECU">Reçu</option>
+      <option value="FACTURE">Facture</option>
+      <!-- etc. -->
+    </select>
+
+    <button (click)="saveZonesToBackend()" [disabled]="zones.length === 0 || isLoading">
+      {{ isLoading ? 'Sauvegarde...' : 'Sauvegarder les zones' }}
+    </button>
+
+    <button (click)="extractZonesContent()" [disabled]="zones.length === 0 || isLoading" class="extract-btn">
+      {{ isLoading ? 'Extraction...' : 'Extraire le contenu' }}
+    </button>
+
+    <button (click)="clearZones()" class="clear-btn" [disabled]="zones.length === 0">
+      Effacer les zones
+    </button>
+
+    <div class="page-controls" *ngIf="totalPages > 1">
+      <button (click)="previousPage()" [disabled]="currentPage <= 1">←</button>
+      <span>Page {{currentPage}} / {{totalPages}}</span>
+      <button (click)="nextPage()" [disabled]="currentPage >= totalPages">→</button>
+    </div>
+  </div>
+
+  <!-- Modal pour sélectionner le type de zone après sélection -->
+  <div *ngIf="showZoneTypeModal" class="zone-type-modal">
+    <div class="modal-content">
+      <h3>Sélectionnez le type de zone</h3>
+
+      <select [(ngModel)]="tempZoneType" class="zone-type-select">
+        <option value="">-- choisir un type --</option>
+        <option value="montantHT">Montant HT</option>
+        <option value="montantTVA">Montant TVA</option>
+        <option value="montantTTC">Montant TTC</option>
+        <option value="date">Date</option>
+        <option value="modePaiement">Mode Paiement</option>
+        <option value="statut">Statut</option>
+        <option value="description">Description</option>
+        <option value="quantite">Quantité</option>
+        <option value="remise">Remise</option>
+        <option value="prixUnitaireHT">Prix Unitaire HT</option>
+        <option value="tva">TVA</option>
+        <option value="article">Article</option>
+        <option value="referanc">Référence</option>
+      </select>
+
+      <div class="modal-buttons">
+        <button type="button" class="btn-cancel" (click)="cancelZoneCreation()">
+          Annuler
+        </button>
+        <button type="button" class="btn-confirm" (click)="confirmZoneCreation()" [disabled]="!tempZoneType">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pdf-viewer" #pdfViewer>
+    <div class="canvas-container" style="position: relative; display: inline-block;">
+      <canvas
+        #pdfCanvas
+        (mousedown)="startSelection($event)"
+        (mousemove)="updateSelection($event)"
+        (mouseup)="endSelection($event)"
+        style="cursor: crosshair; border: 1px solid #ccc; display: block; user-select: none;">
+      </canvas>
+
+      <!-- Zone en cours de sélection -->
+      <div
+        *ngIf="isSelecting && selectionWidth > 0 && selectionHeight > 0"
+        class="selection-overlay"
+        [style.position]="'absolute'"
+        [style.left.px]="currentSelection.x"
+        [style.top.px]="currentSelection.y"
+        [style.width.px]="selectionWidth"
+        [style.height.px]="selectionHeight"
+        [style.border]="'2px dashed #007bff'"
+        [style.background-color]="'rgba(0, 123, 255, 0.1)'"
+        [style.pointer-events]="'none'"
+        [style.z-index]="'10'">
+      </div>
+
+      <!-- Zone temporaire (en attente de confirmation) -->
+      <div
+        *ngIf="pendingZone"
+        class="pending-zone-overlay"
+        [style.position]="'absolute'"
+        [style.left.px]="pendingZone.x"
+        [style.top.px]="pendingZone.y"
+        [style.width.px]="pendingZone.width"
+        [style.height.px]="pendingZone.height"
+        [style.border]="'2px solid #ff6b35'"
+        [style.background-color]="'rgba(255, 107, 53, 0.1)'"
+        [style.pointer-events]="'none'"
+        [style.z-index]="'8'">
+
+        <div style="position: absolute; top: 2px; left: 2px; background: rgba(255,107,53,0.9);
+                    color: white; font-size: 10px; padding: 1px 4px; border-radius: 2px;">
+          En attente...
+        </div>
+      </div>
+
+      <!-- Zones finalisées -->
+      <div
+        *ngFor="let zone of getCurrentPageZones(); let i = index"
+        class="zone-overlay"
+        [ngClass]="'zone-' + zone.type"
+        [style.position]="'absolute'"
+        [style.left.px]="zone.x"
+        [style.top.px]="zone.y"
+        [style.width.px]="zone.width"
+        [style.height.px]="zone.height"
+        [style.border]="'2px solid ' + getZoneColor(zone.type)"
+        [style.background-color]="getZoneColor(zone.type) + '15'"
+        [style.pointer-events]="'auto'"
+        [style.z-index]="'5'"
+        title="{{zone.type}} - Cliquez sur × pour supprimer">
+
+        <button
+          class="zone-delete"
+          (click)="deleteZone(i)"
+          title="Supprimer cette zone"
+          style="position: absolute; top: -8px; right: -8px; width: 16px; height: 16px;
+                 background: red; color: white; border: none; border-radius: 50%;
+                 cursor: pointer; font-size: 10px; line-height: 1; z-index: 15;">
+          ×
+        </button>
+
+        <div
+          class="zone-info"
+          style="position: absolute; bottom: 2px; left: 2px; background: rgba(0,0,0,0.7);
+                 color: white; font-size: 10px; padding: 1px 4px; border-radius: 2px;">
+          <span class="zone-type">{{zone.type}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="status" *ngIf="pdfLoaded">
+    <p>PDF chargé: {{totalPages}} page(s) - {{zones.length}} zone(s) sélectionnée(s)</p>
+    <p *ngIf="zones.length > 0">Page actuelle: {{getCurrentPageZones().length}} zone(s)</p>
+    <p *ngIf="isSelecting">Sélection en cours... ({{selectionWidth}}×{{selectionHeight}})</p>
+    <p *ngIf="pendingZone" style="color: orange;">Zone créée - Sélectionnez un type pour confirmer</p>
+  </div>
+
+  <!-- Résultats d'extraction -->
+  <div class="results" *ngIf="extractionResults.length > 0">
+    <h3>Contenu extrait :</h3>
+    <div *ngFor="let result of extractionResults; let i = index" class="result-item">
+      <h4>Zone {{i + 1}} ({{result.zoneType || 'N/A'}})</h4>
+      <div class="result-content">{{result.content || 'Aucun contenu détecté'}}</div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>{{ zones.length > 0 ? 'Traitement en cours...' : 'Chargement du PDF...' }}</p>
+  </div>
+</div>

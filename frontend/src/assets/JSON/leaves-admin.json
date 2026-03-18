@@ -1,0 +1,85 @@
+{
+    "data": [
+        {
+            "empName": "Mitchum Daniel",                                 
+            "empId": "POS001",
+            "type": "Sick Leave",
+            "fromDate": "02 Aug 2023",
+            "toDate": "03 Aug 2023",
+            "daysHours": "01 Day",
+            "shift": "Regular",
+            "appliedOn": "02 Aug 2023",
+            "status": "Approved",
+            "img":"assets/img/users/user-01.jpg",
+            "action": ""
+        },
+        {
+            "empName": "Susan Lopez",
+            "empId": "POS002",
+            "type": "Sick Leave",
+            "fromDate": "07 Aug 2023",
+            "toDate": "07 Aug 2023",
+            "daysHours": "2 hrs",
+            "shift": "Regular",
+            "appliedOn": "07 Aug 2023",
+            "status": "Rejected",
+            "img":"assets/img/users/user-02.jpg",
+            "action": ""
+        },
+        {
+            "empName": "Robert Grossman",                                 
+            "empId": "POS003",
+            "type": "Sick Leave",
+            "fromDate": "03 Aug 2023",
+            "toDate": "04 Aug 2023",
+            "daysHours": "01 Day",
+            "shift": "Regular",
+            "appliedOn": "03 Aug 2023",
+            "status": "Approved",   
+            "img":"assets/img/users/user-03.jpg",                          
+            "action": ""
+        },
+        {
+            "empName": "Janet Hembre",                                   
+            "type": "Maternity",
+            "fromDate": "05 Aug 2023",
+            "toDate": "07 Aug 2023",
+            "daysHours": "02 Days",
+            "shift": "Regular",
+            "appliedOn": "05 Aug 2023",
+            "status": "Approved",  
+            "img":"assets/img/users/user-04.jpg",                  
+            "action": ""
+        },
+        {
+            "empName": "Russell Belle",                                  
+            "empId": "POS005",
+            "type": "Vacation",
+            "fromDate": "08 Aug 2023",
+            "toDate": "10 Aug 2023",
+            "daysHours": "03 Days",
+            "shift": "Regular",
+            "appliedOn": "08 Aug 2023",
+            "status": "Approved", 
+            "img":"assets/img/users/user-05.jpg",                           
+            "action": ""
+        },
+        {
+            "empName": "Edward K. Muniz",                                  
+            "empId": "POS006",
+            "type": "Sick Leave",
+            "fromDate": "03 Aug 2023",
+            "toDate": "03 Aug 2023",
+            "daysHours": "2 hrs",
+            "shift": "Regular",
+            "appliedOn": "03 Aug 2023",
+            "status": "Approved", 
+            "img":"assets/img/users/user-06.jpg",                             
+            "action": ""
+        }
+     
+    ],
+    "totalData": 6
+  }
+  
+  

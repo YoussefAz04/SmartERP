@@ -1,0 +1,35 @@
+{
+    "data": [
+        {
+            "variant": "Size (T-shirts)",
+            "values": "S,M,L,XL",
+            "createdOn": "25 May 2023",
+            "status": "Active"
+        },
+        {
+            "variant": "Size (Shoes)",
+            "values": "5,6,7,8,9",
+            "createdOn": "24 Jun 2023",
+            "status": "Active"
+        },
+        {
+            "variant": "Color",
+            "values": "Red, Blue, Green",
+            "createdOn": "23 Jul 2023",
+            "status": "Active"
+        },
+        {
+            "variant": "Memory",
+            "values": "64 GB, 128 GB, 512 GB",
+            "createdOn": "22 Aug 2023",
+            "status": "Active"
+        },
+        {
+            "variant": "Storage",
+            "values": "250GB, 1TB",
+            "createdOn": "21 Sep 2023",
+            "status": "Active"
+        }
+    ],
+    "totalData": 5
+}

@@ -1,0 +1,73 @@
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.btn-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-view {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-view:hover {
+  background-color: #bbdefb;
+  color: #0d47a1;
+}
+
+.btn-edit {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.btn-edit:hover {
+  background-color: #e1bee7;
+  color: #4a148c;
+}
+
+.btn-delete {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-delete:hover {
+  background-color: #ffcdd2;
+  color: #b71c1c;
+}
+
+.feather {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.item-name {
+  font-weight: 500;
+  color: #212529;
+}
+
+.item-description {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* Tooltip */
+.btn-action[data-bs-toggle="tooltip"] {
+  cursor: pointer;
+}

@@ -1,0 +1,57 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Vertical Form</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Vertical Form</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Ajouter une Module</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="moduleForm" (ngSubmit)="createModule()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Titre de module</label>
+                <input type="text" formControlName="title" class="form-control" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="status" id="statusCheckbox" />
+                <label class="form-check-label" for="statusCheckbox">
+                  Status
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="idModuleTitre" class="form-label">Module Titre</label>
+              <select id="idModuleTitre" formControlName="idModuleTitre" class="form-select">
+                <option *ngFor="let c of modules" [value]="c.id">{{ c.moduleTittle }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary" [disabled]="!moduleForm.valid">
+              Créer Module
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

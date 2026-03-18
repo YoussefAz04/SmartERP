@@ -1,0 +1,61 @@
+{
+  "data": [
+    {
+      "category": "Laptop",
+      "categorySlug": "laptop",
+      "createdOn": "25 May 2023",
+      "isSelected": false,
+      "status": "Active"
+    },
+    {
+      "category": "Electronics",
+      "categorySlug": "electronics",
+      "createdOn": "24 Jun 2023",
+      "isSelected": false,
+      "status": "Active"
+    },
+    {
+      "category": "Shoe",
+      "categorySlug": "shoe",
+      "createdOn": "23 Jul 2023",
+      "isSelected": false,
+      "status": "Active"
+    },
+    {
+      "category": "Speaker",
+      "categorySlug": "speaker",
+      "createdOn": "22 Aug 2023",
+      "isSelected": false,
+      "status": "Active"
+    },
+    {
+      "category": "Furniture",
+      "categorySlug": "furniture",
+      "createdOn": "21 Sep 2023",
+      "isSelected": false,
+      "status": "Active"
+    },
+    {
+      "category": "Bags",
+      "categorySlug": "bags",
+      "createdOn": "20 Sep 2023",
+      "isSelected": false,
+      "status": "Active"
+    },
+    {
+      "category": "Phone",
+      "categorySlug": "phone",
+      "createdOn": "20 Sep 2023",
+      "isSelected": false,
+      "status": "Active"
+    },
+    {
+      "category": "Chairs",
+      "categorySlug": "chairs",
+      "createdOn": "20 Sep 2023",
+      "isSelected": false,
+      "status": "Active"
+    }
+  ],
+  "totalData": 8
+}

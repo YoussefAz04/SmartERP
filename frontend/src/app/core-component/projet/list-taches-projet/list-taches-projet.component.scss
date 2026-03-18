@@ -1,0 +1,354 @@
+/* Variables CSS */
+:root {
+  --primary-color: #2563eb;
+  --secondary-color: #64748b;
+  --success-color: #059669;
+  --warning-color: #d97706;
+  --danger-color: #dc2626;
+  --background-color: #f8fafc;
+  --card-background: #ffffff;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+/* Conteneur principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--background-color);
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* En-tête */
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+}
+
+/* Grille des projets */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Card de projet */
+.project-card {
+  background: var(--card-background);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* En-tête du projet */
+.project-header {
+  padding: 1.5rem 1.5rem 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-bottom: 1px solid var(--border-color);
+
+  .project-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+      flex: 1;
+    }
+  }
+
+  .project-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+/* Badges de statut */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+
+  &.status-en-cours,
+  &.status-en_cours {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &.status-termine,
+  &.status-terminé {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  &.status-planifie,
+  &.status-planifié {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  &.status-suspendu {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+/* Informations du projet */
+.project-info {
+  display: flex;
+  padding: 1rem 1.5rem;
+  background: var(--card-background);
+  gap: 1.5rem;
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+
+    .icon {
+      font-size: 1.125rem;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+
+      .label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        font-weight: 500;
+      }
+
+      .value {
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+/* Section des tâches */
+.tasks-section {
+  padding: 1.5rem;
+
+  .tasks-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .tasks-count {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background: var(--background-color);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+    }
+  }
+}
+
+/* Liste des tâches */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Item de tâche */
+.task-item {
+  padding: 1rem;
+  background: var(--background-color);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: var(--primary-color);
+  }
+
+  .task-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+
+    .task-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+      flex: 1;
+    }
+  }
+
+  .task-description {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .task-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .task-dates {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+/* Badges de priorité */
+.priority-badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.priority-haute,
+  &.priority-high {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+
+  &.priority-moyenne,
+  &.priority-medium {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &.priority-basse,
+  &.priority-low {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+}
+
+/* Statut des tâches */
+.task-status {
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+
+  &.task-status-termine,
+  &.task-status-terminé {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  &.task-status-en-cours,
+  &.task-status-en_cours {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  &.task-status-a-faire,
+  &.task-status-a_faire {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+}
+
+/* Pas de tâches */
+.no-tasks {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-secondary);
+
+  .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .project-info {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .task-header,
+  .task-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+

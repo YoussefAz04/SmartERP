@@ -1,0 +1,20 @@
+::ng-deep .e-gantt .e-headercell,
+::ng-deep .e-gantt .e-rowcell {
+  font-weight: bold;
+  color: #444;
+  background-color: #f7f7f7;
+}
+
+::ng-deep .e-gantt .e-gantt-taskbar {
+  border-radius: 5px;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+}
+
+::ng-deep .e-gantt .e-weekend {
+  background-color: #ffefef !important;
+}
+
+::ng-deep .e-gantt .e-task-label {
+  font-size: 12px;
+  color: #ffffff;
+}

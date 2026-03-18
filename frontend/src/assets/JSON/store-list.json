@@ -1,0 +1,40 @@
+{
+    "data": [
+        {
+           
+            "storeName": "Thomas",
+            "userName": "Thomas21",
+            "phone": "+12163547758",
+            "email": "thomas$example.com",
+            "status": "Active",
+            "action": ""
+        },
+        {
+           
+            "storeName": "Rasmussen",
+            "userName": "Cras56",
+            "phone": "+1216358690",
+            "email": "rasmussen$example.com",
+            "status": "Active",
+            "action": ""
+        },
+        {
+            "storeName": "Fred john",
+            "userName": "FredJ25",
+            "phone": "+1387694357",
+            "email": "john&example.com",
+            "status": "Active",
+            "action": ""
+        },
+        {
+            
+            "storeName": "James",
+            "userName": "James 524",
+            "phone": "+1416350987",
+            "email": "james$example.com",
+            "status": "Active",
+            "action": ""
+        }
+    ],
+    "totalData": 4
+  }

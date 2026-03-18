@@ -1,0 +1,52 @@
+{
+    "data": [
+      {
+        "userName": "Coupons 21",
+        "code": "Christmas",
+        "type": "Fixed",
+        "discount": "$20",
+        "limit": "04",
+        "used": "01",
+        "valid": "04 Jan 2023",
+        "isSelected": false,
+        "status": "Active"
+      },
+      {
+        "userName": "First Offer",
+        "code": "First Offer",
+        "type": " Percentage"	,
+        "discount": "10%",
+        "limit": " 47",
+        "used": "10",
+        "valid": "15 Feb 2023",
+        "isSelected": false,
+        "status": "Active"
+      },
+      {
+        "userName": "Offer 40",
+        "code": "40% Offer",
+        "type": " Fixed"	,
+        "discount": "$20",
+        "limit": " 21",
+        "used": "14",
+        "valid": "08 Apr 2023",
+        "isSelected": false,
+        "status": "Active"
+      },
+      {
+        "userName": "Subscription",
+        "code": "FirstSub01",
+        "type": " Fixed"	,
+        "discount": "$20",
+        "limit": "09",
+        "used": "07",
+        "valid": "12 Aug 2023",
+        "isSelected": false,
+        "status": "Active"
+      }
+      
+      
+    ],
+    "totalData": 4
+  }
+  

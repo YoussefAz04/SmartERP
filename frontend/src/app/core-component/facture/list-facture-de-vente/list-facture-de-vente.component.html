@@ -1,0 +1,172 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>List Facture de Vente</h4>
+      <h6>Departement Gestion de Facture</h6>
+    </div>
+  </div>
+  <ul class="table-top-head">
+
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Excel" matTooltipPosition="above"><img
+        src="assets/img/icons/excel.svg" alt="img"></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Print" matTooltipPosition="above"><i
+        class="feather icon-printer feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
+        class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <div class="page-btn" >
+        <a (click)="addFacture()" *ngIf="permissionVente.create" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units">
+          <i class="feather icon-plus-circle me-2"></i>Ajouter Facture De Vente
+        </a>
+      </div>
+    </li>
+
+
+  </ul>
+
+</div>
+<!-- /Page Header -->
+<!-- Table responsive -->
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title mb-0">Liste des factures</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+        <tr>
+          <th>Date Achat</th>
+          <th>Référence</th>
+          <th>Montant Total</th>
+          <th>Montant HT</th>
+          <th>Montant TVA</th>
+          <th>Montant TTC</th>
+          <th>Remise</th>
+          <th>Mode Paiement</th>
+          <th>Statut</th>
+          <th>Description</th>
+          <th>Client</th>
+          <th>Action</th>
+          <!-- Détails Facture -->
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let facture of factureAchatList">
+          <td>{{ facture.dateAchat }}</td>
+          <td>{{ facture.referance }}</td>
+          <td>{{ facture.montantTotal | number:'1.2-2' }} €</td>
+          <td>{{ facture.montantHT | number:'1.2-2' }} €</td>
+          <td>{{ facture.montantTVA | number:'1.2-2' }} €</td>
+          <td>{{ facture.montantTTC | number:'1.2-2' }} €</td>
+          <td>{{ facture.remise | number:'1.2-2' }} €</td>
+          <td>{{ facture.modePaiement }}</td>
+          <td>{{ facture.statut }}</td>
+          <td>{{ facture.description }}</td>
+          <td>{{facture.client?.nom}}</td>
+          <td class="text-center">
+            <!-- Voir -->
+            <button class="btn btn-sm btn-info me-1"
+                    (click)="viewFacture(facture.id)"
+                    *ngIf="permissionVente.view"
+                    matTooltip="Voir"
+                    matTooltipPosition="above"
+                    [attr.aria-label]="'Voir la facture ' + facture.id">
+              <i class="feather icon-eye"></i>
+            </button>
+
+            <!-- Supprimer -->
+            <button class="btn btn-sm btn-danger me-1"
+                    (click)="deleteFacture(facture.id)"
+                    *ngIf="permissionVente.delete"
+                    matTooltip="Supprimer"
+                    matTooltipPosition="above"
+                    [attr.aria-label]="'Supprimer la facture ' + facture.id">
+              <i class="feather icon-trash-2"></i>
+            </button>
+
+            <!-- Générer PDF -->
+            <button class="btn btn-sm btn-warning me-1"
+                    (click)="generatePdf(facture)"
+                    matTooltip="Télécharger PDF"
+                    matTooltipPosition="above"
+                    [attr.aria-label]="'Télécharger PDF de la facture ' + facture.id">
+              <img src="assets/img/icons/pdf.svg" alt="PDF" width="16" height="16">
+            </button>
+
+            <!-- Envoyer facture par email -->
+            <button class="btn btn-sm btn-success me-1"
+                    (click)="sendEmailFactureVente(facture)"
+                    matTooltip="Envoyer la facture par email"
+                    matTooltipPosition="above"
+                    [attr.aria-label]="'Envoyer par email la facture ' + facture.id">
+              <img src="assets/OIP.jpg" alt="Email" width="16" height="16">
+            </button>
+
+            <!-- Assigner facture -->
+            <button class="btn btn-sm btn-secondary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#edit-units"
+                    (click)="factureAssigne(facture.id)"
+                    matTooltip="Assigner la facture"
+                    matTooltipPosition="above"
+                    [attr.aria-label]="'Assigner la facture ' + facture.id">
+              <i class="feather icon-user"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="factureAchatList.length === 0">
+          <td colspan="18" class="text-center py-3">Aucune facture trouvée.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Assigner Facture to Client -->
+<div class="modal fade" id="edit-units">
+  <div class="modal-dialog modal-dialog-centered custom-modal-two">
+    <div class="modal-content">
+      <div class="page-wrapper-new p-0">
+        <div class="content">
+          <div class="modal-header border-0 custom-modal-header">
+            <div class="page-title">
+              <h4>Assigner Client</h4>
+            </div>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body custom-modal-body">
+            <form [formGroup]="assignFactureForm" (ngSubmit)="onSubmitAssignFacture()">
+              <div class="mb-3">
+                <label for="roleSelect" class="form-label">Sélectionnez un Client</label>
+                <select id="roleSelect" class="form-control" formControlName="clientId">
+                  <option *ngFor="let client of clients" [value]="client.id">{{ client.nom}}</option>
+                </select>
+              </div>
+
+              <div class="modal-footer-btn mt-3">
+                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-submit" >Assigner Client</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Assigner  Facture to Client -->
+

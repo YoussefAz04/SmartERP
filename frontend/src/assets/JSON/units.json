@@ -1,0 +1,59 @@
+{
+    "data": [
+        {
+            "unit": "Piece",
+            "shortName": "PC",
+            "noOfProducts": "25",
+            "createdOn": "25 May 2023",
+            "isSelected": false,
+            "status": "Active"
+            
+        },
+        {
+            "unit": "Kilogram",
+            "shortName": "KG",
+            "noOfProducts": "15",
+            "createdOn": "24 Jun 2023",
+            "isSelected": false,
+            "status": "Active"
+           
+        },
+        {
+            "unit": "Gram",
+            "shortName": "G",
+            "noOfProducts": "47",
+            "createdOn": "23 Jul 2023",
+            "isSelected": false,
+            "status": "Active"
+          
+        },
+        {
+            "unit": "Meter",
+            "shortName": "M",
+            "noOfProducts": "28",
+            "createdOn": "22 Aug 2023",
+            "isSelected": false,
+            "status": "Active"
+            
+        },
+        {
+            "unit": "Liter",
+            "shortName": "L",
+            "noOfProducts": "47",
+            "createdOn": "21 Sep 2023",
+            "isSelected": false,
+            "status": "Active"
+           
+        },
+        {
+            "unit": "Kilo",
+            "shortName": "K",
+            "noOfProducts": "74",
+            "createdOn": "20 Sep 2023",
+            "isSelected": false,
+            "status": "Active"
+            
+        }
+    ],
+    "totalData": 6
+  }

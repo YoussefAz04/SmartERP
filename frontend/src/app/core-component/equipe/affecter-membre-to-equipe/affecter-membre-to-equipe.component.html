@@ -1,0 +1,39 @@
+<div cdkDropListGroup>
+  <div class="example-container">
+    <h2>Membres non affectés</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="listMembreNotAffected"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)"
+      id="not-affected-list"
+    >
+      <div class="example-box" *ngFor="let item of listMembreNotAffected; trackBy: trackByMembre" cdkDrag>
+        {{item.membreTitre}}
+      </div>
+    </div>
+  </div>
+
+  <div class="example-container">
+    <h2>Membres à affecter</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="listMembreToAffecter"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)"
+      id="to-affect-list"
+    >
+      <div class="example-box" *ngFor="let item of listMembreToAffecter; trackBy: trackByMembre" cdkDrag>
+        {{item.membreTitre}}
+      </div>
+    </div>
+  </div>
+  <div class="page-btn">
+    <a (click)="affecterMembreToEquipe()" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units">
+      <i class="feather icon-plus-circle me-2"></i>Affceter    Membre
+    </a>
+  </div>
+
+</div>

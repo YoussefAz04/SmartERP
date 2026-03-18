@@ -1,0 +1,25 @@
+<div class="card p-3 mt-3 shadow">
+  <h4>📊 Taux d'utilisation du budget</h4>
+
+  <div *ngIf="taux !== null; else loading">
+    <p><strong>Projet {{ idProjet }} :</strong> {{ taux | number:'1.0-2' }} %</p>
+
+    <!-- Progress bar Bootstrap -->
+    <div class="progress">
+      <div class="progress-bar"
+           role="progressbar"
+           [style.width.%]="taux"
+           [ngClass]="{
+             'bg-success': taux < 70,
+             'bg-warning': taux >= 70 && taux < 100,
+             'bg-danger': taux >= 100
+           }">
+        {{ taux | number:'1.0-0' }} %
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <p>Chargement...</p>
+  </ng-template>
+</div>

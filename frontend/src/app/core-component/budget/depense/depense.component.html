@@ -1,0 +1,88 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Liste des Dépenses</h4>
+      <h6>Gestion des dépenses par budget</h6>
+    </div>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a matTooltip="Pdf" matTooltipPosition="above"><img src="assets/img/icons/pdf.svg" alt="pdf"></a>
+    </li>
+    <li>
+      <a matTooltip="Excel" matTooltipPosition="above"><img src="assets/img/icons/excel.svg" alt="excel"></a>
+    </li>
+    <li>
+      <a matTooltip="Imprimer" matTooltipPosition="above"><i class="feather icon-printer feather-rotate-ccw"></i></a>
+    </li>
+    <li>
+      <a matTooltip="Rafraîchir" matTooltipPosition="above" (click)="loadDepenses()">
+        <i class="feather icon-rotate-ccw feather-rotate-ccw"></i>
+      </a>
+    </li>
+  </ul>
+  <div class="page-btn">
+    <a (click)="addDepense()"  *ngIf="permissionDepense.create"  class="btn btn-added">
+      <i class="feather icon-plus-circle me-2"></i>Ajouter Dépense
+    </a>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<!-- Table responsive -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          Liste des Dépenses
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table text-nowrap">
+            <thead>
+            <tr>
+              <th>Description</th>
+              <th>Montant</th>
+              <th>Date</th>
+              <th>Budget</th>
+              <th>Catégorie</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let d of depenses">
+              <td>{{ d.description }}</td>
+              <td>{{ d.montant | number:'1.0-2' }} DT</td>
+              <td>{{ d.dateDepense | date:'dd/MM/yyyy' }}</td>
+              <td>{{ d.budget?.nom || '-' }}</td>
+              <td>{{ d.categorieDepense?.nom || '-' }}</td>
+              <td class="action-table-data text-center">
+                <div class="edit-delete-action">
+                  <a class="me-2 p-2 mb-0" (click)="viewDepense(d.id)"   *ngIf="permissionDepense.view" >
+                    <i class="feather icon-eye action-eye"></i>
+                  </a>
+                  <a class="me-2 p-2 mb-0" >
+                    <i class="feather icon-edit action-edit"></i>
+                  </a>
+                  <a class="confirm-text p-2 mb-0" (click)="deleteDepense(d.id)"  *ngIf="permissionDepense.delete" >
+                    <i class="feather icon-trash-2 feather-trash-2"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <!-- Aucune dépense -->
+          <div *ngIf="!loading && depenses.length === 0" class="text-center p-3">
+            Aucune dépense trouvée.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Table responsive -->

@@ -1,0 +1,82 @@
+{
+  "data": [
+    {
+      "img": "assets/img/products/product1.jpg",
+      "productName": "Macbook pro",
+      "date": "19 Nov 2022",
+      "customer": "Thomas",
+      "status": "Received",
+      "grandTotal": "$550",
+      "paid": "$120",
+      "due": "$550",
+      "paymentStatus": "Paid"
+    },
+    {
+      "img": "assets/img/products/product2.jpg",
+      "productName": "Orange",
+      "date": "19 Nov 2022",
+      "customer": "Benjamin",
+      "status": "Pending",
+      "grandTotal": "$550",
+      "paid": "$120",
+      "due": "$550",
+      "paymentStatus": "Unpaid"
+    },
+    {
+      "img": "assets/img/products/product3.jpg",
+      "productName": "Pineapple",
+      "date": "19 Nov 2022",
+      "customer": "James",
+      "status": "Pending",
+      "grandTotal": "$210",
+      "paid": "$120",
+      "due": "$210",
+      "paymentStatus": "Unpaid"
+    },
+    {
+      "img": "assets/img/products/product4.jpg",
+      "productName": "Strawberry",
+      "date": "19 Nov 2022",
+      "customer": "Bruklin",
+      "status": "Received",
+      "grandTotal": "$210",
+      "paid": "$120",
+      "due": "$210",
+      "paymentStatus": "Paid"
+    },
+    {
+      "img": "assets/img/products/product5.jpg",
+      "productName": "Macbook Pro",
+      "date": "19 Nov 2022",
+      "customer": "Best Power Tools",
+      "status": "Received",
+      "grandTotal": "$210",
+      "paid": "$120",
+      "due": "$210",
+      "paymentStatus": "Paid"
+    },
+    {
+      "img": "assets/img/products/product6.jpg",
+      "productName": "Avocat",
+      "date": "19 Nov 2022",
+      "customer": "Beverly",
+      "status": "Pending",
+      "grandTotal": "$210",
+      "paid": "$120",
+      "due": "$210",
+      "paymentStatus": "Unpaid"
+    },
+    {
+      "img": "assets/img/products/product7.jpg",
+      "productName": "Apple Earpods",
+      "date": "19 Nov 2022",
+      "customer": "Apex Computers",
+      "status": "Ordered",
+      "grandTotal": "$1000",
+      "paid": "$500",
+      "due": "$1000",
+      "paymentStatus": "Partial"
+    }
+  ],
+  "totalData": 7
+}

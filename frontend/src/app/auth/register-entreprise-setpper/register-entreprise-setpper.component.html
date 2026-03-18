@@ -1,0 +1,235 @@
+<div class="container">
+  <a [routerLink]="routes.signIn" class="back-button" mat-icon-button aria-label="Retour">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
+
+
+
+  <div class="stepper-wrapper">
+    <div class="stepper-progress" [class.step-2]="currentStep === 2"></div>
+
+    <div class="stepper-item">
+      <div class="step-number"
+           [class.active]="currentStep === 1"
+           [class.completed]="currentStep > 1"
+           [class.inactive]="currentStep !== 1 && currentStep <= 1">
+        <span *ngIf="currentStep <= 1">1</span>
+      </div>
+      <div class="step-label" [class.active]="currentStep === 1">
+        Détails de l'entreprise
+      </div>
+    </div>
+
+    <div class="stepper-item">
+      <div class="step-number"
+           [class.active]="currentStep === 2"
+           [class.completed]="currentStep > 2"
+           [class.inactive]="currentStep !== 2">
+        <span *ngIf="currentStep <= 2">2</span>
+      </div>
+      <div class="step-label" [class.active]="currentStep === 2">
+        Compte utilisateur
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <!-- Étape 1: Entreprise -->
+    <div *ngIf="currentStep === 1" class="step-transition active">
+      <form [formGroup]="entrepriseFormGroup">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="nom">
+              Nom de l'entreprise <span class="required">*</span>
+            </label>
+            <input type="text"
+                   id="nom"
+                   class="form-input"
+                   formControlName="nom"
+                   placeholder="Nom de votre entreprise"
+                   [class.error]="entrepriseFormGroup.get('nom')?.invalid && entrepriseFormGroup.get('nom')?.touched">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="raisonSociale">
+              Raison sociale <span class="required">*</span>
+            </label>
+            <input type="text"
+                   id="raisonSociale"
+                   class="form-input"
+                   formControlName="raisonSociale"
+                   placeholder="Raison sociale"
+                   [class.error]="entrepriseFormGroup.get('raisonSociale')?.invalid && entrepriseFormGroup.get('raisonSociale')?.touched">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Description</label>
+          <input type="text"
+                 id="description"
+                 class="form-input"
+                 formControlName="description"
+                 placeholder="Description de l'entreprise">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="secteurActivite">Secteur d'activité</label>
+            <input type="text"
+                   id="secteurActivite"
+                   class="form-input"
+                   formControlName="secteurActivite"
+                   placeholder="Secteur d'activité">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="statutJuridique">Statut juridique</label>
+            <input type="text"
+                   id="statutJuridique"
+                   class="form-input"
+                   formControlName="statutJuridique"
+                   placeholder="Statut juridique">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="numeroIdentificationFiscale">
+              Numéro d'identification fiscale
+            </label>
+            <input type="text"
+                   id="numeroIdentificationFiscale"
+                   class="form-input"
+                   formControlName="numeroIdentificationFiscale"
+                   placeholder="Numéro fiscal">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="registreCommerce">Registre de commerce</label>
+            <input type="text"
+                   id="registreCommerce"
+                   class="form-input"
+                   formControlName="registreCommerce"
+                   placeholder="Registre de commerce">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="siteWeb">Site web</label>
+            <input type="url"
+                   id="siteWeb"
+                   class="form-input"
+                   formControlName="siteWeb"
+                   placeholder="www.exemple.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dateCreation">
+              Date de création <span class="required">*</span>
+            </label>
+            <input type="date"
+                   id="dateCreation"
+                   class="form-input"
+                   formControlName="dateCreation"
+                   [class.error]="entrepriseFormGroup.get('dateCreation')?.invalid && entrepriseFormGroup.get('dateCreation')?.touched">
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button"
+                  class="btn btn-primary"
+                  (click)="goToStep(2)"
+                  [disabled]="!entrepriseFormGroup.valid">
+            Suivant →
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Étape 2: Utilisateur -->
+    <div *ngIf="currentStep === 2" class="step-transition active">
+      <form [formGroup]="userFormGroup">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="prenom">
+              Prénom <span class="required">*</span>
+            </label>
+            <input type="text"
+                   id="prenom"
+                   class="form-input"
+                   formControlName="prenom"
+                   placeholder="Votre prénom"
+                   [class.error]="userFormGroup.get('prenom')?.invalid && userFormGroup.get('prenom')?.touched">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="nom_user">
+              Nom <span class="required">*</span>
+            </label>
+            <input type="text"
+                   id="nom_user"
+                   class="form-input"
+                   formControlName="nom_user"
+                   placeholder="Votre nom"
+                   [class.error]="userFormGroup.get('nom_user')?.invalid && userFormGroup.get('nom_user')?.touched">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">
+            Email <span class="required">*</span>
+          </label>
+          <input type="email"
+                 id="email"
+                 class="form-input"
+                 formControlName="email"
+                 placeholder="votre@email.com"
+                 [class.error]="userFormGroup.get('email')?.invalid && userFormGroup.get('email')?.touched">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="telephone">Téléphone</label>
+          <input type="tel"
+                 id="telephone"
+                 class="form-input"
+                 formControlName="telephone"
+                 placeholder="+216 XX XXX XXX">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="username">
+            Nom d'utilisateur <span class="required">*</span>
+          </label>
+          <input type="text"
+                 id="username"
+                 class="form-input"
+                 formControlName="username"
+                 placeholder="Nom d'utilisateur"
+                 [class.error]="userFormGroup.get('username')?.invalid && userFormGroup.get('username')?.touched">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">
+            Mot de passe <span class="required">*</span>
+          </label>
+          <input type="password"
+                 id="password"
+                 class="form-input"
+                 formControlName="password"
+                 placeholder="Mot de passe sécurisé"
+                 [class.error]="userFormGroup.get('password')?.invalid && userFormGroup.get('password')?.touched">
+        </div>
+
+        <div class="button-group">
+          <button type="button"
+                  class="btn btn-secondary"
+                  (click)="goToStep(1)">
+            ← Retour
+          </button>
+          <button type="button"
+                  class="btn btn-primary"
+                  (click)="createUser()"
+                  [disabled]="!userFormGroup.valid">
+            Créer le compte
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

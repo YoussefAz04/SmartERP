@@ -1,0 +1,49 @@
+{
+    "data": [
+        {
+            "warehouse": "Lobar Handy",
+            "shop": "Selosy",
+            "product": "Nike Jordan",
+            "date": "25 Jul 2023",
+            "person": "Steven",
+            "quantity": "120",
+            "isSelected": false,
+            "img": "assets/img/products/stock-img-02.png",
+            "img2": "assets/img/users/user-08.jpg"
+        },
+        {
+            "warehouse": "Quaint Warehouse",
+            "shop": "Logerro",
+            "product": "Apple Series 5 Watch",
+            "date": "28 Jul 2023",
+            "person": "Gravely",
+            "quantity": "130",
+            "isSelected": false,
+            "img": "assets/img/products/stock-img-04.png",
+            "img2": "assets/img/users/user-09.jpg"
+        },
+        {
+            "warehouse": "Traditional Warehouse",
+            "shop": "Vesloo",
+            "product": "Amazon Echo Dot",
+            "date": "24 Jul 2023",
+            "person": "Kevin",
+            "quantity": "140",
+            "isSelected": false,
+            "img": "assets/img/products/stock-img-03.png",
+            "img2": "assets/img/users/user-01.jpg"
+        },
+        {
+            "warehouse": "Cool Warehouse",
+            "shop": "Crompy",
+            "product": "Lobar Handy",
+            "date": "15 Jul 2023",
+            "person": "Grillo",
+            "quantity": "150",
+            "isSelected": false,
+            "img": "assets/img/products/stock-img-01.png",
+            "img2": "assets/img/users/user-02.jpg"
+        }
+    ],
+    "totalData": 4
+}

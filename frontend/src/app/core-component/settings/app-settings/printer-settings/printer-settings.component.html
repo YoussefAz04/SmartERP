@@ -1,0 +1,593 @@
+<div class="page-header settings-pg-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Settings</h4>
+      <h6>Manage your settings on portal</h6>
+    </div>
+  </div>
+  <ul class="table-top-head">
+    <li>
+      <a
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        matTooltip="Refresh"
+        matTooltipPosition="above"
+        ><i class="feather icon-rotate-ccw feather-rotate-ccw"></i
+      ></a>
+    </li>
+    <li>
+      <a
+        (click)="toggleCollapse()"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        matTooltip="Collapse"
+        matTooltipPosition="above"
+        id="collapse-header"
+      >
+        @if (!isCollapsed) {
+        <i class="feather icon-chevron-up feather-chevron-up"></i>
+        } @if (isCollapsed) {
+        <i class="feather icon-chevron-down feather-chevron-down"></i>
+        }</a
+      >
+    </li>
+  </ul>
+</div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="settings-wrapper d-flex">
+      <app-settings-sidebar></app-settings-sidebar>
+      <div class="settings-page-wrap w-50">
+        <div class="setting-title">
+          <h4>Printer</h4>
+        </div>
+        <div class="page-header justify-content-end">
+          <ul class="table-top-head">
+            <li>
+              <a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"
+                ><img src="assets/img/icons/pdf.svg" alt="img"
+              /></a>
+            </li>
+            <li>
+              <a data-bs-toggle="tooltip" data-bs-placement="top" title="Excel"
+                ><img src="assets/img/icons/excel.svg" alt="img"
+              /></a>
+            </li>
+            <li>
+              <a data-bs-toggle="tooltip" data-bs-placement="top" title="Print"
+                ><i class="feather icon-printer feather-rotate-ccw"></i
+              ></a>
+            </li>
+          </ul>
+          <div class="page-btn">
+            <a
+              href="javascript:void(0);"
+              class="btn btn-added"
+              data-bs-toggle="modal"
+              data-bs-target="#add-printer"
+              ><i class="feather icon-plus-circle me-2"></i>Add New Printer</a
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card table-list-card">
+              <div class="card-body">
+                <div class="table-top">
+                  <div class="search-set">
+                    <div class="search-input">
+                      <a href="javascript:void(0);" class="btn btn-searchset"
+                        ><i class="feather icon-search feather-search"></i
+                      ></a>
+                      <div class="dataTables_filter">
+                        <label>
+                          <input
+                            [(ngModel)]="searchDataValue"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="searchData(searchDataValue)"
+                            type="search"
+                            class="form-control"
+                            placeholder="Search..."
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="search-path">
+                    <div class="d-flex align-items-center">
+                      <a
+                        class="btn btn-filter"
+                        id="filter_search"
+                        (click)="openFilter()"
+                        [ngClass]="{ setclose: filter === true }"
+                      >
+                        <i class="feather icon-filter filter-icon"></i>
+                        <span
+                          ><img src="assets/img/icons/closes.svg" alt="img"
+                        /></span>
+                      </a>
+                      <div class="layout-hide-box">
+                        <a href="javascript:void(0);" class="me-3 layout-box"
+                          ><i class="feather icon-layout feather-search"></i
+                        ></a>
+                        <div class="layout-drop-item card">
+                          <div class="drop-item-head">
+                            <h5>Want to manage datatable?</h5>
+                            <p>
+                              Please drag and drop your column to reorder your
+                              table and enable see option as you want.
+                            </p>
+                          </div>
+                          <ul>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Shop</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option1"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option1" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Product</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option2"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option2" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Reference No</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option3"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option3" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Date</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option4"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option4" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Responsible Person</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option5"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option5" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Notes</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option6"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option6" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Quantity</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option7"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option7" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                            <li>
+                              <div
+                                class="status-toggle modal-status d-flex justify-content-between align-items-center"
+                              >
+                                <span class="status-label"
+                                  ><i class="feather icon-menu feather-menu"></i
+                                  >Actions</span
+                                >
+                                <input
+                                  type="checkbox"
+                                  id="option8"
+                                  class="check"
+                                  checked
+                                />
+                                <label for="option8" class="checktoggle">
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-sort">
+                    <i class="feather icon-sliders info-img"></i>
+
+                    <mat-select
+                      [(ngModel)]="selectedValue1"
+                      [ngModelOptions]="{ standalone: true }"
+                      class="select space-select"
+                      placeholder="Sort by Date"
+                    >
+                      @for (data of selectedList1; track data) {
+                      <mat-option [value]="data.value">
+                        {{ data.value }}
+                      </mat-option>
+                      }
+                    </mat-select>
+                  </div>
+                </div>
+                <!-- /Filter -->
+                <div
+                  class="card"
+                  id="filter_inputs"
+                  [ngClass]="{ 'd-block': filter, 'd-none': !filter }"
+                >
+                  <div class="card-body pb-0">
+                    <div class="row">
+                      <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="input-blocks">
+                          <i class="feather icon-zap info-img"></i>
+                          <mat-select
+                            [(ngModel)]="selectedValue6"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="select space-select"
+                            placeholder="Choose Printer"
+                          >
+                            @for (data of selectedList6; track data) {
+                            <mat-option [value]="data.value">
+                              {{ data.value }}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-sm-6 col-12">
+                        <div class="input-blocks">
+                          <i class="feather icon-edit-2 info-img"></i>
+
+                          <mat-select
+                            [(ngModel)]="selectedValue7"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="select space-select"
+                            placeholder="Connection Type"
+                          >
+                            @for (data of selectedList7; track data) {
+                            <mat-option [value]="data.value">
+                              {{ data.value }}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </div>
+                      </div>
+                      <div class="col-lg-3 col-sm-6 col-12 ms-auto">
+                        <div class="input-blocks">
+                          <a class="btn btn-filters ms-auto">
+                            <i class="feather icon-search feather-search"></i>
+                            Search
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /Filter -->
+                <div class="table-responsive">
+                  <table
+                    class="table datanew"
+                    (matSortChange)="sortData($event)"
+                    matSort
+                    matSortActive="Sno"
+                    matSortDirection="asc"
+                    matSortDisableClear
+                  >
+                    <thead>
+                      <tr>
+                        <th class="no-sort">
+                          <label class="checkboxs">
+                            <input type="checkbox" id="select-all" />
+                            <span class="checkmarks"></span>
+                          </label>
+                        </th>
+                        <th mat-sort-header="printer">Printer Name</th>
+                        <th mat-sort-header="connection">Connection type</th>
+                        <th mat-sort-header="ip">IP Address</th>
+                        <th mat-sort-header="port">Port</th>
+                        <th class="no-sort">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (data of tableData; track data; let i = $index) {
+                      <tr>
+                        <td>
+                          <label class="checkboxs">
+                            <input type="checkbox" />
+                            <span class="checkmarks"></span>
+                          </label>
+                        </td>
+                        <td>
+                          {{ data.printerName }}
+                        </td>
+                        <td>
+                          {{ data.connectionType }}
+                        </td>
+                        <td>
+                          {{ data.ipAddress }}
+                        </td>
+                        <td>{{ data.port }}</td>
+                        <td class="action-table-data">
+                          <div class="edit-delete-action">
+                            <a
+                              class="me-2 p-2"
+                              href="javascript:void(0);"
+                              data-bs-toggle="modal"
+                              data-bs-target="#edit-printer"
+                            >
+                              <i class="feather icon-edit feather-edit"></i>
+                            </a>
+                            <a
+                              class="confirm-text p-2"
+                              href="javascript:void(0);"
+                              (click)="confirmColor()"
+                            >
+                              <i
+                                class="feather icon-trash-2 feather-trash-2"
+                              ></i>
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+                <app-custom-pagination></app-custom-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Add Printer -->
+<div class="modal fade" id="add-printer">
+  <div class="modal-dialog modal-dialog-centered custom-modal-two">
+    <div class="modal-content">
+      <div class="page-wrapper-new p-0">
+        <div class="content">
+          <div class="modal-header border-0 custom-modal-header">
+            <div class="page-title">
+              <h4>Add Printer</h4>
+            </div>
+            <button
+              type="button"
+              class="close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body custom-modal-body">
+            <form>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="mb-3">
+                    <label class="form-label"
+                      >Printer Name <span> *</span></label
+                    >
+                    <input type="text" class="form-control" />
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-3">
+                    <label class="form-label"
+                      >Connection Type <span> *</span></label
+                    >
+
+                    <mat-select
+                      [(ngModel)]="selectedValue3"
+                      [ngModelOptions]="{ standalone: true }"
+                      class="select"
+                      placeholder="Choose"
+                    >
+                      @for (data of selectedList3; track data) {
+                      <mat-option [value]="data.value">
+                        {{ data.value }}
+                      </mat-option>
+                      }
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-3">
+                    <label class="form-label">IP Address <span> *</span></label>
+                    <input type="text" class="form-control" />
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-0">
+                    <label class="form-label">Port <span> *</span></label>
+                    <input type="text" class="form-control" />
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer-btn">
+                <button
+                  type="button"
+                  class="btn btn-cancel me-2"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-submit">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Add Printer -->
+
+<!-- Edit Printer -->
+<div class="modal fade" id="edit-printer">
+  <div class="modal-dialog modal-dialog-centered custom-modal-two">
+    <div class="modal-content">
+      <div class="page-wrapper-new p-0">
+        <div class="content">
+          <div class="modal-header border-0 custom-modal-header">
+            <div class="page-title">
+              <h4>Edit Printer</h4>
+            </div>
+            <button
+              type="button"
+              class="close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body custom-modal-body">
+            <form>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="mb-3">
+                    <label class="form-label"
+                      >Printer Name <span> *</span></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      value="HP Printer"
+                    />
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-3">
+                    <label class="form-label"
+                      >Connection Type <span> *</span></label
+                    >
+
+                    <mat-select
+                      [(ngModel)]="selectedValue5"
+                      [ngModelOptions]="{ standalone: true }"
+                      class="select"
+                      placeholder="Network"
+                    >
+                      @for (data of selectedList5; track data) {
+                      <mat-option [value]="data.value">
+                        {{ data.value }}
+                      </mat-option>
+                      }
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-3">
+                    <label class="form-label">IP Address <span> *</span></label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      value="151.00.1.22"
+                    />
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-0">
+                    <label class="form-label">Port <span> *</span></label>
+                    <input type="text" class="form-control" value="900" />
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer-btn">
+                <button
+                  type="button"
+                  class="btn btn-cancel me-2"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-submit">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Edit Printer -->

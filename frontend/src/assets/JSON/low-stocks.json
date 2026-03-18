@@ -1,0 +1,60 @@
+{
+    "data": [
+        {
+            "warehouse": "Lavish Warehouse",
+            "store": "Crinol",
+            "product": "Lenovo 3rd Generation",
+            "category": "Laptop",
+            "sku": "PT001",
+            "qty": "15",
+            "isSelected": false,
+            "qtyAlert": "10",
+            "img": "assets/img/products/stock-img-01.png"
+        },
+        {
+            "warehouse": "Lobar Handy",
+            "store": "Selosy",
+            "product": "Nike Jordan",
+            "category": "Shoe",
+            "isSelected": false,
+            "sku": "PT002",
+            "qty": "17",
+            "qtyAlert": "08",
+            "img": "assets/img/products/stock-img-02.png"
+        },
+        {
+            "warehouse": "Quaint Warehouse",
+            "store": "Logerro",
+            "product": "Apple Series 5 Watch",
+            "category": "Electronics",
+            "sku": "PT003",
+            "isSelected": false,
+            "qty": "14",
+            "qtyAlert": "12",
+            "img": "assets/img/products/stock-img-03.png"
+        },
+        {
+            "warehouse": "Traditional Warehouse",
+            "store": "Vesloo",
+            "product": "Amazon Echo Dot",
+            "isSelected": false,
+            "category": "Speaker",
+            "sku": "PT004",
+            "qty": "20",
+            "qtyAlert": "15",
+            "img": "assets/img/products/stock-img-04.png"
+        },
+        {
+            "warehouse": "Cool Warehouse",
+            "store": "Crompy",
+            "product": "Lobar Handy",
+            "category": "Furnitures",
+            "sku": "PT005",
+            "qty": "18",
+            "isSelected": false,
+            "qtyAlert": "13",
+            "img": "assets/img/products/stock-img-05.png"
+        }
+    ],
+    "totalData": 5
+}

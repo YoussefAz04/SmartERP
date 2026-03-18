@@ -1,0 +1,50 @@
+{
+    "data": [
+        {
+           
+            "modules": "Inventory",
+            "create": "",
+            "edit": "",
+            "delete": "",
+            "view": "",
+            "allowAll": ""
+        },
+        {
+            
+            "modules": "Expense",
+            "create": "",
+            "edit": "",
+            "delete": "",
+            "view": "",
+            "allowAll": ""
+        },
+        {
+           
+            "modules": "Product",
+            "create": "",
+            "edit": "",
+            "delete": "",
+            "view": "",
+            "allowAll": ""
+        },
+        {
+            
+            "modules": "Settings",
+            "create": "",
+            "edit": "",
+            "delete": "",
+            "view": "",
+            "allowAll": ""
+        },
+        {
+           
+            "modules": "Category",
+            "create": "",
+            "edit": "",
+            "delete": "",
+            "view": "",
+            "allowAll": ""
+        }
+    ],
+    "totalData": 5
+}

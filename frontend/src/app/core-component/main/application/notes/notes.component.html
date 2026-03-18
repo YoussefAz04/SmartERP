@@ -1,0 +1,1495 @@
+<div class="page-header page-add-notes  flex-sm-row flex-column">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Notes</h4>
+      <h6 class="mb-0">Manage your notes</h6>
+    </div>
+    <a id="toggle_btn2" class="notes-tog" href="javascript:void(0);" (click)="toggleChange()">
+      @if (!appSidebar) {
+      <i class="fas fa-chevron-right"></i>
+      }
+      @if (appSidebar) {
+      <i class="fas fa-chevron-left"></i>
+      }
+    </a>
+  </div>
+  <div class="d-flex flex-sm-row flex-column align-items-sm-center align-items-start">
+    <div class="form-sort me-2 mb-sm-0 mb-3">
+      <i class="feather icon-sliders info-img"></i>
+      <mat-select [(ngModel)]="selectedValue1" [ngModelOptions]="{standalone: true}" class="space-select select"
+        placeholder="Sort by Date">
+        <mat-option value="Sort by Date">Sort by Date</mat-option>
+        <mat-option value="Ascending">Ascending</mat-option>
+        <mat-option value="Descending">Descending</mat-option>
+        <mat-option value="Recently Viewed">Recently Viewed</mat-option>
+        <mat-option value="Recently Added">Recently Added</mat-option>
+        <mat-option value="Creation Date">Creation Date</mat-option>
+      </mat-select>
+    </div>
+    <ul class="table-top-head">
+      <li>
+        <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
+            class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
+      </li>
+      <li>
+        <a (click)="toggleCollapse()" data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Collapse"
+          matTooltipPosition="above" id="collapse-header"> @if (!isCollapsed) {
+          <i class="feather icon-chevron-up feather-chevron-up"></i>
+          }
+          @if (isCollapsed) {
+          <i class="feather icon-chevron-down feather-chevron-down"></i>
+          }</a>
+      </li>
+    </ul>
+    <div class="page-btn">
+      <a href="javascript:void(0);" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#note-units"><i
+          class="feather icon-plus-circle me-2"></i> Add Note</a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xl-3 col-md-12 sidebars-right theiaStickySidebar section-bulk-widget"
+    [ngClass]="{'section-notes-dashboard': appSidebar === false}">
+    <div class="notes-dash">
+      <div class="notes-top-head">
+        <h5> <i class="feather icon-file-text feather-file-text"></i> Notes</h5>
+      </div>
+      <div class="notes-top-head-submenu">
+        <div class="nav flex-column nav-pills todo-inbox" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <button class="nav-link todo-tab todo-inbox active d-flex align-items-center" id="v-pills-profile-tab"
+            data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab"
+            aria-controls="v-pills-profile" aria-selected="true"> <i class="feather icon-inbox feather-inbox"></i>All
+            Notes
+            <span class="ms-auto">
+              <span>2</span>
+            </span>
+          </button>
+          <button class="nav-link todo-tab-btn todo-inbox" id="v-pills-messages-tab" data-bs-toggle="pill"
+            data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages"
+            aria-selected="false"> <i class="feather icon-star feather-star"></i> Important</button>
+          <button class="nav-link todo-tab todo-inbox mb-0" id="v-pills-settings-tab" data-bs-toggle="pill"
+            data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings"
+            aria-selected="false"> <i class="feather icon-trash-2 feather-trash-2"></i>Trash</button>
+        </div>
+      </div>
+      <div class="content-submenu-tag">
+        <h6>Tags</h6>
+        <ul class="tags-list">
+          <li class="personal">
+            <a href="javascript:void(0);">
+              <span><i class="fas fa-square"></i></span>
+              Pending
+            </a>
+          </li>
+          <li class="social">
+            <a href="javascript:void(0);">
+              <span><i class="fas fa-square"></i></span>
+              Onhold
+            </a>
+          </li>
+          <li class="public">
+            <a href="javascript:void(0);">
+              <span><i class="fas fa-square"></i></span>
+              Inprogress
+            </a>
+          </li>
+
+          <li class="work">
+            <a href="javascript:void(0);">
+              <span><i class="fas fa-square"></i></span>
+              Done
+            </a>
+          </li>
+
+        </ul>
+
+
+        <h6>Priority</h6>
+        <ul class="priority-list">
+          <li class="medium">
+            <a href="javascript:void(0);">
+              <span><i class="fas fa-square"></i></span>
+              Medium
+            </a>
+          </li>
+          <li class="high">
+            <a href="javascript:void(0);">
+              <span><i class="fas fa-square"></i></span>
+              High
+            </a>
+          </li>
+          <li class="low">
+            <a href="javascript:void(0);">
+              <span><i class="fas fa-square"></i></span>
+              Low
+            </a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-9 budget-role-notes" [ngClass]="{'budgeted-role-notes': appSidebar === false}">
+
+    <div class="section-bulk-wrap">
+      <div class="bulk-action-type">
+        <div class="form-sort select-bluk ">
+          <mat-select [(ngModel)]="selectedValue2" [ngModelOptions]="{standalone: true}" class="select"
+            placeholder="Bulk Actions">
+            <mat-option value="Bulk Actions">Bulk Actions</mat-option>
+            <mat-option value="Delete Marked">Delete Marked</mat-option>
+            <mat-option value="Unmark All">Unmark All</mat-option>
+            <mat-option value="Mark All">Mark All</mat-option>
+          </mat-select>
+        </div>
+        <a href="javascript:void(0);" class="btn btn-added">Apply</a>
+        <div class="search-set">
+          <div class="search-input">
+            <a href="javascript:void(0);" class="btn btn-searchset"><i
+                class="feather icon-search feather-search"></i></a>
+            <div id="DataTables_Table_0_filter" class="dataTables_filter">
+              <label> <input type="search" class="form-control form-control-sm" placeholder="Search"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-sort">
+        <i class="feather icon-filter feather-filter"></i>
+        <mat-select [(ngModel)]="selectedValue3" [ngModelOptions]="{standalone: true}" class="space-select select"
+          placeholder="Recent">
+          <mat-option value="Recent">Recent</mat-option>
+          <mat-option value="Last Modified">Last Modified</mat-option>
+          <mat-option value="Last Modified by me">Last Modified by me</mat-option>
+        </mat-select>
+      </div>
+    </div>
+
+    <div class="tab-content" id="v-pills-tabContent">
+      <div class="tab-pane fade active show" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+        <div class="section-notes-slider">
+          <div class="row">
+            <div class="notes-content">
+              <div class="notes-header">
+                <h3>Important Notes </h3>
+              </div>
+              <div class="notes-close">
+                <a href="javascript:void(0);"><i class="fas fa-times"></i> Close </a>
+              </div>
+            </div>
+            <div class="col-md-12" id="notes-important">
+              <div class="notes-slider">
+                <owl-carousel-o [options]="notesSlider">
+                  <ng-template carouselSlide>
+                    <div class="notes-card">
+                      <div class="notes-card-body">
+                        <p class="badged"><i class="fas fa-circle"></i> Low</p>
+                        <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v"></i>
+                        </a>
+                        <div class="dropdown-menu notes-menu dropdown-menu-end">
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#delete-note-units"><span><i
+                                class="feather icon-trash-2"></i></span>Delete</a>
+                          <a href="javascript:void(0);" class="dropdown-item"><span><i
+                                class="feather icon-star"></i></span>Not Important</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                        </div>
+                      </div>
+                      <div class="notes-slider-content">
+                        <h4>
+                          <a href="javascript:void(0);">
+                            Plan a trip to another country
+                          </a>
+                        </h4>
+                        <p>Space, the final frontier. These are the voyages of the Starship Enterprise.
+                        </p>
+                      </div>
+                      <div class="notes-slider-widget">
+                        <div class="notes-logo">
+                          <a href="javascript:void(0);">
+                            <span>
+                              <img src="./assets/img/profiles/profile-01.png" alt="Profile" class="img-fluid">
+                            </span>
+                          </a>
+                          <div class="d-flex">
+                            <span class="low-square"><i class="fas fa-square"></i></span>
+                            <p> Personal</p>
+                          </div>
+                        </div>
+                        <div class="notes-star-delete">
+                          <a href="javascript:void(0);">
+                            <span><i class="fas fa-star"></i></span>
+                          </a>
+                          <a href="javascript:void(0);">
+                            <span><i class="feather icon-trash-2"></i></span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template carouselSlide>
+                    <div class="notes-card medium">
+                      <div class="notes-card-body">
+                        <p class="badged medium"><i class="fas fa-circle"></i> Medium</p>
+                        <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v"></i>
+                        </a>
+                        <div class="dropdown-menu notes-menu dropdown-menu-end">
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#delete-note-units"><span><i
+                                class="feather icon-trash-2"></i></span>Delete</a>
+                          <a href="javascript:void(0);" class="dropdown-item"><span><i
+                                class="feather icon-star"></i></span>Not Important</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                        </div>
+                      </div>
+                      <div class="notes-slider-content">
+                        <h4>
+                          <a href="javascript:void(0);">
+                            Improve touch typing
+                          </a>
+                        </h4>
+                        <p>Well, the way they make shows is, they make one show.</p>
+                      </div>
+                      <div class="notes-slider-widget">
+                        <div class="notes-logo">
+                          <a href="javascript:void(0);">
+                            <span>
+                              <img src="./assets/img/profiles/profile-02.png" alt="Profile" class="img-fluid">
+                            </span>
+                          </a>
+                          <div class="d-flex">
+                            <span class="medium-square"><i class="fas fa-square"></i></span>
+                            <p class="medium"> Work</p>
+                          </div>
+                        </div>
+                        <div class="notes-star-delete">
+                          <a href="javascript:void(0);">
+                            <span><i class="fas fa-star"></i></span>
+                          </a>
+                          <a href="javascript:void(0);">
+                            <span><i class="feather icon-trash-2"></i></span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template carouselSlide>
+                    <div class="notes-card high">
+                      <div class="notes-card-body">
+                        <p class="badged high"><i class="fas fa-circle"></i> High</p>
+                        <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v"></i>
+                        </a>
+                        <div class="dropdown-menu notes-menu dropdown-menu-end">
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#delete-note-units"><span><i
+                                class="feather icon-trash-2"></i></span>Delete</a>
+                          <a href="javascript:void(0);" class="dropdown-item"><span><i
+                                class="feather icon-star"></i></span>Not Important</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                        </div>
+                      </div>
+                      <div class="notes-slider-content">
+                        <h4>
+                          <a href="javascript:void(0);">
+                            Learn calligraphy
+                          </a>
+                        </h4>
+                        <p>Calligraphy, the art of beautiful handwriting. The term may derive from the
+                          Greek words. </p>
+                      </div>
+                      <div class="notes-slider-widget">
+                        <div class="notes-logo">
+                          <a href="javascript:void(0);">
+                            <span>
+                              <img src="./assets/img/profiles/profile-03.png" alt="Profile" class="img-fluid">
+                            </span>
+                          </a>
+                          <div class="d-flex">
+                            <span class="high-square"><i class="fas fa-square"></i></span>
+                            <p class="high"> Social</p>
+                          </div>
+                        </div>
+                        <div class="notes-star-delete">
+                          <a href="javascript:void(0);">
+                            <span><i class="fas fa-star"></i></span>
+                          </a>
+                          <a href="javascript:void(0);">
+                            <span><i class="feather icon-trash-2"></i></span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template carouselSlide>
+                    <div class="notes-card medium">
+                      <div class="notes-card-body">
+                        <p class="badged medium"><i class="fas fa-circle"></i> Medium</p>
+                        <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v"></i>
+                        </a>
+                        <div class="dropdown-menu notes-menu dropdown-menu-end">
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#delete-note-units"><span><i
+                                class="feather icon-trash-2"></i></span>Delete</a>
+                          <a href="javascript:void(0);" class="dropdown-item"><span><i
+                                class="feather icon-star"></i></span>Not Important</a>
+                          <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                        </div>
+                      </div>
+                      <div class="notes-slider-content">
+                        <h4>
+                          <a href="javascript:void(0);">
+                            Improve touch typing
+                          </a>
+                        </h4>
+                        <p>Well, the way they make shows is, they make one show.</p>
+                      </div>
+                      <div class="notes-slider-widget">
+                        <div class="notes-logo">
+                          <a href="javascript:void(0);">
+                            <span>
+                              <img src="./assets/img/profiles/profile-02.png" alt="Profile" class="img-fluid">
+                            </span>
+                          </a>
+                          <div class="d-flex">
+                            <span class="medium-square"><i class="fas fa-square"></i></span>
+                            <p class="medium"> Work</p>
+                          </div>
+                        </div>
+                        <div class="notes-star-delete">
+                          <a href="javascript:void(0);">
+                            <span><i class="fas fa-star"></i></span>
+                          </a>
+                          <a href="javascript:void(0);">
+                            <span><i class="feather icon-trash-2"></i></span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </owl-carousel-o>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-card-body" id="notes-trash">
+          <div class="row">
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged medium"><i class="fas fa-circle"></i> Medium</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Backup Files EOD
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 25 Jul
+                    2023</p>
+                  <p>Project files should be took backup before end of the day.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-26.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="medium-square"><i class="fas fa-square"></i></span>
+                      <p class="medium"> Work</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged high"><i class="fas fa-circle"></i> High</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Download Server Logs
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 27 Jul
+                    2023</p>
+                  <p>Server log is a text document that contains a record of all activity.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-27.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="high-square"><i class="fas fa-square"></i></span>
+                      <p class="high"> Social</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged low"><i class="fas fa-circle"></i> Low</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Team meet at Starbucks
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 13 Aug
+                    2023</p>
+                  <p>Meeting all teamets at Starbucks for identifying them all.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-28.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="low-square"><i class="fas fa-square"></i></span>
+                      <p class="low"> Personal</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged high"><i class="fas fa-circle"></i> High</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Create a compost pile
+                    </a>
+
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 23 Aug
+                    2023</p>
+                  <p>Compost pile refers to fruit and vegetable scraps, used tea, coffee grounds etc..
+                  </p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-29.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="high-square"><i class="fas fa-square"></i></span>
+                      <p class="high"> Social</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged low"><i class="fas fa-circle"></i> Low</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Take a hike at a local park
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 04 Sep
+                    2023</p>
+                  <p>Hiking involves a long energetic walk in a natural environment.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-30.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="low-square"><i class="fas fa-square"></i></span>
+                      <p class="low"> Personal</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged medium"><i class="fas fa-circle"></i> Medium</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Research a topic interested
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 17 Sep
+                    2023</p>
+                  <p>Research a topic interested by listen actively and attentively.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-31.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="medium-square"><i class="fas fa-square"></i></span>
+                      <p class="medium"> Work</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+        <div class="section-card-body pt-0" id="notes-trash2">
+          <div class="row">
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged medium"><i class="fas fa-circle"></i> Medium</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Backup Files EOD
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 25 Jul
+                    2023</p>
+                  <p>Project files should be took backup before end of the day.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-26.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="medium-square"><i class="fas fa-square"></i></span>
+                      <p class="medium"> Work</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged high"><i class="fas fa-circle"></i> High</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Download Server Logs
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 27 Jul
+                    2023</p>
+                  <p>Server log is a text document that contains a record of all activity.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-27.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="high-square"><i class="fas fa-square"></i></span>
+                      <p class="high"> Social</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged low"><i class="fas fa-circle"></i> Low</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Team meet at Starbucks
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 13 Aug
+                    2023</p>
+                  <p>Meeting all teamets at Starbucks for identifying them all.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-28.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="low-square"><i class="fas fa-square"></i></span>
+                      <p class="low"> Personal</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged high"><i class="fas fa-circle"></i> High</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Create a compost pile
+                    </a>
+
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 23 Aug
+                    2023</p>
+                  <p>Compost pile refers to fruit and vegetable scraps, used tea, coffee grounds etc..
+                  </p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-29.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="high-square"><i class="fas fa-square"></i></span>
+                      <p class="high"> Social</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged low"><i class="fas fa-circle"></i> Low</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Take a hike at a local park
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 04 Sep
+                    2023</p>
+                  <p>Hiking involves a long energetic walk in a natural environment.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-30.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="low-square"><i class="fas fa-square"></i></span>
+                      <p class="low"> Personal</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged medium"><i class="fas fa-circle"></i> Medium</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#edit-note-units"><span><i class="feather icon-edit"></i></span>Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-trash-2"></i></span>Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-star"></i></span>Not
+                      Important</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#view-note-units"><span><i class="feather icon-eye"></i></span>View</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Research a topic interested
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 17 Sep
+                    2023</p>
+                  <p>Research a topic interested by listen actively and attentively.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-31.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="medium-square"><i class="fas fa-square"></i></span>
+                      <p class="medium"> Work</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+        <div class="row">
+          <div class="col-12 d-flex align-items-center justify-content-end">
+            <a href="javascript:void(0);" class="btn btn-cancel notes-trash-btn">
+              <span> <i class="feather icon-trash-2" class="feather-trash-2"></i> </span>
+              Restore all
+            </a>
+          </div>
+        </div>
+        <div class="section-card-body pt-0" id="notes-trash3">
+          <div class="row">
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged medium"><i class="fas fa-circle"></i> Medium</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-edit"></i></span>Permanent
+                      Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-trash-2"></i></span>Restore Task</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Backup Files EOD
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 25 Jul
+                    2023</p>
+                  <p>Project files should be took backup before end of the day.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-31.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="medium-square"><i class="fas fa-square"></i></span>
+                      <p class="medium"> Work</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged high"><i class="fas fa-circle"></i> High</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-edit"></i></span>Permanent
+                      Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-trash-2"></i></span>Restore Task</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Download Server Logs
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 27 Jul
+                    2023</p>
+                  <p>Server log is a text document that contains a record of all activity.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-29.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="high-square"><i class="fas fa-square"></i></span>
+                      <p class="high"> Social</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex">
+              <div class="notes-card notes-card-details w-100">
+                <div class="notes-card-body">
+                  <p class="badged low"><i class="fas fa-circle"></i> Low</p>
+                  <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu notes-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#delete-note-units"><span><i class="feather icon-edit"></i></span>Permanent
+                      Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item"><span><i
+                          class="feather icon-trash-2"></i></span>Restore Task</a>
+                  </div>
+                </div>
+                <div class="notes-wrap-content">
+                  <h4>
+                    <a href="javascript:void(0);">
+                      Team meet at Starbucks
+                    </a>
+                  </h4>
+                  <p class="wrap-cal"><i class="feather icon-calendar feather-calendar"></i> 13 Aug
+                    2023</p>
+                  <p>Meeting all teamets at Starbucks for identifying them all.</p>
+                </div>
+                <div class="notes-slider-widget notes-widget-profile">
+                  <div class="notes-logo">
+                    <a href="javascript:void(0);">
+                      <span>
+                        <img src="./assets/img/users/user-30.jpg" alt="Profile" class="img-fluid">
+                      </span>
+                    </a>
+                    <div class="d-flex">
+                      <span class="low-square"><i class="fas fa-square"></i></span>
+                      <p class="low"> Personal</p>
+                    </div>
+                  </div>
+                  <div class="notes-star-delete">
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-star"></i></span>
+                    </a>
+                    <a href="javascript:void(0);">
+                      <span><i class="feather icon-trash-2"></i></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row custom-pagination">
+      <div class="col-md-12">
+        <div class="paginations d-flex justify-content-end">
+          <span><i class="fas fa-chevron-left"></i></span>
+          <ul class="d-flex align-items-center page-wrap">
+            <li>
+              <a href="javascript:void(0);" class="active">
+                1
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);">
+                2
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);">
+                3
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0);">
+                4
+              </a>
+            </li>
+          </ul>
+          <span><i class="fas fa-chevron-right"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Note Unit -->
+<div class="modal fade" id="note-units">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="page-wrapper-new p-0">
+        <div class="content">
+          <div class="modal-header border-0 custom-modal-header">
+            <div class="page-title">
+              <h4>Add New Note</h4>
+            </div>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body custom-modal-body">
+            <form>
+              <div class="row">
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label class="form-label">Note Title</label>
+                    <input type="text" class="form-control">
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label class="form-label">User</label>
+                    <mat-select [(ngModel)]="selectedValue4" [ngModelOptions]="{standalone: true}" class="select"
+                      placeholder="Choose">
+                      <mat-option value="Choose">Choose</mat-option>
+                      <mat-option value="Recent1">Recent1</mat-option>
+                      <mat-option value="Recent2">Recent2</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="mb-3">
+                    <label class="form-label">Tag</label>
+                    <mat-select [(ngModel)]="selectedValue6" [ngModelOptions]="{standalone: true}" class="select"
+                      placeholder="Select">
+                      <mat-option value="Select">Select</mat-option>
+                      <mat-option value="Recent1">Recent1</mat-option>
+                      <mat-option value="Recent2">Recent2</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="mb-3">
+                    <label class="form-label">Priority</label>
+                    <mat-select [(ngModel)]="selectedValue7" [ngModelOptions]="{standalone: true}" class="select"
+                      placeholder="Select">
+                      <mat-option value="Select">Select</mat-option>
+                      <mat-option value="Recent1">Recent1</mat-option>
+                      <mat-option value="Recent2">Recent2</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-3 summer-description-box notes-summernote">
+                    <label class="form-label">Descriptions</label>
+                    <div id="summernote"></div>
+                    <p>Maximum 60 Characters</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="modal-footer-btn">
+                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-submit">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Note Unit -->
+
+<!-- Note Unit -->
+<div class="modal fade" id="edit-note-units">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="page-wrapper-new p-0">
+        <div class="content">
+          <div class="modal-header border-0 custom-modal-header">
+            <div class="page-title">
+              <h4>Edit Note</h4>
+            </div>
+            <div class=" edit-note-head d-flex align-items-center">
+              <a href="javascript:void(0);" class="me-2">
+                <span>
+                  <i class="feather icon-trash-2"></i>
+                </span>
+              </a>
+              <a href="javascript:void(0);" class="me-2">
+                <span>
+                  <i class="feather icon-star"></i>
+                </span>
+              </a>
+              <a href="javascript:void(0);" class="me-2">
+                <span>
+                  <i class="feather icon-eye"></i>
+                </span>
+              </a>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+          <div class="modal-body custom-modal-body">
+            <form>
+              <div class="row">
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label>Note Title</label>
+                    <input type="text" class="form-control" placeholder="Meet Lisa to discuss project details">
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label class="form-label">Assignee</label>
+                    <mat-select [(ngModel)]="selectedValue7" [ngModelOptions]="{standalone: true}" class="select"
+                      placeholder="Select">
+                      <mat-option value="Select">Choose</mat-option>
+                      <mat-option value="Recent1">Recent1</mat-option>
+                      <mat-option value="Recent2">Recent2</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="mb-3">
+                    <label class="form-label">Tag</label>
+                    <mat-select [(ngModel)]="selectedValue8" [ngModelOptions]="{standalone: true}" class="select"
+                      placeholder="Onhold">
+                      <mat-option value="Onhold">Onhold</mat-option>
+                      <mat-option value="Onhold">Onhold</mat-option>
+                      <mat-option value="Onhold">Onhold</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="mb-3">
+                    <label class="form-label">Priority</label>
+                    <mat-select [(ngModel)]="selectedValue9" [ngModelOptions]="{standalone: true}" class="select"
+                      placeholder="High">
+                      <mat-option value="High">High</mat-option>
+                      <mat-option value="Medium">Medium</mat-option>
+                      <mat-option value="Low">Low</mat-option>
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="mb-3 summer-description-box notes-summernote">
+                    <label class="form-label">Descriptions</label>
+                    <div id="summernote2"></div>
+                    <p>Maximum 60 Characters</p>
+                  </div>
+                </div>
+
+              </div>
+
+
+              <div class="modal-footer-btn">
+                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-submit">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Note Unit -->
+
+<!-- Delete Unit -->
+<div class="modal fade" id="delete-note-units">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="page-wrapper-new p-0">
+        <div class="content">
+          <div class="delete-popup">
+            <div class="delete-image text-center mx-auto">
+              <img src="./assets/img/icons/close-circle.png" alt="Img" class="img-fluid">
+            </div>
+            <div class="delete-heads">
+              <h4>Are You Sure?</h4>
+              <p>Do you really want to delete this item, This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer-btn delete-footer">
+              <a href="javascript:void(0);" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</a>
+              <a href="javascript:void(0);" class="btn btn-submit">Delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Delete Unit -->
+
+<!-- View Unit -->
+<div class="modal fade" id="view-note-units">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="page-wrapper-new p-0">
+        <div class="content">
+          <div class="modal-header border-0 custom-modal-header">
+            <div class="page-title edit-page-title">
+              <h4>Notes</h4>
+              <p>Personal</p>
+            </div>
+            <div class=" edit-noted-head d-flex align-items-center">
+              <a href="javascript:void(0);">
+                <span>
+                  <i class="feather icon-trash-2"></i>
+                </span>
+              </a>
+              <a href="javascript:void(0);" class="me-2">
+                <span>
+                  <i class="feather icon-star"></i>
+                </span>
+              </a>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+          <div class="modal-body custom-modal-body">
+            <form>
+              <div class="row">
+                <div class="col-12">
+                  <div class="edit-head-view">
+                    <h6>Take a hike at a local park</h6>
+                    <p>Hiking is a long, vigorous walk, usually on trails or footpaths in the
+                      countryside.
+                      Walking for pleasure developed in Europe during the eighteenth century.
+                      Religious pilgrimages have existed much longer but they involve walking long
+                      distances for a spiritual purpose associated with specific religions and
+                      also
+                      we achieve inner peace while we hike at a local park.</p>
+
+                    <p class="badged low"><i class="fas fa-circle"></i> Low</p>
+                  </div>
+                  <div class="modal-footer-btn edit-footer-menu">
+                    <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /View Unit -->
