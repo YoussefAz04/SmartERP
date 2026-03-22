@@ -6,10 +6,8 @@ import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.entity.UserDTO;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
-import BuissnesManager.BuissnesManager.repository.EquipeRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
-import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,9 +29,6 @@ public class UserService {
 
     @Autowired
     private RoleRepo roleRepo ;
-
-    @Autowired
-    private EquipeRepo equipeRepo ;
 
     public User createUser(UserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
