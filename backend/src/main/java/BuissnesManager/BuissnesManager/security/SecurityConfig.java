@@ -54,20 +54,9 @@ public class SecurityConfig {
                                 "/departement/**",
                                 "/permission/**",
                                 "/clients/**",
-                                "/equipe/**",
-                                "membre/**",
-                                "projets/**",
-                                "categorieProjet/**",
-                                "taches/**",
-                                "categorie-taches/**",
-                                "sous-taches/**",
                                 "/document/**",
-                                "/evenement/**",
                                 "/facture/**",
-                                "/factures-vente/**",
-                                "budgets/**",
-                                "depenses/**",
-                                "categories-depenses/**"
+                                "/factures-vente/**"
                         ).permitAll()
                         //.requestMatchers("/api/**").hasRole("Super_admin")
                         .anyRequest().authenticated())

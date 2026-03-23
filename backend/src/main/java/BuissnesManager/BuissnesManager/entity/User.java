@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,7 +22,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id ;
+    private Long id;
 
     private String email;
     private String phone;
@@ -31,7 +34,6 @@ public class User {
     private String password;
 
     private String imageUrl;
-
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -47,12 +49,13 @@ public class User {
 
     @ManyToOne()
     @JsonIgnore
-    private Entreprise entreprise ;
+    private Entreprise entreprise;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
-
-    @ManyToMany
-    @JsonIgnore
-    private List<Membre> membres ;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 }
