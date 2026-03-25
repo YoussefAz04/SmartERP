@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,6 +20,24 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Autowired
     private JWTUtil jwtUtil;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/auth/") ||
+               path.startsWith("/entreprise/") ||
+               path.startsWith("/swagger") ||
+               path.startsWith("/webjars/") ||
+               path.startsWith("/api/") ||
+               path.startsWith("/module/") ||
+               path.startsWith("/v3/api-docs") ||
+               path.startsWith("/departement/") ||
+               path.startsWith("/permission/") ||
+               path.startsWith("/clients/") ||
+               path.startsWith("/document/") ||
+               path.startsWith("/facture/") ||
+               path.startsWith("/test/");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
