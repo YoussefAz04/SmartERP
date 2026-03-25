@@ -1,12 +1,12 @@
 <div class="account-content">
     <div class="login-wrapper register-wrap bg-img">
         <div class="login-content">
-            <form>
+            <form [formGroup]="registerForm">
                 <div class="login-userset">
                     <div class="login-logo logo-normal">
                         <img src="assets/img/logo.png" alt="img">
                     </div>
-                    <a [routerLink] = "routes.adminDashboard" class="login-logo logo-white">
+                    <a [routerLink]="routes.adminDashboard" class="login-logo logo-white">
                         <img src="assets/img/logo-white.png" alt="">
                     </a>
                     <div class="login-userheading">
@@ -16,32 +16,44 @@
                     <div class="form-login">
                         <label>Name</label>
                         <div class="form-addons">
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" formControlName="name" placeholder="Enter your name">
                             <img src="assets/img/icons/user-icon.svg" alt="img">
                         </div>
+                        <small *ngIf="f['name'].invalid && f['name'].touched" class="text-danger">
+                            Name is required (min 3 characters)
+                        </small>
                     </div>
                     <div class="form-login">
                         <label>Email Address</label>
                         <div class="form-addons">
-                            <input type="text" class="form-control">
+                            <input type="email" class="form-control" formControlName="email" placeholder="Enter your email">
                             <img src="assets/img/icons/mail.svg" alt="img">
                         </div>
+                        <small *ngIf="f['email'].invalid && f['email'].touched" class="text-danger">
+                            Valid email is required
+                        </small>
                     </div>
                     <div class="form-login">
                         <label>Password</label>
                         <div class="pass-group">
-                            <input [type]="password[1] ? 'text' : 'password' " class="pass-input">
-                            <span class="fas toggle-password" [ngClass]=" password[1] ? 'fa-eye' : 'fa-eye-slash'"
+                            <input [type]="password[1] ? 'text' : 'password'" class="pass-input" formControlName="password" placeholder="Min 6 characters">
+                            <span class="fas toggle-password" [ngClass]="password[1] ? 'fa-eye' : 'fa-eye-slash'"
                                 (click)="togglePassword(1)"></span>
                         </div>
+                        <small *ngIf="f['password'].invalid && f['password'].touched" class="text-danger">
+                            Password is required (min 6 characters)
+                        </small>
                     </div>
                     <div class="form-login">
                         <label>Confirm Password</label>
                         <div class="pass-group">
-                            <input [type]="password[2] ? 'text' : 'password' " class="pass-input">
-                            <span class="fas toggle-passwords" [ngClass]=" password[2] ? 'fa-eye' : 'fa-eye-slash'"
+                            <input [type]="password[2] ? 'text' : 'password'" class="pass-input" formControlName="confirmPassword" placeholder="Confirm your password">
+                            <span class="fas toggle-passwords" [ngClass]="password[2] ? 'fa-eye' : 'fa-eye-slash'"
                                 (click)="togglePassword(2)"></span>
                         </div>
+                        <small *ngIf="registerForm.errors?.['passwordMismatch'] && f['confirmPassword'].touched" class="text-danger">
+                            Passwords do not match
+                        </small>
                     </div>
                     <div class="form-login authentication-check">
                         <div class="row">
@@ -58,11 +70,23 @@
                             </div>
                         </div>
                     </div>
+
+                    <div *ngIf="successMessage" class="alert alert-success" role="alert">
+                        ✅ {{ successMessage }}
+                    </div>
+
+                    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                        ❌ {{ errorMessage }}
+                    </div>
+
                     <div class="form-login">
-                        <button type="submit" class="btn btn-login" (click)="navigation()">Sign Up</button>
+                        <button type="button" class="btn btn-login" (click)="navigation()" [disabled]="loading">
+                            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            {{ loading ? 'Creating Account...' : 'Sign Up' }}
+                        </button>
                     </div>
                     <div class="signinform">
-                        <h4>Already have an account ? <a [routerLink] = "routes.signIn" class="hover-a">Sign In Instead</a></h4>
+                        <h4>Already have an account ? <a [routerLink]="routes.signIn" class="hover-a">Sign In Instead</a></h4>
                     </div>
                     <div class="form-setlogin or-text">
                         <h4>OR</h4>
@@ -84,7 +108,6 @@
                                     <img src="assets/img/icons/apple-logo.svg" alt="Apple">
                                 </a>
                             </li>
-
                         </ul>
                     </div>
                     <div class="my-4 d-flex justify-content-center align-items-center copyright-text">
@@ -92,7 +115,6 @@
                     </div>
                 </div>
             </form>
-
         </div>
     </div>
 </div>

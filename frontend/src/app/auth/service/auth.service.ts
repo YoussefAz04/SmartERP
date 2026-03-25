@@ -10,6 +10,13 @@ export interface AuthRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  name?: string;
+}
+
 export interface AuthResponse {
   idUsers: number;
   userName: string;
@@ -31,6 +38,10 @@ export class AuthService {
 
   login(credentials: AuthRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials)
+  }
+
+  register(data: RegisterRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, data);
   }
 
   logout(): void {
