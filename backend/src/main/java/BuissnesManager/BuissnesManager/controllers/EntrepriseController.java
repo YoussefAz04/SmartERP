@@ -4,7 +4,6 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.entity.CaracteristiqueFactureEntreprise;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.service.EntrepriseService;
-import org.apache.catalina.valves.rewrite.RewriteCond;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -12,18 +11,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("entreprise")
+@RequestMapping("/entreprise")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EntrepriseController {
 
     @Autowired
     private EntrepriseService entrepriseService ;
 
-    @PostMapping("create")
-    private ResponseEntity<?> ajouterEntreprise(@RequestBody Entreprise entreprise){
+    @PostMapping("/create")
+    public ResponseEntity<?> ajouterEntreprise(@RequestBody Entreprise entreprise){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.ajouterEntreprise(entreprise));
+            return ResponseEntity.status(HttpStatus.CREATED).body(entrepriseService.ajouterEntreprise(entreprise));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -38,13 +38,13 @@ public class EntrepriseController {
         }
     }
 
-    @PostMapping("assignerUserToEntreprise")
-    private ResponseEntity<?> assignerUserToEntreprise(@RequestParam String username, @RequestParam String nom){
+    @PostMapping("/assignerUserToEntreprise")
+    public ResponseEntity<?> assignerUserToEntreprise(@RequestParam String username, @RequestParam String nom){
         try {
             entrepriseService.assignerUserToEntreprise(username,nom);
              return   ResponseEntity.status(HttpStatus.OK).body("assigner avec sucsse");
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -59,8 +59,9 @@ public class EntrepriseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
         }
     }
-    @GetMapping("getAll")
-    private ResponseEntity<?> getAllEntreprise(){
+
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAllEntreprise(){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getAllEntreprise());
 
@@ -68,8 +69,9 @@ public class EntrepriseController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouver");
         }
     }
-    @GetMapping("getById/{id}")
-    private ResponseEntity<?> getEntrepriseById(@PathVariable Long id){
+
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<?> getEntrepriseById(@PathVariable Long id){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getById(id));
 
@@ -79,12 +81,12 @@ public class EntrepriseController {
     }
 
 
-    @PostMapping("ajouterCaracteristiqueFactureEntreprise")
-    private ResponseEntity<?> ajouterCaracteristiqueFactureEntreprise(@RequestBody CaracteristiqueFactureEntreprise caracteristiqueFactureEntreprise){
+    @PostMapping("/ajouterCaracteristiqueFactureEntreprise")
+    public ResponseEntity<?> ajouterCaracteristiqueFactureEntreprise(@RequestBody CaracteristiqueFactureEntreprise caracteristiqueFactureEntreprise){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.addCaracteristiqueFactureEntreprise(caracteristiqueFactureEntreprise));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

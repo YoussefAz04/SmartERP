@@ -54,7 +54,11 @@ export class AddEntrepriseComponent implements OnInit{
     if (this.entrepriseFormGroup.valid) {
       this.entrepriseService.ajouterEntreprise(this.entrepriseFormGroup.value).subscribe({
         next: (data) => {
-          console.log("Entreprise créée avec ID:", data);
+          console.log("Entreprise créée avec succès:", data);
+          this.router.navigate(['/entreprise/listEntreprise']);
+        },
+        error: (err) => {
+          console.error("Erreur lors de la création de l'entreprise:", err);
         }
       });
     }
