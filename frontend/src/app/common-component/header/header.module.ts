@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { FeatherModule } from 'angular-feather';
 
 import { User, Settings} from 'angular-feather/icons';
 
