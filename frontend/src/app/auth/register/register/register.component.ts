@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class RegisterComponent {
   public routes = routes;
+<<<<<<< Updated upstream
   public password: boolean[] = [false, false, false];
 
   registerForm: FormGroup;
@@ -97,5 +98,17 @@ export class RegisterComponent {
 
   get f() {
     return this.registerForm.controls;
+=======
+  public password: boolean[] = [false];
+
+  constructor(private router: Router) {}
+
+  navigation() {
+    this.router.navigate([routes.signIn]);
+>>>>>>> Stashed changes
+  }
+
+  public togglePassword(index: number) {
+    this.password[index] = !this.password[index];
   }
 }

@@ -56,9 +56,7 @@
                     subdrop: opendSubMenu[1] === mainMenus.tittle
                   }"
                       (click)="showSubMenu(mainMenus.tittle)"
-                      ><span>
-                      {{ mainMenus.tittle }}</span
-                      >
+                      ><span> {{ mainMenus.tittle | titlecase }}</span>
                       <span class="menu-arrow"></span
                       ></a>
                       <ul routerLinkActive="active"

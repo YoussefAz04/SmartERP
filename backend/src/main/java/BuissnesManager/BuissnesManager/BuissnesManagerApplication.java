@@ -14,12 +14,12 @@ public class BuissnesManagerApplication {
 		SpringApplication.run(BuissnesManagerApplication.class, args);
 	}
 
-	@Bean
-	public Tesseract tesseract (){
-		Tesseract tesseract = new Tesseract();
-		tesseract.setLanguage("eng+fra+ara");
-		tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
-		return tesseract ;
-	}
+    @Bean
+    Tesseract tesseract() {
+        Tesseract tesseract = new Tesseract();
+        tesseract.setLanguage("eng+fra+ara");
+        tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
+        return tesseract ;
+    }
 
 }

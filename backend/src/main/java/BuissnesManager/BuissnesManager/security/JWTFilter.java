@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,10 +17,38 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
+@Order(1)  // Process AFTER SecurityFilterChain
 public class JWTFilter extends OncePerRequestFilter {
 
     @Autowired
     private JWTUtil jwtUtil;
+
+    private static final String[] PUBLIC_PATHS = {
+            "/auth/",
+            "/entreprise/",
+            "/swagger",
+            "/webjars/",
+            "/api/",
+            "/module/",
+            "/v3/api-docs",
+            "/departement/",
+            "/permission/",
+            "/clients/",
+            "/document/",
+            "/facture/"
+    };
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        for (String publicPath : PUBLIC_PATHS) {
+            if (path.startsWith(publicPath)) {
+                System.out.println("✅ Skipping JWT validation for public path: " + path);
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -44,26 +73,23 @@ public class JWTFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        System.out.println("🔒 JWTFilter - validating protected endpoint: " + path);
+
         final String authHeader = request.getHeader("Authorization");
 
-        String jwt = null;
-        String username = null;
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            try {
-                username = jwtUtil.extractUsername(jwt);
-            } catch (JWTVerificationException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("⚠️ No Authorization header for: " + path);
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtUtil.validateToken(jwt, username)) {
+        try {
+            String jwt = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(jwt);
 
+            if (username != null && jwtUtil.validateToken(jwt, username)) {
                 List<String> roles = jwtUtil.extractRoles(jwt);
-
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(role -> "ROLE_" + role)
                         .map(SimpleGrantedAuthority::new)
@@ -71,9 +97,13 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                System.out.println("✅ JWT validated for: " + username);
             }
+        } catch (JWTVerificationException e) {
+            System.out.println("❌ JWT error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Filter error: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);

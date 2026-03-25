@@ -5,13 +5,13 @@
         <ul>
           @for (mainTittle of side_bar_data; track mainTittle) {
           <li class="submenu-open">
-            <h6 class="submenu-hdr">{{ mainTittle.tittle }}</h6>
+            <h6 class="submenu-hdr">{{ mainTittle.tittle | titlecase }}</h6>
             <ul>
               @for (menu of mainTittle?.menu; track menu) {
               @if (menu?.hasSubRoute === false) {
               <li routerLinkActive="active">
                 <a class="sub-active" [routerLink]="menu?.route"><i class="feather" [class]="'icon-' + menu.icon"></i>
-                  <span>{{ menu?.menuValue }}</span>
+                  <span>{{ menu?.menuValue | titlecase }}</span>
                 </a>
               </li>
               }
@@ -21,7 +21,7 @@
                   [ngClass]="{ 'subdrop': menu.showSubRoute === true}"
                   [class.active]="base === menu.base1 || base === menu.base || page === menu.page">
                   <i class="feather" [class]="'icon-' + menu.icon"></i>
-                  <span>{{ menu.menuValue }}</span>
+                  <span>{{ menu.menuValue | titlecase }}</span>
                   <span class="menu-arrow"></span>
                 </a>
                 <ul [ngClass]="
@@ -31,7 +31,7 @@
                       ">
                   @for (subMenus of menu.subMenus; track subMenus) {
                   <li>
-                    <a [routerLink]="subMenus.route" routerLinkActive="active">{{ subMenus.menuValue }}</a>
+                    <a [routerLink]="subMenus.route" routerLinkActive="active">{{ subMenus.menuValue | titlecase }}</a>
                   </li>
                   }
                 </ul>
@@ -41,24 +41,24 @@
               <li class="submenu">
                 <a href="javascript:void(0);" (click)="openMenu(menu)" [ngClass]="{'subdrop' : openMenuItem === menu}"
                   [class.active]="base === menu.base"><i class="feather" [class]="'icon-' + menu.icon"></i><span>
-                    {{menu.menuValue }}</span><span class="menu-arrow"></span></a>
+                    {{menu.menuValue | titlecase }}</span><span class="menu-arrow"></span></a>
                 <ul [ngClass]="openMenuItem === menu ? 'd-block' : 'd-none'">
                   @for (subMenus of menu.subMenus; track subMenus) {
                   @if (subMenus.customSubmenuTwo === false) {
-                  <li><a [routerLink]="subMenus.route" routerLinkActive="active">{{ subMenus.menuValue }}</a></li>
+                  <li><a [routerLink]="subMenus.route" routerLinkActive="active">{{ subMenus.menuValue | titlecase }}</a></li>
                   }
                   @if (subMenus.customSubmenuTwo === true) {
                   <li class="submenu submenu-two">
                     <a href="javascript:void(0);"
                       [class.active]="page === subMenus.page1 || page === subMenus.page2 || page === subMenus.page3 || page === subMenus.page4 || page === subMenus.page5 || page === subMenus.page6 || page === subMenus.page7 || page === subMenus.page8"
                       (click)="openSubmenuOne(subMenus)" [ngClass]="{'subdrop' : openSubmenuOneItem === subMenus}">
-                      {{ subMenus.menuValue }}
+                      {{ subMenus.menuValue | titlecase }}
                       <span class="menu-arrow inside-submenu"></span>
                     </a>
                     <ul [ngClass]="openSubmenuOneItem === subMenus ? 'd-block' : 'd-none'">
                       @for (subMenuTwo of subMenus.subMenusTwo; track subMenuTwo) {
                       <li>
-                        <a [routerLink]="subMenuTwo.route" routerLinkActive="active">{{ subMenuTwo.menuValue
+                        <a [routerLink]="subMenuTwo.route" routerLinkActive="active">{{ subMenuTwo.menuValue | titlecase
                           }}</a>
                       </li>
                       }
@@ -73,32 +73,32 @@
               <li class="submenu">
                 <a href="javascript:void(0);" (click)="multiLevelOne()"
                   [ngClass]="{'subdrop' : multiLevel1 === true}"><i class="feather"
-                    [class]="'icon-' + menu.icon"></i><span>{{menu.menuValue }}</span><span
+                    [class]="'icon-' + menu.icon"></i><span>{{menu.menuValue | titlecase }}</span><span
                     class="menu-arrow"></span></a>
                 <ul [ngClass]="multiLevel1 ? 'd-block' : 'd-none'">
                   @for (subMenus of menu.subMenus; track subMenus) {
                   @if (subMenus.customSubmenuThree === false) {
-                  <li><a href="javascript:void(0);">{{ subMenus.menuValue }}</a></li>
+                  <li><a href="javascript:void(0);">{{ subMenus.menuValue | titlecase }}</a></li>
                   }
                   @if (subMenus.customSubmenuThree === true) {
                   <li class="submenu submenu-two"><a href="javascript:void(0);" (click)="multiLevelTwo()"
                       [ngClass]="{'subdrop' : multiLevel2 === true}">{{
-                      subMenus.menuValue }}<span class="menu-arrow inside-submenu"></span></a>
+                      subMenus.menuValue | titlecase }}<span class="menu-arrow inside-submenu"></span></a>
                     <ul [ngClass]="multiLevel2 ? 'd-block' : 'd-none'">
                       @for (subMenuTwo of subMenus.subMenusTwo; track subMenuTwo) {
                       @if (subMenuTwo.customSubmenuFour === false) {
-                      <li><a href="javascript:void(0);">{{ subMenuTwo.menuValue }}</a></li>
+                      <li><a href="javascript:void(0);">{{ subMenuTwo.menuValue | titlecase }}</a></li>
                       }
                       @if (subMenuTwo.customSubmenuFour === true) {
                       <li class="submenu submenu-two submenu-three">
                         <a href="javascript:void(0);" (click)="multiLevelThree()"
                           [ngClass]="{'subdrop' : multiLevel3 === true}">
-                          {{ subMenuTwo.menuValue }}
+                          {{ subMenuTwo.menuValue | titlecase }}
                           <span class="menu-arrow inside-submenu inside-submenu-two"></span>
                         </a>
                         <ul [ngClass]="multiLevel3 ? 'd-block' : 'd-none'">
                           @for (subMenusThree of subMenuTwo.subMenusThree; track subMenusThree) {
-                          <li><a href="javascript:void(0);">{{ subMenusThree.menuValue }}</a></li>
+                          <li><a href="javascript:void(0);">{{ subMenusThree.menuValue | titlecase }}</a></li>
                           }
                         </ul>
                       </li>

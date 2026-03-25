@@ -1,0 +1,559 @@
+// Sign in page layout
+.login-wrapper {
+  width: 100%;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+
+  
+  .login-content {
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media (max-width: 991.98px) {
+      width: 90%;
+      padding: 30px;
+    }
+
+    @media (max-width: 575px) {
+      width: 95%;
+      padding: 20px;
+    }
+
+    .login-logo {
+      display: block;
+      max-width: 150px;
+      margin: 0 auto 30px;
+      text-align: center;
+
+      img {
+        margin-bottom: 25px;
+        max-width: 100%;
+      }
+    }
+
+    .login-userset {
+      width: 100%;
+
+      @media (max-width: 991.98px) {
+        margin-top: 0;
+      }
+
+      .my-4 {
+        margin-top: 50px !important;
+
+        p {
+          font-size: 14px;
+          color: #092c4c;
+          margin-bottom: 0;
+          font-weight: 400;
+          text-align: center;
+        }
+      }
+    }
+
+    // Heading section
+    .login-userheading {
+      margin: 0 0 30px;
+      text-align: center;
+      width: 100%;
+
+      h3 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 10px;
+        color: #000000;
+      }
+
+      h4 {
+        font-size: 15px;
+        font-weight: 400;
+        color: #092c4c;
+        line-height: 1.4;
+      }
+    }
+
+    // Form group wrapper
+    .form-login {
+      margin-bottom: 15px;
+      width: 100%;
+
+      label {
+        width: 100%;
+        color: #092c4c;
+        margin-bottom: 10px;
+        font-size: 15px;
+        font-weight: 400;
+      }
+
+      // Icon addon wrapper
+      .form-addons {
+        position: relative;
+
+        img {
+          position: absolute;
+          top: 16px;
+          right: 20px;
+        }
+      }
+
+      // Standard text inputs
+      input {
+        width: 100%;
+        height: 40px;
+        border: 1px solid rgba(145, 158, 171, 0.32);
+        border-radius: 5px;
+        padding: 0 15px;
+        transition: all 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border: 1px solid #ff9f43;
+          box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
+        }
+      }
+
+      // Sign in button
+      .btn-login {
+        width: 100%;
+        font-weight: 700;
+        font-size: 14px;
+        background: #ff9f43;
+        border-color: #ff9f43;
+        padding: 12px;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background: #ff8c1f;
+          box-shadow: 0 4px 12px rgba(255, 159, 67, 0.3);
+        }
+
+        &:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
+      }
+
+      // Forgot password link
+      .forgot-link {
+        color: #ff9f43;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover {
+          text-decoration: underline;
+          color: #ff8c1f;
+        }
+      }
+
+      // Custom checkbox wrapper
+      .custom-control.custom-checkbox {
+        display: flex;
+        align-items: center;
+        width: auto;
+
+        .custom-control-input {
+          width: auto;
+          height: auto;
+        }
+
+        .custom-control-label {
+          margin-bottom: 0;
+          margin-left: 8px;
+        }
+      }
+    }
+
+    // Password input with visibility toggle
+    .pass-group {
+      position: relative;
+      font-size: 14px;
+      width: 100%;
+
+      .fas {
+        font-size: 13px;
+        color: #939ea8;
+      }
+    }
+
+    .pass-input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid rgba(145, 158, 171, 0.32);
+      border-radius: 5px;
+      padding: 0 40px 0 15px;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border: 1px solid #ff9f43;
+        box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
+      }
+    }
+
+    // Password visibility toggle icons
+    .toggle-password,
+    .toggle-passwords {
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      color: #b8bcc9;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transform: translateY(-50%);
+      position: absolute;
+      top: 50%;
+      right: 10px;
+
+      &:hover {
+        color: #ff9f43;
+      }
+    }
+
+    // Sign in / Sign up redirect text
+    .signinform {
+      margin-bottom: 23px;
+      width: 100%;
+      text-align: center;
+
+      h4 {
+        font-size: 15px;
+        font-weight: 400;
+        color: #092c4c;
+
+        @media (max-width: 575px) {
+          font-size: 14px;
+        }
+
+        a {
+          color: #092c4c;
+          font-weight: 700;
+          font-size: 14px;
+        }
+      }
+    }
+
+    // OR divider
+    .form-setlogin {
+      text-align: center;
+      position: relative;
+      color: #b8bcc9;
+      font-size: 14px;
+      font-weight: 400;
+      margin: 23px 0;
+      width: 100%;
+
+      h4 {
+        position: relative;
+        font-size: 14px;
+        color: #5b6670;
+        font-weight: 700;
+
+        &::after {
+          content: '';
+          background: #b8bcc9;
+          width: 40%;
+          height: 1px;
+          position: absolute;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+        }
+
+        &::before {
+          content: '';
+          background: #b8bcc9;
+          width: 40%;
+          height: 1px;
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translateY(-50%);
+        }
+      }
+
+      &.or-text {
+        max-width: 100%;
+        margin: 20px 0;
+      }
+    }
+
+    // Social login icons
+    .form-sociallink {
+      margin-top: 25px;
+      width: 100%;
+
+      ul {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 0;
+        list-style: none;
+        gap: 10px;
+
+        li {
+          text-align: center;
+          flex: 1;
+          min-width: 120px;
+
+          @media (max-width: 575px) {
+            width: 100%;
+            flex: none;
+          }
+
+          &:last-child {
+            padding-right: 0;
+          }
+
+          a {
+            color: #092c4c;
+            width: 100%;
+            border: 1px solid rgba(145, 158, 171, 0.23);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: #ff9f43;
+              color: #ffffff;
+              border-color: #ff9f43;
+            }
+
+            img {
+              width: 24px;
+              height: 24px;
+            }
+          }
+
+          .facebook-logo {
+            border-radius: 10px;
+            background: #1877f2;
+            border-color: #1877f2;
+            color: white;
+
+            &:hover {
+              background: #145dbf;
+              border-color: #145dbf;
+            }
+          }
+
+          .apple-logo {
+            border-radius: 10px;
+            background: #000000;
+            border-color: #000000;
+            color: white;
+
+            &:hover {
+              background: #333333;
+              border-color: #333333;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Checkbox custom styling
+.checkboxs {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+
+    &~ .checkmarks {
+      border: 1px solid #adb5bd;
+      border-radius: 5px;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+    }
+
+    &:checked ~ .checkmarks {
+      background-color: #ff9f43;
+      border-color: #ff9f43;
+    }
+
+    &:checked ~ .checkmarks::after {
+      display: block;
+    }
+  }
+
+  .checkmarks {
+    height: 18px;
+    width: 18px;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+
+    &::after {
+      content: '';
+      position: absolute;
+      display: none;
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 9px;
+      border: solid #ffffff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  span {
+    font-size: 14px;
+    color: #092c4c;
+    margin-left: 0;
+  }
+}
+
+// Authentication checkbox tweaks - properly aligned
+.authentication-check {
+  margin: 15px 0 20px 0;
+  width: 100%;
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 575px) {
+      flex-direction: column;
+      gap: 15px;
+    }
+  }
+
+  .col-12 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 15px;
+
+    @media (max-width: 575px) {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  .custom-control.custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+
+    .custom-control-input {
+      position: relative;
+      margin: 0;
+    }
+
+    .custom-control-label {
+      margin: 0;
+      cursor: pointer;
+      font-size: 14px;
+      color: #092c4c;
+      white-space: nowrap;
+    }
+  }
+
+  .checkboxs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .forgot-link {
+    color: #ff9f43;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+      color: #ff8c1f;
+    }
+  }
+}
+
+// Animated underline hover link
+.hover-a {
+  position: relative;
+  color: #092c4c;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    height: 2px;
+    width: 100%;
+    background: #ff9f43;
+    transform: scale(0);
+    transition: all 0.3s ease;
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+  }
+
+  &:hover::after {
+    transform: scale(1);
+  }
+
+  &:hover {
+    color: #ff9f43 !important;
+  }
+}
+
+// Copyright text
+.copyright-text {
+  p {
+    font-size: 14px;
+    color: #092c4c;
+    margin-bottom: 0;
+    text-align: center;
+
+    @media (max-width: 575px) {
+      max-width: 215px;
+    }
+  }
+}

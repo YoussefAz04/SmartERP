@@ -2,6 +2,7 @@
 .login-wrapper {
   width: 100%;
   overflow: hidden;
+<<<<<<< Updated upstream
   height: 100vh;
   flex-wrap: wrap;
   display: flex;
@@ -34,21 +35,64 @@
 
     @media (max-width: 991.98px) {
       width: 100%;
+=======
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+
+  .login-content {
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media (max-width: 991.98px) {
+      width: 90%;
+      padding: 30px;
+    }
+
+    @media (max-width: 575px) {
+      width: 95%;
+      padding: 20px;
+>>>>>>> Stashed changes
     }
 
     .login-logo {
       display: block;
       max-width: 150px;
+<<<<<<< Updated upstream
       margin: auto;
 
       img {
         margin-bottom: 25px;
+=======
+      margin: 0 auto 30px;
+      text-align: center;
+
+      img {
+        margin-bottom: 25px;
+        max-width: 100%;
+>>>>>>> Stashed changes
       }
     }
 
     .login-userset {
+<<<<<<< Updated upstream
       @media (max-width: 991.98px) {
         margin-top: 30px;
+=======
+      width: 100%;
+
+      @media (max-width: 991.98px) {
+        margin-top: 0;
+>>>>>>> Stashed changes
       }
 
       .my-4 {
@@ -59,13 +103,23 @@
           color: #092c4c;
           margin-bottom: 0;
           font-weight: 400;
+<<<<<<< Updated upstream
+=======
+          text-align: center;
+>>>>>>> Stashed changes
         }
       }
     }
 
     // Heading section
     .login-userheading {
+<<<<<<< Updated upstream
       margin: 0 0 24px;
+=======
+      margin: 0 0 30px;
+      text-align: center;
+      width: 100%;
+>>>>>>> Stashed changes
 
       h3 {
         font-size: 24px;
@@ -85,6 +139,10 @@
     // Form group wrapper
     .form-login {
       margin-bottom: 15px;
+<<<<<<< Updated upstream
+=======
+      width: 100%;
+>>>>>>> Stashed changes
 
       label {
         width: 100%;
@@ -117,6 +175,10 @@
         &:focus {
           outline: none;
           border: 1px solid #ff9f43;
+<<<<<<< Updated upstream
+=======
+          box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
+>>>>>>> Stashed changes
         }
       }
 
@@ -127,6 +189,7 @@
         font-size: 14px;
         background: #ff9f43;
         border-color: #ff9f43;
+<<<<<<< Updated upstream
         padding: 10px;
         transition: all 0.5s ease;
         margin-top: 5px;
@@ -135,6 +198,19 @@
         &:hover {
           box-shadow: 0 50px #ffffff inset !important;
           color: #ff9f43;
+=======
+        padding: 12px;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background: #ff8c1f;
+          box-shadow: 0 4px 12px rgba(255, 159, 67, 0.3);
+>>>>>>> Stashed changes
         }
 
         &:disabled {
@@ -155,9 +231,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
+<<<<<<< Updated upstream
 
         @media (max-width: 575px) {
           justify-content: start;
+=======
+        width: 100%;
+
+        @media (max-width: 575px) {
+          justify-content: center;
+>>>>>>> Stashed changes
         }
 
         .custom-control-input {
@@ -176,6 +259,10 @@
     .pass-group {
       position: relative;
       font-size: 14px;
+<<<<<<< Updated upstream
+=======
+      width: 100%;
+>>>>>>> Stashed changes
 
       .fas {
         font-size: 13px;
@@ -194,6 +281,10 @@
       &:focus {
         outline: none;
         border: 1px solid #ff9f43;
+<<<<<<< Updated upstream
+=======
+        box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
+>>>>>>> Stashed changes
       }
     }
 
@@ -222,6 +313,11 @@
     // Sign in / Sign up redirect text
     .signinform {
       margin-bottom: 23px;
+<<<<<<< Updated upstream
+=======
+      width: 100%;
+      text-align: center;
+>>>>>>> Stashed changes
 
       h4 {
         font-size: 15px;
@@ -247,7 +343,12 @@
       color: #b8bcc9;
       font-size: 14px;
       font-weight: 400;
+<<<<<<< Updated upstream
       margin-bottom: 23px;
+=======
+      margin: 23px 0;
+      width: 100%;
+>>>>>>> Stashed changes
 
       h4 {
         position: relative;
@@ -258,6 +359,7 @@
         &::after {
           content: '';
           background: #b8bcc9;
+<<<<<<< Updated upstream
           width: 21px;
           height: 1px;
           position: absolute;
@@ -267,11 +369,20 @@
           @media (max-width: 991.98px) {
             height: 0;
           }
+=======
+          width: 40%;
+          height: 1px;
+          position: absolute;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+>>>>>>> Stashed changes
         }
 
         &::before {
           content: '';
           background: #b8bcc9;
+<<<<<<< Updated upstream
           width: 21px;
           height: 1px;
           position: absolute;
@@ -281,22 +392,40 @@
           @media (max-width: 991.98px) {
             height: 0;
           }
+=======
+          width: 40%;
+          height: 1px;
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translateY(-50%);
+>>>>>>> Stashed changes
         }
       }
 
       &.or-text {
+<<<<<<< Updated upstream
         max-width: 365px;
         margin: auto;
+=======
+        max-width: 100%;
+        margin: 20px 0;
+>>>>>>> Stashed changes
       }
     }
 
     // Social login icons
     .form-sociallink {
       margin-top: 25px;
+<<<<<<< Updated upstream
+=======
+      width: 100%;
+>>>>>>> Stashed changes
 
       ul {
         display: flex;
         align-items: center;
+<<<<<<< Updated upstream
         flex-wrap: wrap;
         padding: 0;
         list-style: none;
@@ -308,6 +437,22 @@
           @media (max-width: 575px) {
             width: 100%;
             margin-bottom: 20px;
+=======
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 0;
+        list-style: none;
+        gap: 10px;
+
+        li {
+          text-align: center;
+          flex: 1;
+          min-width: 120px;
+
+          @media (max-width: 575px) {
+            width: 100%;
+            flex: none;
+>>>>>>> Stashed changes
           }
 
           &:last-child {
@@ -323,13 +468,23 @@
             align-items: center;
             justify-content: center;
             border-radius: 10px;
+<<<<<<< Updated upstream
             margin: 0 10px 0 0;
             padding: 15px 53px;
             font-weight: 500;
+=======
+            padding: 12px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+>>>>>>> Stashed changes
 
             &:hover {
               background: #ff9f43;
               color: #ffffff;
+<<<<<<< Updated upstream
+=======
+              border-color: #ff9f43;
+>>>>>>> Stashed changes
             }
 
             img {
@@ -341,11 +496,31 @@
           .facebook-logo {
             border-radius: 10px;
             background: #1877f2;
+<<<<<<< Updated upstream
+=======
+            border-color: #1877f2;
+            color: white;
+
+            &:hover {
+              background: #145dbf;
+              border-color: #145dbf;
+            }
+>>>>>>> Stashed changes
           }
 
           .apple-logo {
             border-radius: 10px;
             background: #000000;
+<<<<<<< Updated upstream
+=======
+            border-color: #000000;
+            color: white;
+
+            &:hover {
+              background: #333333;
+              border-color: #333333;
+            }
+>>>>>>> Stashed changes
           }
         }
       }
@@ -408,6 +583,12 @@
 
 // Authentication checkbox tweaks
 .authentication-check {
+<<<<<<< Updated upstream
+=======
+  width: 100%;
+  text-align: center;
+
+>>>>>>> Stashed changes
   .checkboxs {
     padding-left: 22px;
 
@@ -425,6 +606,11 @@
 // Animated underline hover link
 .hover-a {
   position: relative;
+<<<<<<< Updated upstream
+=======
+  color: #092c4c;
+  text-decoration: none;
+>>>>>>> Stashed changes
 
   &::after {
     content: '';
@@ -453,6 +639,7 @@
     font-size: 14px;
     color: #092c4c;
     margin-bottom: 0;
+<<<<<<< Updated upstream
 
     @media (max-width: 575px) {
       text-align: center;
@@ -460,3 +647,12 @@
     }
   }
 }
+=======
+    text-align: center;
+
+    @media (max-width: 575px) {
+      max-width: 215px;
+    }
+  }
+}
+>>>>>>> Stashed changes

@@ -1,6 +1,5 @@
 package BuissnesManager.BuissnesManager.security;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,18 +11,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
-
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
+    @Autowired(required = false)
     private JWTFilter jwtFilter;
 
     @Autowired
@@ -33,22 +28,36 @@ public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
     @Bean
+    @Order(0)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+<<<<<<< Updated upstream
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+=======
+                .cors(cors -> cors.disable())
+>>>>>>> Stashed changes
                 .authorizeHttpRequests(auth -> auth
+                        // ✅ Allow ALL HTTP methods for public endpoints
+                        .requestMatchers(HttpMethod.GET, "/entreprise/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/entreprise/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/entreprise/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/entreprise/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/entreprise/**").permitAll()
+                        
+                        // Other public endpoints
                         .requestMatchers(
                                 "/auth/**",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
                                 "/swagger-ui/**",
+                                "/swagger-resources/**",
                                 "/webjars/**",
-                                "/swagger-ui.html",
-                                "/entreprise/**",
+                                "/v3/api-docs/**",
                                 "/api/**",
                                 "/module/**",
+<<<<<<< Updated upstream
                                 "/v3/api-docs/**",
+=======
+>>>>>>> Stashed changes
                                 "/departement/**",
                                 "/permission/**",
                                 "/clients/**",
@@ -57,9 +66,20 @@ public class SecurityConfig {
                                 "/factures-vente/**",
                                 "/test/**"
                         ).permitAll()
+<<<<<<< Updated upstream
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+=======
+                        
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        if (jwtFilter != null) {
+            http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+>>>>>>> Stashed changes
 
         return http.build();
     }
@@ -82,6 +102,4 @@ public class SecurityConfig {
         authBuilder.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
         return authBuilder.build();
     }
-
-
 }

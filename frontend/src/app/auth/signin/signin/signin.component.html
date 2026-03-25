@@ -12,7 +12,7 @@
 
           <div class="login-userheading">
             <h3>Sign In</h3>
-            <h4>Access the Dreamspos panel using your email and passcode.</h4>
+            
           </div>
 
           <div class="form-login mb-3">
@@ -62,15 +62,19 @@
             </div>
           </div>
 
-          <div class="form-login">
-            <button type="submit" class="btn btn-login" [disabled]="loading">
-              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-              Sign In
-            </button>
-          </div>
+         <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+  {{ errorMessage }}
+</div>
+
+<div class="form-login">
+  <button type="submit" class="btn btn-login" [disabled]="loading || !loginForm.valid">
+    <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+    {{ loading ? 'Signing In...' : 'Sign In' }}
+  </button>
+</div>
 
           <div class="signinform">
-            <h4>New on our platform?<a [routerLink]="routes.registerbyStepper" class="hover-a"> Create an account</a></h4>
+            <h4>New on our platform?<a [routerLink]="routes.register" class="hover-a"> Create an account</a></h4>
           </div>
 
           <div class="form-setlogin or-text">
@@ -96,7 +100,7 @@
               </li>
             </ul>
             <div class="my-4 d-flex justify-content-center align-items-center copyright-text">
-              <p>Copyright &copy; 2023 DreamsPOS. All rights reserved</p>
+              
             </div>
           </div>
         </div>
