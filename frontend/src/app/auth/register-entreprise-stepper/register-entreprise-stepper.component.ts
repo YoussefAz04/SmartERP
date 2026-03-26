@@ -18,7 +18,7 @@ import {MatIcon} from "@angular/material/icon";
 
 
 @Component({
-  selector: 'app-register-entreprise-setpper',
+  selector: 'app-register-entreprise-stepper',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -33,10 +33,10 @@ import {MatIcon} from "@angular/material/icon";
     RouterLink,
     MatIcon
   ],
-  templateUrl: './register-entreprise-setpper.component.html',
-  styleUrl: './register-entreprise-setpper.component.scss'
+  templateUrl: './register-entreprise-stepper.component.html',
+  styleUrl: './register-entreprise-stepper.component.scss'
 })
-export class RegisterEntrepriseSetpperComponent implements OnInit {
+export class RegisterEntrepriseStepperComponent implements OnInit {
   public routes = routes;
 
   userFormGroup!: FormGroup;

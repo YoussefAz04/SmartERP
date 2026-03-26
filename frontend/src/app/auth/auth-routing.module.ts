@@ -22,7 +22,7 @@ import { SuccessComponent } from './successs/success/success.component';
 import { Success2Component } from './successs/success-2/success-2.component';
 import { Success3Component } from './successs/success-3/success-3.component';
 import { RegisterComponent } from './register/register/register.component';
-import {RegisterEntrepriseSetpperComponent} from "./register-entreprise-setpper/register-entreprise-setpper.component";
+import {RegisterEntrepriseStepperComponent} from "./register-entreprise-stepper/register-entreprise-stepper.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'signin', pathMatch: 'full' },
@@ -121,7 +121,7 @@ const routes: Routes = [
       },
       {
         path: 'stepperCompany',
-        component: RegisterEntrepriseSetpperComponent,
+        component: RegisterEntrepriseStepperComponent,
       },
     ],
   },

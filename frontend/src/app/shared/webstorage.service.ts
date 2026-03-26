@@ -6,7 +6,7 @@ import { routes } from '../core/helpers/routes';
 @Injectable({
   providedIn: 'root',
 })
-export class WebstorgeService {
+export class WebstorageService {
 
   constructor(private router: Router) {}
 
