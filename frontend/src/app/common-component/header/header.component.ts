@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import {CommonService, SettingsService, SidebarService} from 'src/app/core/core.index';
-import { WebstorgeService } from 'src/app/shared/webstorge.service';
+import { WebstorageService } from 'src/app/shared/webstorage.service';
 import { routes } from 'src/app/core/helpers/routes';
 import {ResponseDto} from "../../model/reponseDto.model";
 import {Role} from "../../model/role.model";
@@ -33,7 +33,7 @@ export class HeaderComponent implements OnInit{
     private Router: Router,
     private common: CommonService,
     private sidebar: SidebarService,
-    private webStorage: WebstorgeService,
+    private webStorage: WebstorageService,
     private settings: SettingsService,
     private authService : AuthService
 

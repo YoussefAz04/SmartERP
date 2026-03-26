@@ -5,7 +5,7 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'signin',
+    redirectTo: 'auth/signin',
   },
   {
     path: '',
@@ -13,12 +13,9 @@ const routes: Routes = [
       import('./core-component/core-component.module').then(
         (m) => m.CoreComponentModule
       ),
-
   },
-
-
   {
-    path: '',
+    path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
   },
   {
@@ -28,12 +25,11 @@ const routes: Routes = [
         (m) => m.ErrorPagesModule
       ),
   },
-
-  // {
-  //   path: '**',
-  //   redirectTo: 'errorpages/error404',
-  //   pathMatch: 'full',
-  // },
+  {
+    path: '**',
+    redirectTo: 'error-pages/error-404',
+    pathMatch: 'full',
+  },
 ];
 
 @NgModule({
