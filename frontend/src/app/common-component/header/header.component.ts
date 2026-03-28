@@ -112,7 +112,6 @@ export class HeaderComponent implements OnInit{
 
 
 
-
   userName! : string | undefined ;
   roleName!: string[]
 
@@ -126,9 +125,15 @@ export class HeaderComponent implements OnInit{
       this.userName = currentUser?.name;
       console.log('Token:', currentUser?.token);
       console.log('Permissions:', currentUser?.permission);
-      console.log('Entreprise:', currentUser?.entreprise.nom);
+      
+      // ✅ FIXED: Add null check for entreprise
+      if (currentUser?.entreprise && currentUser.entreprise.nom) {
+        console.log('Entreprise:', currentUser.entreprise.nom);
+      } else {
+        console.log('⚠️ Entreprise not set or is null');
+      }
     }
-    this.roleName =  this.authService.getRoles() ;
+    this.roleName = this.authService.getRoles() ;
   }
 
 }

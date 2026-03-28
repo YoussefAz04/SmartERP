@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { routes } from 'src/app/core/helpers/routes';
 import { AuthService } from "../../service/auth.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { Validators } from "@angular/forms";
 import { PermissionDto } from "../../../model/permissionDto.model";
 import { ModuleService } from "../../../core/service/Module/module.service";
 
@@ -17,10 +18,9 @@ export class SigninComponent implements OnInit {
   loginForm: FormGroup;
   loading = false;
   errorMessage = '';
-  public password: boolean[] = [false];
-
+  
   constructor(
-    private router: Router,
+    private router: Router, 
     private fb: FormBuilder,
     private authService: AuthService,
     private moduleService: ModuleService
@@ -32,70 +32,89 @@ export class SigninComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Mark all fields as touched to show validation errors
-    this.loginForm.markAllAsTouched();
+    console.log('✅ SigninComponent initialized');
   }
 
   responseLogin!: PermissionDto;
-
+  
   navigation() {
-    console.log('Form Valid:', this.loginForm.valid);
-    console.log('Form Value:', this.loginForm.value);
-
+    console.log('🔐 Sign In clicked');
+    console.log('Form valid:', this.loginForm.valid);
+    console.log('Form data:', this.loginForm.value);
+    
     if (!this.loginForm.valid) {
-      this.errorMessage = 'Please fill in all fields correctly';
-      console.warn('Form is invalid:', this.loginForm.errors);
+      console.warn('❌ Form invalid');
+      this.errorMessage = 'Please fill in username and password';
       return;
     }
 
     this.loading = true;
     this.errorMessage = '';
 
-    const credentials = this.loginForm.value;
-    console.log('Logging in with:', credentials);
+    const credentials = {
+      username: this.loginForm.get('username')?.value,
+      password: this.loginForm.get('password')?.value
+    };
+
+    console.log('📤 Sending:', credentials);
 
     this.authService.login(credentials).subscribe({
       next: (response) => {
-        console.log("Login response:", response);
+        console.log('✅ Login success:', response);
+        
+        // Save user data
+        localStorage.removeItem("myLSkey");
+        localStorage.setItem('myLSkey', btoa(JSON.stringify({
+          token: response.token,
+          name: response.userName,
+          userId: response.idUsers,
+          permission: response.permissionDtos,
+          entreprise: response.entreprise,
+          idRole: response.idRoleUser
+        })));
 
-        if (response && response.token) {
-          localStorage.removeItem("myLSkey");
-          localStorage.setItem('myLSkey', btoa(JSON.stringify({
-            token: response.token,
-            name: response.userName,
-            userId: response.idUsers,
-            permission: response.permissionDtos,
-            entreprise: response.entreprise,
-            idRole: response.idRoleUser
-          })));
+        console.log('✅ User saved to localStorage');
 
-          this.moduleService.updateStatusByRole(response.idRoleUser).subscribe(() => {
-            console.log("Sidebar updated successfully");
-            this.router.navigate([routes.adminDashboard]);
-          }, (error) => {
-            console.error('Module update error:', error);
-            this.router.navigate([routes.adminDashboard]);
+        // Update sidebar
+        this.moduleService.updateStatusByRole(response.idRoleUser).subscribe(
+          () => console.log("✅ Sidebar updated"),
+          (err) => console.error("⚠️ Sidebar error:", err)
+        );
+
+        // ✅ FIXED: Use the correct route from routes helper
+        console.log('📍 Navigating to:', routes.adminDashboard);
+        setTimeout(() => {
+          this.router.navigate([routes.adminDashboard]).then((success) => {
+            if (success) {
+              console.log('✅ Navigation successful');
+            } else {
+              console.error('❌ Navigation failed');
+              // Fallback to enterprise list
+              this.router.navigate(['/enterprise/listEnterprise']);
+            }
+            this.loading = false;
+          }).catch((err) => {
+            console.error('❌ Navigation error:', err);
+            this.loading = false;
+            // Fallback to enterprise list
+            this.router.navigate(['/enterprise/listEnterprise']);
           });
-        } else {
-          this.errorMessage = 'Login failed: Invalid response from server';
-          this.loading = false;
-        }
+        }, 500);
       },
       error: (error) => {
-        console.error('Login error:', error);
-        this.errorMessage = error?.error?.message || 'Login failed. Please check your credentials.';
+        console.error('❌ Login failed:', error);
         this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
+        this.errorMessage = error.error?.message || `Login failed: ${error.status}`;
       }
     });
   }
+  
+  public password: boolean[] = [false];
 
   public togglePassword(index: number) {
     this.password[index] = !this.password[index];
   }
-
+  
   get f() {
     return this.loginForm.controls;
   }

@@ -1,13 +1,15 @@
 <!-- Page Header -->
 <div class="page-header">
-  <div class="row">
-    <div class="col">
-      <h3 class="page-title">Ajouter une Entreprise</h3>
-      <ul class="breadcrumb">
-        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
-        <li class="breadcrumb-item active">Ajouter Entreprise</li>
-      </ul>
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Créer une entreprise</h4>
+      <h6>Département Entreprise</h6>
     </div>
+  </div>
+  <div class="page-btn">
+    <a routerLink="/entreprise/listEntreprise" class="btn btn-secondary">
+      <i class="feather icon-arrow-left me-2"></i>Retour à la liste
+    </a>
   </div>
 </div>
 <!-- /Page Header -->
@@ -18,177 +20,196 @@
       <div class="card-header">
         <h5 class="card-title">Ajouter une entreprise</h5>
       </div>
-      <div class="card-body">
+      <div class="card-body add-entreprise">
         <form [formGroup]="entrepriseFormGroup" (ngSubmit)="createEntreprise()">
           <div class="row">
-            <!-- LEFT COLUMN -->
             <div class="col-md-6">
-              <!-- NOM FIELD -->
+              <!-- Nom -->
               <div class="mb-3">
-                <label class="form-label">Nom <span class="text-danger">*</span></label>
+                <label class="form-label">
+                  Nom <span class="text-danger">*</span>
+                </label>
                 <input 
                   type="text" 
                   formControlName="nom" 
                   class="form-control"
-                  placeholder="Entrez le nom de l'entreprise"
-                  [class.is-invalid]="f['nom'].invalid && f['nom'].touched" />
-                <small *ngIf="f['nom'].invalid && f['nom'].touched" class="text-danger">
-                  <span *ngIf="f['nom'].hasError('required')">Le nom est requis</span>
-                  <span *ngIf="f['nom'].hasError('minlength')">Minimum 2 caractères</span>
-                </small>
+                  [class.is-invalid]="isFieldInvalid('nom')"
+                  placeholder="Entrez le nom" />
+                <!-- ✅ ERROR MESSAGE VISIBLE -->
+                <div class="error-message" *ngIf="isFieldInvalid('nom')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span *ngIf="entrepriseFormGroup.get('nom')?.hasError('required')">Le nom est requis</span>
+                  <span *ngIf="entrepriseFormGroup.get('nom')?.hasError('minlength')">Le nom doit avoir au moins 2 caractères</span>
+                </div>
               </div>
 
-              <!-- RAISON SOCIALE FIELD -->
+              <!-- Raison sociale -->
               <div class="mb-3">
-                <label class="form-label">Raison sociale <span class="text-danger">*</span></label>
+                <label class="form-label">
+                  Raison Sociale <span class="text-danger">*</span>
+                </label>
                 <input 
                   type="text" 
                   formControlName="raisonSociale" 
                   class="form-control"
-                  placeholder="Entrez la raison sociale"
-                  [class.is-invalid]="f['raisonSociale'].invalid && f['raisonSociale'].touched" />
-                <small *ngIf="f['raisonSociale'].invalid && f['raisonSociale'].touched" class="text-danger">
-                  <span *ngIf="f['raisonSociale'].hasError('required')">La raison sociale est requise</span>
-                  <span *ngIf="f['raisonSociale'].hasError('minlength')">Minimum 2 caractères</span>
-                </small>
+                  [class.is-invalid]="isFieldInvalid('raisonSociale')"
+                  placeholder="Entrez la raison sociale" />
+                <!-- ✅ ERROR MESSAGE VISIBLE -->
+                <div class="error-message" *ngIf="isFieldInvalid('raisonSociale')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span *ngIf="entrepriseFormGroup.get('raisonSociale')?.hasError('required')">La raison sociale est requise</span>
+                  <span *ngIf="entrepriseFormGroup.get('raisonSociale')?.hasError('minlength')">La raison sociale doit avoir au moins 2 caractères</span>
+                </div>
               </div>
-              <!-- EMAIL FIELD -->
-<div class="mb-3">
-  <label class="form-label">Email</label>
-  <input 
-    type="email" 
-    formControlName="email" 
-    class="form-control"
-    placeholder="contact@entreprise.com" />
-</div>
 
-<!-- TELEPHONE FIELD -->
-<div class="mb-3">
-  <label class="form-label">Téléphone</label>
-  <input 
-    type="tel" 
-    formControlName="telephone" 
-    class="form-control"
-    placeholder="+212 5XX XXX XXX" />
-</div>
+              <!-- Adresse -->
+              <div class="mb-3">
+                <label class="form-label">Adresse</label>
+                <input 
+                  type="text" 
+                  formControlName="adresse" 
+                  class="form-control"
+                  placeholder="Entrez l'adresse" />
+              </div>
 
-<!-- ADRESSE FIELD -->
-<div class="mb-3">
-  <label class="form-label">Adresse</label>
-  <input 
-    type="text" 
-    formControlName="adresse" 
-    class="form-control"
-    placeholder="Adresse complète de l'entreprise" />
-</div>
+              <!-- Téléphone -->
+              <div class="mb-3">
+                <label class="form-label">Téléphone</label>
+                <input 
+                  type="tel" 
+                  formControlName="telephone" 
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('telephone')"
+                  placeholder="Ex: +216 XX XXX XXX" />
+                <!-- ✅ ERROR MESSAGE VISIBLE -->
+                <div class="error-message" *ngIf="isFieldInvalid('telephone')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span *ngIf="entrepriseFormGroup.get('telephone')?.hasError('pattern')">Le numéro de téléphone est invalide (format: +216 XX XXX XXX)</span>
+                </div>
+              </div>
 
-              <!-- DESCRIPTION FIELD -->
+                           <!-- Email -->
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  formControlName="email" 
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('email')"
+                  placeholder="exemple@entreprise.com" />
+                <!-- ✅ ERROR MESSAGE VISIBLE -->
+                <div class="error-message" *ngIf="isFieldInvalid('email')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span *ngIf="entrepriseFormGroup.get('email')?.hasError('email')">Veuillez entrer une adresse email valide (ex: exemple&#64;entreprise.com)</span>
+                </div>
+              </div>
+
+              <!-- Description -->
               <div class="mb-3">
                 <label class="form-label">Description</label>
                 <textarea 
                   formControlName="description" 
                   class="form-control" 
-                  rows="4"
-                  placeholder="Entrez la description de l'entreprise"></textarea>
+                  rows="3" 
+                  placeholder="Décrivez votre entreprise"></textarea>
               </div>
+            </div>
 
-              <!-- SECTEUR D'ACTIVITE FIELD -->
+            <div class="col-md-6">
+              <!-- Secteur d'activité -->
               <div class="mb-3">
                 <label class="form-label">Secteur d'activité</label>
                 <input 
                   type="text" 
                   formControlName="secteurActivite" 
-                  class="form-control"
-                  placeholder="Ex: Technologie, Commerce..." />
+                  class="form-control" 
+                  placeholder="Ex: Technologie, Commerce, etc." />
               </div>
 
-              <!-- STATUT JURIDIQUE FIELD -->
+              <!-- Statut juridique -->
               <div class="mb-3">
-                <label class="form-label">Statut juridique</label>
+                <label class="form-label">Statut Juridique</label>
                 <input 
                   type="text" 
                   formControlName="statutJuridique" 
-                  class="form-control"
-                  placeholder="Ex: SARL, SA, SAS..." />
+                  class="form-control" 
+                  placeholder="Ex: SARL, EIRL, etc." />
               </div>
 
-              <!-- N° IDENTIFICATION FISCALE FIELD -->
+              <!-- N° Identification Fiscale -->
               <div class="mb-3">
                 <label class="form-label">N° Identification Fiscale</label>
                 <input 
                   type="text" 
                   formControlName="numeroIdentificationFiscale" 
-                  class="form-control"
-                  placeholder="Entrez le numéro fiscal" />
+                  class="form-control" 
+                  placeholder="NIF" />
               </div>
-            </div>
 
-            <!-- RIGHT COLUMN -->
-            <div class="col-md-6">
-              <!-- REGISTRE DE COMMERCE FIELD -->
+              <!-- Registre de commerce -->
               <div class="mb-3">
-                <label class="form-label">Registre de commerce</label>
+                <label class="form-label">Registre de Commerce</label>
                 <input 
                   type="text" 
                   formControlName="registreCommerce" 
-                  class="form-control"
-                  placeholder="Entrez le registre de commerce" />
+                  class="form-control" 
+                  placeholder="Numéro RC" />
               </div>
 
-              <!-- SITE WEB FIELD -->
+              <!-- Site web -->
               <div class="mb-3">
-                <label class="form-label">Site web</label>
+                <label class="form-label">Site Web</label>
                 <input 
                   type="url" 
                   formControlName="siteWeb" 
                   class="form-control"
-                  placeholder="https://example.com" />
+                  [class.is-invalid]="isFieldInvalid('siteWeb')"
+                  placeholder="https://exemple.com" />
+                <!-- ✅ ERROR MESSAGE VISIBLE -->
+                <div class="error-message" *ngIf="isFieldInvalid('siteWeb')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span *ngIf="entrepriseFormGroup.get('siteWeb')?.hasError('invalidUrl')">Veuillez entrer une URL valide (ex: https://exemple.com)</span>
+                </div>
               </div>
 
-              <!-- DATE DE CREATION FIELD -->
+              <!-- Date de création -->
               <div class="mb-3">
-                <label class="form-label">Date de création <span class="text-danger">*</span></label>
+                <label class="form-label">
+                  Date de Création <span class="text-danger">*</span>
+                </label>
                 <input 
-                  type="date" 
+                  type="datetime-local" 
                   formControlName="dateCreation" 
                   class="form-control"
-                  [class.is-invalid]="f['dateCreation'].invalid && f['dateCreation'].touched" />
-                <small *ngIf="f['dateCreation'].invalid && f['dateCreation'].touched" class="text-danger">
-                  La date de création est requise
-                </small>
+                  [class.is-invalid]="isFieldInvalid('dateCreation')" />
+                <!-- ✅ ERROR MESSAGE VISIBLE -->
+                <div class="error-message" *ngIf="isFieldInvalid('dateCreation')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span *ngIf="entrepriseFormGroup.get('dateCreation')?.hasError('required')">La date de création est requise</span>
+                </div>
               </div>
 
-              <!-- DATE DERNIERE MODIFICATION FIELD -->
+              <!-- Date dernière modification -->
               <div class="mb-3">
-                <label class="form-label">Date dernière modification</label>
+                <label class="form-label">Date Dernière Modification</label>
                 <input 
-                  type="date" 
+                  type="datetime-local" 
                   formControlName="dateDerniereModification" 
                   class="form-control" />
               </div>
             </div>
           </div>
 
-          <!-- ERROR MESSAGE -->
-          <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="feather icon-alert-circle"></i> {{ errorMessage }}
-            <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
-          </div>
-
-          <!-- SUCCESS MESSAGE -->
-          <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="feather icon-check-circle"></i> {{ successMessage }}
-            <button type="button" class="btn-close" (click)="successMessage = ''" aria-label="Close"></button>
-          </div>
-
-          <!-- SUBMIT BUTTON -->
-          <div class="text-end mt-3">
+          <!-- Action Buttons -->
+          <div class="form-actions text-end mt-4 border-top pt-3">
+            <a routerLink="/entreprise/listEntreprise" class="btn btn-secondary me-2">
+              <i class="feather icon-x me-2"></i>Annuler
+            </a>
             <button 
               type="submit" 
-              class="btn btn-primary"
-              [disabled]="loading || !entrepriseFormGroup.valid">
-              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-              {{ loading ? 'Création en cours...' : 'Créer l\'entreprise' }}
+              class="btn btn-primary" 
+              [disabled]="!entrepriseFormGroup.valid">
+              <i class="feather icon-check-circle me-2"></i>Créer l'entreprise
             </button>
           </div>
         </form>

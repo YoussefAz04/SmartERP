@@ -25,86 +25,103 @@ import {ResponseDto} from "../../model/reponseDto.model";
 })
 export class EntrepriseComponent implements OnInit{
 
-
-
-
-
-
-
-  permissionEntreprise !: PermissionDto ;
-
-
+  permissionEntreprise!: PermissionDto;
   public routes = routes;
-  entreprises : Entreprise[] = []  ;
-  constructor(private entrepriseService:EntrepriseService,private router : Router) {
-  }
+  entreprises: Entreprise[] = [];
+  isLoading: boolean = true;  // ✅ ADD THIS
+  errorMessage: string = '';  // ✅ ADD THIS
 
-
+  constructor(
+    private entrepriseService: EntrepriseService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.entrepriseService.getAllEntreprises().subscribe({
-      next: (data) => {
-        this.entreprises = data;
-        console.log("Entreprises chargées:", data);
-      },
-      error: (err) => {
-        console.error("Erreur lors du chargement des entreprises:", err);
-      }
-    });
-
-
     this.getUserAuthData();
-
+    this.loadEntreprises();  // ✅ ADD THIS
   }
 
-  getUserAuthData(){
+  // ✅ ADD THIS METHOD
+  loadEntreprises(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    
+    console.log('🔄 Loading entreprises...');
+    this.entrepriseService.getAllEntreprises().subscribe({
+      next: (data) => {
+        console.log("✅ Entreprises loaded:", data);
+        this.entreprises = data;
+        this.isLoading = false;
+        
+        if (data.length === 0) {
+          console.warn("⚠️ No entreprises found");
+        }
+      },
+      error: (err) => {
+        console.error("❌ Error loading entreprises:", err);
+        this.isLoading = false;
+        this.errorMessage = "Erreur lors du chargement des entreprises";
+      }
+    });
+  }
+
+  getUserAuthData(): void {
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
-      console.log('User connecté:', currentUser?.name);
+      try {
+        currentUser = JSON.parse(atob(item));
+        console.log('✅ User connected:', currentUser?.name);
+        console.log('Token:', currentUser?.token);
+        console.log('Permissions:', currentUser?.permission);
 
-      console.log('Token:', currentUser?.token);
-      console.log('Permissions:', currentUser?.permission);
-      currentUser?.permission.map(per =>{
-        if (per.moduleTitle.includes("gestion entreprise")){
-          this.permissionEntreprise = per ;
-          console.log("permission Entreprise" ,this.permissionEntreprise);
-        }
-      })
-      console.log('Entreprise:', currentUser?.entreprise.nom);
+        currentUser?.permission.map(per => {
+          if (per.moduleTitle.includes("gestion entreprise")) {
+            this.permissionEntreprise = per;
+            console.log("✅ Permission Entreprise:", this.permissionEntreprise);
+          }
+        });
+        console.log('Entreprise:', currentUser?.entreprise.nom);
+      } catch (error) {
+        console.error('❌ Error parsing user data:', error);
+      }
+    } else {
+      console.warn('⚠️ No user data found in localStorage');
     }
   }
 
-
-  editEntreprise(id : number | undefined) {
-    this.router.navigate(['/entreprise/detaisEntreprise', id]);
+  editEntreprise(id: number | undefined): void {
+    if (id) {
+      console.log('📝 Editing entreprise:', id);
+      this.router.navigate(['/entreprise/detaisEntreprise', id]);
+    }
   }
 
   deleteEntreprise(id: number | undefined): void {
-    if (confirm("Voulez-vous vraiment supprimer cette entreprise ?") && id) {
+    if (!id) {
+      alert("ID entreprise invalide");
+      return;
+    }
+
+    if (confirm("Voulez-vous vraiment supprimer cette entreprise ?")) {
+      console.log('🗑️ Deleting entreprise:', id);
       this.entrepriseService.deleteEntreprise(id).subscribe({
         next: () => {
+          console.log('✅ Entreprise deleted successfully');
           alert("Entreprise supprimée avec succès !");
+          this.loadEntreprises(); // ✅ Reload the list after delete
         },
-        error: () => {
+        error: (err) => {
+          console.error('❌ Error deleting entreprise:', err);
           alert("Erreur : impossible de supprimer l'entreprise.");
         }
       });
     }
   }
 
-  addEntreprise() {
-    this.router.navigate(['/entreprise/addEntreprise'])
+  addEntreprise(): void {
+    console.log('➕ Adding new entreprise');
+    this.router.navigate(['/entreprise/addEntreprise']);
   }
-
-
-
-
-
-
-
-
-
 }

@@ -1,526 +1,255 @@
-// Register page layout
-.login-wrapper {
+.account-content {
   width: 100%;
-  overflow: hidden;
-<<<<<<< Updated upstream
   height: 100vh;
-  flex-wrap: wrap;
-  display: flex;
-
-  &.bg-img {
-    background-image: url('assets/img/authentication/login-img.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-
-    &.register-wrap {
-      background-image: url('assets/img/authentication/register-img.jpg');
-    }
-
-    .login-content {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(17px);
-    }
-  }
-
-  .login-content {
-    width: 50%;
-    height: 100vh;
-    padding: 24px;
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-
-    @media (max-width: 991.98px) {
-      width: 100%;
-=======
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px;
 
-  .login-content {
+  .login-wrapper {
     width: 100%;
     max-width: 500px;
-    padding: 40px;
+    padding: 50px 40px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 
-    @media (max-width: 991.98px) {
-      width: 90%;
-      padding: 30px;
+    &.register-wrap {
+      background-image: none !important;
     }
 
-    @media (max-width: 575px) {
-      width: 95%;
-      padding: 20px;
->>>>>>> Stashed changes
+    &.bg-img {
+      background-image: none !important;
     }
 
-    .login-logo {
-      display: block;
-      max-width: 150px;
-<<<<<<< Updated upstream
-      margin: auto;
-
-      img {
-        margin-bottom: 25px;
-=======
-      margin: 0 auto 30px;
-      text-align: center;
-
-      img {
-        margin-bottom: 25px;
-        max-width: 100%;
->>>>>>> Stashed changes
-      }
-    }
-
-    .login-userset {
-<<<<<<< Updated upstream
-      @media (max-width: 991.98px) {
-        margin-top: 30px;
-=======
+    .login-content {
       width: 100%;
+      padding: 0;
 
-      @media (max-width: 991.98px) {
-        margin-top: 0;
->>>>>>> Stashed changes
+      form {
+        width: 100%;
       }
 
-      .my-4 {
-        margin-top: 50px !important;
+      .login-userset {
+        width: 100%;
 
-        p {
-          font-size: 14px;
-          color: #092c4c;
-          margin-bottom: 0;
-          font-weight: 400;
-<<<<<<< Updated upstream
-=======
+        .login-logo {
           text-align: center;
->>>>>>> Stashed changes
-        }
-      }
-    }
+          margin-bottom: 30px;
 
-    // Heading section
-    .login-userheading {
-<<<<<<< Updated upstream
-      margin: 0 0 24px;
-=======
-      margin: 0 0 30px;
-      text-align: center;
-      width: 100%;
->>>>>>> Stashed changes
-
-      h3 {
-        font-size: 24px;
-        font-weight: 700;
-        margin: 0 0 10px;
-        color: #000000;
-      }
-
-      h4 {
-        font-size: 15px;
-        font-weight: 400;
-        color: #092c4c;
-        line-height: 1.4;
-      }
-    }
-
-    // Form group wrapper
-    .form-login {
-      margin-bottom: 15px;
-<<<<<<< Updated upstream
-=======
-      width: 100%;
->>>>>>> Stashed changes
-
-      label {
-        width: 100%;
-        color: #092c4c;
-        margin-bottom: 10px;
-        font-size: 15px;
-        font-weight: 400;
-      }
-
-      // Icon addon wrapper
-      .form-addons {
-        position: relative;
-
-        img {
-          position: absolute;
-          top: 16px;
-          right: 20px;
-        }
-      }
-
-      // Standard text inputs
-      input {
-        width: 100%;
-        height: 40px;
-        border: 1px solid rgba(145, 158, 171, 0.32);
-        border-radius: 5px;
-        padding: 0 15px;
-        transition: all 0.2s ease;
-
-        &:focus {
-          outline: none;
-          border: 1px solid #ff9f43;
-<<<<<<< Updated upstream
-=======
-          box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
->>>>>>> Stashed changes
-        }
-      }
-
-      // Sign up button
-      .btn-login {
-        width: 100%;
-        font-weight: 700;
-        font-size: 14px;
-        background: #ff9f43;
-        border-color: #ff9f43;
-<<<<<<< Updated upstream
-        padding: 10px;
-        transition: all 0.5s ease;
-        margin-top: 5px;
-        color: #ffffff;
-
-        &:hover {
-          box-shadow: 0 50px #ffffff inset !important;
-          color: #ff9f43;
-=======
-        padding: 12px;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-        color: #ffffff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-
-        &:hover {
-          background: #ff8c1f;
-          box-shadow: 0 4px 12px rgba(255, 159, 67, 0.3);
->>>>>>> Stashed changes
-        }
-
-        &:disabled {
-          opacity: 0.65;
-          cursor: not-allowed;
-        }
-      }
-
-      // Forgot password link
-      .forgot-link {
-        color: #ff0000;
-        font-size: 15px;
-        font-weight: 600;
-      }
-
-      // Custom checkbox wrapper
-      .custom-control.custom-checkbox {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-<<<<<<< Updated upstream
-
-        @media (max-width: 575px) {
-          justify-content: start;
-=======
-        width: 100%;
-
-        @media (max-width: 575px) {
-          justify-content: center;
->>>>>>> Stashed changes
-        }
-
-        .custom-control-input {
-          width: auto;
-          height: auto;
-        }
-
-        .custom-control-label {
-          margin-bottom: 0;
-          margin-left: 8px;
-        }
-      }
-    }
-
-    // Password input with visibility toggle
-    .pass-group {
-      position: relative;
-      font-size: 14px;
-<<<<<<< Updated upstream
-=======
-      width: 100%;
->>>>>>> Stashed changes
-
-      .fas {
-        font-size: 13px;
-        color: #939ea8;
-      }
-    }
-
-    .pass-input {
-      width: 100%;
-      height: 40px;
-      border: 1px solid rgba(145, 158, 171, 0.32);
-      border-radius: 5px;
-      padding: 0 40px 0 15px;
-      transition: all 0.2s ease;
-
-      &:focus {
-        outline: none;
-        border: 1px solid #ff9f43;
-<<<<<<< Updated upstream
-=======
-        box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
->>>>>>> Stashed changes
-      }
-    }
-
-    // Password visibility toggle icons
-    .toggle-password,
-    .toggle-passwords {
-      cursor: pointer;
-      width: 30px;
-      height: 30px;
-      color: #b8bcc9;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transform: translateY(-50%);
-      position: absolute;
-      top: 50%;
-      right: 10px;
-
-      &:hover {
-        color: #ff9f43;
-      }
-    }
-
-    // Sign in / Sign up redirect text
-    .signinform {
-      margin-bottom: 23px;
-<<<<<<< Updated upstream
-=======
-      width: 100%;
-      text-align: center;
->>>>>>> Stashed changes
-
-      h4 {
-        font-size: 15px;
-        font-weight: 400;
-        color: #092c4c;
-
-        @media (max-width: 575px) {
-          font-size: 14px;
-        }
-
-        a {
-          color: #092c4c;
-          font-weight: 700;
-          font-size: 14px;
-        }
-      }
-    }
-
-    // OR divider
-    .form-setlogin {
-      text-align: center;
-      position: relative;
-      color: #b8bcc9;
-      font-size: 14px;
-      font-weight: 400;
-<<<<<<< Updated upstream
-      margin-bottom: 23px;
-=======
-      margin: 23px 0;
-      width: 100%;
->>>>>>> Stashed changes
-
-      h4 {
-        position: relative;
-        font-size: 14px;
-        color: #5b6670;
-        font-weight: 700;
-
-        &::after {
-          content: '';
-          background: #b8bcc9;
-<<<<<<< Updated upstream
-          width: 21px;
-          height: 1px;
-          position: absolute;
-          top: 10px;
-          left: 200px;
-
-          @media (max-width: 991.98px) {
-            height: 0;
+          img {
+            max-width: 180px;
+            height: auto;
           }
-=======
-          width: 40%;
-          height: 1px;
-          position: absolute;
-          top: 50%;
-          left: 0;
-          transform: translateY(-50%);
->>>>>>> Stashed changes
-        }
 
-        &::before {
-          content: '';
-          background: #b8bcc9;
-<<<<<<< Updated upstream
-          width: 21px;
-          height: 1px;
-          position: absolute;
-          top: 10px;
-          right: 200px;
-
-          @media (max-width: 991.98px) {
-            height: 0;
+          &.logo-white {
+            display: none;
           }
-=======
-          width: 40%;
-          height: 1px;
-          position: absolute;
-          top: 50%;
-          right: 0;
-          transform: translateY(-50%);
->>>>>>> Stashed changes
         }
-      }
 
-      &.or-text {
-<<<<<<< Updated upstream
-        max-width: 365px;
-        margin: auto;
-=======
-        max-width: 100%;
-        margin: 20px 0;
->>>>>>> Stashed changes
-      }
-    }
-
-    // Social login icons
-    .form-sociallink {
-      margin-top: 25px;
-<<<<<<< Updated upstream
-=======
-      width: 100%;
->>>>>>> Stashed changes
-
-      ul {
-        display: flex;
-        align-items: center;
-<<<<<<< Updated upstream
-        flex-wrap: wrap;
-        padding: 0;
-        list-style: none;
-
-        li {
+        .login-userheading {
           text-align: center;
-          margin-right: 10px;
+          margin-bottom: 30px;
 
-          @media (max-width: 575px) {
-            width: 100%;
-            margin-bottom: 20px;
-=======
-        justify-content: center;
-        flex-wrap: wrap;
-        padding: 0;
-        list-style: none;
-        gap: 10px;
-
-        li {
-          text-align: center;
-          flex: 1;
-          min-width: 120px;
-
-          @media (max-width: 575px) {
-            width: 100%;
-            flex: none;
->>>>>>> Stashed changes
+          h3 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 10px;
           }
 
-          &:last-child {
-            padding-right: 0;
-          }
-
-          a {
-            color: #092c4c;
-            width: 100%;
-            border: 1px solid rgba(145, 158, 171, 0.23);
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-<<<<<<< Updated upstream
-            margin: 0 10px 0 0;
-            padding: 15px 53px;
+          h4 {
+            font-size: 14px;
+            color: #718096;
             font-weight: 500;
-=======
-            padding: 12px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
->>>>>>> Stashed changes
+          }
+        }
 
-            &:hover {
-              background: #ff9f43;
-              color: #ffffff;
-<<<<<<< Updated upstream
-=======
-              border-color: #ff9f43;
->>>>>>> Stashed changes
+        // Form Fields
+        .form-login {
+          margin-bottom: 20px;
+
+          label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+          }
+
+          .form-addons,
+          .pass-group {
+            position: relative;
+
+            input {
+              width: 100%;
+              height: 45px;
+              border: 1.5px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 0 15px 0 45px;
+              font-size: 14px;
+              transition: all 0.3s ease;
+              background-color: #f7fafc;
+
+              &:focus {
+                outline: none;
+                border-color: #ff9f43;
+                background-color: white;
+                box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
+              }
+
+              &.is-invalid {
+                border-color: #f56565;
+                background-color: #fff5f5;
+              }
+
+              &::placeholder {
+                color: #cbd5e0;
+              }
             }
 
             img {
-              width: 24px;
-              height: 24px;
+              position: absolute;
+              left: 15px;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 20px;
+              height: 20px;
+            }
+
+            .toggle-password,
+            .toggle-passwords {
+              position: absolute;
+              right: 15px;
+              top: 50%;
+              transform: translateY(-50%);
+              cursor: pointer;
+              color: #a0aec0;
+              font-size: 18px;
+              transition: color 0.3s ease;
+
+              &:hover {
+                color: #ff9f43;
+              }
             }
           }
 
-          .facebook-logo {
-            border-radius: 10px;
-            background: #1877f2;
-<<<<<<< Updated upstream
-=======
-            border-color: #1877f2;
-            color: white;
+          // Error Messages
+          small {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #f56565;
+          }
+        }
 
-            &:hover {
-              background: #145dbf;
-              border-color: #145dbf;
+        // Terms & Privacy Checkbox
+        .authentication-check {
+          margin-bottom: 20px;
+
+          label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #4a5568;
+            margin: 0;
+
+            a {
+              color: #ff9f43;
+              text-decoration: none;
+
+              &:hover {
+                text-decoration: underline;
+              }
             }
->>>>>>> Stashed changes
+          }
+        }
+
+        // Sign Up Button
+        .btn-login {
+          width: 100%;
+          height: 48px;
+          background: #ff9f43;
+          border: 2px solid #ff9f43;
+          border-radius: 8px;
+          color: white;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          margin-top: 10px;
+
+          &:hover:not(:disabled) {
+            background: white;
+            color: #ff9f43;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 159, 67, 0.3);
           }
 
-          .apple-logo {
-            border-radius: 10px;
-            background: #000000;
-<<<<<<< Updated upstream
-=======
-            border-color: #000000;
-            color: white;
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
 
-            &:hover {
-              background: #333333;
-              border-color: #333333;
+          &:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+          }
+        }
+
+        // Sign In Link
+        .signinform {
+          text-align: center;
+          margin-top: 20px;
+
+          h4 {
+            font-size: 14px;
+            color: #4a5568;
+            margin: 0;
+            font-weight: 500;
+
+            a {
+              color: #ff9f43;
+              text-decoration: none;
+              font-weight: 600;
+              transition: color 0.3s ease;
+
+              &:hover {
+                color: #ffa500;
+              }
             }
->>>>>>> Stashed changes
+          }
+        }
+
+        // Hide Social Media & OR
+        .form-setlogin {
+          display: none;
+        }
+
+        .form-sociallink {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .account-content {
+    padding: 15px;
+
+    .login-wrapper {
+      padding: 30px 20px;
+      max-width: 100%;
+
+      .login-userset {
+        .login-userheading {
+          h3 {
+            font-size: 26px;
+          }
+
+          h4 {
+            font-size: 13px;
           }
         }
       }
@@ -528,131 +257,25 @@
   }
 }
 
-// Checkbox custom styling
-.checkboxs {
-  display: block;
-  position: relative;
-  padding-left: 35px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  user-select: none;
+@media (max-width: 480px) {
+  .account-content {
+    .login-wrapper {
+      padding: 20px 15px;
 
-  input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
+      .login-userset {
+        .form-login {
+          margin-bottom: 15px;
 
-    &~ .checkmarks {
-      border: 1px solid #adb5bd;
-      border-radius: 5px;
-    }
+          input {
+            height: 40px !important;
+          }
+        }
 
-    &:checked ~ .checkmarks {
-      background-color: #ff9f43;
-      border-color: #ff9f43;
-    }
-
-    &:checked ~ .checkmarks::after {
-      display: block;
-    }
-  }
-
-  .checkmarks {
-    height: 15px;
-    width: 15px;
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    &::after {
-      content: '';
-      position: absolute;
-      display: none;
-      left: 4px;
-      top: 1px;
-      width: 5px;
-      height: 9px;
-      border: solid #ffffff;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
+        .btn-login {
+          height: 42px;
+          font-size: 14px;
+        }
+      }
     }
   }
 }
-
-// Authentication checkbox tweaks
-.authentication-check {
-<<<<<<< Updated upstream
-=======
-  width: 100%;
-  text-align: center;
-
->>>>>>> Stashed changes
-  .checkboxs {
-    padding-left: 22px;
-
-    .checkmarks {
-      border-radius: 5px;
-      top: 4px;
-    }
-  }
-
-  .custom-checkbox .checkboxs span {
-    top: 0;
-  }
-}
-
-// Animated underline hover link
-.hover-a {
-  position: relative;
-<<<<<<< Updated upstream
-=======
-  color: #092c4c;
-  text-decoration: none;
->>>>>>> Stashed changes
-
-  &::after {
-    content: '';
-    height: 2px;
-    width: 100%;
-    background: #ff9f43;
-    transform: scale(0);
-    transition: all 0.3s ease;
-    position: absolute;
-    bottom: -3px;
-    left: 0;
-  }
-
-  &:hover::after {
-    transform: scale(1);
-  }
-
-  &:hover {
-    color: #ff9f43 !important;
-  }
-}
-
-// Copyright text
-.copyright-text {
-  p {
-    font-size: 14px;
-    color: #092c4c;
-    margin-bottom: 0;
-<<<<<<< Updated upstream
-
-    @media (max-width: 575px) {
-      text-align: center;
-      max-width: 215px;
-    }
-  }
-}
-=======
-    text-align: center;
-
-    @media (max-width: 575px) {
-      max-width: 215px;
-    }
-  }
-}
->>>>>>> Stashed changes

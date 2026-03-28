@@ -27,7 +27,7 @@
                 @if (mainMenus.hasSubRoute === false) {
                   <li>
                     <a [routerLink]="mainMenus.route" [class.active]="mainMenus.activeRoute === activePath" routerLinkActive="active"><span> {{
-                    mainMenus.tittle | titlecase }}</span>
+                    mainMenus.tittle }}</span>
                   </a>
                 </li>
               }
@@ -36,7 +36,7 @@
                 <a [ngClass]="{
                     active: activePath === mainMenus.activeRoute,
                     subdrop: opendSubMenu[1] === mainMenus.tittle
-                  }" (click)="showSubMenu(mainMenus.tittle)"><span> {{ mainMenus.tittle | titlecase }}</span>
+                  }" (click)="showSubMenu(mainMenus.tittle)"><span> {{ mainMenus.tittle }}</span>
                     <span class="menu-arrow"></span></a>
                 <ul [ngClass]="{
                     'd-block': opendSubMenu[1] === mainMenus.tittle,
@@ -44,7 +44,7 @@
                   }">
                       @for (subDropMenus of mainMenus.subRoutes; track subDropMenus) {
                         <li>
-                          <a [routerLink]="subDropMenus.route" routerLinkActive="active">{{ subDropMenus.tittle | titlecase }}</a>
+                          <a [routerLink]="subDropMenus.route" routerLinkActive="active">{{ subDropMenus.tittle }}</a>
                         </li>
                       }
                     </ul>

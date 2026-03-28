@@ -56,7 +56,13 @@
           <input type="date" id="dateDerniereModification" class="form-control" name="dateDerniereModification" [(ngModel)]="entreprise.dateDerniereModification">
         </div>
 
-        <button type="submit" class="btn btn-primary" [disabled]="!entrepriseForm.form.valid" *ngIf="permissionEntreprise.update">Enregistrer</button>
+        <!-- ✅ SUBMIT BUTTON SECTION -->
+        <div class="form-actions text-end mt-4">
+          <a routerLink="/entreprise/listEntreprise" class="btn btn-secondary me-2">Annuler</a>
+          <button type="submit" class="btn btn-primary">
+            <i class="feather icon-check-circle me-2"></i>Enregistrer
+          </button>
+        </div>
       </form>
     </div>
   </div>

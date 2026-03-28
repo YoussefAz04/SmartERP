@@ -20,33 +20,34 @@ import java.util.stream.Collectors;
 public class JWTUtil {
 
     @Autowired
-    private UserRepo userRepo ;
+    private UserRepo userRepo;
 
     private final String secret;
     private final Algorithm algorithm;
-
     private final long expirationTime;
     private final String issuer;
 
     public JWTUtil(
-            @Value("${jwt_secret}") String secret,
-            @Value("${jwt.expiration-time}") long expirationTime,
-            @Value("${jwt.issuer}") String issuer) {
+            @Value("${jwt_secret:sayariMohamed123123}") String secret,
+            @Value("${jwt.expiration-time:36000000}") long expirationTime,
+            @Value("${jwt.issuer:SymatiqueBusinessManager}") String issuer) {
 
         this.secret = secret;
         this.algorithm = Algorithm.HMAC256(secret);
         this.expirationTime = expirationTime;
         this.issuer = issuer;
+        
+        System.out.println("✅ JWTUtil initialized with secret: " + (secret != null ? "***" : "NULL"));
     }
 
     public String generateToken(String username) {
         User user = userRepo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-
         List<String> roleNames = user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toList());
+        
         return JWT.create()
                 .withSubject(username)
                 .withIssuedAt(new Date())
@@ -69,7 +70,6 @@ public class JWTUtil {
             String tokenUsername = extractUsername(token);
             return tokenUsername.equals(username) && !isTokenExpired(token);
         } catch (JWTVerificationException e) {
-            // logger.error("Token invalide", e);
             return false;
         }
     }

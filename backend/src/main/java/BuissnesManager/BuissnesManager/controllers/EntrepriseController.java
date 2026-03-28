@@ -1,144 +1,107 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.entity.CaracteristiqueFactureEntreprise;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.service.EntrepriseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/entreprise")
-<<<<<<< Updated upstream
-@CrossOrigin(origins = "http://localhost:4200")
-=======
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
->>>>>>> Stashed changes
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class EntrepriseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EntrepriseController.class);
 
     @Autowired
     private EntrepriseService entrepriseService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> ajouterEntreprise(@RequestBody Entreprise entreprise){
-<<<<<<< Updated upstream
+    public ResponseEntity<?> ajouterEntreprise(@RequestBody Entreprise entreprise) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(entrepriseService.ajouterEntreprise(entreprise));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-=======
-        System.out.println("✅ POST /entreprise/create received");
-        System.out.println("Data: nom=" + entreprise.getNom() + ", raison=" + entreprise.getRaisonSociale());
-        try {
+            logger.info("═══════════════════════════════════════");
+            logger.info("✅ POST /entreprise/create RECEIVED");
+            logger.info("📦 Nom: " + entreprise.getNom());
+            logger.info("📦 Email: " + entreprise.getEmail());
+            logger.info("═══════════════════════════════════════");
+
+            if (entreprise.getNom() == null || entreprise.getNom().isEmpty()) {
+                logger.warn("⚠️ Nom is required!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nom is required");
+            }
+
             Entreprise saved = entrepriseService.ajouterEntreprise(entreprise);
-            System.out.println("✅ Saved with ID: " + saved.getId());
+            logger.info("✅ Entreprise saved with ID: " + saved.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-        } catch (Exception e){
-            System.err.println("❌ Error: " + e.getMessage());
+
+        } catch (Exception e) {
+            logger.error("❌ Error creating entreprise: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
->>>>>>> Stashed changes
-        }
-    }
-
-    @GetMapping("/getAll")
-    public ResponseEntity<?> getAllEntreprise(){
-        System.out.println("✅ GET /entreprise/getAll received");
-        try {
-            return ResponseEntity.ok(entrepriseService.getAllEntreprises());
-        }catch (Exception e) {
-            System.err.println("❌ Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
-        }
-    }
-
-    @GetMapping("/getById/{id}")
-    public ResponseEntity<?> getEntrepriseById(@PathVariable Long id){
-        System.out.println("✅ GET /entreprise/getById/" + id + " received");
-        try {
-            return ResponseEntity.ok(entrepriseService.getById(id));
-        }catch (Exception e) {
-            System.err.println("❌ Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateEntreprise(@PathVariable Long id, @RequestBody Entreprise entrepriseDetails) {
-        System.out.println("✅ PUT /entreprise/update/" + id + " received");
         try {
-            Entreprise updated = entrepriseService.updateEntreprise(id, entrepriseDetails);
-            return ResponseEntity.ok(updated);
-        } catch (Exception e) {
-            System.err.println("❌ Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
+            Entreprise updatedEntreprise = entrepriseService.updateEntreprise(id, entrepriseDetails);
+            return ResponseEntity.ok(updatedEntreprise);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PostMapping("/assignerUserToEntreprise")
-    public ResponseEntity<?> assignerUserToEntreprise(@RequestParam String username, @RequestParam String nom){
-<<<<<<< Updated upstream
-=======
-        System.out.println("✅ POST /entreprise/assignerUserToEntreprise received");
->>>>>>> Stashed changes
+    public ResponseEntity<?> assignerUserToEntreprise(@RequestParam String username, @RequestParam String nom) {
         try {
             entrepriseService.assignerUserToEntreprise(username, nom);
-            return ResponseEntity.ok("Success");
-        }catch (Exception e){
-<<<<<<< Updated upstream
+            return ResponseEntity.status(HttpStatus.OK).body("assigner avec succes");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-=======
-            System.err.println("❌ Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
->>>>>>> Stashed changes
         }
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteEntreprise(@PathVariable Long id) {
-        System.out.println("✅ DELETE /entreprise/delete/" + id + " received");
         try {
             entrepriseService.deleteEntreprise(id);
-            return ResponseEntity.ok("Deleted");
+            return ResponseEntity.ok("Entreprise supprimée avec succès.");
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvée avec ID : " + id);
         } catch (Exception e) {
-            System.err.println("❌ Error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
         }
     }
-<<<<<<< Updated upstream
 
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAllEntreprise(){
+    public ResponseEntity<?> getAllEntreprise() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getAllEntreprise());
-
-        }catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouver");
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvee");
         }
     }
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<?> getEntrepriseById(@PathVariable Long id){
+    public ResponseEntity<?> getEntrepriseById(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getById(id));
-
-        }catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouver");
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvee");
         }
     }
 
-
     @PostMapping("/ajouterCaracteristiqueFactureEntreprise")
-    public ResponseEntity<?> ajouterCaracteristiqueFactureEntreprise(@RequestBody CaracteristiqueFactureEntreprise caracteristiqueFactureEntreprise){
+    public ResponseEntity<?> ajouterCaracteristiqueFactureEntreprise(@RequestBody CaracteristiqueFactureEntreprise caracteristiqueFactureEntreprise) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.addCaracteristiqueFactureEntreprise(caracteristiqueFactureEntreprise));
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
-
 }
-=======
-}
->>>>>>> Stashed changes

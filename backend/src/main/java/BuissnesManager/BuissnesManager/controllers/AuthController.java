@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")  // ✅ CHANGED: Added /api prefix
 @CrossOrigin(origins = "http://localhost:4200")
-
 public class AuthController {
 
     @Autowired
@@ -36,20 +36,26 @@ public class AuthController {
 
     @Autowired
     private JWTUtil jwtUtil;
+
     @Autowired
     private UserRepo userRepo;
+
     @Autowired
     private RoleRepo roleRepo;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private PermissionService permissionService;
 
-
-
+    /**
+     * Register a new user
+     * POST /api/auth/register
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        System.out.println("Register endpoint hit for username: " + request.getUsername());
+        System.out.println("✅ Register endpoint hit for username: " + request.getUsername());
 
         // Validate required fields
         if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
@@ -92,79 +98,124 @@ public class AuthController {
             newUser.setRoles(Collections.singletonList(userRole));
 
             User savedUser = userRepo.save(newUser);
-            System.out.println("User registered successfully: " + savedUser.getUsername());
+            System.out.println("✅ User registered successfully: " + savedUser.getUsername());
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new RegisterResponse("User registered successfully", true, savedUser.getUsername(), savedUser.getId()));
         } catch (Exception e) {
-            System.err.println("Registration error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed: " + e.getMessage());
+            System.err.println("❌ Registration error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Registration failed: " + e.getMessage());
         }
     }
 
+    /**
+     * Login user and return JWT token
+     * POST /api/auth/login
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+        System.out.println("✅ Login endpoint hit for username: " + request.getUsername());
+        System.out.println("📤 Password received: " + request.getPassword());
+        
         List<PermissionDto> permissionDtoList = new ArrayList<>();
 
-                System.out.println("Login endpoint hit");
         try {
+            // ✅ DEBUG: Check if user exists
+            Optional<User> userOptional = userRepo.findByUsername(request.getUsername());
+            if (userOptional.isEmpty()) {
+                System.out.println("❌ User not found in database: " + request.getUsername());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid credentials: User not found");
+            }
 
+            User dbUser = userOptional.get();
+            System.out.println("✅ User found in database: " + dbUser.getUsername());
+            System.out.println("🔐 Stored password hash: " + dbUser.getPassword().substring(0, Math.min(20, dbUser.getPassword().length())) + "...");
+            System.out.println("✅ User enabled: " + dbUser.isEnabled());
+            System.out.println("✅ User roles: " + dbUser.getRoles().size());
+
+            // ✅ DEBUG: Attempt authentication
+            System.out.println("📍 Attempting authentication...");
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
+            System.out.println("✅ Authentication successful");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String token = jwtUtil.generateToken(userDetails.getUsername());
 
-            User user = userRepo.findByUsername(userDetails.getUsername()).get();
-            System.out.println("user connecte" + user.getUsername());
-            for (Role role : user.getRoles()){
-                 permissionDtoList =  permissionService.getPermissionsByRole(role.getId());
+            User user = userRepo.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found after authentication"));
+            
+            System.out.println("✅ User connected: " + user.getUsername());
+
+            // Get permissions for user's roles
+            for (Role role : user.getRoles()) {
+                System.out.println("📋 Getting permissions for role: " + role.getName());
+                permissionDtoList = permissionService.getPermissionsByRole(role.getId());
             }
 
-
-            Response response = new Response() ;
+            // Build response
+            Response response = new Response();
             response.setUserName(user.getUsername());
             response.setEntreprise(user.getEntreprise());
             response.setPermissionDtos(permissionDtoList);
             response.setIdUsers(user.getId());
             response.setToken(token);
-            response.setIdRoleUser(user.getRoles().get(0).getId());
-            System.out.println(response.getIdRoleUser());
+            
+            if (!user.getRoles().isEmpty()) {
+                response.setIdRoleUser(user.getRoles().get(0).getId());
+            }
 
-
-
-//            Map<String,Object> response = new HashMap<>();
-//            response.put("token",token);
-//            response.put("username",user.getUsername());
-//            response.put("userId",user.getId());
-//            response.put("entreprise",user.getEntreprise());
-//            response.put("permission",permissionDtoList);
-
-
-
+            System.out.println("✅ Login successful for: " + user.getUsername());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Identifiants invalides");
+            System.err.println("❌ Login error: " + e.getMessage());
+            System.err.println("❌ Error type: " + e.getClass().getName());
+            System.err.println("❌ Error cause: " + (e.getCause() != null ? e.getCause().getMessage() : "No cause"));
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid credentials: " + e.getMessage());
         }
     }
 
-
-    // Test d'une route protégée
+    /**
+     * Test protected endpoint
+     * GET /api/auth/test
+     */
     @GetMapping("/test")
     public ResponseEntity<?> testToken() {
-        return ResponseEntity.ok("Token valide ! Vous êtes authentifié.");
+        System.out.println("✅ Test token endpoint hit");
+        return ResponseEntity.ok("Token is valid! You are authenticated.");
     }
 
+    /**
+     * Refresh user permissions
+     * POST /api/auth/refreshPermissionDtoList
+     */
     @PostMapping("/refreshPermissionDtoList")
-    public ResponseEntity<?> refreshPermissionDtoList(Long userId) {
-        User user = userRepo.findById(userId).get();
-        List<PermissionDto> permissionDtoList = new ArrayList<>();
-        for (Role role : user.getRoles()){
-            permissionDtoList =  permissionService.getPermissionsByRole(role.getId());
+    public ResponseEntity<?> refreshPermissionDtoList(@RequestParam Long userId) {
+        System.out.println("✅ Refresh permissions for user: " + userId);
+        
+        try {
+            User user = userRepo.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            List<PermissionDto> permissionDtoList = new ArrayList<>();
+            
+            for (Role role : user.getRoles()) {
+                permissionDtoList = permissionService.getPermissionsByRole(role.getId());
+            }
+
+            System.out.println("✅ Permissions refreshed for user: " + userId);
+            return ResponseEntity.ok(permissionDtoList);
+        } catch (Exception e) {
+            System.err.println("❌ Error refreshing permissions: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error refreshing permissions: " + e.getMessage());
         }
-        return ResponseEntity.ok(permissionDtoList);
-
     }
-
 }

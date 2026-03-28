@@ -1,54 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { routes } from 'src/app/core/helpers/routes';
-import { AuthService } from '../../service/auth.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/auth/service/auth.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
-export class RegisterComponent {
-  public routes = routes;
-<<<<<<< Updated upstream
-  public password: boolean[] = [false, false, false];
-
-  registerForm: FormGroup;
+export class RegisterComponent implements OnInit {
+  
+  registerForm!: FormGroup;
   loading = false;
   errorMessage = '';
   successMessage = '';
+  protected readonly routes = routes;
+  password: boolean[] = [false, false, false];
 
   constructor(
-    private router: Router,
     private fb: FormBuilder,
-    private authService: AuthService
-  ) {
-    this.registerForm = this.fb.group(
-      {
-        name: ['', [Validators.required, Validators.minLength(3)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', [Validators.required]]
-      },
-      { validators: this.passwordMatchValidator }
-    );
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.initializeForm();
   }
 
-  passwordMatchValidator(group: FormGroup) {
+  initializeForm(): void {
+    this.registerForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]],
+      phone: ['', []]
+    }, { 
+      validators: this.passwordMatchValidator 
+    });
+  }
+
+  get f() {
+    return this.registerForm.controls;
+  }
+
+  passwordMatchValidator(group: FormGroup): { [key: string]: any } | null {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
-    if (password && confirmPassword && password !== confirmPassword) {
-      return { passwordMismatch: true };
-    }
-    return null;
+    
+    return password === confirmPassword ? null : { passwordMismatch: true };
   }
 
-  navigation() {
-    this.registerForm.markAllAsTouched();
+  togglePassword(index: number): void {
+    this.password[index] = !this.password[index];
+  }
 
+  navigation(): void {
+    this.onSignUp();
+  }
+
+  onSignUp(): void {
     if (!this.registerForm.valid) {
-      this.errorMessage = 'Please fill in all fields correctly';
+      console.warn('❌ Form is invalid');
+      this.markFormGroupTouched(this.registerForm);
       return;
     }
 
@@ -56,59 +70,59 @@ export class RegisterComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const formData = this.registerForm.value;
     const registerData = {
-      username: formData.email,
-      email: formData.email,
-      password: formData.password,
-      name: formData.name
+      username: this.registerForm.get('name')?.value,
+      email: this.registerForm.get('email')?.value,
+      password: this.registerForm.get('password')?.value,
+      phone: this.registerForm.get('phone')?.value || ''
     };
+
+    console.log('📝 Registering user:', registerData.username);
 
     this.authService.register(registerData).subscribe({
       next: (response) => {
-        console.log('Registration successful:', response?.message);
-        this.successMessage = 'Account created successfully! Redirecting to sign in...';
-        this.registerForm.reset();
+        console.log('✅ Registration successful:', response);
+        this.loading = false;
+        this.successMessage = 'Registration successful! Redirecting to signin...';
+        
         setTimeout(() => {
-          this.router.navigate([routes.signIn]);
+          // ✅ Navigate to /auth/signin - ABSOLUTE PATH
+          this.router.navigate(['/auth/signin']).then((success) => {
+            if (success) {
+              console.log('✅ Redirected to signin');
+            } else {
+              console.error('❌ Navigation failed');
+              window.location.href = '/auth/signin';
+            }
+          }).catch((err) => {
+            console.error('❌ Navigation error:', err);
+            window.location.href = '/auth/signin';
+          });
         }, 2000);
       },
       error: (error) => {
-        console.error('Registration error:', error?.status);
-        if (error?.status === 0) {
-          this.errorMessage = 'Cannot connect to server. Is backend running on http://localhost:8020?';
-        } else if (error?.status === 409) {
-          this.errorMessage = error?.error || 'Email or username already exists. Please use different credentials.';
-        } else if (error?.status === 400) {
-          this.errorMessage = error?.error || 'Invalid input. Please check your data.';
+        console.error('❌ Registration error:', error);
+        this.loading = false;
+        
+        if (error.error?.message) {
+          this.errorMessage = error.error.message;
+        } else if (error.error?.status === 'error') {
+          this.errorMessage = error.error.message;
         } else {
-          this.errorMessage = error?.error?.message || error?.error || 'Registration failed. Please try again.';
+          this.errorMessage = 'Registration failed. Please try again.';
         }
-        this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
       }
     });
   }
 
-  public togglePassword(index: number) {
-    this.password[index] = !this.password[index];
-  }
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
 
-  get f() {
-    return this.registerForm.controls;
-=======
-  public password: boolean[] = [false];
-
-  constructor(private router: Router) {}
-
-  navigation() {
-    this.router.navigate([routes.signIn]);
->>>>>>> Stashed changes
-  }
-
-  public togglePassword(index: number) {
-    this.password[index] = !this.password[index];
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 }

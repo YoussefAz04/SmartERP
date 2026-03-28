@@ -12,7 +12,7 @@
 
           <div class="login-userheading">
             <h3>Sign In</h3>
-            
+  
           </div>
 
           <div class="form-login mb-3">
@@ -46,6 +46,11 @@
             </div>
           </div>
 
+          <!-- ✅ ADD ERROR MESSAGE DISPLAY -->
+          <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+          </div>
+
           <div class="form-login authentication-check">
             <div class="row">
               <div class="col-12 d-flex align-items-center justify-content-between">
@@ -62,19 +67,16 @@
             </div>
           </div>
 
-         <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-  {{ errorMessage }}
-</div>
-
-<div class="form-login">
-  <button type="submit" class="btn btn-login" [disabled]="loading || !loginForm.valid">
-    <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-    {{ loading ? 'Signing In...' : 'Sign In' }}
-  </button>
-</div>
+          <div class="form-login">
+            <!-- ✅ CHANGED: Use (click)="navigation()" instead of form submit -->
+            <button type="button" class="btn btn-login" (click)="navigation()" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ loading ? 'Signing In...' : 'Sign In' }}
+            </button>
+          </div>
 
           <div class="signinform">
-            <h4>New on our platform?<a [routerLink]="routes.register" class="hover-a"> Create an account</a></h4>
+            <h4>New on our platform?<a [routerLink]="routes.registerbyStepper" class="hover-a"> Create an account</a></h4>
           </div>
 
           <div class="form-setlogin or-text">

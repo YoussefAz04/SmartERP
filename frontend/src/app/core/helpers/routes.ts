@@ -943,8 +943,8 @@ export class routes {
   public static permissions(id: number | undefined): string {
     return this.usersManagement + '/permissions/' + id;
   }
-  public static get registerbyStepper(): string {
-    return this.base + '/stepperCompany';
-  }
+public static get registerbyStepper(): string {
+  return this.base + '/auth/register';
+}
   // core pages child routes *ends*
 }
