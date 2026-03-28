@@ -41,4 +41,9 @@ export class RoleService {
   assignRoleToUser(idUser: number, idRole: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/assign-role/${idUser}/${idRole}`, null);
   }
+
+  // Retirer un rôle d'un utilisateur
+  removeRoleFromUser(idUser: number, idRole: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/remove-role/${idUser}/${idRole}`);
+  }
 }

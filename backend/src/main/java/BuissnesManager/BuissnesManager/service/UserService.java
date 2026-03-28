@@ -75,6 +75,16 @@ public class UserService {
         user.getRoles().add(role);
         userRepository.save(user);
     }
+
+    public void removeRoleFromUser(Long userId, Long idRole) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Role role = roleRepo.findById(idRole)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        user.getRoles().remove(role);
+        userRepository.save(user);
+    }
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }

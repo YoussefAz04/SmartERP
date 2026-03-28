@@ -67,5 +67,14 @@ public class RoleController {
         }
     }
 
+    @DeleteMapping("/remove-role/{idUser}/{idRole}")
+    public ResponseEntity<?> removeRoleFromUser(@PathVariable Long idUser, @PathVariable Long idRole) {
+        try {
+            userService.removeRoleFromUser(idUser, idRole);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 }

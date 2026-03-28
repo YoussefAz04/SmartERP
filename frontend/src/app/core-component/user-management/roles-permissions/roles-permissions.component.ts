@@ -14,6 +14,9 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {RoleService} from "../../../core/service/role/role.service";
 import {Validators} from "ngx-editor";
 import {Role} from "../../../model/role.model";
+import {UserService} from "../../../auth/service/user/user.service";
+import {UserDTO} from "../../../model/userDTO.model";
+import {forkJoin} from "rxjs";
 interface data {
   value: string;
 }
@@ -57,6 +60,11 @@ export class RolesPermissionsComponent implements OnInit{
   editRoleForm!: FormGroup;
   currentRoleId!: number;
 
+  // Manage Users
+  allUsers: UserDTO[] = [];
+  selectedUserIds: Set<number> = new Set<number>();
+  currentRoleForManage: Role | null = null;
+  manageUsersLoading = false;
 
   //** / pagination variables
 
@@ -66,7 +74,8 @@ export class RolesPermissionsComponent implements OnInit{
     private router: Router,
     private sidebar: SidebarService,
     private fb: FormBuilder,
-    private roleService : RoleService
+    private roleService : RoleService,
+    private userService: UserService
   ) {
   }
 
@@ -160,6 +169,84 @@ export class RolesPermissionsComponent implements OnInit{
     });
   }
 
+  manageUsersForRole(role: Role): void {
+    this.currentRoleForManage = role;
+    this.manageUsersLoading = true;
+    this.userService.getAllUsersDTO().subscribe({
+      next: (users) => {
+        this.allUsers = users;
+        this.selectedUserIds = new Set(
+          users
+            .filter(u => u.roles && u.roles.includes(role.name!))
+            .map(u => u.id)
+        );
+        this.manageUsersLoading = false;
+      },
+      error: () => {
+        this.manageUsersLoading = false;
+      }
+    });
+  }
+
+  isUserSelected(userId: number): boolean {
+    return this.selectedUserIds.has(userId);
+  }
+
+  toggleUserSelection(userId: number): void {
+    if (this.selectedUserIds.has(userId)) {
+      this.selectedUserIds.delete(userId);
+    } else {
+      this.selectedUserIds.add(userId);
+    }
+  }
+
+  assignUsersToRole(): void {
+    if (!this.currentRoleForManage) return;
+    const roleId = this.currentRoleForManage.id!;
+
+    const usersWithRole = this.allUsers.filter(
+      u => u.roles && u.roles.includes(this.currentRoleForManage!.name!)
+    );
+    const currentUserIds = new Set(usersWithRole.map(u => u.id));
+
+    const toAdd = this.allUsers.filter(
+      u => this.selectedUserIds.has(u.id) && !currentUserIds.has(u.id)
+    );
+    const toRemove = this.allUsers.filter(
+      u => !this.selectedUserIds.has(u.id) && currentUserIds.has(u.id)
+    );
+
+    const addRequests = toAdd.map(u => this.roleService.assignRoleToUser(u.id, roleId));
+    const removeRequests = toRemove.map(u => this.roleService.removeRoleFromUser(u.id, roleId));
+
+    const allRequests = [...addRequests, ...removeRequests];
+
+    if (allRequests.length === 0) {
+      Swal.fire('No changes', 'No changes were made.', 'info');
+      this.closeManageUsersModal();
+      return;
+    }
+
+    forkJoin(allRequests).subscribe({
+      next: () => {
+        this.closeManageUsersModal();
+        Swal.fire('Success', 'User assignments updated successfully.', 'success');
+      },
+      error: () => {
+        Swal.fire('Error', 'An error occurred while updating user assignments.', 'error');
+      }
+    });
+  }
+
+  closeManageUsersModal(): void {
+    const modalEl = document.getElementById('manage-users-modal');
+    if (modalEl) {
+      const modal = (window as any).bootstrap?.Modal?.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.roleForm = this.fb.group({
