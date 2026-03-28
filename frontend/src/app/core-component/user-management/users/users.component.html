@@ -103,10 +103,12 @@
             <div class="input-blocks">
               <i class="feather icon-zap info-img"></i>
               <mat-select [(ngModel)]="selectedValue5" [ngModelOptions]="{standalone: true}" class="space-select select"
-                          placeholder="Choose Role">
-                <mat-option value="Choose Role">Choose Role</mat-option>
-                <mat-option value="Store Keeper">Store Keeper</mat-option>
-                <mat-option value="Salesman">Salesman</mat-option>
+                          placeholder="All Roles"
+                          (selectionChange)="filterByRole($event.value)">
+                <mat-option value="">All Roles</mat-option>
+                @for (role of roles; track role.id) {
+                  <mat-option [value]="role.name">{{ role.name }}</mat-option>
+                }
               </mat-select>
             </div>
           </div>

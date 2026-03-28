@@ -45,6 +45,10 @@ export class UsersComponent implements OnInit{
       roleId: ['']
     });
 
+    this.roleService.getAllRoles().subscribe({
+      next: (roles) => this.roles = roles,
+      error: (err) => console.error('Erreur chargement rôles', err)
+    });
 
     this.getUserAuthData();
   }
@@ -106,6 +110,16 @@ export class UsersComponent implements OnInit{
 
   viewUsers(id:any) {
     this.router.navigate(['/user-management/detaisUsers',id])
+  }
+
+  filterByRole(roleName: string): void {
+    if (!roleName) {
+      this.tableData = [...this.allUsers];
+    } else {
+      this.tableData = this.allUsers.filter(user =>
+        user.roles?.includes(roleName)
+      );
+    }
   }
 
 
