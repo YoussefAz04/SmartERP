@@ -16,11 +16,9 @@ import {PermissionDto} from "../../../model/permissionDto.model";
 export class UsersComponent implements OnInit{
   tableData: any[] = [];
   allUsers: UserDTO[] = [];
-
   initChecked: boolean = false;
   searchDataValue: string = '';
   filter: boolean = false;
-
   selectedValue2 = '';
   selectedValue3 = '';
   selectedValue4 = '';
@@ -28,24 +26,30 @@ export class UsersComponent implements OnInit{
   selectedValue6 = '';
   selectedValue7 = '';
   isCollapsed = false;
-
   password: boolean[] = [];
-   permissionUsers!: PermissionDto;
+  permissionUsers: PermissionDto = {
+    create: false,
+    view: false,
+    update: false,
+    delete: false,
+    moduleTitle: ''
+  } as PermissionDto;
+  roles: Role[] = [];
+  idUserAssigner!: number;
+  assignRoleForm!: FormGroup;
 
   constructor(private userService: UserService,
               private router : Router,
               private roleService: RoleService,
               private fb: FormBuilder,
-
   ) {}
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadRoles();
     this.assignRoleForm = this.fb.group({
       roleId: ['']
     });
-
-
     this.getUserAuthData();
   }
 
@@ -60,6 +64,28 @@ export class UsersComponent implements OnInit{
     });
   }
 
+  loadRoles(): void {
+    this.roleService.getAllRoles().subscribe({
+      next: (roles) => {
+        this.roles = roles;
+        console.log('Roles loaded:', this.roles);
+      },
+      error: (err) => console.error('Error loading roles:', err)
+    });
+  }
+
+  filterByRole(roleName: string): void {
+    if (!roleName || roleName === '') {
+      this.tableData = [...this.allUsers];
+      console.log('Showing all users');
+    } else {
+      this.tableData = this.allUsers.filter(user =>
+        user.roles && user.roles.includes(roleName)
+      );
+      console.log(`Showing users with role: ${roleName}`, this.tableData);
+    }
+  }
+
   searchData(query: string): void {
     const lower = query.toLowerCase();
     this.tableData = this.allUsers.filter(user =>
@@ -71,7 +97,6 @@ export class UsersComponent implements OnInit{
   sortData(event: any): void {
     const field = event.active;
     const direction = event.direction;
-
     this.tableData.sort((a: any, b: any) => {
       const aField = a[field] || '';
       const bField = b[field] || '';
@@ -108,19 +133,9 @@ export class UsersComponent implements OnInit{
     this.router.navigate(['/user-management/detaisUsers',id])
   }
 
-
-
-  idUserAssigner!: number;
-  roles: Role[] = [];
-  assignRoleForm!: FormGroup;
-
-
   userAssigner(id: any) {
     this.idUserAssigner = id;
     console.log("ID user sélectionné :", this.idUserAssigner);
-
-
-
     this.roleService.getAllRoles().subscribe(data => {
       this.roles = data;
       console.log("Rôles récupérés :", this.roles);
@@ -129,22 +144,19 @@ export class UsersComponent implements OnInit{
 
   onSubmitAssignRole() {
     const roleId = this.assignRoleForm.value.roleId;
-
     if (this.idUserAssigner && roleId) {
       this.roleService.assignRoleToUser(this.idUserAssigner, roleId).subscribe(()=>{
         this.loadUsers();
-      }
-      );
+      });
     }
   }
+
   getUserAuthData(){
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
-
     if (item) {
       currentUser = JSON.parse(atob(item));
       console.log('User connecté:', currentUser?.name);
-
       console.log('Token:', currentUser?.token);
       console.log('Permissions:', currentUser?.permission);
       currentUser?.permission.map(per =>{
@@ -155,8 +167,4 @@ export class UsersComponent implements OnInit{
       })
     }
   }
-
-
-
-
 }

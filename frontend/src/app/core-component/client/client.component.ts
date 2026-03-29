@@ -19,30 +19,53 @@ import {PermissionDto} from "../../model/permissionDto.model";
   styleUrl: './client.component.scss'
 })
 export class ClientComponent implements OnInit{
-  clientList : Client[] = [] ;
-  permissionClient!: PermissionDto;
-  constructor(private Clientservise: ClientService,private router : Router) {
+  clientList : Client[] = [];
+  permissionClient: PermissionDto = {
+    create: false,
+    view: false,
+    update: false,
+    delete: false,
+    moduleTitle: ''
+  } as PermissionDto;
+
+  constructor(private Clientservise: ClientService, private router: Router) {
   }
+
   ngOnInit() {
-    this.Clientservise.getAllClients().subscribe(data => {
-      this.clientList = data ;
-      console.log(this.clientList);
-    })
+    this.loadClients();
     this.getUserAuthData();
   }
 
+  loadClients(): void {
+    this.Clientservise.getAllClients().subscribe({
+      next: (data) => {
+        this.clientList = data;
+        console.log('Clients loaded:', this.clientList);
+      },
+      error: (err) => console.error('Error loading clients:', err)
+    });
+  }
 
   addClient() {
-    this.router.navigate(['/client/addClient'])
-
+    this.router.navigate(['/client/addClient']);
   }
 
   viewClient(id: number | undefined) {
-    return id ;
+    if (id) {
+      this.router.navigate(['/client/viewClient', id]);
+    }
   }
 
   deleteClient(id: number | undefined) {
-    return id ;
+    if (id && confirm('Are you sure?')) {
+      this.Clientservise.deleteClient(id).subscribe({
+        next: () => {
+          this.clientList = this.clientList.filter(c => c.id !== id);
+          console.log('Client deleted');
+        },
+        error: (err) => console.error('Error deleting client:', err)
+      });
+    }
   }
 
   getUserAuthData(){
@@ -52,17 +75,25 @@ export class ClientComponent implements OnInit{
     if (item) {
       currentUser = JSON.parse(atob(item));
       console.log('User connecté:', currentUser?.name);
-
       console.log('Token:', currentUser?.token);
       console.log('Permissions:', currentUser?.permission);
-      currentUser?.permission.map(per =>{
-        if (per.moduleTitle.includes("gestion de Client")){
-          this.permissionClient = per ;
-          console.log("permission Client" ,this.permissionClient);
-        }
-      })
-      console.log('Client:', currentUser?.entreprise.nom);
+
+      if (currentUser?.permission && Array.isArray(currentUser.permission)) {
+        currentUser.permission.forEach((per: any) => {
+          if (per.moduleTitle?.includes("gestion de Client") || per.moduleTitle?.includes("gestion client")) {
+            this.permissionClient = per;
+            console.log("Permission Client:", this.permissionClient);
+          }
+        });
+      }
+
+      console.log('Entreprise:', currentUser?.entreprise?.nom);
+    } else {
+      console.warn("No user found in localStorage");
     }
   }
-
+  ngAfterViewInit() {
+  console.log('Final permissionClient:', this.permissionClient);
+  console.log('Create permission:', this.permissionClient?.create);
+}
 }

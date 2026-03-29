@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 import { Module } from '../../../model/module.model';
@@ -54,18 +54,14 @@ export class PermissionsComponent implements OnInit {
     private permissionService: PermissionService,
     private route: ActivatedRoute,
     private sidebar: SidebarService,
-    private autheService : AuthService
+    private autheService : AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.idRole = +this.route.snapshot.params['id'];
     this.loadModulesAndPermissions();
   }
-
-
-
-
-
 
   loadModulesAndPermissions() {
     this.moduleService.getAllModules().subscribe({
@@ -84,7 +80,6 @@ export class PermissionsComponent implements OnInit {
       next: (permissions: PermissionDto[]) => {
         this.processPermissions(permissions);
         console.log("Erreur lors du chargement des permissions", permissions);
-
       },
       error: err => {
         console.error("Erreur lors de la récupération des permissions", err);
@@ -170,7 +165,6 @@ export class PermissionsComponent implements OnInit {
       this.updateAllSelectedStates();
     }
   }
-
 
   // Déplacer une permission spécifique
   movePermission(permission: ModulePermissionItem, toAssigned: boolean) {
@@ -382,11 +376,11 @@ export class PermissionsComponent implements OnInit {
                   if (modules) {
                     this.sidebar.generateSidebarData(modules);
                   }
-                  return Promise.resolve(); // Ensure all paths return a value
+                  return Promise.resolve();
                 });
             }
           }
-          return Promise.resolve(); // Ensure all paths return a value
+          return Promise.resolve();
         });
     });
 
@@ -395,10 +389,8 @@ export class PermissionsComponent implements OnInit {
         console.log('Toutes les permissions ont été sauvegardées avec succès');
         this.loadRolePermissions();
         this.updatePermission();
-
-
-
-
+        // ✅ Navigate after save is complete
+        this.router.navigate(['/user-management/roles-permissions']);
       })
       .catch(err => {
         console.error('Erreur lors de la sauvegarde des permissions:', err);
@@ -461,9 +453,6 @@ export class PermissionsComponent implements OnInit {
     return `${item.moduleId}-${item.permissionType}`;
   }
 
-
-
-
   updatePermission() {
     const item = localStorage.getItem('myLSkey');
 
@@ -472,7 +461,6 @@ export class PermissionsComponent implements OnInit {
 
       this.idUser = currentUser.userId;
       console.log("idUser pour update", this.idUser);
-
 
       this.autheService.refreshPermissionDtoList(this.idUser).subscribe({
         next: (response) => {
@@ -483,7 +471,7 @@ export class PermissionsComponent implements OnInit {
           console.log("les permissions", response);
         },
         error: (err) => {
-          console.error("Erreur lors de l’update des permissions:", err);
+          console.error("Erreur lors de l'update des permissions:", err);
         }
       });
     } else {
@@ -491,9 +479,8 @@ export class PermissionsComponent implements OnInit {
     }
   }
 
-
-
-
-
-
+  // ✅ UPDATED: Simplified navigation method
+  saveAndNavigate() {
+    this.savePermissions();
+  }
 }

@@ -24,6 +24,10 @@ export class ClientService {
     return this.http.get<Client>(`${this.baseUrl}/getClientById/${id}`);
   }
 
+  deleteClient(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/deleteClient/${id}`);
+  }
+
   addCategorieClient(categorie: CategorieClient): Observable<CategorieClient> {
     return this.http.post<CategorieClient>(`${this.baseUrl}/addCategorieClient`, categorie);
   }
