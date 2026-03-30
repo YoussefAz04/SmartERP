@@ -35,4 +35,8 @@ export class UserService {
   getAllUsersNotAffectedToMembre(): Observable<UserRequest[]> {
     return this.http.get<UserRequest[]>(`${this.apiUrl}/getAllUsersNotAffectedToMembre`);
   }
+
+  deleteUser(userId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${userId}`);
+  }
 }
