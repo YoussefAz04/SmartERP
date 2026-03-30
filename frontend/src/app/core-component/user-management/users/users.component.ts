@@ -13,6 +13,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CustomPaginationComponent } from '../custom-pagination/custom-pagination.component';
 
 @Component({
   selector: 'app-users',
@@ -23,7 +24,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatSortModule,
     MatSelectModule,
     MatTooltipModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CustomPaginationComponent
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
