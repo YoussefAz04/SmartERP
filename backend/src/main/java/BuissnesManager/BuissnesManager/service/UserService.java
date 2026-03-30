@@ -151,6 +151,9 @@ public class UserService {
 //                .filter(user -> user.getMembre() == null)
 //                .collect(Collectors.toList());
 //    }
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
 
 
 

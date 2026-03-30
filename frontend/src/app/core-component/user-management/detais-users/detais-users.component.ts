@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../auth/service/user/user.service';
 import { UserDTO } from '../../../model/userDTO.model';
+import { ResponseDto } from '../../../model/reponseDto.model';
+import { PermissionDto } from '../../../model/permissionDto.model';
 
 @Component({
   selector: 'app-detais-users',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './detais-users.component.html',
   styleUrl: './detais-users.component.scss'
 })
@@ -16,6 +18,15 @@ export class DetaisUsersComponent implements OnInit {
   user: UserDTO | null = null;
   isLoading = true;
   userId!: number;
+  isSubmitting = false;
+  
+  permissionUsers: PermissionDto = {
+    create: false,
+    view: false,
+    update: false,
+    delete: false,
+    moduleTitle: ''
+  } as PermissionDto;
 
   constructor(
     private userService: UserService,
@@ -26,6 +37,7 @@ export class DetaisUsersComponent implements OnInit {
   ngOnInit(): void {
     this.userId = this.route.snapshot.params['id'];
     this.loadUserDetails();
+    this.getUserAuthData();
   }
 
   loadUserDetails(): void {
@@ -35,15 +47,63 @@ export class DetaisUsersComponent implements OnInit {
         this.user = data;
         this.isLoading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading user:', err);
-        alert('Error loading user details');
+        alert('Erreur lors du chargement de l\'utilisateur');
         this.isLoading = false;
+      }
+    });
+  }
+
+  onSubmit(): void {
+    if (!this.user || !this.userId) {
+      alert('❌ Données utilisateur manquantes');
+      return;
+    }
+
+    if (this.isSubmitting) {
+      alert('Opération en cours...');
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    this.userService.updateUser(this.userId, this.user).subscribe({
+      next: (response: any) => {
+        this.isSubmitting = false;
+        alert('✓ Utilisateur mis à jour avec succès');
+        this.router.navigate(['/user-management/users']);
+      },
+      error: (err: any) => {
+        this.isSubmitting = false;
+        const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+        alert('✗ Erreur lors de la mise à jour: ' + errorMsg);
       }
     });
   }
 
   goBack(): void {
     this.router.navigate(['/user-management/users']);
+  }
+
+  getUserAuthData(): void {
+    const item = localStorage.getItem('myLSkey');
+    
+    if (item) {
+      try {
+        const currentUser: ResponseDto = JSON.parse(atob(item));
+
+        if (currentUser?.permission && Array.isArray(currentUser.permission)) {
+          currentUser.permission.forEach(per => {
+            if (per.moduleTitle.toLowerCase().includes("gestion users") || 
+                per.moduleTitle.toLowerCase().includes("users")) {
+              this.permissionUsers = per;
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
   }
 }

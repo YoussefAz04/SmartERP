@@ -5,33 +5,7 @@
       <h6>Manage Your Users</h6>
     </div>
   </div>
-  <ul class="table-top-head">
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Pdf" matTooltipPosition="above"><img
-      src="assets/img/icons/pdf.svg" alt="img"></a>
-    </li>
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Excel" matTooltipPosition="above"><img
-      src="assets/img/icons/excel.svg" alt="img"></a>
-    </li>
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Print" matTooltipPosition="above"><i
-      class="feather icon-printer feather-rotate-ccw"></i></a>
-    </li>
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
-      class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
-    </li>
-    <li>
-      <a (click)="toggleCollapse()" data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Collapse"
-        matTooltipPosition="above" id="collapse-header"> @if (!isCollapsed) {
-        <i class="feather icon-chevron-up feather-chevron-up"></i>
-      }
-      @if (isCollapsed) {
-        <i class="feather icon-chevron-down feather-chevron-down"></i>
-      }</a>
-    </li>
-  </ul>
+  
   <div class="page-btn" *ngIf="permissionUsers?.create">
     <a (click)="addUsers()" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units"><i
     class="feather icon-plus-circle me-2"></i>Add New User</a>

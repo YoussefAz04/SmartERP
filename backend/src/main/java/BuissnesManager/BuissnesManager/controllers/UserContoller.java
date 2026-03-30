@@ -77,15 +77,22 @@ public class UserContoller {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
         }
     }
-
-//    @GetMapping("/getAllUsersNotAffectedToMembre")
-//    public  ResponseEntity<?> getAllUsersNotAffectedToMembre(){
-//        try {
-//            return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsersNotAffectedToMember());
-//        }catch (Exception e){
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//        }
-//    }
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok(new java.util.HashMap<String, String>() {{
+                put("message", "User deleted successfully");
+                put("status", "success");
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new java.util.HashMap<String, String>() {{
+                    put("error", e.getMessage());
+                    put("status", "error");
+                }}
+            );
+        }
+    }
 
 }

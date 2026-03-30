@@ -261,30 +261,26 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  getUserAuthData(): void {
-    const item = localStorage.getItem('myLSkey');
-    
-    if (item) {
-      try {
-        const currentUser: ResponseDto = JSON.parse(atob(item));
-        console.log('User connecté:', currentUser?.name);
-        console.log('Token:', currentUser?.token);
-        console.log('Permissions:', currentUser?.permission);
+ getUserAuthData(): void {
+  const item = localStorage.getItem('myLSkey');
+  
+  if (item) {
+    try {
+      const currentUser: ResponseDto = JSON.parse(atob(item));
+      console.log('User connecté:', currentUser?.name);
+      console.log('Token:', currentUser?.token);
+      console.log('Permissions:', currentUser?.permission);
 
-        if (currentUser?.permission && Array.isArray(currentUser.permission)) {
-          currentUser.permission.forEach(per => {
-            if (per.moduleTitle.toLowerCase().includes("gestion users") || 
-                per.moduleTitle.toLowerCase().includes("users")) {
-              this.permissionUsers = per;
-              console.log("Permission Users:", this.permissionUsers);
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+      if (currentUser?.permission && Array.isArray(currentUser.permission) && currentUser.permission.length > 0) {
+        // Use the first permission (all have the same create/delete/update/view values)
+        this.permissionUsers = currentUser.permission[0];
+        console.log("Permission Users:", this.permissionUsers);
       }
-    } else {
-      console.warn('No user found in localStorage');
+    } catch (error) {
+      console.error('Error parsing user data:', error);
     }
+  } else {
+    console.warn('No user found in localStorage');
   }
+}
 }

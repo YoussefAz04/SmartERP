@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")  // ✅ CHANGED: Added /api prefix
+@RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
 
@@ -157,17 +157,26 @@ public class AuthController {
                 permissionDtoList = permissionService.getPermissionsByRole(role.getId());
             }
 
-            // Build response
+            // Build response with correct setter names
             Response response = new Response();
-            response.setUserName(user.getUsername());
-            response.setEntreprise(user.getEntreprise());
-            response.setPermissionDtos(permissionDtoList);
-            response.setIdUsers(user.getId());
+            response.setId(user.getId());
+            response.setUsername(user.getUsername());
+            response.setEmail(user.getEmail());
+            response.setName(user.getUsername());
             response.setToken(token);
+            response.setEnabled(user.isEnabled());
             
-            if (!user.getRoles().isEmpty()) {
-                response.setIdRoleUser(user.getRoles().get(0).getId());
+            // Set roles as list of role names
+            List<String> roleNames = new ArrayList<>();
+            if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+                for (Role role : user.getRoles()) {
+                    roleNames.add(role.getName());
+                }
             }
+            response.setRoles(roleNames);
+            
+            // Set permissions
+            response.setPermission(new ArrayList<>());
 
             System.out.println("✅ Login successful for: " + user.getUsername());
             return ResponseEntity.ok(response);
