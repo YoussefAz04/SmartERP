@@ -5,7 +5,7 @@ import { DepartmentRoutingModule } from './department-routing.module';
 import { DepartmentComponent } from './department.component';
 import { DepartmentGridComponent } from './department-grid/department-grid.component';
 import { DepartmentListComponent } from './department-list/department-list.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -19,7 +19,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
     CommonModule,
     DepartmentRoutingModule,
     
-    sharedModule
+    SharedModule
   ]
 })
 export class DepartmentModule { }

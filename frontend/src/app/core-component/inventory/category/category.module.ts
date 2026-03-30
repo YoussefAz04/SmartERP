@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { CategoryRoutingModule } from './category-routing.module';
 import { CategoryComponent } from './category.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { CategoryListComponent } from './category-list/category-list.component';
 import { SubCategoriesComponent } from './sub-categories/sub-categories.component';
 
@@ -17,7 +17,7 @@ import { SubCategoriesComponent } from './sub-categories/sub-categories.componen
   imports: [
     CommonModule,
     CategoryRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class CategoryModule { }

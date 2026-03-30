@@ -5,7 +5,7 @@ import {SousTache} from "../../../model/sousTache.model";
 import {SousTacheService} from "../../../core/service/sousTache/sous-tache.service";
 import {Router} from "@angular/router";
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {sharedModule} from "../../../shared/shared.module";
+import {SharedModule} from "../../../shared/shared.module";
 import {Tache} from "../../../model/tache.model";
 import {TacheService} from "../../../core/service/taches/tache.service";
 import {ResponseDto} from "../../../model/reponseDto.model";
@@ -19,7 +19,7 @@ import {PermissionDto} from "../../../model/permissionDto.model";
     NgIf,
     NgForOf,
     ReactiveFormsModule,
-    sharedModule
+    SharedModule
   ],
   templateUrl: './list-sous-tache.component.html',
   styleUrl: './list-sous-tache.component.scss'

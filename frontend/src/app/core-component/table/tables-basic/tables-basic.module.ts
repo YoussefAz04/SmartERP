@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 
 import { TablesBasicRoutingModule } from './tables-basic-routing.module';
 import { TablesBasicComponent } from './tables-basic.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [TablesBasicComponent],
-  imports: [CommonModule, TablesBasicRoutingModule, sharedModule],
+  imports: [CommonModule, TablesBasicRoutingModule, SharedModule],
 })
 export class TablesBasicModule {}

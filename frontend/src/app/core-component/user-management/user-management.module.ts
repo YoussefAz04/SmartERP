@@ -8,7 +8,7 @@ import { PermissionsComponent } from './permissions/permissions.component';
 import { UsersComponent } from './users/users.component';
 import { DetaisUsersComponent } from './detais-users/detais-users.component';
 import { AddUserComponent } from './add-user/add-user.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +20,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UserManagementRoutingModule,
-    sharedModule,
+    SharedModule,
     UsersComponent,
     DetaisUsersComponent,
     AddUserComponent,

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { PromoRoutingModule } from './promo-routing.module';
 import { PromoComponent } from './promo.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     PromoRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class PromoModule { }

@@ -119,4 +119,4 @@ const icons = {
     { provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true },
   ],
 })
-export class sharedModule {}
+export class SharedModule {}

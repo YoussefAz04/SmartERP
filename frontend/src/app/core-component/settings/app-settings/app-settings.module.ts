@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AppSettingsRoutingModule } from './app-settings-routing.module';
 import { AppSettingsComponent } from './app-settings.component';
 import { CustomFieldsComponent } from './custom-fields/custom-fields.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { InvoiceSettingsComponent } from './invoice-settings/invoice-settings.component';
 import { PosSettingsComponent } from './pos-settings/pos-settings.component';
 import { PrinterSettingsComponent } from './printer-settings/printer-settings.component';
@@ -22,7 +22,7 @@ import { PrinterSettingsComponent } from './printer-settings/printer-settings.co
   imports: [
     CommonModule,
     AppSettingsRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class AppSettingsModule { }

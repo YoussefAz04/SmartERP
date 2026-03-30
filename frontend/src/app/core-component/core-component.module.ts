@@ -9,7 +9,7 @@ import { SidebarTwoComponent } from '../common-component/sidebar-two/sidebar-two
 import { SidebarThreeComponent } from '../common-component/sidebar-three/sidebar-three.component';
 import { HeaderComponent } from '../common-component/header/header.component';
 import { LayoutComponent } from '../common-component/layout/layout.component';
-import { sharedModule } from '../shared/shared.module';
+import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
@@ -21,7 +21,7 @@ import { RouterModule } from '@angular/router';
         SidebarThreeComponent,
         LayoutComponent,
     ],
-    imports: [CommonModule, CoreComponentRoutingModule, sharedModule, RouterModule],
+    imports: [CommonModule, CoreComponentRoutingModule, SharedModule, RouterModule],
     providers: [],
     exports: [
         SidebarThreeComponent

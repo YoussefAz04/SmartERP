@@ -9,7 +9,7 @@ import { FileFavouritesComponent } from './file/file-favourites/file-favourites.
 import { FileManagerComponent } from './file/file-manager/file-manager.component';
 import { FileManagerDeletedComponent } from './file/file-manager-deleted/file-manager-deleted.component';
 import { FileRecentComponent } from './file/file-recent/file-recent.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { FileSharedComponent } from './file/file-shared/file-shared.component';
 import { ChatComponent } from './chat/chat.component';
 import { CallHistoryComponent } from './call/call-history/call-history.component';
@@ -39,7 +39,7 @@ import { VideoCallComponent } from './call/video-call/video-call.component';
   imports: [
     CommonModule,
     ApplicationRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class ApplicationModule { }

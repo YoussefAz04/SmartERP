@@ -7,7 +7,7 @@ import {DatePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {MatTooltip} from "@angular/material/tooltip";
 import {Router} from "@angular/router";
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {sharedModule} from "../../../shared/shared.module";
+import {SharedModule} from "../../../shared/shared.module";
 import {MembreService} from "../../../core/service/membre/membre.service";
 import {Membre} from "../../../model/membre.model";
 import {ResponseDto} from "../../../model/reponseDto.model";
@@ -23,7 +23,7 @@ import { PermissionDto } from 'src/app/model/permissionDto.model';
     NgClass,
     MatTooltip,
     ReactiveFormsModule,
-    sharedModule
+    SharedModule
   ],
   templateUrl: './list-taches-projet.component.html',
   styleUrl: './list-taches-projet.component.scss'

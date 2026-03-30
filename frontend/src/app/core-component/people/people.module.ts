@@ -7,7 +7,7 @@ import { CustomersComponent } from './customers/customers.component';
 import { StoreListComponent } from './store-list/store-list.component';
 import { SuppliersComponent } from './suppliers/suppliers.component';
 import { WarehouseComponent } from './warehouse/warehouse.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +21,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     PeopleRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class PeopleModule { }

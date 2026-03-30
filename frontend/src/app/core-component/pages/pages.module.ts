@@ -7,7 +7,7 @@ import { UnderMaintenanceComponent } from './under-maintenance/under-maintenance
 import { ProfileComponent } from './profile/profile.component';
 import { ActivitiesComponent } from './activities/activities.component';
 import { BlankPageComponent } from './blank-page/blank-page.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 
 @NgModule({
@@ -19,6 +19,6 @@ import { ComingSoonComponent } from './coming-soon/coming-soon.component';
     BlankPageComponent,
     ComingSoonComponent
   ],
-  imports: [CommonModule, PagesRoutingModule, sharedModule],
+  imports: [CommonModule, PagesRoutingModule, SharedModule],
 })
 export class PagesModule {}

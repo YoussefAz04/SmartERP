@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 
 import { EmailRoutingModule } from './email-routing.module';
 import { EmailComponent } from './email.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [EmailComponent],
-  imports: [CommonModule, EmailRoutingModule, sharedModule],
+  imports: [CommonModule, EmailRoutingModule, SharedModule],
 })
 export class EmailModule {}

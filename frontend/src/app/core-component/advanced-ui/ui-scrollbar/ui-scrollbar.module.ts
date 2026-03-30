@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiScrollbarRoutingModule } from './ui-scrollbar-routing.module';
 import { UiScrollbarComponent } from './ui-scrollbar.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UiScrollbarRoutingModule,
-    sharedModule,
+    SharedModule,
   ]
 })
 export class UiScrollbarModule { }

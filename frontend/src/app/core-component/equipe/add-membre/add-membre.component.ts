@@ -5,7 +5,7 @@ import {MembreService} from "../../../core/service/membre/membre.service";
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {Validators} from "ngx-editor";
 import {NgForOf} from "@angular/common";
-import {sharedModule} from "../../../shared/shared.module";
+import {SharedModule} from "../../../shared/shared.module";
 import {Router, RouterLink} from "@angular/router";
 import {routes} from "../../../core/helpers/routes";
 
@@ -15,7 +15,7 @@ import {routes} from "../../../core/helpers/routes";
   imports: [
     NgForOf,
     ReactiveFormsModule,
-    sharedModule,
+    SharedModule,
     RouterLink
   ],
   templateUrl: './add-membre.component.html',

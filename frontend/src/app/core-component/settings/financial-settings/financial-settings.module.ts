@@ -6,7 +6,7 @@ import { FinancialSettingsComponent } from './financial-settings.component';
 import { CurrencySettingsComponent } from './currency-settings/currency-settings.component';
 import { BankSettingsGridComponent } from './bank-settings-grid/bank-settings-grid.component';
 import { BankSettingsListComponent } from './bank-settings-list/bank-settings-list.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { PaymentGatewaySettingsComponent } from './payment-gateway-settings/payment-gateway-settings.component';
 import { TaxRatesComponent } from './tax-rates/tax-rates.component';
 
@@ -23,7 +23,7 @@ import { TaxRatesComponent } from './tax-rates/tax-rates.component';
   imports: [
     CommonModule,
     FinancialSettingsRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class FinancialSettingsModule { }

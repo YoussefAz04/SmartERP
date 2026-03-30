@@ -5,7 +5,7 @@ import { PayrollRoutingModule } from './payroll-routing.module';
 import { PayrollComponent } from './payroll.component';
 import { PayrollListComponent } from './payroll-list/payroll-list.component';
 import { PayslipComponent } from './payslip/payslip.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -17,7 +17,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     PayrollRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class PayrollModule { }

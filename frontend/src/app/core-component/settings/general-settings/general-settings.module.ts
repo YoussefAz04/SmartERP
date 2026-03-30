@@ -7,7 +7,7 @@ import { ConnectedAppsComponent } from './connected-apps/connected-apps.componen
 import { ProfileComponent } from './profile/profile.component';
 import { SecuritySettingsComponent } from './security-settings/security-settings.component';
 import { NotificationComponent } from './notification/notification.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -21,7 +21,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     GeneralSettingsRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class GeneralSettingsModule { }

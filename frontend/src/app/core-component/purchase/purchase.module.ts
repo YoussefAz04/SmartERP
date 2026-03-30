@@ -6,7 +6,7 @@ import { PurchaseComponent } from './purchase.component';
 import { PurchaseListComponent } from './purchase-list/purchase-list.component';
 import { PurchaseOrderReportComponent } from './purchase-order-report/purchase-order-report.component';
 import { PurchaseReturnsComponent } from './purchase-returns/purchase-returns.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -19,7 +19,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     PurchaseRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class PurchaseModule { }

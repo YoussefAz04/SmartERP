@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ProductRoutingModule } from './product-routing.module';
 import { ProductComponent } from './product.component';
 import { EditProductComponent } from './edit-product/edit-product.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { ProductListComponent } from './product-list/product-list.component';
 import { AddProductComponent } from './add-product/add-product.component';
 import { ExpiredProductsComponent } from './expired-products/expired-products.component';
@@ -23,7 +23,7 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
   imports: [
     CommonModule,
     ProductRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class ProductModule { }
