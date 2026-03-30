@@ -23,7 +23,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)  // ✅ ADD THIS for @PreAuthorize support
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
@@ -44,8 +44,8 @@ public class SecurityConfig {
         // Allow frontend origin
         config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
 
-        // Allow all HTTP methods
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        // ✅ EXPLICITLY ALLOW DELETE METHOD
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
 
         // Allow all headers including Authorization
         config.setAllowedHeaders(Collections.singletonList("*"));
@@ -61,7 +61,7 @@ public class SecurityConfig {
 
         logger.info("✅ CORS Configuration:");
         logger.info("   - Allowed Origins: http://localhost:4200");
-        logger.info("   - Allowed Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH");
+        logger.info("   - Allowed Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD");
         logger.info("   - Allowed Headers: *");
         logger.info("   - Allow Credentials: true");
 
@@ -85,11 +85,11 @@ public class SecurityConfig {
 
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - NO authentication required
+                        // ✅ Public endpoints - NO authentication required
                         .requestMatchers(
                                 "/test/**",
                                 "/auth/**",
-                                "/entreprise/**",           // ✅ Allow all /entreprise endpoints
+                                "/entreprise/**",
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
@@ -98,7 +98,7 @@ public class SecurityConfig {
                                 "/module/**",
                                 "/departement/**",
                                 "/permission/**",
-                                "/clients/**",
+                                "/clients/**",           // ✅ ALL client endpoints (including DELETE)
                                 "/document/**",
                                 "/facture/**",
                                 "/factures-vente/**"

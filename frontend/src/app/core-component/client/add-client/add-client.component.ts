@@ -1,18 +1,18 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators, ReactiveFormsModule} from "@angular/forms";
 import {ClientService} from "../../../core/service/client/client.service";
-import {Validators} from "ngx-editor";
 import {CategorieClient} from "../../../model/categorieClient.model";
-import {NgForOf} from "@angular/common";
+import {CommonModule, NgForOf} from "@angular/common";
 import {PaginatorModule} from "primeng/paginator";
 import {routes} from "../../../core/helpers/routes";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-add-client',
   standalone: true,
   imports: [
     NgForOf,
+    CommonModule,
     PaginatorModule,
     ReactiveFormsModule,
     RouterLink
@@ -21,41 +21,89 @@ import {RouterLink} from "@angular/router";
   styleUrl: './add-client.component.scss'
 })
 export class AddClientComponent implements OnInit{
-  clientForm!: FormGroup ;
-  categories : CategorieClient[] = [];
+  clientForm!: FormGroup;
+  categories: CategorieClient[] = [];
+  isLoading = false;
+  submitted = false;
 
-  constructor(private clientService : ClientService ,private  fb: FormBuilder ) {
-
-  }
+  constructor(
+    private clientService: ClientService,
+    private fb: FormBuilder,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this.loadCategorie();
+    this.initializeForm();
+  }
 
-    this.loadCategorie() ;
+  initializeForm(): void {
     this.clientForm = this.fb.group({
-      nom: ['', Validators.required],
-      prenom: ['', Validators.required],
-      email: ['', Validators.required],
-      telephone: ['', Validators.required],
-      adresse: ['', Validators.required],
-      secteurActivite: ['', Validators.required],
-      categorieId: [null, Validators.required],
+      nom: ['', [Validators.required, Validators.minLength(2)]],
+      prenom: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
+      adresse: ['', [Validators.required, Validators.minLength(5)]],
+      secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
+      categorieId: ['', Validators.required],
     });
   }
 
-  onSubmit(){
-    if (this.clientForm.valid){
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.clientForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/client/listClient']);
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+
+    if (this.clientForm.valid) {
+      this.isLoading = true;
       const formValue = this.clientForm.value;
-      const idCategorie = formValue.categorieId ;
-      this.clientService.addClient(this.clientForm.value,idCategorie).subscribe(data =>{
-        console.log('ajoute avec succes', data);
-      })
+      const idCategorie = formValue.categorieId;
+
+      const clientData = {
+        nom: formValue.nom.trim(),
+        prenom: formValue.prenom.trim(),
+        email: formValue.email.trim(),
+        telephone: formValue.telephone.trim(),
+        adresse: formValue.adresse.trim(),
+        secteurActivite: formValue.secteurActivite.trim()
+      };
+
+      this.clientService.addClient(clientData, idCategorie).subscribe({
+        next: (data) => {
+          console.log('Client ajouté avec succès:', data);
+          this.isLoading = false;
+          alert('✓ Client ajouté avec succès!');
+          this.router.navigate(['/client/listClient']);
+        },
+        error: (err: any) => {
+          this.isLoading = false;
+          console.error('Erreur:', err);
+          const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter le client';
+          alert('✗ Erreur: ' + errorMsg);
+        }
+      });
+    } else {
+      alert('⚠ Veuillez remplir correctement tous les champs');
     }
   }
 
-  loadCategorie(){
-    this.clientService.getAllCategorieClients().subscribe(data =>{
-      this.categories = data ;
-    })
+  loadCategorie(): void {
+    this.clientService.getAllCategorieClients().subscribe({
+      next: (data) => {
+        this.categories = data;
+        console.log('Catégories chargées:', data);
+      },
+      error: (err: any) => {
+        console.error('Erreur:', err);
+      }
+    });
   }
 
   protected readonly routes = routes;

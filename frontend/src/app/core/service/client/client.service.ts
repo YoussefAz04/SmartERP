@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Client} from "../../../model/client.model";
 import {Observable} from "rxjs";
 import {CategorieClient} from "../../../model/categorieClient.model";
@@ -12,31 +12,107 @@ export class ClientService {
 
   constructor(private http: HttpClient) { }
 
+  // Get token from localStorage
+  private getHeaders(): HttpHeaders {
+    const token = this.getToken();
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+      console.log('Token sent:', token.substring(0, 20) + '...');
+    } else {
+      console.warn('No token found in localStorage');
+    }
+    
+    return headers;
+  }
+
+  private getToken(): string | null {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const user = JSON.parse(atob(item));
+        return user.token || null;
+      } catch (error) {
+        console.error('Error parsing token:', error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  // ✅ ADD CLIENT
   addClient(client: Client, idCategorie: number): Observable<Client> {
-    return this.http.post<Client>(`${this.baseUrl}/addClient/${idCategorie}`, client);
+    return this.http.post<Client>(
+      `${this.baseUrl}/addClient/${idCategorie}`, 
+      client,
+      { headers: this.getHeaders() }
+    );
   }
 
+  // ✅ GET ALL CLIENTS
   getAllClients(): Observable<Client[]> {
-    return this.http.get<Client[]>(`${this.baseUrl}/getAllClients`);
+    return this.http.get<Client[]>(
+      `${this.baseUrl}/getAllClients`,
+      { headers: this.getHeaders() }
+    );
   }
 
+  // ✅ GET CLIENT BY ID
   getClientById(id: number): Observable<Client> {
-    return this.http.get<Client>(`${this.baseUrl}/getClientById/${id}`);
+    return this.http.get<Client>(
+      `${this.baseUrl}/getClientById/${id}`,
+      { headers: this.getHeaders() }
+    );
   }
 
+  // ✅ DELETE CLIENT
   deleteClient(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteClient/${id}`);
+    console.log('Deleting client:', id);
+    return this.http.delete<any>(
+      `${this.baseUrl}/deleteClient/${id}`,
+      { headers: this.getHeaders() }
+    );
   }
 
+  // ✅ ADD CATEGORY CLIENT
   addCategorieClient(categorie: CategorieClient): Observable<CategorieClient> {
-    return this.http.post<CategorieClient>(`${this.baseUrl}/addCategorieClient`, categorie);
+    return this.http.post<CategorieClient>(
+      `${this.baseUrl}/addCategorieClient`, 
+      categorie,
+      { headers: this.getHeaders() }
+    );
   }
 
+  // ✅ GET ALL CATEGORIES
   getAllCategorieClients(): Observable<CategorieClient[]> {
-    return this.http.get<CategorieClient[]>(`${this.baseUrl}/getAllCategorieClients`);
+    return this.http.get<CategorieClient[]>(
+      `${this.baseUrl}/getAllCategorieClients`,
+      { headers: this.getHeaders() }
+    );
   }
 
+  // ✅ GET CATEGORY BY ID
   getCategorieClientById(id: number): Observable<CategorieClient> {
-    return this.http.get<CategorieClient>(`${this.baseUrl}/getCategorieClientById/${id}`);
+    return this.http.get<CategorieClient>(
+      `${this.baseUrl}/getCategorieClientById/${id}`,
+      { headers: this.getHeaders() }
+    );
   }
+  updateClient(id: number, client: Client): Observable<Client> {
+  return this.http.put<Client>(
+    `${this.baseUrl}/updateClient/${id}`, 
+    client,
+    { headers: this.getHeaders() }
+  );
+}
+deleteCategorie(id: number): Observable<any> {
+  return this.http.delete(
+    `${this.baseUrl}/deleteCategorie/${id}`,
+    { headers: this.getHeaders() }
+  );
+}
+
 }

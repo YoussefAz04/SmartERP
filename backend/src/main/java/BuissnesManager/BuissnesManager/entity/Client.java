@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ← Change from AUTO to IDENTITY
     private Long id;
 
     private String nom;
@@ -29,15 +29,13 @@ public class Client {
 
     @ManyToOne
     @JsonIgnore
-    private CategorieClient categorieClient ;
-
+    private CategorieClient categorieClient;
 
     @ManyToMany
     @JsonIgnore
-    private List<Entreprise> entreprises ;
+    private List<Entreprise> entreprises;
 
     @OneToMany(mappedBy = "client")
     @JsonIgnoreProperties(value = "client")
-    private List<FactureDeVente> factureDeVentes ;
-
+    private List<FactureDeVente> factureDeVentes;
 }

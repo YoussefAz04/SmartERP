@@ -1,45 +1,79 @@
-import {Component, OnInit} from '@angular/core';
-import {ClientService} from "../../../core/service/client/client.service";
-import {Client} from "../../../model/client.model";
-import {CategorieClient} from "../../../model/categorieClient.model";
-import {MatTooltip} from "@angular/material/tooltip";
-import {NgForOf, NgIf} from "@angular/common";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ClientService } from '../../../core/service/client/client.service';
+import { CategorieClient } from '../../../model/categorieClient.model';
+import { routes } from '../../../core/helpers/routes';
 
 @Component({
   selector: 'app-list-categorie-client',
   standalone: true,
-  imports: [
-    MatTooltip,
-    NgForOf,
-    NgIf
-  ],
+  imports: [CommonModule, RouterLink],
   templateUrl: './list-categorie-client.component.html',
   styleUrl: './list-categorie-client.component.scss'
 })
-export class ListCategorieClientComponent implements OnInit{
+export class ListCategorieClientComponent implements OnInit {
+  categories: CategorieClient[] = [];
+  isLoading: boolean = false;
+  protected readonly routes = routes;
+  protected readonly router: Router;
 
-  categorieClientList : CategorieClient[] = [] ;
-  constructor(private Clientservise: ClientService,private router : Router) {
-  }
-  ngOnInit() {
-    this.Clientservise.getAllCategorieClients().subscribe(data => {
-      this.categorieClientList = data ;
-      console.log(this.categorieClientList);
-    })
-  }
-
-
-  addCategorieClient() {
-    this.router.navigate(['/client/addCategorie'])
-
+  constructor(
+    private clientService: ClientService,
+    router: Router
+  ) {
+    this.router = router;
   }
 
-  viewCategorieClient(id: number | undefined) {
-    return id ;
+  ngOnInit(): void {
+    this.loadCategories();
   }
 
-  deleteCategorie(id: number | undefined) {
-    return id ;
+  loadCategories(): void {
+    this.isLoading = true;
+    this.clientService.getAllCategorieClients().subscribe({
+      next: (data: CategorieClient[]) => {
+        this.categories = data;
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Erreur lors du chargement:', err);
+        alert('Erreur lors du chargement des catégories');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  editCategorie(id: number | undefined): void {
+    if (id) {
+      this.router.navigate(['/client/editCategorieClient', id]);
+    } else {
+      alert('ID invalide');
+    }
+  }
+
+  deleteCategorie(id: number | undefined): void {
+    if (!id) {
+      alert('ID invalide');
+      return;
+    }
+
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie?')) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.clientService.deleteCategorie(id).subscribe({
+      next: (response: any) => {
+        alert('✓ Catégorie supprimée avec succès');
+        this.loadCategories();
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Erreur lors de la suppression:', err);
+        alert('Erreur lors de la suppression');
+        this.isLoading = false;
+      }
+    });
   }
 }

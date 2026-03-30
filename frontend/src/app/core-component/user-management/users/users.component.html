@@ -160,9 +160,17 @@
                   <a class="me-2 p-2 mb-0" href="javascript:void(0);" (click)="viewUsers(data.id)" *ngIf="permissionUsers?.view">
                     <i class="feather icon-eye action-eye"></i>
                   </a>
-                  <a class="me-2 confirm-text p-2 mb-0" href="javascript:void(0);" (click)="confirmColor()" *ngIf="permissionUsers?.delete">
-                    <i class="feather icon-trash-2 feather-trash-2"></i>
-                  </a>
+                  <a class="me-2 p-2 mb-0 action-delete" 
+   href="javascript:void(0);" 
+   (click)="deleteUser(data.id)" 
+   [class.disabled]="isDeleting && deletingUserId === data.id"
+   *ngIf="permissionUsers?.delete"
+   title="Supprimer l'utilisateur">
+  <i class="feather icon-trash-2"></i>
+  @if (isDeleting && deletingUserId === data.id) {
+    <span class="spinner-small"></span>
+  }
+</a>
                 </div>
               </td>
             </tr>

@@ -5,8 +5,8 @@ import { RolesPermissionsComponent } from './roles-permissions/roles-permissions
 import { DeleteAccountComponent } from './delete-account/delete-account.component';
 import { UsersComponent } from './users/users.component';
 import { PermissionsComponent } from './permissions/permissions.component';
-import {AddUserComponent} from "./add-user/add-user.component";
-import {DetaisUsersComponent} from "./detais-users/detais-users.component";
+import { AddUserComponent } from "./add-user/add-user.component";
+import { DetaisUsersComponent } from "./detais-users/detais-users.component";
 
 const routes: Routes = [
   {
@@ -28,10 +28,12 @@ const routes: Routes = [
       {
         path: 'permissions/:id',
         component: PermissionsComponent,
-      },{
+      },
+      {
         path: 'addUsers',
         component: AddUserComponent,
-      },{
+      },
+      {
         path: 'detaisUsers/:id',
         component: DetaisUsersComponent,
       },

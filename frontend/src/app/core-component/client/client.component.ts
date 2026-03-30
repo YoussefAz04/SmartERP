@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {ClientService} from "../../core/service/client/client.service";
-import {Router} from "@angular/router";
-import {Client} from "../../model/client.model";
-import {MatTooltip} from "@angular/material/tooltip";
-import {NgForOf, NgIf} from "@angular/common";
-import {ResponseDto} from "../../model/reponseDto.model";
-import {PermissionDto} from "../../model/permissionDto.model";
+import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { ClientService } from "../../core/service/client/client.service";
+import { Router, RouterOutlet } from "@angular/router";
+import { Client } from "../../model/client.model";
+import { MatTooltip } from "@angular/material/tooltip";
+import { NgForOf, NgIf, CommonModule } from "@angular/common";
+import { ResponseDto } from "../../model/reponseDto.model";
+import { PermissionDto } from "../../model/permissionDto.model";
 
 @Component({
   selector: 'app-client',
@@ -13,13 +13,17 @@ import {PermissionDto} from "../../model/permissionDto.model";
   imports: [
     MatTooltip,
     NgForOf,
-    NgIf
+    NgIf,
+    CommonModule,
+    RouterOutlet
   ],
   templateUrl: './client.component.html',
   styleUrl: './client.component.scss'
 })
-export class ClientComponent implements OnInit{
-  clientList : Client[] = [];
+export class ClientComponent implements OnInit, AfterViewInit {
+  clientList: Client[] = [];
+  isDeleting = false;
+  
   permissionClient: PermissionDto = {
     create: false,
     view: false,
@@ -28,12 +32,16 @@ export class ClientComponent implements OnInit{
     moduleTitle: ''
   } as PermissionDto;
 
-  constructor(private Clientservise: ClientService, private router: Router) {
-  }
+  constructor(private Clientservise: ClientService, private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadClients();
     this.getUserAuthData();
+  }
+
+  ngAfterViewInit(): void {
+    console.log('Final permissionClient:', this.permissionClient);
+    console.log('Create permission:', this.permissionClient?.create);
   }
 
   loadClients(): void {
@@ -42,58 +50,93 @@ export class ClientComponent implements OnInit{
         this.clientList = data;
         console.log('Clients loaded:', this.clientList);
       },
-      error: (err) => console.error('Error loading clients:', err)
+      error: (err) => {
+        console.error('Error loading clients:', err);
+        alert('Erreur lors du chargement des clients');
+      }
     });
   }
 
-  addClient() {
+  addClient(): void {
     this.router.navigate(['/client/addClient']);
   }
 
-  viewClient(id: number | undefined) {
+  viewClient(id: number | undefined): void {
     if (id) {
+      console.log('Viewing client:', id);
       this.router.navigate(['/client/viewClient', id]);
+    } else {
+      alert('ID client invalide');
     }
   }
 
-  deleteClient(id: number | undefined) {
-    if (id && confirm('Are you sure?')) {
+  deleteClient(id: number | undefined): void {
+    if (!id) {
+      alert('ID client invalide');
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = confirm('Êtes-vous sûr de vouloir supprimer ce client ?');
+    
+    if (confirmed) {
+      this.isDeleting = true;
+      console.log('Suppression du client:', id);
+
       this.Clientservise.deleteClient(id).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Client supprimé:', response);
+          
+          // Remove from list
           this.clientList = this.clientList.filter(c => c.id !== id);
-          console.log('Client deleted');
+          this.isDeleting = false;
+          
+          // Show success message
+          alert('✓ Client supprimé avec succès');
+          
+          // Reload to ensure sync
+          this.loadClients();
         },
-        error: (err) => console.error('Error deleting client:', err)
+        error: (err) => {
+          this.isDeleting = false;
+          console.error('Erreur lors de la suppression:', err);
+          
+          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+          alert('✗ Erreur: ' + errorMsg);
+        }
       });
+    } else {
+      console.log('Suppression annulée');
     }
   }
 
-  getUserAuthData(){
+  getUserAuthData(): void {
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
-      console.log('User connecté:', currentUser?.name);
-      console.log('Token:', currentUser?.token);
-      console.log('Permissions:', currentUser?.permission);
+      try {
+        currentUser = JSON.parse(atob(item));
+        console.log('User connecté:', currentUser?.name);
+        console.log('Token:', currentUser?.token);
+        console.log('Permissions:', currentUser?.permission);
 
-      if (currentUser?.permission && Array.isArray(currentUser.permission)) {
-        currentUser.permission.forEach((per: any) => {
-          if (per.moduleTitle?.includes("gestion de Client") || per.moduleTitle?.includes("gestion client")) {
-            this.permissionClient = per;
-            console.log("Permission Client:", this.permissionClient);
-          }
-        });
+        if (currentUser?.permission && Array.isArray(currentUser.permission)) {
+          currentUser.permission.forEach((per: any) => {
+            if (per.moduleTitle?.toLowerCase().includes("gestion de client") || 
+                per.moduleTitle?.toLowerCase().includes("gestion client")) {
+              this.permissionClient = per;
+              console.log("Permission Client:", this.permissionClient);
+            }
+          });
+        }
+
+        console.log('Entreprise:', currentUser?.entreprise?.nom);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
       }
-
-      console.log('Entreprise:', currentUser?.entreprise?.nom);
     } else {
       console.warn("No user found in localStorage");
     }
   }
-  ngAfterViewInit() {
-  console.log('Final permissionClient:', this.permissionClient);
-  console.log('Create permission:', this.permissionClient?.create);
-}
 }

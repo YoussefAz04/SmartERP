@@ -1,20 +1,43 @@
-::ng-deep .e-gantt .e-headercell,
-::ng-deep .e-gantt .e-rowcell {
-  font-weight: bold;
-  color: #444;
-  background-color: #f7f7f7;
+.action-delete {
+  color: #e74c3c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover:not(.disabled) {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    transform: scale(1.1);
+  }
+
+  &:active:not(.disabled) {
+    background-color: rgba(231, 76, 60, 0.2);
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 14px;
+  }
+
+  .spinner-small {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #e74c3c;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
 }
 
-::ng-deep .e-gantt .e-gantt-taskbar {
-  border-radius: 5px;
-  box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
-}
-
-::ng-deep .e-gantt .e-weekend {
-  background-color: #ffefef !important;
-}
-
-::ng-deep .e-gantt .e-task-label {
-  font-size: 12px;
-  color: #ffffff;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

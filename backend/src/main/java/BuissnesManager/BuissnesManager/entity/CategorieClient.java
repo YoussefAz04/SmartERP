@@ -17,13 +17,16 @@ import java.util.List;
 public class CategorieClient {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ✅ CHANGE FROM AUTO TO IDENTITY
     private Long id;
 
+    @Column(nullable = false)
     private String nom;
+
+    @Column(length = 500)
     private String description;
 
     @OneToMany(mappedBy = "categorieClient")
     @JsonIgnore
-    private List<Client> clients ;
+    private List<Client> clients;
 }

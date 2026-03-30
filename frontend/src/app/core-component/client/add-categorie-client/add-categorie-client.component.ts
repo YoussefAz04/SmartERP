@@ -1,40 +1,71 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {Validators} from "ngx-editor";
-import {ClientService} from "../../../core/service/client/client.service";
-import {routes} from "../../../core/helpers/routes";
-import {RouterLink} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { ClientService } from "../../../core/service/client/client.service";
+import { routes } from "../../../core/helpers/routes";
+import { RouterLink, Router } from "@angular/router";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: 'app-add-categorie-client',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink
+    RouterLink,
+    CommonModule
   ],
   templateUrl: './add-categorie-client.component.html',
   styleUrl: './add-categorie-client.component.scss'
 })
-export class AddCategorieClientComponent implements OnInit{
-  categorieClientForm!: FormGroup ;
+export class AddCategorieClientComponent implements OnInit {
+  categorieClientForm!: FormGroup;
+  isLoading = false;
 
-  constructor(private clientService : ClientService ,private  fb: FormBuilder ) {
-
-  }
+  constructor(
+    private clientService: ClientService,
+    private fb: FormBuilder,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this.initializeForm();
+  }
+
+  initializeForm(): void {
     this.categorieClientForm = this.fb.group({
-      nom: ['', Validators.required],
-      description: ['', Validators.required],
+      nom: ['', [Validators.required, Validators.minLength(2)]],
+      description: ['', [Validators.required, Validators.minLength(5)]],
     });
   }
 
-  createCategorieClient(){
-    if (this.categorieClientForm.valid){
-      this.clientService.addCategorieClient(this.categorieClientForm.value).subscribe(data =>{
-        console.log('ajoute avec succes', data);
-      })
+  createCategorieClient(): void {
+    if (!this.categorieClientForm.valid) {
+      alert('Veuillez remplir correctement tous les champs');
+      return;
     }
+
+    this.isLoading = true;
+    this.clientService.addCategorieClient(this.categorieClientForm.value).subscribe({
+      next: (data: any) => {
+        console.log('Catégorie ajoutée avec succès', data);
+        alert('✓ Catégorie ajoutée avec succès');
+        this.router.navigate(['/client/listCategorieClient']);
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Erreur:', err);
+        alert('Erreur lors de l\'ajout: ' + (err.error?.message || err.message));
+        this.isLoading = false;
+      }
+    });
+  }
+
+  cancelForm(): void {
+    this.router.navigate(['/client/listCategorieClient']);
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.categorieClientForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
   protected readonly routes = routes;

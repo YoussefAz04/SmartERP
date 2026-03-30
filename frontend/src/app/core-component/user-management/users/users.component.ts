@@ -7,13 +7,28 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {Role} from "../../../model/role.model";
 import {ResponseDto} from "../../../model/reponseDto.model";
 import {PermissionDto} from "../../../model/permissionDto.model";
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-users',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatSortModule,
+    MatSelectModule,
+    MatTooltipModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
 })
-export class UsersComponent implements OnInit{
+export class UsersComponent implements OnInit {
   tableData: any[] = [];
   allUsers: UserDTO[] = [];
   initChecked: boolean = false;
@@ -27,6 +42,9 @@ export class UsersComponent implements OnInit{
   selectedValue7 = '';
   isCollapsed = false;
   password: boolean[] = [];
+  isDeleting = false;
+  deletingUserId: number | null = null;
+  
   permissionUsers: PermissionDto = {
     create: false,
     view: false,
@@ -34,14 +52,16 @@ export class UsersComponent implements OnInit{
     delete: false,
     moduleTitle: ''
   } as PermissionDto;
+  
   roles: Role[] = [];
   idUserAssigner!: number;
   assignRoleForm!: FormGroup;
 
-  constructor(private userService: UserService,
-              private router : Router,
-              private roleService: RoleService,
-              private fb: FormBuilder,
+  constructor(
+    private userService: UserService,
+    private router: Router,
+    private roleService: RoleService,
+    private fb: FormBuilder,
   ) {}
 
   ngOnInit(): void {
@@ -58,9 +78,12 @@ export class UsersComponent implements OnInit{
       next: (users) => {
         this.allUsers = users;
         this.tableData = [...users];
-        console.log(this.allUsers);
+        console.log('Users loaded:', this.allUsers);
       },
-      error: (err) => console.error('Erreur chargement utilisateurs', err)
+      error: (err: any) => {
+        console.error('Erreur chargement utilisateurs', err);
+        alert('Erreur lors du chargement des utilisateurs');
+      }
     });
   }
 
@@ -70,7 +93,10 @@ export class UsersComponent implements OnInit{
         this.roles = roles;
         console.log('Roles loaded:', this.roles);
       },
-      error: (err) => console.error('Error loading roles:', err)
+      error: (err: any) => {
+        console.error('Error loading roles:', err);
+        alert('Erreur lors du chargement des rôles');
+      }
     });
   }
 
@@ -94,13 +120,32 @@ export class UsersComponent implements OnInit{
     );
   }
 
-  sortData(event: any): void {
+  sortData(event: Sort): void {
     const field = event.active;
     const direction = event.direction;
+    
+    if (!direction) {
+      this.tableData = [...this.allUsers];
+      return;
+    }
+
     this.tableData.sort((a: any, b: any) => {
-      const aField = a[field] || '';
-      const bField = b[field] || '';
-      const comparison = aField.localeCompare(bField);
+      let aField = a[field];
+      let bField = b[field];
+
+      if (aField == null) aField = '';
+      if (bField == null) bField = '';
+
+      if (typeof aField === 'string') aField = aField.toLowerCase();
+      if (typeof bField === 'string') bField = bField.toLowerCase();
+
+      let comparison = 0;
+      if (aField > bField) {
+        comparison = 1;
+      } else if (aField < bField) {
+        comparison = -1;
+      }
+
       return direction === 'asc' ? comparison : -comparison;
     });
   }
@@ -117,54 +162,127 @@ export class UsersComponent implements OnInit{
     this.tableData.forEach(user => user.isSelected = state);
   }
 
-  confirmColor(): void {
-    alert('Fonction de suppression à implémenter');
+  deleteUser(userId: number): void {
+    if (!userId) {
+      alert('❌ ID utilisateur invalide');
+      return;
+    }
+
+    if (this.isDeleting) {
+      alert('Opération en cours...');
+      return;
+    }
+
+    const confirmed = confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.');
+    
+    if (confirmed) {
+      this.isDeleting = true;
+      this.deletingUserId = userId;
+
+      this.userService.deleteUser(userId).subscribe({
+        next: (response: any) => {
+          console.log('User deleted successfully:', response);
+          
+          this.allUsers = this.allUsers.filter(u => u.id !== userId);
+          this.tableData = this.tableData.filter(u => u.id !== userId);
+          
+          this.isDeleting = false;
+          this.deletingUserId = null;
+          
+          alert('✓ Utilisateur supprimé avec succès');
+          this.loadUsers();
+        },
+        error: (err: any) => {
+          this.isDeleting = false;
+          this.deletingUserId = null;
+          
+          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+          console.error('Erreur suppression:', err);
+          alert('✗ Erreur lors de la suppression: ' + errorMsg);
+        }
+      });
+    }
   }
 
   togglePassword(index: number): void {
     this.password[index] = !this.password[index];
   }
 
-  addUsers() {
-    this.router.navigate(['/user-management/addUsers'])
+  addUsers(): void {
+    this.router.navigate(['/user-management/addUsers']);
   }
 
-  viewUsers(id:any) {
-    this.router.navigate(['/user-management/detaisUsers',id])
+  viewUsers(id: any): void {
+    this.router.navigate(['/user-management/detaisUsers', id]);
   }
 
-  userAssigner(id: any) {
+  userAssigner(id: any): void {
     this.idUserAssigner = id;
-    console.log("ID user sélectionné :", this.idUserAssigner);
-    this.roleService.getAllRoles().subscribe(data => {
-      this.roles = data;
-      console.log("Rôles récupérés :", this.roles);
+    console.log("ID user sélectionné:", this.idUserAssigner);
+    
+    this.roleService.getAllRoles().subscribe({
+      next: (data) => {
+        this.roles = data;
+        console.log("Rôles récupérés:", this.roles);
+      },
+      error: (err: any) => {
+        console.error('Error loading roles:', err);
+        alert('Erreur lors du chargement des rôles');
+      }
     });
   }
 
-  onSubmitAssignRole() {
+  onSubmitAssignRole(): void {
     const roleId = this.assignRoleForm.value.roleId;
-    if (this.idUserAssigner && roleId) {
-      this.roleService.assignRoleToUser(this.idUserAssigner, roleId).subscribe(()=>{
-        this.loadUsers();
-      });
+    
+    if (!this.idUserAssigner) {
+      alert('Veuillez sélectionner un utilisateur');
+      return;
     }
+
+    if (!roleId) {
+      alert('Veuillez sélectionner un rôle');
+      return;
+    }
+
+    this.roleService.assignRoleToUser(this.idUserAssigner, roleId).subscribe({
+      next: () => {
+        console.log('Role assigned successfully');
+        alert('✓ Rôle assigné avec succès');
+        this.assignRoleForm.reset();
+        this.loadUsers();
+      },
+      error: (err: any) => {
+        console.error('Error assigning role:', err);
+        alert('✗ Erreur lors de l\'assignation du rôle');
+      }
+    });
   }
 
-  getUserAuthData(){
+  getUserAuthData(): void {
     const item = localStorage.getItem('myLSkey');
-    let currentUser: ResponseDto | null = null;
+    
     if (item) {
-      currentUser = JSON.parse(atob(item));
-      console.log('User connecté:', currentUser?.name);
-      console.log('Token:', currentUser?.token);
-      console.log('Permissions:', currentUser?.permission);
-      currentUser?.permission.map(per =>{
-        if (per.moduleTitle.includes("gestion users")){
-          this.permissionUsers = per ;
-          console.log("permission Users" ,this.permissionUsers);
+      try {
+        const currentUser: ResponseDto = JSON.parse(atob(item));
+        console.log('User connecté:', currentUser?.name);
+        console.log('Token:', currentUser?.token);
+        console.log('Permissions:', currentUser?.permission);
+
+        if (currentUser?.permission && Array.isArray(currentUser.permission)) {
+          currentUser.permission.forEach(per => {
+            if (per.moduleTitle.toLowerCase().includes("gestion users") || 
+                per.moduleTitle.toLowerCase().includes("users")) {
+              this.permissionUsers = per;
+              console.log("Permission Users:", this.permissionUsers);
+            }
+          });
         }
-      })
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    } else {
+      console.warn('No user found in localStorage');
     }
   }
 }

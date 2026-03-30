@@ -1,4 +1,5 @@
 <!-- Page Header -->
+ <router-outlet></router-outlet>
 <div class="page-header">
   <div class="add-item d-flex">
     <div class="page-title">
@@ -6,9 +7,8 @@
       <h6>Departement Client</h6>
     </div>
   </div>
- 
   
-  <!-- ✅ STYLED ADD NEW CLIENT BUTTON -->
+  
   <div class="page-btn">
     <button (click)="addClient()" class="btn btn-added">
       <i class="feather icon-plus-circle me-2"></i>Ajouter Client
@@ -53,17 +53,20 @@
                     <td>{{ d.secteurActivite }}</td>
                     <td class="action-table-data">
                       <div class="edit-delete-action">
-                        <a class="me-2 p-2 mb-0" 
-                           (click)="viewClient(d.id)" 
-                           *ngIf="permissionClient?.view"
-                           style="cursor: pointer;">
-                          <i class="feather icon-eye action-eye"></i>
+                        <!-- VIEW ICON -->
+                        <a class="action-eye" 
+                           (click)="viewClient(d.id)"
+                           style="cursor: pointer;"
+                           title="Voir">
+                          <i class="feather icon-eye"></i>
                         </a>
-                        <a class="me-2 confirm-text p-2 mb-0" 
-                           (click)="deleteClient(d.id)" 
-                           *ngIf="permissionClient?.delete"
-                           style="cursor: pointer;">
-                          <i class="feather icon-trash-2 feather-trash-2"></i>
+                        
+                        <!-- DELETE ICON -->
+                        <a class="action-delete" 
+                           (click)="deleteClient(d.id)"
+                           style="cursor: pointer;"
+                           title="Supprimer">
+                          <i class="feather icon-trash-2"></i>
                         </a>
                       </div>
                     </td>

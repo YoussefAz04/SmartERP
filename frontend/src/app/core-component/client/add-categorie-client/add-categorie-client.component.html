@@ -2,40 +2,71 @@
 <div class="page-header">
   <div class="row">
     <div class="col">
-      <h3 class="page-title">Vertical Form</h3>
+      <h3 class="page-title">Ajouter Catégorie Client</h3>
       <ul class="breadcrumb">
         <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
-        <li class="breadcrumb-item active">Vertical Form</li>
+        <li class="breadcrumb-item active">Ajouter Catégorie</li>
       </ul>
     </div>
   </div>
 </div>
-<!-- /Page Header -->
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h5 class="card-title">Ajouter une sous Categorie Client</h5>
+        <div class="card-title">
+          <h5>Formulaire Ajouter Catégorie Client</h5>
+        </div>
       </div>
       <div class="card-body">
         <form [formGroup]="categorieClientForm" (ngSubmit)="createCategorieClient()">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label">Nom de Categorie</label>
-                <input type="text" formControlName="nom" class="form-control" />
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Description</label>
-              <textarea formControlName="description" class="form-control" rows="4"></textarea>
+          <!-- Nom Field -->
+          <div class="form-group mb-3">
+            <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nom"
+              formControlName="nom"
+              placeholder="Entrez le nom de la catégorie"
+              [class.is-invalid]="isFieldInvalid('nom')">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('nom')">
+              <span *ngIf="categorieClientForm.get('nom')?.errors?.['required']">Le nom est requis</span>
+              <span *ngIf="categorieClientForm.get('nom')?.errors?.['minlength']">Le nom doit contenir au moins 2 caractères</span>
             </div>
           </div>
 
-          <div class="text-end mt-3">
-            <button type="submit" class="btn btn-primary" [disabled]="!categorieClientForm.valid">
-              Créer sous module
+          <!-- Description Field -->
+          <div class="form-group mb-3">
+            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+            <textarea 
+              class="form-control" 
+              id="description"
+              formControlName="description"
+              rows="4"
+              placeholder="Entrez la description de la catégorie"
+              [class.is-invalid]="isFieldInvalid('description')"></textarea>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+              <span *ngIf="categorieClientForm.get('description')?.errors?.['required']">La description est requise</span>
+              <span *ngIf="categorieClientForm.get('description')?.errors?.['minlength']">La description doit contenir au moins 5 caractères</span>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="form-group d-flex gap-2">
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="isLoading || categorieClientForm.invalid">
+              <i class="feather icon-save"></i> Ajouter
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-secondary"
+              (click)="cancelForm()"
+              [disabled]="isLoading">
+              <i class="feather icon-x"></i> Annuler
             </button>
           </div>
         </form>

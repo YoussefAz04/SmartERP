@@ -1,0 +1,528 @@
+// ========================================
+// Add Client Component - Complete Styling
+// ========================================
+
+// Variables
+$primary-color: #ff9a44;
+$danger-color: #dc3545;
+$warning-color: #ffc107;
+$warning-bg: #fff3cd;
+$warning-text: #856404;
+$success-color: #28a745;
+$gray-light: #f9f9f9;
+$gray-border: #e0e0e0;
+$gray-text: #6c757d;
+$text-dark: #333;
+
+// ========================================
+// Page Header
+// ========================================
+.page-header {
+  margin-bottom: 30px;
+  
+  .row {
+    display: flex;
+    align-items: center;
+  }
+  
+  .col {
+    flex: 1;
+  }
+  
+  h3.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0 0 10px 0;
+  }
+  
+  .breadcrumb {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    
+    .breadcrumb-item {
+      color: #999;
+      
+      a {
+        color: $primary-color;
+        text-decoration: none;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      
+      &.active {
+        color: #999;
+      }
+      
+      &:not(:last-child)::after {
+        content: "/";
+        margin-left: 10px;
+        color: #ddd;
+      }
+    }
+  }
+}
+
+// ========================================
+// Card Styling
+// ========================================
+.card {
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: white;
+  
+  .card-header {
+    background-color: $gray-light;
+    border-bottom: 1px solid $gray-border;
+    padding: 20px;
+    border-radius: 6px 6px 0 0;
+    
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0;
+    }
+  }
+  
+  .card-body {
+    padding: 30px;
+  }
+}
+
+// ========================================
+// Form Labels
+// ========================================
+.form-label {
+  font-weight: 500;
+  color: $text-dark;
+  margin-bottom: 10px;
+  font-size: 13px;
+  display: block;
+  
+  .text-danger {
+    color: $danger-color;
+    margin-left: 3px;
+  }
+}
+
+// ========================================
+// Input Blocks Container
+// ========================================
+.input-blocks {
+  margin-bottom: 20px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ========================================
+// Error Message - BEFORE INPUT
+// ========================================
+.error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background-color: $warning-bg;
+  color: $warning-text;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  border-left: 3px solid $warning-color;
+  font-size: 12px;
+  line-height: 1.5;
+  animation: slideDown 0.2s ease-out;
+  
+  i {
+    font-size: 14px;
+    flex-shrink: 0;
+    color: $warning-color;
+    margin-top: 1px;
+  }
+  
+  span {
+    flex: 1;
+    word-break: break-word;
+  }
+}
+
+// ========================================
+// Form Controls
+// ========================================
+.form-control,
+.form-select {
+  width: 100%;
+  border: 1px solid $gray-border;
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background-color: white;
+  color: $text-dark;
+  
+  &::placeholder {
+    color: #aaa;
+    opacity: 1;
+  }
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(255, 154, 68, 0.1);
+    outline: none;
+    background-color: white;
+  }
+  
+  &:hover:not(:disabled) {
+    border-color: #d0d0d0;
+  }
+  
+  &:disabled {
+    background-color: $gray-light;
+    color: #999;
+    cursor: not-allowed;
+  }
+  
+  // Valid state with checkmark
+  &.ng-valid.ng-touched:not(.is-invalid) {
+    border-color: $success-color;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px 16px;
+    padding-right: 35px;
+  }
+  
+  // Invalid state
+  &.is-invalid {
+    border-color: $danger-color;
+    background-color: #fff8f8;
+    
+    &:focus {
+      border-color: $danger-color;
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+    
+    &:hover {
+      border-color: $danger-color;
+    }
+  }
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  padding-right: 35px;
+  cursor: pointer;
+  
+  option {
+    color: $text-dark;
+    background-color: white;
+    padding: 5px;
+  }
+}
+
+// ========================================
+// Utility Classes
+// ========================================
+.mb-3 {
+  margin-bottom: 20px;
+}
+
+.mt-4 {
+  margin-top: 30px;
+}
+
+.me-2 {
+  margin-right: 8px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+.gap-2 {
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-lg-6 {
+  flex: 0 0 50%;
+  padding-right: 15px;
+  padding-left: 15px;
+  
+  @media (max-width: 991px) {
+    flex: 0 0 100%;
+  }
+}
+
+.col-md-12 {
+  flex: 0 0 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.text-danger {
+  color: $danger-color;
+}
+
+// ========================================
+// Buttons
+// ========================================
+.btn {
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  white-space: nowrap;
+  user-select: none;
+  
+  i {
+    font-size: 14px;
+  }
+  
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  &:focus {
+    outline: none;
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+.btn-cancel {
+  background-color: $gray-text;
+  color: white;
+  
+  &:hover:not(:disabled) {
+    background-color: #5a6268;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
+  }
+  
+  &:focus:not(:disabled) {
+    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.25);
+  }
+}
+
+.btn-submit {
+  background-color: $primary-color;
+  color: white;
+  min-width: 120px;
+  justify-content: center;
+  
+  &:hover:not(:disabled) {
+    background-color: #ff8c2e;
+    box-shadow: 0 2px 8px rgba(255, 154, 68, 0.2);
+  }
+  
+  &:focus:not(:disabled) {
+    box-shadow: 0 0 0 3px rgba(255, 154, 68, 0.25);
+  }
+  
+  &:active:not(:disabled) {
+    background-color: #ff7d1a;
+  }
+}
+
+// ========================================
+// Animations
+// ========================================
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ========================================
+// Responsive Design
+// ========================================
+@media (max-width: 991px) {
+  .card {
+    .card-body {
+      padding: 20px;
+    }
+  }
+  
+  .col-lg-6 {
+    flex: 0 0 100%;
+  }
+  
+  .d-flex.justify-content-end {
+    flex-direction: column;
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    margin-bottom: 20px;
+    
+    h3.page-title {
+      font-size: 20px;
+    }
+  }
+  
+  .card {
+    .card-header {
+      padding: 15px;
+    }
+    
+    .card-body {
+      padding: 15px;
+    }
+  }
+  
+  .input-blocks {
+    margin-bottom: 15px;
+  }
+  
+  .form-label {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .form-control,
+  .form-select {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  
+  .error-message {
+    padding: 8px 10px;
+    font-size: 11px;
+    
+    i {
+      font-size: 12px;
+    }
+  }
+  
+  .mt-4 {
+    margin-top: 20px;
+  }
+  
+  .gap-2 {
+    gap: 8px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    font-size: 12px;
+    width: 100%;
+    
+    i {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .page-header {
+    h3.page-title {
+      font-size: 18px;
+    }
+    
+    .breadcrumb {
+      font-size: 11px;
+    }
+  }
+  
+  .card {
+    .card-header {
+      padding: 12px;
+      
+      .card-title {
+        font-size: 14px;
+      }
+    }
+    
+    .card-body {
+      padding: 12px;
+    }
+  }
+  
+  .form-label {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  
+  .form-control,
+  .form-select {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .error-message {
+    padding: 6px 8px;
+    font-size: 10px;
+    margin-bottom: 6px;
+    
+    i {
+      font-size: 11px;
+    }
+  }
+  
+  .btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    
+    i {
+      font-size: 11px;
+    }
+  }
+}
+
+// ========================================
+// Accessibility
+// ========================================
+@media (prefers-reduced-motion: reduce) {
+  .error-message,
+  .form-control,
+  .form-select,
+  .btn {
+    animation: none !important;
+    transition: none !important;
+  }
+}
