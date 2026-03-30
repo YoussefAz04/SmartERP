@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ChartNg2RoutingModule } from './chart-ng2-routing.module';
 import { ChartNg2Component } from './chart-ng2.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     ChartNg2RoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class ChartNg2Module { }

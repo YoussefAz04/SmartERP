@@ -6,7 +6,7 @@ import {MembreDto} from "../../../model/membreDto.model";
 import {MembreService} from "../../../core/service/membre/membre.service";
 import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {sharedModule} from "../../../shared/shared.module";
+import {SharedModule} from "../../../shared/shared.module";
 import {ResponseDto} from "../../../model/reponseDto.model";
 import {PermissionDto} from "../../../model/permissionDto.model";
 
@@ -17,7 +17,7 @@ import {PermissionDto} from "../../../model/permissionDto.model";
     NgIf,
     NgForOf,
     FormsModule,
-    sharedModule
+    SharedModule
   ],
   templateUrl: './details-membre.component.html',
   styleUrl: './details-membre.component.scss'

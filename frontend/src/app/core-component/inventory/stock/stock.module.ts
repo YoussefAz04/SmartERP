@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { StockRoutingModule } from './stock-routing.module';
 import { StockComponent } from './stock.component';
 import { LowStocksComponent } from './low-stocks/low-stocks.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -15,7 +15,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     StockRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class StockModule { }

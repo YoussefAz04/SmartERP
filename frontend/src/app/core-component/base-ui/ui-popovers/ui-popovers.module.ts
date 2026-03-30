@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiPopoversRoutingModule } from './ui-popovers-routing.module';
 import { UiPopoversComponent } from './ui-popovers.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UiPopoversRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class UiPopoversModule { }

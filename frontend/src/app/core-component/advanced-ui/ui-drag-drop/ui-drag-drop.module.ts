@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiDragDropRoutingModule } from './ui-drag-drop-routing.module';
 import { UiDragDropComponent } from './ui-drag-drop.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UiDragDropRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class UiDragDropModule { }

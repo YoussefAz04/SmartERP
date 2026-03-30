@@ -13,7 +13,7 @@ import { PurchaseReportComponent } from './purchase-report/purchase-report.compo
 import { SalesReportComponent } from './sales-report/sales-report.component';
 import { SupplierReportComponent } from './supplier-report/supplier-report.component';
 import { TaxReportComponent } from './tax-report/tax-report.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -29,6 +29,6 @@ import { sharedModule } from 'src/app/shared/shared.module';
     SupplierReportComponent,
     TaxReportComponent,
   ],
-  imports: [CommonModule, ReportsRoutingModule, sharedModule],
+  imports: [CommonModule, ReportsRoutingModule, SharedModule],
 })
 export class ReportsModule {}

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiTooltipsRoutingModule } from './ui-tooltips-routing.module';
 import { UiTooltipsComponent } from './ui-tooltips.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UiTooltipsRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class UiTooltipsModule { }

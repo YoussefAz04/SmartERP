@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiRangesliderRoutingModule } from './ui-rangeslider-routing.module';
 import { UiRangesliderComponent } from './ui-rangeslider.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 import {MatSliderModule} from '@angular/material/slider';
 
 
@@ -14,7 +14,7 @@ import {MatSliderModule} from '@angular/material/slider';
   imports: [
     CommonModule,
     UiRangesliderRoutingModule,
-    sharedModule,
+    SharedModule,
     MatSliderModule
   ]
 })

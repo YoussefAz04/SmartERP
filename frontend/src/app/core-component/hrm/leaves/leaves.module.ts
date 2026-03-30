@@ -6,7 +6,7 @@ import { LeavesComponent } from './leaves.component';
 import { LeavesAdminComponent } from './leaves-admin/leaves-admin.component';
 import { LeavesEmployeeComponent } from './leaves-employee/leaves-employee.component';
 import { LeavesTypeComponent } from './leaves-type/leaves-type.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -19,7 +19,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     LeavesRoutingModule,
-    sharedModule
+    SharedModule
     
   ]
 })

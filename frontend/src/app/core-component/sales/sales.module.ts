@@ -7,7 +7,7 @@ import { SalesReturnsComponent } from './sales-returns/sales-returns.component';
 import { QuotationListComponent } from './quotation-list/quotation-list.component';
 import { PosComponent } from './pos/pos.component';
 import { SalesListComponent } from './sales-list/sales-list.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 
@@ -23,7 +23,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     SalesRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class SalesModule { }

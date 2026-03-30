@@ -5,7 +5,7 @@ import { ExpenseRoutingModule } from './expense-routing.module';
 import { ExpenseComponent } from './expense.component';
 import { ExpenseCategoryComponent } from './expense-category/expense-category.component';
 import { ExpenseListComponent } from './expense-list/expense-list.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -17,7 +17,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     ExpenseRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class ExpenseModule { }

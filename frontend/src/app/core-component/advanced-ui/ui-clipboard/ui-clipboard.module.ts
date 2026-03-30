@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiClipboardRoutingModule } from './ui-clipboard-routing.module';
 import { UiClipboardComponent } from './ui-clipboard.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UiClipboardRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class UiClipboardModule { }

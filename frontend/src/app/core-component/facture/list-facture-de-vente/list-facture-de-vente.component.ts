@@ -6,7 +6,7 @@ import {FactureDeVenteServiceService} from "../../../core/service/factureDeVente
 import {DecimalPipe, NgForOf, NgIf} from "@angular/common";
 import {MatTooltip} from "@angular/material/tooltip";
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {sharedModule} from "../../../shared/shared.module";
+import {SharedModule} from "../../../shared/shared.module";
 import {ClientService} from "../../../core/service/client/client.service";
 import {Client} from "../../../model/client.model";
 import {ResponseDto} from "../../../model/reponseDto.model";
@@ -21,7 +21,7 @@ import {PermissionDto} from "../../../model/permissionDto.model";
     NgForOf,
     NgIf,
     ReactiveFormsModule,
-    sharedModule
+    SharedModule
   ],
   templateUrl: './list-facture-de-vente.component.html',
   styleUrl: './list-facture-de-vente.component.scss'

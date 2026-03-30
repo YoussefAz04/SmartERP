@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { FormVerticalRoutingModule } from './form-vertical-routing.module';
 import { FormVerticalComponent } from './form-vertical.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     FormVerticalRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class FormVerticalModule { }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiTextEditorRoutingModule } from './ui-text-editor-routing.module';
 import { UiTextEditorComponent } from './ui-text-editor.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UiTextEditorRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class UiTextEditorModule { }

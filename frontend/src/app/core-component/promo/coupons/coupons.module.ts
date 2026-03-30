@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { CouponsRoutingModule } from './coupons-routing.module';
 import { CouponsComponent } from './coupons.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     CouponsRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class CouponsModule { }

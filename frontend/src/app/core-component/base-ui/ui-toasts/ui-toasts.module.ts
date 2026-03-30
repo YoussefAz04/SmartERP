@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { UiToastsRoutingModule } from './ui-toasts-routing.module';
 import { UiToastsComponent } from './ui-toasts.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     UiToastsRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class UiToastsModule { }

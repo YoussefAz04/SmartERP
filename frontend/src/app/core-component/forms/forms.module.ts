@@ -16,7 +16,7 @@ import { FormWizardComponent } from './form-wizard/form-wizard.component';
 import { FormFloatingLabelsComponent } from './layouts/form-floating-labels/form-floating-labels.component';
 import { FormHorizontalComponent } from './layouts/form-horizontal/form-horizontal.component';
 import { FormVerticalComponent } from './layouts/form-vertical/form-vertical.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -40,7 +40,7 @@ import { sharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     FormsRoutingModule,
-    sharedModule
+    SharedModule
   ]
 })
 export class FormsModule { }

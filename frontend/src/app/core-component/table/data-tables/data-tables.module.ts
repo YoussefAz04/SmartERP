@@ -4,10 +4,10 @@ import { CommonModule } from '@angular/common';
 import { DataTablesRoutingModule } from './data-tables-routing.module';
 
 import { DataTablesComponent } from './data-tables.component';
-import { sharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [DataTablesComponent],
-  imports: [CommonModule, DataTablesRoutingModule, sharedModule],
+  imports: [CommonModule, DataTablesRoutingModule, SharedModule],
 })
 export class DataTableSModule {}
