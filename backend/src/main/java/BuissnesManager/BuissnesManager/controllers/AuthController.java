@@ -153,8 +153,7 @@ public class AuthController {
 
             // Get permissions for user's roles
             for (Role role : user.getRoles()) {
-                System.out.println("📋 Getting permissions for role: " + role.getName());
-                permissionDtoList = permissionService.getPermissionsByRole(role.getId());
+                permissionDtoList.addAll(permissionService.getPermissionsByRole(role.getId()));
             }
 
             // Build response with correct setter names
@@ -176,7 +175,7 @@ public class AuthController {
             response.setRoles(roleNames);
             
             // Set permissions
-            response.setPermission(new ArrayList<>());
+            response.setPermission(permissionDtoList);
 
             System.out.println("✅ Login successful for: " + user.getUsername());
             return ResponseEntity.ok(response);

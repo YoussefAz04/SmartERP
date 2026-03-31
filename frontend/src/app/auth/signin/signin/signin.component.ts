@@ -59,29 +59,33 @@ export class SigninComponent implements OnInit {
     console.log('📤 Sending:', credentials);
 
     this.authService.login(credentials).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         console.log('✅ Login success:', response);
         
-        // Save user data
+        // ✅ FIXED: Save user data with correct field names matching backend Response.java
         localStorage.removeItem("myLSkey");
         localStorage.setItem('myLSkey', btoa(JSON.stringify({
           token: response.token,
-          name: response.userName,
-          userId: response.idUsers,
-          permission: response.permissionDtos,
+          name: response.name,              // ✅ FIXED: was response.userName
+          username: response.username,      // ✅ ADDED
+          userId: response.id,              // ✅ FIXED: was response.idUsers
+          permission: response.permission,  // ✅ FIXED: was response.permissionDtos
           entreprise: response.entreprise,
-          idRole: response.idRoleUser
+          roles: response.roles,            // ✅ ADDED: array of role name strings
+          roleId: response.roleId           // ✅ FIXED: was response.idRoleUser
         })));
 
         console.log('✅ User saved to localStorage');
+        console.log('📋 Permissions saved:', response.permission);
 
-        // Update sidebar
-        this.moduleService.updateStatusByRole(response.idRoleUser).subscribe(
-          () => console.log("✅ Sidebar updated"),
-          (err) => console.error("⚠️ Sidebar error:", err)
-        );
+        // ✅ FIXED: Use response.roleId instead of response.idRoleUser
+        if (response.roleId) {
+          this.moduleService.updateStatusByRole(response.roleId).subscribe(
+            () => console.log("✅ Sidebar updated"),
+            (err) => console.error("⚠️ Sidebar error:", err)
+          );
+        }
 
-        // ✅ FIXED: Use the correct route from routes helper
         console.log('📍 Navigating to:', routes.adminDashboard);
         setTimeout(() => {
           this.router.navigate([routes.adminDashboard]).then((success) => {
@@ -89,14 +93,12 @@ export class SigninComponent implements OnInit {
               console.log('✅ Navigation successful');
             } else {
               console.error('❌ Navigation failed');
-              // Fallback to enterprise list
               this.router.navigate(['/enterprise/listEnterprise']);
             }
             this.loading = false;
           }).catch((err) => {
             console.error('❌ Navigation error:', err);
             this.loading = false;
-            // Fallback to enterprise list
             this.router.navigate(['/enterprise/listEnterprise']);
           });
         }, 500);

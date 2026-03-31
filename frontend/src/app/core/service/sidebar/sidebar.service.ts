@@ -32,7 +32,7 @@ export class SidebarService {
   }
 
   public sideBarPosition: BehaviorSubject<string> = new BehaviorSubject<string>(
-    localStorage.getItem('sideBarPosition') || 'false'
+    localStorage.getItem('sideBarPosition') || 'true'
   );
 
   public toggleMobileSideBar: BehaviorSubject<string> =
