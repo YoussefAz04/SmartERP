@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { Fournisseur } from '../../../model/fournisseur.model';
-import { CategorieFournisseur } from '../../../model/categorieFournisseur.model';
 
 @Component({
   selector: 'app-add-article-achat',
@@ -17,7 +16,6 @@ import { CategorieFournisseur } from '../../../model/categorieFournisseur.model'
 export class AddArticleAchatComponent implements OnInit {
   articleForm!: FormGroup;
   fournisseurs: Fournisseur[] = [];
-  categories: CategorieFournisseur[] = [];
   isLoading = false;
   submitted = false;
 
@@ -31,7 +29,6 @@ export class AddArticleAchatComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadFournisseurs();
-    this.loadCategories();
   }
 
   initializeForm(): void {
@@ -55,13 +52,6 @@ export class AddArticleAchatComponent implements OnInit {
     this.fournisseurService.getAllFournisseurs().subscribe({
       next: (data) => { this.fournisseurs = data; },
       error: (err) => { console.error('Erreur chargement fournisseurs:', err); }
-    });
-  }
-
-  loadCategories(): void {
-    this.fournisseurService.getAllCategorieFournisseurs().subscribe({
-      next: (data) => { this.categories = data; },
-      error: (err) => { console.error('Erreur chargement catégories:', err); }
     });
   }
 
