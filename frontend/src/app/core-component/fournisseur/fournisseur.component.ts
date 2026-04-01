@@ -74,7 +74,6 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
           this.fournisseurList = this.fournisseurList.filter(f => f.id !== id);
           this.isDeleting = false;
           alert('✓ Fournisseur supprimé avec succès');
-          this.loadFournisseurs();
         },
         error: (err) => {
           this.isDeleting = false;
