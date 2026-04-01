@@ -15,25 +15,27 @@ public class StockService {
     @Autowired
     private StockRepository stockRepository;
     @Autowired
-    private ArticleRepository articleRepository;
+    private ArticleAchatRepo articleAchatRepo;
     @Autowired
-    private EntrepriseRepo entrepriseRepo;
+    private ArticleVenteRepo articleVenteRepo;
 
     public Stock createStock(StockDto dto) {
         Stock stock = new Stock();
+        stock.setQuantiteEntree(dto.getQuantiteEntree());
         stock.setQuantiteDisponible(dto.getQuantiteDisponible());
-        stock.setQuantiteMinimale(dto.getQuantiteMinimale());
-        stock.setQuantiteMaximale(dto.getQuantiteMaximale());
-        stock.setEmplacement(dto.getEmplacement());
-        if (dto.getArticleId() != null) {
-            Article article = articleRepository.findById(dto.getArticleId())
-                    .orElseThrow(() -> new RuntimeException("Article non trouvé: " + dto.getArticleId()));
-            stock.setArticle(article);
+        stock.setQuantiteReserve(dto.getQuantiteReserve());
+        stock.setQuantiteVendue(dto.getQuantiteVendue());
+        stock.setLocalisation(dto.getLocalisation());
+        stock.setDateDernierInventaire(dto.getDateDernierInventaire());
+        if (dto.getArticleAchatId() != null) {
+            ArticleAchat articleAchat = articleAchatRepo.findById(dto.getArticleAchatId())
+                    .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé: " + dto.getArticleAchatId()));
+            stock.setArticleAchat(articleAchat);
         }
-        if (dto.getEntrepriseId() != null) {
-            Entreprise entreprise = entrepriseRepo.findById(dto.getEntrepriseId())
-                    .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + dto.getEntrepriseId()));
-            stock.setEntreprise(entreprise);
+        if (dto.getArticleVenteId() != null) {
+            ArticleVente articleVente = articleVenteRepo.findById(dto.getArticleVenteId())
+                    .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé: " + dto.getArticleVenteId()));
+            stock.setArticleVente(articleVente);
         }
         return stockRepository.save(stock);
     }
@@ -42,12 +44,8 @@ public class StockService {
         return stockRepository.findAll();
     }
 
-    public List<Stock> getStocksByEntreprise(Long entrepriseId) {
-        return stockRepository.findByEntrepriseId(entrepriseId);
-    }
-
-    public List<Stock> getLowStockAlerts(Long entrepriseId) {
-        return stockRepository.findLowStockByEntreprise(entrepriseId);
+    public List<Stock> getStocksByArticleAchat(Long articleAchatId) {
+        return stockRepository.findByArticleAchatId(articleAchatId);
     }
 
     public Optional<Stock> getStockById(Long id) {
@@ -57,14 +55,21 @@ public class StockService {
     public Stock updateStock(Long id, StockDto dto) {
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Stock non trouvé avec id: " + id));
+        if (dto.getQuantiteEntree() != null) stock.setQuantiteEntree(dto.getQuantiteEntree());
         if (dto.getQuantiteDisponible() != null) stock.setQuantiteDisponible(dto.getQuantiteDisponible());
-        if (dto.getQuantiteMinimale() != null) stock.setQuantiteMinimale(dto.getQuantiteMinimale());
-        if (dto.getQuantiteMaximale() != null) stock.setQuantiteMaximale(dto.getQuantiteMaximale());
-        if (dto.getEmplacement() != null) stock.setEmplacement(dto.getEmplacement());
-        if (dto.getArticleId() != null) {
-            Article article = articleRepository.findById(dto.getArticleId())
-                    .orElseThrow(() -> new RuntimeException("Article non trouvé"));
-            stock.setArticle(article);
+        if (dto.getQuantiteReserve() != null) stock.setQuantiteReserve(dto.getQuantiteReserve());
+        if (dto.getQuantiteVendue() != null) stock.setQuantiteVendue(dto.getQuantiteVendue());
+        if (dto.getLocalisation() != null) stock.setLocalisation(dto.getLocalisation());
+        if (dto.getDateDernierInventaire() != null) stock.setDateDernierInventaire(dto.getDateDernierInventaire());
+        if (dto.getArticleAchatId() != null) {
+            ArticleAchat articleAchat = articleAchatRepo.findById(dto.getArticleAchatId())
+                    .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé"));
+            stock.setArticleAchat(articleAchat);
+        }
+        if (dto.getArticleVenteId() != null) {
+            ArticleVente articleVente = articleVenteRepo.findById(dto.getArticleVenteId())
+                    .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé"));
+            stock.setArticleVente(articleVente);
         }
         return stockRepository.save(stock);
     }

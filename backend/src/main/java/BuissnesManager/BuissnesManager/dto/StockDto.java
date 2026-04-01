@@ -1,43 +1,46 @@
 package BuissnesManager.BuissnesManager.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class StockDto {
     private Long id;
-    private Long articleId;
-    private String articleNom;
-    private Long entrepriseId;
-    private BigDecimal quantiteDisponible;
-    private BigDecimal quantiteMinimale;
-    private BigDecimal quantiteMaximale;
-    private String emplacement;
+    private Integer quantiteEntree;
+    private Integer quantiteDisponible;
+    private Integer quantiteReserve;
+    private Integer quantiteVendue;
+    private String localisation;
+    private LocalDateTime dateDernierInventaire;
+    private Long articleAchatId;
+    private Long articleVenteId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Long getArticleId() { return articleId; }
-    public void setArticleId(Long articleId) { this.articleId = articleId; }
+    public Integer getQuantiteEntree() { return quantiteEntree; }
+    public void setQuantiteEntree(Integer quantiteEntree) { this.quantiteEntree = quantiteEntree; }
 
-    public String getArticleNom() { return articleNom; }
-    public void setArticleNom(String articleNom) { this.articleNom = articleNom; }
+    public Integer getQuantiteDisponible() { return quantiteDisponible; }
+    public void setQuantiteDisponible(Integer quantiteDisponible) { this.quantiteDisponible = quantiteDisponible; }
 
-    public Long getEntrepriseId() { return entrepriseId; }
-    public void setEntrepriseId(Long entrepriseId) { this.entrepriseId = entrepriseId; }
+    public Integer getQuantiteReserve() { return quantiteReserve; }
+    public void setQuantiteReserve(Integer quantiteReserve) { this.quantiteReserve = quantiteReserve; }
 
-    public BigDecimal getQuantiteDisponible() { return quantiteDisponible; }
-    public void setQuantiteDisponible(BigDecimal quantiteDisponible) { this.quantiteDisponible = quantiteDisponible; }
+    public Integer getQuantiteVendue() { return quantiteVendue; }
+    public void setQuantiteVendue(Integer quantiteVendue) { this.quantiteVendue = quantiteVendue; }
 
-    public BigDecimal getQuantiteMinimale() { return quantiteMinimale; }
-    public void setQuantiteMinimale(BigDecimal quantiteMinimale) { this.quantiteMinimale = quantiteMinimale; }
+    public String getLocalisation() { return localisation; }
+    public void setLocalisation(String localisation) { this.localisation = localisation; }
 
-    public BigDecimal getQuantiteMaximale() { return quantiteMaximale; }
-    public void setQuantiteMaximale(BigDecimal quantiteMaximale) { this.quantiteMaximale = quantiteMaximale; }
+    public LocalDateTime getDateDernierInventaire() { return dateDernierInventaire; }
+    public void setDateDernierInventaire(LocalDateTime dateDernierInventaire) { this.dateDernierInventaire = dateDernierInventaire; }
 
-    public String getEmplacement() { return emplacement; }
-    public void setEmplacement(String emplacement) { this.emplacement = emplacement; }
+    public Long getArticleAchatId() { return articleAchatId; }
+    public void setArticleAchatId(Long articleAchatId) { this.articleAchatId = articleAchatId; }
+
+    public Long getArticleVenteId() { return articleVenteId; }
+    public void setArticleVenteId(Long articleVenteId) { this.articleVenteId = articleVenteId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
