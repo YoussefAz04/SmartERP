@@ -1,4 +1,5 @@
 import { CategorieFournisseur } from './categorieFournisseur.model';
+import { Entreprise } from './entreprise.model';
 
 export interface Fournisseur {
   id?: number;
@@ -6,5 +7,13 @@ export interface Fournisseur {
   email: string;
   telephone: string;
   adresse: string;
+  ville: string;
+  pays: string;
+  codePostal: string;
+  numeroIdentificationFiscale: string;
+  registreCommerce: string;
+  createdAt?: string;
+  updatedAt?: string;
   categorieFournisseur?: CategorieFournisseur;
+  entreprise?: Entreprise;
 }

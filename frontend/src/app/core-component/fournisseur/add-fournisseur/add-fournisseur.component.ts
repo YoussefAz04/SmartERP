@@ -38,6 +38,7 @@ export class AddFournisseurComponent implements OnInit {
   initializeForm(): void {
     this.fournisseurForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
+
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
@@ -62,7 +63,7 @@ export class AddFournisseurComponent implements OnInit {
       const formValue = this.fournisseurForm.value;
       const idCategorie = formValue.categorieId;
 
-      const fournisseurData = {
+        const fournisseurData: any = {
         nom: formValue.nom.trim(),
         email: formValue.email.trim(),
         telephone: formValue.telephone.trim(),

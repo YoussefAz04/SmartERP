@@ -31,7 +31,6 @@
             <thead>
               <tr>
                 <th>Nom</th>
-          
                 <th>Email</th>
                 <th>Telephone</th>
                 <th>Adresse</th>
@@ -44,7 +43,6 @@
                 @for (f of fournisseurList; track f.id) {
                   <tr>
                     <td>{{ f.nom }}</td>
-               
                     <td>{{ f.email }}</td>
                     <td>{{ f.telephone }}</td>
                     <td>{{ f.adresse }}</td>
@@ -64,7 +62,7 @@
                 }
               } @else {
                 <tr>
-                  <td colspan="7" class="text-center">Aucun fournisseur disponible</td>
+                  <td colspan="6" class="text-center">Aucun fournisseur disponible</td>
                 </tr>
               }
             </tbody>

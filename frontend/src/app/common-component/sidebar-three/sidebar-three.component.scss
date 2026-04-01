@@ -1,3 +1,356 @@
-#sidebar .sidebar-inner {
-  width: 100%;
+// ============================================
+// VARIABLES
+// ============================================
+$primary: #ff9f43;
+$primary-dark: #ff8c1a;
+$secondary: #1a202c;
+$light-bg: #f8fafc;
+$border: #e2e8f0;
+$text-primary: #2d3748;
+$text-secondary: #718096;
+$text-light: #a0aec0;
+
+// ============================================
+// SIDEBAR BASE
+// ============================================
+#sidebar {
+  .sidebar-inner {
+    width: 100%;
+    padding: 12px 0;
+  }
+}
+
+// ============================================
+// SIDEBAR MENU
+// ============================================
+#sidebar-menu {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    // SECTION HEADERS
+    li.submenu-open {
+      margin-bottom: 24px;
+      padding: 0;
+
+      .submenu-hdr {
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: $text-light;
+        letter-spacing: 1.2px;
+        padding: 14px 18px 10px;
+        margin: 0;
+        transition: all 0.3s ease;
+        cursor: default;
+      }
+
+      // SUBMENU LIST
+      > ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        li {
+          margin: 0;
+          padding: 0;
+          transition: all 0.3s ease;
+
+          // MAIN MENU ITEMS
+          > a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: $text-secondary;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            border-left: 3px solid transparent;
+            border-radius: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            width: 100%;
+            text-align: left;
+
+            // ICON
+            i {
+              font-size: 18px;
+              color: #cbd5e0;
+              margin-right: 12px;
+              transition: all 0.3s ease;
+              min-width: 20px;
+              text-align: center;
+            }
+
+            // TEXT
+            span {
+              flex: 1;
+
+              // ARROW
+              &.menu-arrow {
+                margin-left: auto;
+                font-size: 16px;
+                color: #cbd5e0;
+                transition: transform 0.3s ease, color 0.3s ease;
+                margin-right: 4px;
+              }
+            }
+
+            // HOVER STATE
+            &:hover {
+              background: linear-gradient(90deg, rgba(255, 159, 67, 0.08) 0%, transparent 100%);
+              color: $primary;
+              border-left-color: $primary;
+              padding-left: 22px;
+
+              i {
+                color: $primary;
+                transform: scale(1.1);
+              }
+
+              .menu-arrow {
+                color: $primary;
+              }
+            }
+
+            // ACTIVE STATE
+            &.active,
+            &.sub-active.active {
+              background: linear-gradient(90deg, rgba(255, 159, 67, 0.15) 0%, transparent 100%);
+              color: $primary;
+              border-left-color: $primary;
+              font-weight: 700;
+
+              i {
+                color: $primary;
+              }
+
+              .menu-arrow {
+                color: $primary;
+              }
+            }
+
+            // EXPANDED STATE
+            &.subdrop {
+              background: linear-gradient(90deg, rgba(255, 159, 67, 0.1) 0%, transparent 100%);
+              color: $primary;
+              border-left-color: $primary;
+
+              .menu-arrow {
+                transform: rotate(180deg);
+                color: $primary;
+              }
+
+              i {
+                color: $primary;
+              }
+            }
+          }
+
+          // SUBMENU CONTAINER
+          &.submenu {
+            // Nested submenu items
+            ul {
+              list-style: none;
+              padding: 0;
+              margin: 6px 0 0 0;
+              background: transparent;
+              border-radius: 0;
+              overflow: hidden;
+
+              &.d-block {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+              }
+
+              &.d-none {
+                display: none;
+              }
+
+              li {
+                margin: 0;
+                padding: 0;
+                border-radius: 0;
+
+                a {
+                  padding: 10px 18px 10px 46px;
+                  margin: 0;
+                  font-size: 13px;
+                  color: $text-light;
+                  border-radius: 0;
+                  border-left: 3px solid transparent;
+                  font-weight: 500;
+                  transition: all 0.3s ease;
+
+                  &:hover {
+                    background: linear-gradient(90deg, rgba(255, 159, 67, 0.1) 0%, transparent 100%);
+                    color: $primary;
+                    border-left-color: $primary;
+                    padding-left: 50px;
+                  }
+
+                  &.active {
+                    background: linear-gradient(90deg, rgba(255, 159, 67, 0.12) 0%, transparent 100%);
+                    color: $primary;
+                    border-left-color: $primary;
+                    font-weight: 600;
+                  }
+                }
+              }
+            }
+          }
+
+          // MULTI-LEVEL SUBMENU
+          &.submenu-two {
+            a {
+              &.subdrop {
+                .inside-submenu {
+                  transform: rotate(180deg);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // HIGHLIGHT ACTIVE SECTION
+      &:has(.submenu-hdr:hover) {
+        .submenu-hdr {
+          color: $primary;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// SCROLLBAR STYLING
+// ============================================
+.sidebar-inner,
+#sidebar-menu {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #a0aec0;
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+@media (max-width: 1024px) {
+  #sidebar-menu ul li.submenu-open {
+    margin-bottom: 18px;
+
+    .submenu-hdr {
+      padding: 12px 16px 8px;
+      font-size: 10px;
+    }
+
+    > ul {
+      gap: 2px;
+
+      li > a {
+        padding: 10px 16px;
+        font-size: 13px;
+
+        i {
+          font-size: 16px;
+          margin-right: 10px;
+        }
+
+        .menu-arrow {
+          font-size: 14px;
+        }
+      }
+
+      li.submenu ul a {
+        padding: 8px 16px 8px 40px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  #sidebar-menu ul li.submenu-open {
+    margin-bottom: 16px;
+
+    .submenu-hdr {
+      padding: 10px 14px 6px;
+      font-size: 9px;
+    }
+
+    > ul {
+      li > a {
+        padding: 10px 14px;
+        font-size: 12px;
+
+        i {
+          font-size: 16px;
+          margin-right: 8px;
+        }
+      }
+
+      li.submenu ul a {
+        padding: 8px 14px 8px 36px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  #sidebar-menu ul li.submenu-open {
+    margin-bottom: 12px;
+
+    .submenu-hdr {
+      padding: 8px 12px 4px;
+      font-size: 8px;
+      letter-spacing: 0.8px;
+    }
+
+    > ul {
+      gap: 2px;
+
+      li > a {
+        padding: 8px 12px;
+        font-size: 11px;
+
+        i {
+          font-size: 14px;
+          margin-right: 6px;
+        }
+
+        .menu-arrow {
+          font-size: 12px;
+        }
+      }
+
+      li.submenu ul a {
+        padding: 6px 12px 6px 32px;
+        font-size: 11px;
+      }
+    }
+  }
 }
