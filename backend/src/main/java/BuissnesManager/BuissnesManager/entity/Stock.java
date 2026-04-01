@@ -1,13 +1,11 @@
 package BuissnesManager.BuissnesManager.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,31 +20,38 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal quantiteDisponible;
+    @Column(name = "quantite_entree")
+    private Integer quantiteEntree;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal quantiteMinimale;
+    @Column(name = "quantite_disponible")
+    private Integer quantiteDisponible;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal quantiteMaximale;
+    @Column(name = "quantite_reserve")
+    private Integer quantiteReserve;
 
-    private String emplacement;
+    @Column(name = "quantite_vendue")
+    private Integer quantiteVendue;
+
+    private String localisation;
+
+    @Column(name = "date_dernier_inventaire")
+    private LocalDateTime dateDernierInventaire;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "article_id")
+    @JoinColumn(name = "article_achat_id", nullable = false)
     @JsonIgnoreProperties("stocks")
-    private Article article;
+    private ArticleAchat articleAchat;
 
     @ManyToOne
-    @JoinColumn(name = "entreprise_id")
-    @JsonIgnore
-    private Entreprise entreprise;
+    @JoinColumn(name = "article_vente_id")
+    @JsonIgnoreProperties("stocks")
+    private ArticleVente articleVente;
 }

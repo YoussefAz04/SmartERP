@@ -37,19 +37,10 @@ public class StockController {
         }
     }
 
-    @GetMapping("/entreprise/{entrepriseId}")
-    public ResponseEntity<List<Stock>> getStocksByEntreprise(@PathVariable Long entrepriseId) {
+    @GetMapping("/article-achat/{articleAchatId}")
+    public ResponseEntity<List<Stock>> getStocksByArticleAchat(@PathVariable Long articleAchatId) {
         try {
-            return ResponseEntity.ok(stockService.getStocksByEntreprise(entrepriseId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/low-stock/{entrepriseId}")
-    public ResponseEntity<List<Stock>> getLowStockAlerts(@PathVariable Long entrepriseId) {
-        try {
-            return ResponseEntity.ok(stockService.getLowStockAlerts(entrepriseId));
+            return ResponseEntity.ok(stockService.getStocksByArticleAchat(articleAchatId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

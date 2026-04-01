@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "article")
@@ -62,8 +61,4 @@ public class Article {
     @JoinColumn(name = "entreprise_id")
     @JsonIgnore
     private Entreprise entreprise;
-
-    @OneToMany(mappedBy = "article")
-    @JsonIgnore
-    private List<Stock> stocks;
 }
