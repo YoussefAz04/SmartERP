@@ -1,0 +1,75 @@
+<router-outlet></router-outlet>
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Articles Vente</h4>
+      <h6>Liste des articles de vente</h6>
+    </div>
+  </div>
+  <div class="page-btn">
+    <button (click)="addArticle()" class="btn btn-added">
+      <i class="feather icon-plus-circle me-2"></i>Ajouter Article Vente
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">Liste des Articles Vente</div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table text-nowrap">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Prix Unitaire</th>
+                <th>Quantité</th>
+                <th>Unité</th>
+                <th>SKU</th>
+                <th>Markup (%)</th>
+                <th>Article Achat</th>
+                <th>Créé le</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (articleVenteList && articleVenteList.length > 0) {
+                @for (a of articleVenteList; track a.id) {
+                  <tr>
+                    <td>{{ a.nom }}</td>
+                    <td>{{ a.prixUnitaire | number:'1.2-2' }}</td>
+                    <td>{{ a.quantite }}</td>
+                    <td>{{ a.unite }}</td>
+                    <td>{{ a.sku }}</td>
+                    <td>{{ a.markup }}%</td>
+                    <td>{{ a.articleAchat?.nom }}</td>
+                    <td>{{ a.createdAt | date:'shortDate' }}</td>
+                    <td class="action-table-data">
+                      <div class="edit-delete-action">
+                        <a class="action-edit" (click)="editArticle(a.id)" style="cursor:pointer" title="Modifier">
+                          <i class="feather icon-edit"></i>
+                        </a>
+                        <a class="action-delete" (click)="deleteArticle(a.id)" style="cursor:pointer" title="Supprimer">
+                          <i class="feather icon-trash-2"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              } @else {
+                <tr>
+                  <td colspan="9" class="text-center">
+                    @if (isLoading) { Chargement... } @else { Aucun article disponible }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

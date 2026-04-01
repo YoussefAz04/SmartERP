@@ -174,6 +174,14 @@ const routes: Routes = [
         path: 'budget',
         loadChildren: () =>
           import('./budget/budget-routing.module').then((m) => m.BudgetRoutingModule),
+      },{
+        path: 'article-achat',
+        loadChildren: () =>
+          import('./article-achat/article-achat.module').then((m) => m.ArticleAchatModule),
+      },{
+        path: 'article-vente',
+        loadChildren: () =>
+          import('./article-vente/article-vente.module').then((m) => m.ArticleVenteModule),
       },
 
 
