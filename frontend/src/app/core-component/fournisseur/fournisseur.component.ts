@@ -39,6 +39,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     console.log('Final permissionFournisseur:', this.permissionFournisseur);
+    console.log('Create permission:', this.permissionFournisseur?.create);
   }
 
   loadFournisseurs(): void {
@@ -58,6 +59,15 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/fournisseur/addFournisseur']);
   }
 
+  viewFournisseur(id: number | undefined): void {
+    if (id) {
+      console.log('Viewing fournisseur:', id);
+      this.router.navigate(['/fournisseur/viewFournisseur', id]);
+    } else {
+      alert('ID fournisseur invalide');
+    }
+  }
+
   deleteFournisseur(id: number | undefined): void {
     if (!id) {
       alert('ID fournisseur invalide');
@@ -68,12 +78,15 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
 
     if (confirmed) {
       this.isDeleting = true;
+      console.log('Suppression du fournisseur:', id);
+
       this.fournisseurService.deleteFournisseur(id).subscribe({
         next: (response) => {
           console.log('Fournisseur supprimé:', response);
           this.fournisseurList = this.fournisseurList.filter(f => f.id !== id);
           this.isDeleting = false;
           alert('✓ Fournisseur supprimé avec succès');
+          this.loadFournisseurs();
         },
         error: (err) => {
           this.isDeleting = false;
@@ -82,6 +95,8 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
           alert('✗ Erreur: ' + errorMsg);
         }
       });
+    } else {
+      console.log('Suppression annulée');
     }
   }
 
@@ -92,14 +107,20 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
     if (item) {
       try {
         currentUser = JSON.parse(atob(item));
+        console.log('User connecté:', currentUser?.name);
+        console.log('Permissions:', currentUser?.permission);
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {
-            if (per.moduleTitle?.toLowerCase().includes('fournisseur')) {
+            if (per.moduleTitle?.toLowerCase().includes('gestion de fournisseur') ||
+                per.moduleTitle?.toLowerCase().includes('gestion fournisseur')) {
               this.permissionFournisseur = per;
+              console.log('Permission Fournisseur:', this.permissionFournisseur);
             }
           });
         }
+
+        console.log('Entreprise:', currentUser?.entreprise?.nom);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
