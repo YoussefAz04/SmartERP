@@ -12,17 +12,14 @@ export class FournisseurService {
 
   constructor(private http: HttpClient) {}
 
-  // Get token from localStorage
   private getHeaders(): HttpHeaders {
     const token = this.getToken();
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
+    } else {
+      console.warn('No token found in localStorage');
     }
-
     return headers;
   }
 
@@ -67,6 +64,7 @@ export class FournisseurService {
 
   // ✅ DELETE FOURNISSEUR
   deleteFournisseur(id: number): Observable<any> {
+    console.log('Deleting fournisseur:', id);
     return this.http.delete<any>(
       `${this.baseUrl}/deleteFournisseur/${id}`,
       { headers: this.getHeaders() }
@@ -95,6 +93,14 @@ export class FournisseurService {
   getAllCategorieFournisseurs(): Observable<CategorieFournisseur[]> {
     return this.http.get<CategorieFournisseur[]>(
       `${this.baseUrl}/getAllCategorieFournisseurs`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // ✅ GET CATEGORIE FOURNISSEUR BY ID
+  getCategorieFournisseurById(id: number): Observable<CategorieFournisseur> {
+    return this.http.get<CategorieFournisseur>(
+      `${this.baseUrl}/getCategorieFournisseurById/${id}`,
       { headers: this.getHeaders() }
     );
   }
