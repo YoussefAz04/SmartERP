@@ -3,12 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Fournisseur } from '../../../model/fournisseur.model';
 import { CategorieFournisseur } from '../../../model/categorieFournisseur.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FournisseurService {
-  private baseUrl = 'http://localhost:8020/fournisseurs';
+  private baseUrl = `${environment.apiUrl}/fournisseurs`;
 
   constructor(private http: HttpClient) {}
 
@@ -109,6 +110,15 @@ export class FournisseurService {
   deleteCategorieFournisseur(id: number): Observable<any> {
     return this.http.delete<any>(
       `${this.baseUrl}/deleteCategorieFournisseur/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // ✅ UPDATE CATEGORIE FOURNISSEUR
+  updateCategorieFournisseur(id: number, categorie: CategorieFournisseur): Observable<CategorieFournisseur> {
+    return this.http.put<CategorieFournisseur>(
+      `${this.baseUrl}/updateCategorieFournisseur/${id}`,
+      categorie,
       { headers: this.getHeaders() }
     );
   }

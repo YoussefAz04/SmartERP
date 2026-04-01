@@ -49,6 +49,20 @@
                     <td>{{ f.categorieFournisseur?.nom }}</td>
                     <td class="action-table-data">
                       <div class="edit-delete-action">
+                        <!-- VIEW ICON -->
+                        <a class="action-eye"
+                           (click)="viewFournisseur(f.id)"
+                           style="cursor: pointer;"
+                           title="Voir détails">
+                          <i class="feather icon-eye"></i>
+                        </a>
+                        <!-- EDIT ICON -->
+                        <a class="action-edit"
+                           (click)="editFournisseur(f.id)"
+                           style="cursor: pointer;"
+                           title="Modifier">
+                          <i class="feather icon-edit"></i>
+                        </a>
                         <!-- DELETE ICON -->
                         <a class="action-delete"
                            (click)="deleteFournisseur(f.id)"

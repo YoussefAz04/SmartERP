@@ -1,0 +1,137 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Modifier un Fournisseur</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a routerLink="/fournisseur/listFournisseur">Fournisseurs</a></li>
+        <li class="breadcrumb-item active">Modifier</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<!-- Error State -->
+<div class="alert alert-danger" *ngIf="errorMessage">
+  <i class="feather icon-alert-circle me-2"></i>{{ errorMessage }}
+</div>
+
+<div class="row" *ngIf="!errorMessage">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Modifier le Fournisseur</h5>
+      </div>
+      <div class="card-body">
+        <!-- Loading State -->
+        <div class="text-center py-3" *ngIf="isLoading && !fournisseurForm.dirty">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+        </div>
+
+        <form [formGroup]="fournisseurForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="row">
+
+            <!-- Nom Field -->
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Nom <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="nom"
+                  placeholder="Entrez le nom"
+                  [class.is-invalid]="isFieldInvalid('nom')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('nom')">
+                  <span *ngIf="fournisseurForm.get('nom')?.hasError('required')">Le nom est requis</span>
+                  <span *ngIf="fournisseurForm.get('nom')?.hasError('minlength')">Min 2 caractères</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Telephone Field -->
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  formControlName="telephone"
+                  placeholder="Entrez le téléphone (8+ chiffres)"
+                  [class.is-invalid]="isFieldInvalid('telephone')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('telephone')">
+                  <span *ngIf="fournisseurForm.get('telephone')?.hasError('required')">Le téléphone est requis</span>
+                  <span *ngIf="fournisseurForm.get('telephone')?.hasError('pattern')">Min 8 chiffres</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Email <span class="text-danger">*</span></label>
+                <input
+                  type="email"
+                  class="form-control"
+                  formControlName="email"
+                  placeholder="exemple@email.com"
+                  [class.is-invalid]="isFieldInvalid('email')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                  <span *ngIf="fournisseurForm.get('email')?.hasError('required')">L'email est requis</span>
+                  <span *ngIf="fournisseurForm.get('email')?.hasError('email')">Email invalide</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adresse Field -->
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="adresse"
+                  placeholder="Entrez l'adresse complète"
+                  [class.is-invalid]="isFieldInvalid('adresse')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('adresse')">
+                  <span *ngIf="fournisseurForm.get('adresse')?.hasError('required')">L'adresse est requise</span>
+                  <span *ngIf="fournisseurForm.get('adresse')?.hasError('minlength')">Min 5 caractères</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Categorie Field -->
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Catégorie Fournisseur <span class="text-danger">*</span></label>
+                <select
+                  class="form-select"
+                  formControlName="categorieId"
+                  [class.is-invalid]="isFieldInvalid('categorieId')">
+                  <option value="">-- Sélectionnez une catégorie --</option>
+                  <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('categorieId')">
+                  <span *ngIf="fournisseurForm.get('categorieId')?.hasError('required')">La catégorie est requise</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="d-flex justify-content-end mt-4 gap-2">
+            <button type="button" class="btn btn-secondary" [disabled]="isLoading" (click)="onCancel()">
+              <i class="feather icon-x me-2"></i>Annuler
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="!fournisseurForm.valid || isLoading">
+              <i class="feather icon-save me-2"></i>{{ isLoading ? 'En cours...' : 'Enregistrer' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
