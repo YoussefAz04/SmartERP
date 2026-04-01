@@ -40,23 +40,7 @@
               </div>
             </div>
 
-            <!-- Prenom Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Prénom <span class="text-danger">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="prenom"
-                  placeholder="Entrez le prénom"
-                  [class.is-invalid]="isFieldInvalid('prenom')">
-                <span class="error-message" *ngIf="isFieldInvalid('prenom')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="fournisseurForm.get('prenom')?.hasError('required')">Le prénom est requis</span>
-                  <span *ngIf="fournisseurForm.get('prenom')?.hasError('minlength')">Min 2 caractères</span>
-                </span>
-              </div>
-            </div>
+            
 
             <!-- Telephone Field -->
             <div class="col-lg-6">

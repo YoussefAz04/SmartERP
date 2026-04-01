@@ -101,7 +101,8 @@ public class SecurityConfig {
                                 "/clients/**",           // ✅ ALL client endpoints (including DELETE)
                                 "/document/**",
                                 "/facture/**",
-                                "/factures-vente/**"
+                                "/factures-vente/**",
+                                "/fournisseurs/**"
                         ).permitAll()
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
