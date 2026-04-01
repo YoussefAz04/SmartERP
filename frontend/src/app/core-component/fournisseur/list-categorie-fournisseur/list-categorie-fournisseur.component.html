@@ -48,6 +48,8 @@
               <tr>
                 <th>Nom</th>
                 <th>Description</th>
+                <th>Créé le</th>
+                <th>Modifié le</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -55,6 +57,8 @@
               <tr *ngFor="let categorie of categories">
                 <td class="fw-bold">{{ categorie.nom }}</td>
                 <td>{{ categorie.description || 'N/A' }}</td>
+                <td>{{ categorie.createdAt | date:'short' }}</td>
+                <td>{{ categorie.updatedAt | date:'short' }}</td>
                 <td>
                   <div class="d-flex gap-2">
                     <!-- Edit Button -->
