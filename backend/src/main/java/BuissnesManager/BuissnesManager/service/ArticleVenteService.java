@@ -1,0 +1,82 @@
+package BuissnesManager.BuissnesManager.service;
+
+import BuissnesManager.BuissnesManager.entity.ArticleAchat;
+import BuissnesManager.BuissnesManager.entity.ArticleVente;
+import BuissnesManager.BuissnesManager.entity.Client;
+import BuissnesManager.BuissnesManager.repository.ArticleAchatRepo;
+import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
+import BuissnesManager.BuissnesManager.repository.ClientRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ArticleVenteService {
+
+    @Autowired
+    private ArticleVenteRepo articleVenteRepo;
+
+    @Autowired
+    private ArticleAchatRepo articleAchatRepo;
+
+    @Autowired
+    private ClientRepo clientRepo;
+
+    public List<ArticleVente> getAllArticlesVente() {
+        return articleVenteRepo.findAll();
+    }
+
+    public Optional<ArticleVente> getArticleVenteById(Long id) {
+        return articleVenteRepo.findById(id);
+    }
+
+    public List<ArticleVente> getArticleVenteByClient(Long clientId) {
+        return articleVenteRepo.findByClientId(clientId);
+    }
+
+    public List<ArticleVente> getArticleVenteByArticleAchat(Long articleAchatId) {
+        return articleVenteRepo.findByArticleAchatId(articleAchatId);
+    }
+
+    @Transactional
+    public ArticleVente addArticleVente(ArticleVente articleVente, Long articleAchatId, Long clientId) {
+        if (articleAchatId != null) {
+            ArticleAchat articleAchat = articleAchatRepo.findById(articleAchatId)
+                    .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + articleAchatId));
+            articleVente.setArticleAchat(articleAchat);
+        }
+        if (clientId != null) {
+            Client client = clientRepo.findById(clientId)
+                    .orElseThrow(() -> new RuntimeException("Client non trouvé avec id: " + clientId));
+            articleVente.setClient(client);
+        }
+        return articleVenteRepo.save(articleVente);
+    }
+
+    @Transactional
+    public ArticleVente updateArticleVente(Long id, ArticleVente updated) {
+        ArticleVente existing = articleVenteRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé avec id: " + id));
+        if (updated.getNom() != null) existing.setNom(updated.getNom());
+        if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
+        if (updated.getPrixUnitaire() != null) existing.setPrixUnitaire(updated.getPrixUnitaire());
+        if (updated.getQuantite() != null) existing.setQuantite(updated.getQuantite());
+        if (updated.getUnite() != null) existing.setUnite(updated.getUnite());
+        if (updated.getSku() != null) existing.setSku(updated.getSku());
+        if (updated.getMarkup() != null) existing.setMarkup(updated.getMarkup());
+        if (updated.getArticleAchat() != null) existing.setArticleAchat(updated.getArticleAchat());
+        if (updated.getClient() != null) existing.setClient(updated.getClient());
+        return articleVenteRepo.save(existing);
+    }
+
+    @Transactional
+    public void deleteArticleVente(Long id) {
+        if (!articleVenteRepo.existsById(id)) {
+            throw new RuntimeException("ArticleVente non trouvé avec id: " + id);
+        }
+        articleVenteRepo.deleteById(id);
+    }
+}

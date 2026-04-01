@@ -102,7 +102,9 @@ public class SecurityConfig {
                                 "/document/**",
                                 "/facture/**",
                                 "/factures-vente/**",
-                                "/fournisseurs/**"
+                                "/fournisseurs/**",
+                                "/articles-achat/**",
+                                "/articles-vente/**"
                         ).permitAll()
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
