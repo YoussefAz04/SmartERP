@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/auth/service/auth.service';
 export class RegisterComponent implements OnInit {
   
   registerForm!: FormGroup;
-  loading = false;
+  isLoading = false;
   errorMessage = '';
   successMessage = '';
   protected readonly routes = routes;
@@ -44,6 +44,22 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.controls;
   }
 
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.registerForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const field = this.registerForm.get(fieldName);
+    if (!field) return '';
+    if (field.hasError('required')) return 'Ce champ est obligatoire';
+    if (field.hasError('email')) return 'Email invalide';
+    if (field.hasError('minlength')) return `Minimum ${field.errors?.['minlength']?.requiredLength} caractères`;
+    if (field.hasError('maxlength')) return `Maximum ${field.errors?.['maxlength']?.requiredLength} caractères`;
+    if (field.hasError('pattern')) return 'Format invalide';
+    return '';
+  }
+
   passwordMatchValidator(group: FormGroup): { [key: string]: any } | null {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
@@ -66,7 +82,7 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
 
@@ -82,7 +98,7 @@ export class RegisterComponent implements OnInit {
     this.authService.register(registerData).subscribe({
       next: (response) => {
         console.log('✅ Registration successful:', response);
-        this.loading = false;
+        this.isLoading = false;
         this.successMessage = 'Registration successful! Redirecting to signin...';
         
         setTimeout(() => {
@@ -102,7 +118,7 @@ export class RegisterComponent implements OnInit {
       },
       error: (error) => {
         console.error('❌ Registration error:', error);
-        this.loading = false;
+        this.isLoading = false;
         
         if (error.error?.message) {
           this.errorMessage = error.error.message;

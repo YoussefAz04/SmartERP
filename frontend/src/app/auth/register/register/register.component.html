@@ -80,9 +80,9 @@
                     </div>
 
                     <div class="form-login">
-                        <button type="button" class="btn btn-login" (click)="navigation()" [disabled]="loading">
-                            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            {{ loading ? 'Creating Account...' : 'Sign Up' }}
+                        <button type="button" class="btn btn-login" (click)="navigation()" [disabled]="isLoading">
+                            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
                         </button>
                     </div>
                     <div class="signinform">
