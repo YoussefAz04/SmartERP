@@ -83,4 +83,14 @@ public class FournisseurService {
         }
         categorieFournisseurRepo.deleteById(id);
     }
+
+    // ✅ UPDATE CATEGORIE FOURNISSEUR
+    @Transactional
+    public CategorieFournisseur updateCategorieFournisseur(Long id, CategorieFournisseur categorie) {
+        if (!categorieFournisseurRepo.existsById(id)) {
+            throw new RuntimeException("Categorie not found with id: " + id);
+        }
+        categorie.setId(id);
+        return categorieFournisseurRepo.save(categorie);
+    }
 }

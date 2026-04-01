@@ -127,4 +127,15 @@ public class FournisseurController {
             ));
         }
     }
+
+    // ✅ UPDATE CATEGORIE FOURNISSEUR
+    @PutMapping("/updateCategorieFournisseur/{id}")
+    public ResponseEntity<CategorieFournisseur> updateCategorieFournisseur(@PathVariable Long id, @RequestBody CategorieFournisseur categorie) {
+        try {
+            CategorieFournisseur updated = fournisseurService.updateCategorieFournisseur(id, categorie);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
 }

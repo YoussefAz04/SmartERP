@@ -1,0 +1,76 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Détails Fournisseur</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a routerLink="/fournisseur/listFournisseur">Fournisseurs</a></li>
+        <li class="breadcrumb-item active">Détails</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<!-- Loading State -->
+<div class="text-center py-5" *ngIf="isLoading">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Chargement...</span>
+  </div>
+</div>
+
+<!-- Error State -->
+<div class="alert alert-danger" *ngIf="!isLoading && errorMessage">
+  <i class="feather icon-alert-circle me-2"></i>{{ errorMessage }}
+  <div class="mt-2">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+      <i class="feather icon-arrow-left me-1"></i>Retour
+    </button>
+  </div>
+</div>
+
+<!-- Fournisseur Details -->
+<div class="row" *ngIf="!isLoading && fournisseur && !errorMessage">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">{{ fournisseur.nom }}</h5>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-primary btn-sm" (click)="editFournisseur()">
+            <i class="feather icon-edit me-1"></i>Modifier
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+            <i class="feather icon-arrow-left me-1"></i>Retour
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Nom</div>
+          <div class="col-sm-8">{{ fournisseur.nom }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Email</div>
+          <div class="col-sm-8">{{ fournisseur.email }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Téléphone</div>
+          <div class="col-sm-8">{{ fournisseur.telephone }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Adresse</div>
+          <div class="col-sm-8">{{ fournisseur.adresse }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Catégorie</div>
+          <div class="col-sm-8">{{ fournisseur.categorieFournisseur?.nom || 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

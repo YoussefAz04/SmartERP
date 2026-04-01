@@ -57,6 +57,16 @@
                 <td>{{ categorie.description || 'N/A' }}</td>
                 <td>
                   <div class="d-flex gap-2">
+                    <!-- Edit Button -->
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-warning"
+                      (click)="router.navigate(['/fournisseur/editCategorieFournisseur', categorie.id])"
+                      title="Modifier"
+                      [disabled]="isLoading"
+                      style="border: none; cursor: pointer; background-color: #ff9a44; color: white; padding: 5px 10px; border-radius: 4px;">
+                      <i class="feather icon-edit"></i>
+                    </button>
                     <!-- Delete Button -->
                     <button
                       type="button"

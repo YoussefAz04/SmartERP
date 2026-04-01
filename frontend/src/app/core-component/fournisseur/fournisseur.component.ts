@@ -68,6 +68,15 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
     }
   }
 
+  editFournisseur(id: number | undefined): void {
+    if (id) {
+      console.log('Editing fournisseur:', id);
+      this.router.navigate(['/fournisseur/editFournisseur', id]);
+    } else {
+      alert('ID fournisseur invalide');
+    }
+  }
+
   deleteFournisseur(id: number | undefined): void {
     if (!id) {
       alert('ID fournisseur invalide');

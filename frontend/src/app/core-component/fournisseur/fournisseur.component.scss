@@ -204,6 +204,20 @@
       }
     }
 
+    // Edit Icon - Orange
+    .action-edit {
+      color: #ff9a44;
+
+      &:hover {
+        background-color: rgba(255, 154, 68, 0.1);
+        color: #ff7d1a;
+      }
+
+      &:active {
+        background-color: rgba(255, 154, 68, 0.2);
+      }
+    }
+
     // Delete Icon - Red
     .action-delete {
       color: #e74c3c;
