@@ -1,0 +1,79 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Liste Catégorie Fournisseur</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active">Catégories Fournisseur</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title d-flex justify-content-between align-items-center">
+          <h5>Liste Des Catégories Fournisseur</h5>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            (click)="router.navigate(['/fournisseur/addCategorieFournisseur'])"
+            style="border: none; cursor: pointer;">
+            <i class="feather icon-plus"></i> Ajouter Catégorie
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Loading State -->
+        <div class="text-center py-5" *ngIf="isLoading">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="alert alert-info text-center" *ngIf="!isLoading && categories.length === 0">
+          <i class="feather icon-inbox"></i>
+          <p>Aucune catégorie fournisseur trouvée</p>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive" *ngIf="!isLoading && categories.length > 0">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let categorie of categories">
+                <td class="fw-bold">{{ categorie.nom }}</td>
+                <td>{{ categorie.description || 'N/A' }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <!-- Delete Button -->
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger"
+                      (click)="deleteCategorie(categorie.id)"
+                      title="Supprimer"
+                      [disabled]="isLoading"
+                      style="border: none; cursor: pointer; background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 4px;">
+                      <i class="feather icon-trash-2"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

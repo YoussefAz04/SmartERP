@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,13 +16,15 @@ public class Fournisseur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
-    private String nom ;
-    private String prenom ;
+    private Long id;
+    private String nom;
+    private String prenom;
+    private String email;
+    private String telephone;
+    private String adresse;
 
-
-
-
-
-
+    @ManyToOne
+    @JoinColumn(name = "categorie_fournisseur_id")
+    @JsonIgnoreProperties("fournisseurs")
+    private CategorieFournisseur categorieFournisseur;
 }

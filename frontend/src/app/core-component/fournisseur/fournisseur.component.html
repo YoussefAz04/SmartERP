@@ -1,0 +1,77 @@
+<!-- Page Header -->
+<router-outlet></router-outlet>
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>List Fournisseurs</h4>
+      <h6>Departement Fournisseur</h6>
+    </div>
+  </div>
+
+  <div class="page-btn">
+    <button (click)="addFournisseur()" class="btn btn-added">
+      <i class="feather icon-plus-circle me-2"></i>Ajouter Fournisseur
+    </button>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<!-- Table responsive -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          Liste des Fournisseurs
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table text-nowrap">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Email</th>
+                <th>Telephone</th>
+                <th>Adresse</th>
+                <th>Categorie</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (fournisseurList && fournisseurList.length > 0) {
+                @for (f of fournisseurList; track f.id) {
+                  <tr>
+                    <td>{{ f.nom }}</td>
+                    <td>{{ f.prenom }}</td>
+                    <td>{{ f.email }}</td>
+                    <td>{{ f.telephone }}</td>
+                    <td>{{ f.adresse }}</td>
+                    <td>{{ f.categorieFournisseur?.nom }}</td>
+                    <td class="action-table-data">
+                      <div class="edit-delete-action">
+                        <!-- DELETE ICON -->
+                        <a class="action-delete"
+                           (click)="deleteFournisseur(f.id)"
+                           style="cursor: pointer;"
+                           title="Supprimer">
+                          <i class="feather icon-trash-2"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              } @else {
+                <tr>
+                  <td colspan="7" class="text-center">Aucun fournisseur disponible</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Table responsive -->

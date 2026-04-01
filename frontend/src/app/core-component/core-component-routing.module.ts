@@ -116,6 +116,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'fournisseur',
+        loadChildren: () =>
+          import('./fournisseur/fournisseur-routing.module').then(
+            (m) => m.FournisseurRoutingModule
+          ),
+      },
+      {
         path: 'equipe',
         loadChildren: () =>
           import('./equipe/equipe-routing.module').then(
