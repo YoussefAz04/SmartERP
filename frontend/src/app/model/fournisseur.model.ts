@@ -12,8 +12,8 @@ export interface Fournisseur {
   codePostal: string;
   numeroIdentificationFiscale: string;
   registreCommerce: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
   categorieFournisseur?: CategorieFournisseur;
   entreprise?: Entreprise;
 }

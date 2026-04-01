@@ -35,6 +35,8 @@
                 <th>Telephone</th>
                 <th>Adresse</th>
                 <th>Categorie</th>
+                <th>Créé le</th>
+                <th>Modifié le</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -47,6 +49,8 @@
                     <td>{{ f.telephone }}</td>
                     <td>{{ f.adresse }}</td>
                     <td>{{ f.categorieFournisseur?.nom }}</td>
+                    <td>{{ f.createdAt | date:'short' }}</td>
+                    <td>{{ f.updatedAt | date:'short' }}</td>
                     <td class="action-table-data">
                       <div class="edit-delete-action">
                         <!-- VIEW ICON -->
@@ -76,7 +80,7 @@
                 }
               } @else {
                 <tr>
-                  <td colspan="6" class="text-center">Aucun fournisseur disponible</td>
+                  <td colspan="8" class="text-center">Aucun fournisseur disponible</td>
                 </tr>
               }
             </tbody>
