@@ -25,6 +25,11 @@ const routes: Routes = [
         component: ListStockDashboardComponent,
       },
       {
+        path: 'listStock',
+        redirectTo: 'listStockDashboard',
+        pathMatch: 'full',
+      },
+      {
         path: 'list',
         component: ListStockComponent,
       },
