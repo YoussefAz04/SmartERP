@@ -18,6 +18,8 @@ export class AddArticleVenteComponent implements OnInit {
   articlesAchat: ArticleAchat[] = [];
   isLoading = false;
   submitted = false;
+  selectedArticleAchatPrice: number | null = null;
+  autoCalculated = false;
 
   constructor(
     private articleVenteService: ArticleVenteService,
@@ -29,6 +31,7 @@ export class AddArticleVenteComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadArticlesAchat();
+    this.setupPriceAutoCalc();
   }
 
   initializeForm(): void {
@@ -42,6 +45,37 @@ export class AddArticleVenteComponent implements OnInit {
       markup: [null, [Validators.min(0)]],
       articleAchatId: [null],
     });
+  }
+
+  setupPriceAutoCalc(): void {
+    this.articleForm.get('articleAchatId')?.valueChanges.subscribe(id => {
+      if (id) {
+        const found = this.articlesAchat.find(a => a.id === Number(id));
+        this.selectedArticleAchatPrice = found?.prixUnitaire ?? null;
+        this.recalculatePrice();
+      } else {
+        this.selectedArticleAchatPrice = null;
+        this.autoCalculated = false;
+      }
+    });
+
+    this.articleForm.get('markup')?.valueChanges.subscribe(() => {
+      this.recalculatePrice();
+    });
+  }
+
+  recalculatePrice(): void {
+    const markup = this.articleForm.get('markup')?.value;
+    if (this.selectedArticleAchatPrice != null && markup != null && markup >= 0) {
+      const calculatedPrice = this.selectedArticleAchatPrice * (1 + markup / 100);
+      this.articleForm.get('prixUnitaire')?.setValue(
+        Math.round(calculatedPrice * 100) / 100,
+        { emitEvent: false }
+      );
+      this.autoCalculated = true;
+    } else {
+      this.autoCalculated = false;
+    }
   }
 
   isFieldInvalid(fieldName: string): boolean {

@@ -1,4 +1,6 @@
 <router-outlet></router-outlet>
+
+<!-- Page Header -->
 <div class="page-header">
   <div class="add-item d-flex">
     <div class="page-title">
@@ -6,45 +8,167 @@
       <h6>Liste des articles de vente</h6>
     </div>
   </div>
-  <div class="page-btn">
+  <div class="page-btn d-flex gap-2">
+    <button (click)="exportCSV()" class="btn btn-secondary">
+      <i class="feather icon-download me-2"></i>Exporter CSV
+    </button>
     <button (click)="addArticle()" class="btn btn-added">
       <i class="feather icon-plus-circle me-2"></i>Ajouter Article Vente
     </button>
   </div>
 </div>
 
+<!-- Stats Cards -->
+<div class="row mb-4">
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count">
+      <div class="dash-counts">
+        <h4>{{ totalCount }}</h4>
+        <h5>Total Articles</h5>
+      </div>
+      <div class="dash-imgs">
+        <i class="feather icon-shopping-cart"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count das2">
+      <div class="dash-counts">
+        <h4>{{ avgPrice | number:'1.2-2' }}</h4>
+        <h5>Prix Moyen Vente</h5>
+      </div>
+      <div class="dash-imgs">
+        <i class="feather icon-tag"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count das3">
+      <div class="dash-counts">
+        <h4>{{ avgMarkup | number:'1.1-1' }}%</h4>
+        <h5>Markup Moyen</h5>
+      </div>
+      <div class="dash-imgs">
+        <i class="feather icon-percent"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count das4">
+      <div class="dash-counts">
+        <h4>{{ totalValue | number:'1.2-2' }}</h4>
+        <h5>Valeur Totale</h5>
+      </div>
+      <div class="dash-imgs">
+        <i class="feather icon-dollar-sign"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search & Filters -->
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Recherche</label>
+        <input type="text" class="form-control" placeholder="Nom, SKU, article achat..."
+          [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Prix min</label>
+        <input type="number" class="form-control" placeholder="0"
+          [(ngModel)]="minPrice" (ngModelChange)="applyFilters()">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Prix max</label>
+        <input type="number" class="form-control" placeholder="∞"
+          [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Markup min (%)</label>
+        <input type="number" class="form-control" placeholder="0"
+          [(ngModel)]="minMarkup" (ngModelChange)="applyFilters()">
+      </div>
+      <div class="col-md-1">
+        <label class="form-label">Markup max (%)</label>
+        <input type="number" class="form-control" placeholder="∞"
+          [(ngModel)]="maxMarkup" (ngModelChange)="applyFilters()">
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-secondary w-100" (click)="resetFilters()">
+          <i class="feather icon-refresh-cw me-1"></i>Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
 <div class="row">
   <div class="col-xl-12">
     <div class="card">
       <div class="card-header justify-content-between">
-        <div class="card-title">Liste des Articles Vente</div>
+        <div class="card-title">
+          Liste des Articles Vente
+          <span class="badge bg-secondary ms-2">{{ filteredList.length }} article(s)</span>
+        </div>
+        @if (selectedIds.size > 0) {
+          <button class="btn btn-danger btn-sm" (click)="bulkDelete()">
+            <i class="feather icon-trash-2 me-1"></i>Supprimer ({{ selectedIds.size }})
+          </button>
+        }
       </div>
       <div class="card-body">
         <div class="table-responsive">
           <table class="table text-nowrap">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Prix Unitaire</th>
-                <th>Quantité</th>
+                <th>
+                  <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()">
+                </th>
+                <th style="cursor:pointer" (click)="setSort('nom')">
+                  Nom <i class="feather" [class.icon-chevron-up]="sortField==='nom' && sortAsc"
+                    [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
+                    [class.icon-chevrons-up]="sortField!=='nom'"></i>
+                </th>
+                <th style="cursor:pointer" (click)="setSort('prixUnitaire')">
+                  Prix Unitaire <i class="feather" [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
+                    [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
+                    [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
+                </th>
+                <th style="cursor:pointer" (click)="setSort('quantite')">Quantité</th>
                 <th>Unité</th>
                 <th>SKU</th>
-                <th>Markup (%)</th>
+                <th style="cursor:pointer" (click)="setSort('markup')">
+                  Markup (%) <i class="feather" [class.icon-chevron-up]="sortField==='markup' && sortAsc"
+                    [class.icon-chevron-down]="sortField==='markup' && !sortAsc"
+                    [class.icon-chevrons-up]="sortField!=='markup'"></i>
+                </th>
                 <th>Article Achat</th>
-                <th>Créé le</th>
+                <th style="cursor:pointer" (click)="setSort('createdAt')">Créé le</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @if (articleVenteList && articleVenteList.length > 0) {
-                @for (a of articleVenteList; track a.id) {
-                  <tr>
+              @if (filteredList && filteredList.length > 0) {
+                @for (a of filteredList; track a.id) {
+                  <tr [class.table-active]="isSelected(a.id)">
+                    <td>
+                      <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)">
+                    </td>
                     <td>{{ a.nom }}</td>
                     <td>{{ a.prixUnitaire | number:'1.2-2' }}</td>
                     <td>{{ a.quantite }}</td>
                     <td>{{ a.unite }}</td>
                     <td>{{ a.sku }}</td>
-                    <td>{{ a.markup }}%</td>
+                    <td>
+                      @if (a.markup != null) {
+                        <span class="badge bg-success">{{ a.markup }}%</span>
+                      } @else {
+                        <span class="text-muted">—</span>
+                      }
+                    </td>
                     <td>{{ a.articleAchat?.nom }}</td>
                     <td>{{ a.createdAt | date:'shortDate' }}</td>
                     <td class="action-table-data">
@@ -61,7 +185,7 @@
                 }
               } @else {
                 <tr>
-                  <td colspan="9" class="text-center">
+                  <td colspan="10" class="text-center">
                     @if (isLoading) { Chargement... } @else { Aucun article disponible }
                   </td>
                 </tr>
@@ -73,3 +197,4 @@
     </div>
   </div>
 </div>
+

@@ -35,9 +35,44 @@
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
-                <label class="form-label">Prix Unitaire <span class="text-danger">*</span></label>
+                <label class="form-label">Article Achat (optionnel)</label>
+                <select class="form-select" formControlName="articleAchatId">
+                  <option value="">-- Lier à un article achat --</option>
+                  <option *ngFor="let a of articlesAchat" [value]="a.id">
+                    {{ a.nom }} ({{ a.prixUnitaire | number:'1.2-2' }})
+                  </option>
+                </select>
+                <small *ngIf="selectedArticleAchatPrice != null" class="text-info">
+                  <i class="feather icon-info me-1"></i>Prix achat: {{ selectedArticleAchatPrice | number:'1.2-2' }}
+                </small>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Markup (%)</label>
+                <input type="number" class="form-control" formControlName="markup"
+                  placeholder="Pourcentage de marge" [class.is-invalid]="isFieldInvalid('markup')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('markup')">
+                  <span *ngIf="articleForm.get('markup')?.hasError('min')">Le markup doit être positif</span>
+                </div>
+                <small *ngIf="selectedArticleAchatPrice != null" class="text-muted">
+                  Saisissez un markup pour calculer automatiquement le prix de vente
+                </small>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">
+                  Prix Unitaire <span class="text-danger">*</span>
+                  <span *ngIf="autoCalculated" class="badge bg-success ms-2">
+                    <i class="feather icon-zap me-1"></i>Calculé automatiquement
+                  </span>
+                </label>
                 <input type="number" class="form-control" formControlName="prixUnitaire"
-                  placeholder="Prix de vente" [class.is-invalid]="isFieldInvalid('prixUnitaire')">
+                  placeholder="Prix de vente" [class.is-invalid]="isFieldInvalid('prixUnitaire')"
+                  [class.border-success]="autoCalculated">
                 <div class="invalid-feedback" *ngIf="isFieldInvalid('prixUnitaire')">
                   <span *ngIf="articleForm.get('prixUnitaire')?.hasError('required')">Le prix est requis</span>
                   <span *ngIf="articleForm.get('prixUnitaire')?.hasError('min')">Le prix doit être positif</span>
@@ -59,17 +94,6 @@
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
-                <label class="form-label">Markup (%)</label>
-                <input type="number" class="form-control" formControlName="markup"
-                  placeholder="Pourcentage de marge" [class.is-invalid]="isFieldInvalid('markup')">
-                <div class="invalid-feedback" *ngIf="isFieldInvalid('markup')">
-                  <span *ngIf="articleForm.get('markup')?.hasError('min')">Le markup doit être positif</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
                 <label class="form-label">Unité</label>
                 <input type="text" class="form-control" formControlName="unite" placeholder="ex: pcs, kg, L">
               </div>
@@ -79,16 +103,6 @@
               <div class="input-blocks mb-3">
                 <label class="form-label">SKU / Référence</label>
                 <input type="text" class="form-control" formControlName="sku" placeholder="Code SKU ou référence">
-              </div>
-            </div>
-
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Article Achat (optionnel)</label>
-                <select class="form-select" formControlName="articleAchatId">
-                  <option value="">-- Lier à un article achat --</option>
-                  <option *ngFor="let a of articlesAchat" [value]="a.id">{{ a.nom }}</option>
-                </select>
               </div>
             </div>
 
