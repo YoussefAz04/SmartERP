@@ -1,0 +1,215 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Tableau de bord - Gestion des Stocks</h4>
+      <h6>Vue d'ensemble de l'inventaire</h6>
+    </div>
+  </div>
+  <div class="page-btn">
+    <button class="btn btn-added" routerLink="/stock/list">
+      <i class="feather icon-list me-2"></i>Voir l'inventaire
+    </button>
+  </div>
+</div>
+
+<!-- Loading -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2">Chargement des données...</p>
+  </div>
+}
+
+@if (!isLoading) {
+  <!-- KPI Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-xl-3 col-sm-6">
+      <div class="card dash-widget">
+        <div class="card-body">
+          <span class="dash-widget-icon bg-primary text-white">
+            <i class="feather icon-package"></i>
+          </span>
+          <div class="dash-widget-info">
+            <h3>{{ totalItems }}</h3>
+            <span>Articles en stock</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card dash-widget">
+        <div class="card-body">
+          <span class="dash-widget-icon bg-success text-white">
+            <i class="feather icon-trending-up"></i>
+          </span>
+          <div class="dash-widget-info">
+            <h3>{{ totalAvailable }}</h3>
+            <span>Quantité disponible totale</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card dash-widget">
+        <div class="card-body">
+          <span class="dash-widget-icon bg-warning text-white">
+            <i class="feather icon-alert-triangle"></i>
+          </span>
+          <div class="dash-widget-info">
+            <h3>{{ lowStockCount }}</h3>
+            <span>Ruptures de stock</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card dash-widget">
+        <div class="card-body">
+          <span class="dash-widget-icon bg-info text-white">
+            <i class="feather icon-activity"></i>
+          </span>
+          <div class="dash-widget-info">
+            <h3>{{ movements.length }}</h3>
+            <span>Mouvements totaux</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row g-3 mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Actions rapides</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-primary" routerLink="/stock/list">
+              <i class="feather icon-list me-2"></i>Voir tout l'inventaire
+            </button>
+            <button class="btn btn-success" routerLink="/stock/adjust">
+              <i class="feather icon-edit me-2"></i>Ajuster le stock
+            </button>
+            <button class="btn btn-info text-white" routerLink="/stock/movements">
+              <i class="feather icon-clock me-2"></i>Historique des mouvements
+            </button>
+            <button class="btn btn-warning text-dark" routerLink="/stock/list">
+              <i class="feather icon-alert-triangle me-2"></i>Alertes stock bas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Low Stock Items -->
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">
+            <i class="feather icon-alert-triangle text-warning me-2"></i>
+            Articles en rupture de stock
+          </h5>
+          <span class="badge bg-warning text-dark">{{ lowStockCount }}</span>
+        </div>
+        <div class="card-body p-0">
+          @if (lowStockItems.length > 0) {
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Article</th>
+                    <th>Localisation</th>
+                    <th class="text-center">Qté Dispo</th>
+                    <th class="text-center">Statut</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (stock of lowStockItems.slice(0, 10); track stock.id) {
+                    <tr>
+                      <td>
+                        <strong>{{ stock.articleAchat?.nom || 'Article #' + stock.id }}</strong>
+                      </td>
+                      <td>{{ stock.localisation || '-' }}</td>
+                      <td class="text-center">
+                        <span class="fw-bold text-danger">{{ stock.quantiteDisponible || 0 }}</span>
+                      </td>
+                      <td class="text-center">
+                        <span [class]="getStatusBadgeClass(stock)">{{ getStatusLabel(stock) }}</span>
+                      </td>
+                      <td>
+                        <a [routerLink]="['/stock/view', stock.id]" class="btn btn-sm btn-outline-primary">
+                          <i class="feather icon-eye"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="text-center py-4 text-muted">
+              <i class="feather icon-check-circle fs-1 text-success"></i>
+              <p class="mt-2">Aucune rupture de stock détectée</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Movements -->
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">
+            <i class="feather icon-activity text-primary me-2"></i>
+            Derniers mouvements
+          </h5>
+          <a routerLink="/stock/movements" class="btn btn-sm btn-outline-primary">Voir tout</a>
+        </div>
+        <div class="card-body p-0">
+          @if (recentMovements.length > 0) {
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th class="text-center">Quantité</th>
+                    <th>Motif</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (mvt of recentMovements; track mvt.id) {
+                    <tr>
+                      <td>{{ mvt.dateMouvement | date:'dd/MM/yy HH:mm' }}</td>
+                      <td>
+                        <span [class]="getMovementBadgeClass(mvt.typeMouvement)">
+                          {{ mvt.typeMouvement }}
+                        </span>
+                      </td>
+                      <td class="text-center fw-bold">{{ mvt.quantite }}</td>
+                      <td class="text-truncate" style="max-width: 150px">{{ mvt.motif || '-' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="text-center py-4 text-muted">
+              <i class="feather icon-inbox fs-1"></i>
+              <p class="mt-2">Aucun mouvement enregistré</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
