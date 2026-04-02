@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -46,5 +48,18 @@ public class FactureAchat {
     @JsonIgnoreProperties(value = "factureAchat")
     private DetaisFactureAchat detaisFactureAchat ;
 
+    @ManyToOne
+    @JoinColumn(name = "fournisseur_id")
+    @JsonIgnoreProperties({"articleAchats", "factureAchats"})
+    private Fournisseur fournisseur;
+
+    @ManyToOne
+    @JoinColumn(name = "commande_achat_id")
+    @JsonIgnoreProperties({"factureAchats", "lignes", "fournisseur", "entreprise"})
+    private CommandeAchat commandeAchat;
+
+    @OneToMany(mappedBy = "factureAchat")
+    @JsonIgnoreProperties("factureAchat")
+    private List<LigneFactureAchat> lignes;
 
 }

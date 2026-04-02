@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CommandeVenteDto {
     private Long id;
@@ -18,6 +19,7 @@ public class CommandeVenteDto {
     private Long entrepriseId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<LigneCommandeVenteDto> lignes;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -57,4 +59,7 @@ public class CommandeVenteDto {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public List<LigneCommandeVenteDto> getLignes() { return lignes; }
+    public void setLignes(List<LigneCommandeVenteDto> lignes) { this.lignes = lignes; }
 }
