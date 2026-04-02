@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
+import BuissnesManager.BuissnesManager.entity.FactureVente;
 import BuissnesManager.BuissnesManager.service.CommandeVenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,6 +73,30 @@ public class CommandeVenteController {
     public ResponseEntity<CommandeVente> updateStatut(@PathVariable Long id, @RequestParam String statut) {
         try {
             CommandeVente commande = commandeVenteService.updateStatut(id, statut);
+            return ResponseEntity.ok(commande);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/{id}/valider")
+    public ResponseEntity<FactureVente> validerCommande(@PathVariable Long id) {
+        try {
+            FactureVente facture = commandeVenteService.validerCommande(id);
+            return ResponseEntity.ok(facture);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/{id}/annuler")
+    public ResponseEntity<CommandeVente> annulerCommande(@PathVariable Long id) {
+        try {
+            CommandeVente commande = commandeVenteService.annulerCommande(id);
             return ResponseEntity.ok(commande);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

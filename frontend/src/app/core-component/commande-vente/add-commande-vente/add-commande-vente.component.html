@@ -1,0 +1,141 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-title">
+    <h4>{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande Vente</h4>
+    <h6>{{ isEditMode ? 'Modifier la commande vente' : 'Créer une nouvelle commande vente' }}</h6>
+  </div>
+</div>
+
+<form [formGroup]="commandeForm" (ngSubmit)="onSubmit()">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Informations générales</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Référence <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="reference"
+                 [class.is-invalid]="isFieldInvalid('reference')" placeholder="CV-0001">
+          <div class="invalid-feedback">La référence est obligatoire.</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Date Commande <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" formControlName="dateCommande"
+                 [class.is-invalid]="isFieldInvalid('dateCommande')">
+          <div class="invalid-feedback">La date est obligatoire.</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Date Livraison Prévue</label>
+          <input type="date" class="form-control" formControlName="dateLivraisonPrevue">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Client</label>
+          <select class="form-select" formControlName="clientId">
+            <option value="">-- Sélectionner un client --</option>
+            <option *ngFor="let c of clients" [value]="c.id">{{ c.nom }} {{ c.prenom }}</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Notes</label>
+          <textarea class="form-control" formControlName="note" rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lignes de commande -->
+  <div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="card-title mb-0">Articles Vente (Lignes de commande)</h5>
+      <button type="button" class="btn btn-sm btn-primary" (click)="addLigne()">
+        <i class="feather icon-plus me-1"></i>Ajouter un article
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" formArrayName="lignes">
+          <thead class="table-light">
+            <tr>
+              <th>Article Vente</th>
+              <th>Quantité</th>
+              <th>Prix Unit. HT</th>
+              <th>TVA (%)</th>
+              <th>Montant HT</th>
+              <th>Montant TTC</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ligne of lignesArray.controls; let i = index" [formGroupName]="i">
+              <td>
+                <select class="form-select form-select-sm" formControlName="articleVenteId"
+                        (change)="onArticleChange(i)">
+                  <option value="">-- Article --</option>
+                  <option *ngFor="let a of articles" [value]="a.id">{{ a.nom }}</option>
+                </select>
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm" formControlName="quantite"
+                       min="0.01" step="0.01" style="width: 80px">
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm" formControlName="prixUnitaireHT"
+                       min="0" step="0.01" style="width: 100px">
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm" formControlName="tva"
+                       min="0" max="100" step="0.1" style="width: 70px">
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm bg-light" formControlName="montantHT"
+                       readonly style="width: 100px">
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm bg-light" formControlName="montantTTC"
+                       readonly style="width: 110px">
+              </td>
+              <td>
+                <button type="button" class="btn btn-sm btn-danger" (click)="removeLigne(i)">
+                  <i class="feather icon-trash-2"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="lignesArray.length === 0">
+              <td colspan="7" class="text-center text-muted py-3">
+                Aucun article ajouté. Cliquez sur "Ajouter un article" pour commencer.
+              </td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="lignesArray.length > 0" class="table-light">
+            <tr>
+              <td colspan="4" class="text-end fw-bold">Totaux :</td>
+              <td><strong>{{ totalHT | number:'1.2-2' }}</strong></td>
+              <td><strong>{{ totalTTC | number:'1.2-2' }}</strong></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="4" class="text-end">Montant TVA :</td>
+              <td colspan="2"><strong>{{ totalTVA | number:'1.2-2' }}</strong></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="card mt-4">
+    <div class="card-body d-flex gap-2 justify-content-end">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        <i class="feather icon-x me-1"></i>Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        <i *ngIf="!isLoading" class="feather icon-save me-1"></i>
+        {{ isEditMode ? 'Enregistrer les modifications' : 'Créer la commande' }}
+      </button>
+    </div>
+  </div>
+</form>

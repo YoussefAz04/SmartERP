@@ -1,0 +1,157 @@
+<router-outlet></router-outlet>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Commandes Achat</h4>
+      <h6>Liste des commandes d'achat</h6>
+    </div>
+  </div>
+  <div class="page-btn">
+    <button (click)="addCommande()" class="btn btn-added">
+      <i class="feather icon-plus-circle me-2"></i>Nouvelle Commande Achat
+    </button>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Rechercher par référence ou fournisseur..."
+               [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="selectedStatut" (ngModelChange)="applyFilters()">
+          <option value="">Tous les statuts</option>
+          <option *ngFor="let s of statuts" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-outline-secondary w-100" (click)="searchTerm=''; selectedStatut=''; applyFilters()">
+          <i class="feather icon-x me-1"></i>Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card">
+  <div class="card-body">
+    <div *ngIf="isLoading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading" class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Référence</th>
+            <th>Date Commande</th>
+            <th>Date Livraison</th>
+            <th>Fournisseur</th>
+            <th>Montant HT</th>
+            <th>Montant TVA</th>
+            <th>Montant TTC</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let commande of filteredCommandes">
+            <td><strong>{{ commande.reference }}</strong></td>
+            <td>{{ commande.dateCommande | date:'dd/MM/yyyy' }}</td>
+            <td>{{ commande.dateLivraisonPrevue | date:'dd/MM/yyyy' }}</td>
+            <td>{{ commande.fournisseur?.nom || '-' }}</td>
+            <td>{{ commande.montantHT | number:'1.2-2' }}</td>
+            <td>{{ commande.montantTVA | number:'1.2-2' }}</td>
+            <td><strong>{{ commande.montantTTC | number:'1.2-2' }}</strong></td>
+            <td>
+              <span [class]="getStatutBadgeClass(commande.statut)">{{ commande.statut }}</span>
+            </td>
+            <td>
+              <div class="d-flex gap-1 flex-wrap">
+                <button *ngIf="commande.statut !== 'VALIDEE' && commande.statut !== 'ANNULEE'"
+                        class="btn btn-sm btn-success"
+                        (click)="validerCommande(commande.id!)"
+                        title="Valider et générer facture">
+                  <i class="feather icon-check-circle"></i>
+                </button>
+                <button *ngIf="commande.statut !== 'VALIDEE' && commande.statut !== 'ANNULEE'"
+                        class="btn btn-sm btn-outline-primary"
+                        (click)="editCommande(commande.id!)"
+                        title="Modifier">
+                  <i class="feather icon-edit"></i>
+                </button>
+                <button *ngIf="commande.statut !== 'VALIDEE' && commande.statut !== 'ANNULEE'"
+                        class="btn btn-sm btn-warning"
+                        (click)="annulerCommande(commande.id!)"
+                        title="Annuler">
+                  <i class="feather icon-x-circle"></i>
+                </button>
+                <button class="btn btn-sm btn-danger"
+                        (click)="deleteCommande(commande.id!)"
+                        title="Supprimer">
+                  <i class="feather icon-trash-2"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredCommandes.length === 0">
+            <td colspan="9" class="text-center text-muted py-4">
+              Aucune commande achat trouvée
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Facture Modal -->
+<div *ngIf="showFactureModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">
+          <i class="feather icon-file-text me-2"></i>Facture Achat Générée
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeFactureModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="lastGeneratedFacture">
+        <div class="row">
+          <div class="col-6"><strong>Référence :</strong></div>
+          <div class="col-6">{{ lastGeneratedFacture.referance }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6"><strong>Date :</strong></div>
+          <div class="col-6">{{ lastGeneratedFacture.dateAchat }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6"><strong>Montant HT :</strong></div>
+          <div class="col-6">{{ lastGeneratedFacture.montantHT | number:'1.2-2' }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6"><strong>Montant TVA :</strong></div>
+          <div class="col-6">{{ lastGeneratedFacture.montantTVA | number:'1.2-2' }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6"><strong>Montant TTC :</strong></div>
+          <div class="col-6"><strong>{{ lastGeneratedFacture.montantTTC | number:'1.2-2' }}</strong></div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6"><strong>Statut :</strong></div>
+          <div class="col-6">{{ lastGeneratedFacture.statut }}</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeFactureModal()">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -182,6 +182,14 @@ const routes: Routes = [
         path: 'article-vente',
         loadChildren: () =>
           import('./article-vente/article-vente.module').then((m) => m.ArticleVenteModule),
+      },{
+        path: 'commande-achat',
+        loadChildren: () =>
+          import('./commande-achat/commande-achat.module').then((m) => m.CommandeAchatModule),
+      },{
+        path: 'commande-vente',
+        loadChildren: () =>
+          import('./commande-vente/commande-vente.module').then((m) => m.CommandeVenteModule),
       },
 
 
