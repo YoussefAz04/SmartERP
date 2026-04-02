@@ -946,5 +946,23 @@ export class routes {
 public static get registerbyStepper(): string {
   return this.base + '/auth/register';
 }
+  public static get commandeAchat(): string {
+    return this.core + '/commande-achat';
+  }
+  public static get commandeAchatList(): string {
+    return this.commandeAchat + '/list';
+  }
+  public static get addCommandeAchat(): string {
+    return this.commandeAchat + '/add';
+  }
+  public static get commandeVente(): string {
+    return this.core + '/commande-vente';
+  }
+  public static get commandeVenteList(): string {
+    return this.commandeVente + '/list';
+  }
+  public static get addCommandeVente(): string {
+    return this.commandeVente + '/add';
+  }
   // core pages child routes *ends*
 }
