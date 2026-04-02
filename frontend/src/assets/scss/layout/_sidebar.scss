@@ -215,9 +215,9 @@
                     }
                     .submenu-hdr {
                         font-weight: $font-weight-bold;
-                        font-size: 11px;
+                        font-size: $font-size-11;
                         text-transform: uppercase;
-                        letter-spacing: 1.2px;
+                        letter-spacing: 1.2px; // wide spacing for uppercase section labels
                         color: #a0aec0;
                         margin: 0;
                         padding: 14px 18px 10px;
@@ -340,7 +340,7 @@
             @include transform(translateY(-50%));
             @include transition(all 0.3s ease);
             &::before {
-                content: "\f105";
+                content: "\f105"; // Font Awesome chevron-right icon
             }
             &.inside-submenu {
                 right: 40px;
@@ -453,8 +453,7 @@
             font-weight: $font-weight-bold;
             @include transform(translate(0, 0));
             &:before {
-                content: "\f105";
-                
+                content: "\f105"; // Font Awesome chevron-right icon
             }
         }
     }
