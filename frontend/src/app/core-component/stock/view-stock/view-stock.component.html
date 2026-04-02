@@ -1,0 +1,248 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Détail du Stock</h4>
+      <h6>
+        @if (stock) {
+          {{ stock.articleAchat?.nom || 'Article #' + stock.id }}
+        }
+      </h6>
+    </div>
+  </div>
+  <div class="page-btn d-flex gap-2">
+    <button class="btn btn-secondary" (click)="goBack()">
+      <i class="feather icon-arrow-left me-2"></i>Retour
+    </button>
+    @if (stock) {
+      <button class="btn btn-added" [routerLink]="['/stock/adjust', stock.id]">
+        <i class="feather icon-edit me-2"></i>Ajuster stock
+      </button>
+    }
+  </div>
+</div>
+
+<!-- Loading -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Chargement...</p>
+  </div>
+}
+
+@if (!isLoading && stock) {
+  <!-- Stock Info Header -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h5 class="mb-1">
+            <strong>{{ stock.articleAchat?.nom || 'Article #' + stock.id }}</strong>
+            <span [class]="getStatusClass()" class="ms-2">{{ getStockStatus() }}</span>
+          </h5>
+          <p class="text-muted mb-1">
+            <i class="feather icon-map-pin me-1"></i>
+            Localisation: <strong>{{ stock.localisation || 'Non définie' }}</strong>
+          </p>
+          <p class="text-muted mb-0">
+            <i class="feather icon-calendar me-1"></i>
+            Dernier inventaire: <strong>{{ stock.dateDernierInventaire | date:'dd/MM/yyyy HH:mm' }}</strong>
+          </p>
+        </div>
+        <div class="col-md-4 text-end">
+          <p class="text-muted small mb-1">Créé le: {{ stock.createdAt | date:'dd/MM/yyyy' }}</p>
+          <p class="text-muted small mb-0">Modifié le: {{ stock.updatedAt | date:'dd/MM/yyyy' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quantity Cards -->
+  <div class="row g-3 mb-3">
+    <div class="col-xl-3 col-sm-6">
+      <div class="card text-center">
+        <div class="card-body">
+          <div class="fs-1 fw-bold text-primary">{{ stock.quantiteEntree || 0 }}</div>
+          <div class="text-muted">Quantité entrée</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card text-center">
+        <div class="card-body">
+          <div class="fs-1 fw-bold"
+            [class.text-success]="(stock.quantiteDisponible || 0) >= 5"
+            [class.text-warning]="(stock.quantiteDisponible || 0) > 0 && (stock.quantiteDisponible || 0) < 5"
+            [class.text-danger]="(stock.quantiteDisponible || 0) === 0">
+            {{ stock.quantiteDisponible || 0 }}
+          </div>
+          <div class="text-muted">Quantité disponible</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card text-center">
+        <div class="card-body">
+          <div class="fs-1 fw-bold text-info">{{ stock.quantiteReserve || 0 }}</div>
+          <div class="text-muted">Quantité réservée</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+      <div class="card text-center">
+        <div class="card-body">
+          <div class="fs-1 fw-bold text-secondary">{{ stock.quantiteVendue || 0 }}</div>
+          <div class="text-muted">Quantité vendue</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="card">
+    <div class="card-header p-0">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'overview'"
+            (click)="activeTab = 'overview'">
+            <i class="feather icon-info me-1"></i>Vue d'ensemble
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'movements'"
+            (click)="activeTab = 'movements'">
+            <i class="feather icon-activity me-1"></i>Mouvements
+            <span class="badge bg-secondary ms-1">{{ movements.length }}</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+
+      <!-- Overview Tab -->
+      @if (activeTab === 'overview') {
+        <div class="row g-3">
+          <div class="col-md-6">
+            <h6 class="border-bottom pb-2 mb-3">Informations article</h6>
+            <dl class="row">
+              <dt class="col-sm-5">Nom:</dt>
+              <dd class="col-sm-7">{{ stock.articleAchat?.nom || '-' }}</dd>
+              <dt class="col-sm-5">SKU:</dt>
+              <dd class="col-sm-7">{{ stock.articleAchat?.sku || '-' }}</dd>
+              <dt class="col-sm-5">Description:</dt>
+              <dd class="col-sm-7">{{ stock.articleAchat?.description || '-' }}</dd>
+              <dt class="col-sm-5">Fournisseur:</dt>
+              <dd class="col-sm-7">{{ stock.articleAchat?.fournisseur?.nom || '-' }}</dd>
+            </dl>
+          </div>
+          <div class="col-md-6">
+            <h6 class="border-bottom pb-2 mb-3">Informations stock</h6>
+            <dl class="row">
+              <dt class="col-sm-5">Localisation:</dt>
+              <dd class="col-sm-7">{{ stock.localisation || '-' }}</dd>
+              <dt class="col-sm-5">Dernier inventaire:</dt>
+              <dd class="col-sm-7">{{ stock.dateDernierInventaire | date:'dd/MM/yyyy' }}</dd>
+              <dt class="col-sm-5">Créé le:</dt>
+              <dd class="col-sm-7">{{ stock.createdAt | date:'dd/MM/yyyy' }}</dd>
+              <dt class="col-sm-5">Modifié le:</dt>
+              <dd class="col-sm-7">{{ stock.updatedAt | date:'dd/MM/yyyy' }}</dd>
+            </dl>
+          </div>
+        </div>
+      }
+
+      <!-- Movements Tab -->
+      @if (activeTab === 'movements') {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex gap-2 align-items-center">
+            <select class="form-select form-select-sm" style="width: auto"
+              [(ngModel)]="filterType" (change)="applyFilters()">
+              <option value="">Tous les types</option>
+              <option value="ENTREE">Entrée</option>
+              <option value="SORTIE">Sortie</option>
+              <option value="AJUSTEMENT">Ajustement</option>
+              <option value="RESERVATION">Réservation</option>
+            </select>
+          </div>
+          <button class="btn btn-sm btn-outline-success" (click)="exportCSV()" title="Exporter CSV">
+            <i class="feather icon-download me-1"></i>Exporter CSV
+          </button>
+        </div>
+
+        @if (isLoadingMovements) {
+          <div class="text-center py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <span class="ms-2">Chargement des mouvements...</span>
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th class="text-center">Quantité</th>
+                  <th>Référence</th>
+                  <th>Motif</th>
+                  <th>Utilisateur</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (paginatedMovements.length > 0) {
+                  @for (mvt of paginatedMovements; track mvt.id) {
+                    <tr>
+                      <td>{{ mvt.dateMouvement | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td>
+                        <span [class]="getMovementBadgeClass(mvt.typeMouvement)">
+                          {{ mvt.typeMouvement }}
+                        </span>
+                      </td>
+                      <td class="text-center fw-bold">{{ mvt.quantite }}</td>
+                      <td>{{ mvt.referenceCommande || '-' }}</td>
+                      <td>{{ mvt.motif || '-' }}</td>
+                      <td>{{ mvt.utilisateur?.username || mvt.utilisateur?.email || '-' }}</td>
+                    </tr>
+                  }
+                } @else {
+                  <tr>
+                    <td colspan="6" class="text-center py-3 text-muted">
+                      Aucun mouvement trouvé
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (totalPages > 1) {
+            <div class="d-flex justify-content-end">
+              <nav>
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <button class="page-link" (click)="currentPage = currentPage - 1">«</button>
+                  </li>
+                  @for (page of pages; track page) {
+                    <li class="page-item" [class.active]="page === currentPage">
+                      <button class="page-link" (click)="currentPage = page">{{ page }}</button>
+                    </li>
+                  }
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <button class="page-link" (click)="currentPage = currentPage + 1">»</button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          }
+        }
+      }
+    </div>
+  </div>
+}
+
+@if (!isLoading && !stock) {
+  <div class="text-center py-5">
+    <i class="feather icon-alert-circle fs-1 text-danger"></i>
+    <p class="mt-2">Stock introuvable.</p>
+    <button class="btn btn-primary" (click)="goBack()">Retour à la liste</button>
+  </div>
+}
