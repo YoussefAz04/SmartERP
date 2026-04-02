@@ -79,7 +79,6 @@ export class AddCommandeAchatComponent implements OnInit {
 
   removeLigne(index: number): void {
     this.lignesArray.removeAt(index);
-    this.calculateTotals();
   }
 
   calculateLigne(ligneGroup: FormGroup): void {
@@ -90,25 +89,6 @@ export class AddCommandeAchatComponent implements OnInit {
     const montantTTC = montantHT * (1 + tva / 100);
     ligneGroup.get('montantHT')?.setValue(montantHT.toFixed(2), { emitEvent: false });
     ligneGroup.get('montantTTC')?.setValue(montantTTC.toFixed(2), { emitEvent: false });
-    this.calculateTotals();
-  }
-
-  calculateTotals(): void {
-    let totalHT = 0;
-    let totalTVA = 0;
-    let totalTTC = 0;
-    this.lignesArray.controls.forEach((ctrl) => {
-      const ht = parseFloat(ctrl.get('montantHT')?.value || 0);
-      const ttc = parseFloat(ctrl.get('montantTTC')?.value || 0);
-      totalHT += ht;
-      totalTVA += ttc - ht;
-      totalTTC += ttc;
-    });
-    this.commandeForm.patchValue({
-      montantHT: totalHT.toFixed(2),
-      montantTVA: totalTVA.toFixed(2),
-      montantTTC: totalTTC.toFixed(2)
-    }, { emitEvent: false });
   }
 
   get totalHT(): number {

@@ -125,7 +125,6 @@ public class CommandeAchatService {
         commandeAchatRepository.save(commande);
 
         FactureAchat facture = new FactureAchat();
-        facture.setReferance("FA-" + String.format("%04d", factureAchatRepository.count() + 1));
         facture.setDateAchat(LocalDate.now().toString());
         facture.setMontantHT(commande.getMontantHT() != null ? commande.getMontantHT().doubleValue() : 0.0);
         facture.setMontantTVA(commande.getMontantTVA() != null ? commande.getMontantTVA().doubleValue() : 0.0);
@@ -136,6 +135,8 @@ public class CommandeAchatService {
         facture.setFournisseur(commande.getFournisseur());
         facture.setCommandeAchat(commande);
         FactureAchat savedFacture = factureAchatRepository.save(facture);
+        savedFacture.setReferance("FA-" + String.format("%04d", savedFacture.getId()));
+        savedFacture = factureAchatRepository.save(savedFacture);
 
         List<LigneCommandeAchat> lignesCommande = ligneCommandeAchatRepository.findByCommandeAchatId(id);
         for (LigneCommandeAchat ligneCommande : lignesCommande) {

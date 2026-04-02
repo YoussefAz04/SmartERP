@@ -125,7 +125,6 @@ public class CommandeVenteService {
         commandeVenteRepository.save(commande);
 
         FactureVente facture = new FactureVente();
-        facture.setReferance("FV-" + String.format("%04d", factureVenteRepository.count() + 1));
         facture.setDateVente(LocalDate.now().toString());
         facture.setMontantHT(commande.getMontantHT());
         facture.setMontantTVA(commande.getMontantTVA());
@@ -136,6 +135,8 @@ public class CommandeVenteService {
         facture.setCommandeVente(commande);
         facture.setEntreprise(commande.getEntreprise());
         FactureVente savedFacture = factureVenteRepository.save(facture);
+        savedFacture.setReferance("FV-" + String.format("%04d", savedFacture.getId()));
+        savedFacture = factureVenteRepository.save(savedFacture);
 
         List<LigneCommandeVente> lignesCommande = ligneCommandeVenteRepository.findByCommandeVenteId(id);
         for (LigneCommandeVente ligneCommande : lignesCommande) {
