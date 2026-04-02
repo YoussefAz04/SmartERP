@@ -1722,7 +1722,143 @@ SET IDENTITY_INSERT [dbo].[zone_selectionnee_de_document] OFF
 GO
 
 -- ============================================================
--- 15. RESTORE DATABASE
+-- 15. SAMPLE STOCK DATA
+-- ============================================================
+
+-- MEASUREMENTS
+SET IDENTITY_INSERT [dbo].[mesure] ON
+INSERT [dbo].[mesure] ([id], [nom], [symbole], [created_at], [updated_at])
+VALUES 
+  (1, N'Piece', N'Pce', GETDATE(), GETDATE()),
+  (2, N'Kilogram', N'Kg', GETDATE(), GETDATE()),
+  (3, N'Liter', N'L', GETDATE(), GETDATE()),
+  (4, N'Box', N'Box', GETDATE(), GETDATE())
+SET IDENTITY_INSERT [dbo].[mesure] OFF
+GO
+
+-- VAT RATES
+SET IDENTITY_INSERT [dbo].[tva] ON
+INSERT [dbo].[tva] ([id], [taux], [nom], [created_at], [updated_at])
+VALUES 
+  (1, 0.00, N'No VAT', GETDATE(), GETDATE()),
+  (2, 19.00, N'Standard VAT', GETDATE(), GETDATE())
+SET IDENTITY_INSERT [dbo].[tva] OFF
+GO
+
+-- ARTICLE CATEGORIES
+SET IDENTITY_INSERT [dbo].[categorie_article] ON
+INSERT [dbo].[categorie_article] ([id], [nom], [description], [created_at], [updated_at])
+VALUES 
+  (1, N'Electronics', N'Electronic equipment and devices', GETDATE(), GETDATE()),
+  (2, N'Office Supplies', N'Office equipment and supplies', GETDATE(), GETDATE()),
+  (3, N'Groceries', N'Food and beverage products', GETDATE(), GETDATE())
+SET IDENTITY_INSERT [dbo].[categorie_article] OFF
+GO
+
+-- ARTICLES (Products)
+SET IDENTITY_INSERT [dbo].[article] ON
+INSERT [dbo].[article] ([id], [reference], [nom], [description], [prix_achat], [prix_vente], [actif], [categorie_article_id], [mesure_id], [tva_id], [entreprise_id], [created_at], [updated_at])
+VALUES 
+  (1, N'ELEC-001', N'Dell Laptop XPS 13', N'High performance laptop for professionals', 800.00, 1000.00, 1, 1, 1, 2, 1, GETDATE(), GETDATE()),
+  (2, N'OFFC-001', N'Ergonomic Office Chair', N'Comfortable office chair with lumbar support', 120.00, 150.00, 1, 2, 1, 2, 1, GETDATE(), GETDATE()),
+  (3, N'GROC-001', N'Premium Coffee Beans', N'Arabica coffee beans 1kg bag', 15.00, 25.00, 1, 3, 2, 2, 1, GETDATE(), GETDATE()),
+  (4, N'OFFC-002', N'A4 Printer Paper', N'500 sheets per box', 3.50, 8.00, 1, 2, 4, 2, 1, GETDATE(), GETDATE()),
+  (5, N'ELEC-002', N'USB-C Cable', N'1.5m USB Type-C cable', 2.00, 5.00, 1, 1, 1, 2, 1, GETDATE(), GETDATE())
+SET IDENTITY_INSERT [dbo].[article] OFF
+GO
+
+-- ARTICLE VENTE (Sales variants)
+SET IDENTITY_INSERT [dbo].[article_vente] ON
+INSERT [dbo].[article_vente] ([id], [article_id], [prix_vente_special], [description_vente], [created_at], [updated_at])
+VALUES 
+  (1, 1, 950.00, N'Special promotional price for bulk orders', GETDATE(), GETDATE()),
+  (2, 2, 140.00, N'Discounted for corporate clients', GETDATE(), GETDATE()),
+  (3, 3, 22.00, N'Wholesale price', GETDATE(), GETDATE()),
+  (4, 4, 7.50, N'Bundle discount', GETDATE(), GETDATE()),
+  (5, 5, 4.50, N'Multi-pack discount', GETDATE(), GETDATE())
+SET IDENTITY_INSERT [dbo].[article_vente] OFF
+GO
+
+-- STOCK INVENTORY
+SET IDENTITY_INSERT [dbo].[stock] ON
+INSERT [dbo].[stock] ([id], [article_id], [entreprise_id], [quantite_disponible], [quantite_minimale], [quantite_maximale], [emplacement], [created_at], [updated_at])
+VALUES 
+  (1, 1, 1, 50.000, 10.000, 200.000, N'Warehouse A1', GETDATE(), GETDATE()),
+  (2, 2, 1, 100.000, 20.000, 300.000, N'Warehouse A2', GETDATE(), GETDATE()),
+  (3, 3, 1, 500.000, 50.000, 1000.000, N'Storage B1', GETDATE(), GETDATE()),
+  (4, 4, 1, 1000.000, 100.000, 2000.000, N'Storage B2', GETDATE(), GETDATE()),
+  (5, 5, 1, 2000.000, 200.000, 5000.000, N'Storage C1', GETDATE(), GETDATE())
+SET IDENTITY_INSERT [dbo].[stock] OFF
+GO
+
+-- STOCK MOVEMENTS - Historical transactions
+SET IDENTITY_INSERT [dbo].[mouvement_stock] ON
+
+-- Laptop movements
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (1, 1, 1, N'ENTREE', 100.000, DATEADD(day, -30, GETDATE()), N'PO-2026-001', N'Initial purchase from supplier', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (2, 1, 1, N'SORTIE', 25.000, DATEADD(day, -25, GETDATE()), N'SO-2026-001', N'Sales to customer ABC Corp', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (3, 1, 1, N'SORTIE', 15.000, DATEADD(day, -20, GETDATE()), N'SO-2026-002', N'Sales to customer XYZ Inc', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (4, 1, 1, N'RESERVATION', 10.000, DATEADD(day, -15, GETDATE()), N'RES-2026-001', N'Reserved for pending order', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (5, 1, 1, N'AJUSTEMENT', 5.000, DATEADD(day, -5, GETDATE()), N'ADJ-2026-001', N'Inventory count correction', GETDATE(), GETDATE())
+
+-- Office Chair movements
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (6, 2, 1, N'ENTREE', 150.000, DATEADD(day, -28, GETDATE()), N'PO-2026-002', N'Bulk order from manufacturer', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (7, 2, 1, N'SORTIE', 20.000, DATEADD(day, -22, GETDATE()), N'SO-2026-003', N'Office equipment order', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (8, 2, 1, N'SORTIE', 10.000, DATEADD(day, -18, GETDATE()), N'SO-2026-004', N'Retail store delivery', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (9, 2, 1, N'RESERVATION', 20.000, DATEADD(day, -12, GETDATE()), N'RES-2026-002', N'Corporate client bulk order', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (10, 2, 1, N'SORTIE', 0.000, DATEADD(day, -8, GETDATE()), N'SO-2026-005', N'Return from customer', GETDATE(), GETDATE())
+
+-- Coffee Beans movements
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (11, 3, 1, N'ENTREE', 750.000, DATEADD(day, -35, GETDATE()), N'PO-2026-003', N'Import from coffee supplier', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (12, 3, 1, N'SORTIE', 100.000, DATEADD(day, -30, GETDATE()), N'SO-2026-006', N'Wholesale to cafe chain', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (13, 3, 1, N'SORTIE', 75.000, DATEADD(day, -24, GETDATE()), N'SO-2026-007', N'Retail store sales', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (14, 3, 1, N'SORTIE', 25.000, DATEADD(day, -16, GETDATE()), N'SO-2026-008', N'Online orders', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (15, 3, 1, N'RESERVATION', 50.000, DATEADD(day, -10, GETDATE()), N'RES-2026-003', N'Standing order from restaurant', GETDATE(), GETDATE())
+
+-- Printer Paper movements
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (16, 4, 1, N'ENTREE', 1500.000, DATEADD(day, -32, GETDATE()), N'PO-2026-004', N'Bulk purchase from distributor', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (17, 4, 1, N'SORTIE', 200.000, DATEADD(day, -28, GETDATE()), N'SO-2026-009', N'Office supply order', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (18, 4, 1, N'SORTIE', 150.000, DATEADD(day, -20, GETDATE()), N'SO-2026-010', N'Corporate order fulfillment', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (19, 4, 1, N'SORTIE', 100.000, DATEADD(day, -14, GETDATE()), N'SO-2026-011', N'Reseller shipment', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (20, 4, 1, N'RESERVATION', 100.000, DATEADD(day, -7, GETDATE()), N'RES-2026-004', N'Scheduled delivery next week', GETDATE(), GETDATE())
+
+-- USB Cables movements
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (21, 5, 1, N'ENTREE', 3000.000, DATEADD(day, -40, GETDATE()), N'PO-2026-005', N'Large shipment from electronics supplier', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (22, 5, 1, N'SORTIE', 400.000, DATEADD(day, -35, GETDATE()), N'SO-2026-012', N'Tech store order', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (23, 5, 1, N'SORTIE', 250.000, DATEADD(day, -28, GETDATE()), N'SO-2026-013', N'Online retailer shipment', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (24, 5, 1, N'SORTIE', 150.000, DATEADD(day, -19, GETDATE()), N'SO-2026-014', N'Electronics bundle kit sales', GETDATE(), GETDATE())
+INSERT [dbo].[mouvement_stock] ([id], [article_id], [entreprise_id], [type_mouvement], [quantite], [date_mouvement], [reference_document], [description], [created_at], [updated_at])
+VALUES (25, 5, 1, N'RESERVATION', 200.000, DATEADD(day, -6, GETDATE()), N'RES-2026-005', N'Bulk corporate tech order', GETDATE(), GETDATE())
+
+SET IDENTITY_INSERT [dbo].[mouvement_stock] OFF
+GO
+
+-- ============================================================
+-- 16. RESTORE DATABASE
 -- ============================================================
 
 USE [master]
