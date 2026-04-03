@@ -1,9 +1,9 @@
 package BuissnesManager.BuissnesManager.service;
 
-import BuissnesManager.BuissnesManager.entity.ArticleAchat;
+import BuissnesManager.BuissnesManager.entity.Article;
 import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.entity.Client;
-import BuissnesManager.BuissnesManager.repository.ArticleAchatRepo;
+import BuissnesManager.BuissnesManager.repository.ArticleRepository;
 import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class ArticleVenteService {
     private ArticleVenteRepo articleVenteRepo;
 
     @Autowired
-    private ArticleAchatRepo articleAchatRepo;
+    private ArticleRepository articleRepository;
 
     @Autowired
     private ClientRepo clientRepo;
@@ -44,7 +44,7 @@ public class ArticleVenteService {
     @Transactional
     public ArticleVente addArticleVente(ArticleVente articleVente, Long articleAchatId, Long clientId) {
         if (articleAchatId != null) {
-            ArticleAchat articleAchat = articleAchatRepo.findById(articleAchatId)
+            Article articleAchat = articleRepository.findById(articleAchatId)
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + articleAchatId));
             articleVente.setArticleAchat(articleAchat);
         }

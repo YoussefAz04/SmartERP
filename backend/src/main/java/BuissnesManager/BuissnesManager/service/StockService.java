@@ -16,7 +16,7 @@ public class StockService {
     @Autowired
     private StockRepository stockRepository;
     @Autowired
-    private ArticleAchatRepo articleAchatRepo;
+    private ArticleRepository articleRepository;
     @Autowired
     private ArticleVenteRepo articleVenteRepo;
 
@@ -39,7 +39,7 @@ public class StockService {
         stock.setLocalisation(dto.getLocalisation());
         stock.setDateDernierInventaire(dto.getDateDernierInventaire());
         if (dto.getArticleAchatId() != null) {
-            ArticleAchat articleAchat = articleAchatRepo.findById(dto.getArticleAchatId())
+            Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé: " + dto.getArticleAchatId()));
             stock.setArticleAchat(articleAchat);
         }
@@ -73,7 +73,7 @@ public class StockService {
         if (dto.getLocalisation() != null) stock.setLocalisation(dto.getLocalisation());
         if (dto.getDateDernierInventaire() != null) stock.setDateDernierInventaire(dto.getDateDernierInventaire());
         if (dto.getArticleAchatId() != null) {
-            ArticleAchat articleAchat = articleAchatRepo.findById(dto.getArticleAchatId())
+            Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé"));
             stock.setArticleAchat(articleAchat);
         }

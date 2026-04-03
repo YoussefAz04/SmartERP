@@ -6,6 +6,7 @@ export interface ArticleAchat {
   nom: string;
   description?: string;
   prixUnitaire?: number;
+  prixAchat?: number;
   quantite?: number;
   unite?: string;
   sku?: string;

@@ -44,8 +44,8 @@ public class ArticleVente {
 
     @ManyToOne
     @JoinColumn(name = "article_achat_id")
-    @JsonIgnoreProperties("articleVentes")
-    private ArticleAchat articleAchat;
+    @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
+    private Article articleAchat;
 
     @ManyToOne
     @JoinColumn(name = "client_id")

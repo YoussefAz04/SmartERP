@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.entity.Article;
 import BuissnesManager.BuissnesManager.entity.ArticleAchat;
 import BuissnesManager.BuissnesManager.service.ArticleAchatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class ArticleAchatController {
     private ArticleAchatService articleAchatService;
 
     @GetMapping
-    public ResponseEntity<List<ArticleAchat>> getAllArticlesAchat() {
+    public ResponseEntity<List<Article>> getAllArticlesAchat() {
         try {
             return ResponseEntity.ok(articleAchatService.getAllArticlesAchat());
         } catch (Exception e) {
@@ -27,7 +28,7 @@ public class ArticleAchatController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ArticleAchat> getArticleAchatById(@PathVariable Long id) {
+    public ResponseEntity<Article> getArticleAchatById(@PathVariable Long id) {
         try {
             return articleAchatService.getArticleAchatById(id)
                     .map(ResponseEntity::ok)
@@ -38,9 +39,9 @@ public class ArticleAchatController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ArticleAchat> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
+    public ResponseEntity<Article> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
         try {
-            ArticleAchat created = articleAchatService.addArticleAchat(articleAchat);
+            Article created = articleAchatService.addArticleAchat(articleAchat);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -48,10 +49,10 @@ public class ArticleAchatController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ArticleAchat> updateArticleAchat(@PathVariable Long id,
-                                                            @RequestBody ArticleAchat articleAchat) {
+    public ResponseEntity<Article> updateArticleAchat(@PathVariable Long id,
+                                                      @RequestBody ArticleAchat articleAchat) {
         try {
-            ArticleAchat updated = articleAchatService.updateArticleAchat(id, articleAchat);
+            Article updated = articleAchatService.updateArticleAchat(id, articleAchat);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
