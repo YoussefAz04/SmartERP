@@ -117,12 +117,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         System.out.println("✅ Login endpoint hit for username: " + request.getUsername());
-        System.out.println("📤 Password received: " + request.getPassword());
         
         List<PermissionDto> permissionDtoList = new ArrayList<>();
 
         try {
-            // ✅ DEBUG: Check if user exists
             Optional<User> userOptional = userRepo.findByUsername(request.getUsername());
             if (userOptional.isEmpty()) {
                 System.out.println("❌ User not found in database: " + request.getUsername());
@@ -131,18 +129,11 @@ public class AuthController {
             }
 
             User dbUser = userOptional.get();
-            System.out.println("✅ User found in database: " + dbUser.getUsername());
-            System.out.println("🔐 Stored password hash: " + dbUser.getPassword().substring(0, Math.min(20, dbUser.getPassword().length())) + "...");
-            System.out.println("✅ User enabled: " + dbUser.isEnabled());
-            System.out.println("✅ User roles: " + dbUser.getRoles().size());
 
-            // ✅ DEBUG: Attempt authentication
-            System.out.println("📍 Attempting authentication...");
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
-            System.out.println("✅ Authentication successful");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String token = jwtUtil.generateToken(userDetails.getUsername());
 
@@ -156,7 +147,7 @@ public class AuthController {
                 permissionDtoList.addAll(permissionService.getPermissionsByRole(role.getId()));
             }
 
-            // Build response with correct setter names
+            // Build response
             Response response = new Response();
             response.setId(user.getId());
             response.setUsername(user.getUsername());
@@ -165,7 +156,6 @@ public class AuthController {
             response.setToken(token);
             response.setEnabled(user.isEnabled());
             
-            // Set roles as list of role names
             List<String> roleNames = new ArrayList<>();
             if (user.getRoles() != null && !user.getRoles().isEmpty()) {
                 for (Role role : user.getRoles()) {
@@ -173,16 +163,29 @@ public class AuthController {
                 }
             }
             response.setRoles(roleNames);
-            
-            // Set permissions
             response.setPermission(permissionDtoList);
 
+            // ✅ SET ENTERPRISE ID - Use a default or from first enterprise
+            Long entrepriseId = 1L;  // ✅ DEFAULT: Change to match your first enterprise ID
+            String entrepriseName = "Default Enterprise";
+
+            // ✅ TRY TO GET FROM USER IF AVAILABLE
+            if (user.getEntreprise() != null) {
+                entrepriseId = user.getEntreprise().getId();
+                entrepriseName = user.getEntreprise().getNom();
+                System.out.println("✅ Enterprise from user: " + entrepriseId + " - " + entrepriseName);
+            } else {
+                System.out.println("⚠️ User has no enterprise - using default: " + entrepriseId);
+            }
+
+            response.setEntrepriseId(entrepriseId);
+            response.setEntrepriseName(entrepriseName);
+
             System.out.println("✅ Login successful for: " + user.getUsername());
+            System.out.println("✅ Enterprise ID in response: " + entrepriseId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.err.println("❌ Login error: " + e.getMessage());
-            System.err.println("❌ Error type: " + e.getClass().getName());
-            System.err.println("❌ Error cause: " + (e.getCause() != null ? e.getCause().getMessage() : "No cause"));
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid credentials: " + e.getMessage());

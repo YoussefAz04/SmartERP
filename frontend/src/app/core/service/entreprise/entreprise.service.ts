@@ -1,94 +1,79 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { Entreprise } from "../../../model/entreprise.model";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EntrepriseService {
-
-  private apiUrl = 'http://localhost:8020/entreprise';
+  private baseUrl = `${environment.apiUrl}/entreprises`;
 
   constructor(private http: HttpClient) {}
 
-  // Get Authorization Header
   private getHeaders(): HttpHeaders {
-    const token = this.getTokenFromLocalStorage();
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    
+    const token = this.getToken();
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     if (token) {
-      // Token might be with or without "Bearer " prefix
-      const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-      headers = headers.set('Authorization', authToken);
-      console.log('Authorization header set:', authToken.substring(0, 20) + '...');
+      headers = headers.set('Authorization', `Bearer ${token}`);
     } else {
       console.warn('No token found in localStorage');
     }
-    
     return headers;
   }
 
-  // Extract token from localStorage (handles the base64 encoded format)
-  private getTokenFromLocalStorage(): string | null {
+  private getToken(): string | null {
     const item = localStorage.getItem('myLSkey');
     if (item) {
       try {
-        // Your token is stored as base64 encoded JSON
-        const decoded = JSON.parse(atob(item));
-        console.log('Decoded localStorage item:', decoded);
-        return decoded.token || null;
+        const user = JSON.parse(atob(item));
+        return user.token || null;
       } catch (error) {
-        console.error('Error parsing token from localStorage:', error);
+        console.error('Error parsing token:', error);
         return null;
       }
     }
-    console.warn('myLSkey not found in localStorage');
     return null;
   }
 
-  ajouterEntreprise(entreprise: Entreprise): Observable<Entreprise> {
-    console.log('Creating entreprise with data:', entreprise);
-    return this.http.post<Entreprise>(
-      `${this.apiUrl}/create`, 
-      entreprise,
+  // ✅ GET ALL ENTERPRISES
+  getAllEntreprises(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/getAllEntreprises`,
       { headers: this.getHeaders() }
     );
   }
 
-  getAllEntreprises(): Observable<Entreprise[]> {
-    return this.http.get<Entreprise[]>(`${this.apiUrl}/getAll`);
+  // ✅ GET ENTERPRISE BY ID
+  getEntrepriseById(id: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/getEntrepriseById/${id}`,
+      { headers: this.getHeaders() }
+    );
   }
 
-  assignerUserToEntreprise(username: string, nom: string) {
-    const params = new HttpParams()
-      .set('username', username)
-      .set('nom', nom);
-
-    return this.http.post(`${this.apiUrl}/assignerUserToEntreprise`, null, { 
-      params, 
-      responseType: 'text',
-      headers: this.getHeaders()
-    });
+  // ✅ ADD ENTERPRISE
+  ajouterEntreprise(data: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/addEntreprise`,
+      data,
+      { headers: this.getHeaders() }
+    );
   }
 
-  getEntrepriseById(id: number): Observable<Entreprise> {
-    return this.http.get<Entreprise>(`${this.apiUrl}/getById/${id}`);
+  // ✅ UPDATE ENTERPRISE
+  updateEntreprise(id: number, data: any): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}/updateEntreprise/${id}`,
+      data,
+      { headers: this.getHeaders() }
+    );
   }
 
+  // ✅ DELETE ENTERPRISE
   deleteEntreprise(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete/${id}`, { 
-      responseType: 'text',
-      headers: this.getHeaders()
-    });
-  }
-
-  updateEntreprise(id: number, entreprise: Entreprise): Observable<Entreprise> {
-    return this.http.put<Entreprise>(
-      `${this.apiUrl}/update/${id}`, 
-      entreprise,
+    return this.http.delete<any>(
+      `${this.baseUrl}/deleteEntreprise/${id}`,
       { headers: this.getHeaders() }
     );
   }

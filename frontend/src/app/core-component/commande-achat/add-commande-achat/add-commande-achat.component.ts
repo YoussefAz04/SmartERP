@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { CommandeAchatService } from '../../../core/service/commande-achat/commande-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
+import { EntrepriseService } from '../../../core/service/entreprise/entreprise.service';
 
 @Component({
   selector: 'app-add-commande-achat',
@@ -21,8 +22,10 @@ export class AddCommandeAchatComponent implements OnInit {
   errorMessage = '';
   fournisseurs: any[] = [];
   articles: any[] = [];
+  entreprises: any[] = [];
   
   currentEntrepriseId: number | null = null;
+  selectedEntrepriseName: string = '';
   totalHT = 0;
   totalTVA = 0;
   totalTTC = 0;
@@ -32,20 +35,24 @@ export class AddCommandeAchatComponent implements OnInit {
     private commandeAchatService: CommandeAchatService,
     private fournisseurService: FournisseurService,
     private articleAchatService: ArticleAchatService,
+    private entrepriseService: EntrepriseService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
-    this.getEntrepriseId();
-    this.loadFournisseurs();
-    this.loadArticles();
-    this.checkEditMode();
     
-    // ✅ LISTEN TO FORM VALUE CHANGES TO CALCULATE TOTALS
-    this.lignesArray.valueChanges.subscribe(() => {
-      this.calculateTotals();
+    // ✅ LOAD ENTERPRISES FIRST, THEN EVERYTHING ELSE
+    this.loadEntreprises(() => {
+      this.getEntrepriseId();
+      this.loadFournisseurs();
+      this.loadArticles();
+      this.checkEditMode();
+      
+      this.lignesArray.valueChanges.subscribe(() => {
+        this.calculateTotals();
+      });
     });
   }
 
@@ -61,14 +68,52 @@ export class AddCommandeAchatComponent implements OnInit {
     });
   }
 
+  // ✅ LOAD ENTERPRISES WITH CALLBACK
+  loadEntreprises(callback?: () => void): void {
+    this.entrepriseService.getAllEntreprises().subscribe({
+      next: (data: any) => {
+        this.entreprises = data;
+        console.log('✅ Enterprises loaded:', this.entreprises);
+        
+        // Auto-select first enterprise if none selected
+        if (this.entreprises.length > 0 && !this.currentEntrepriseId) {
+          this.changeEnterprise(this.entreprises[0].id);
+        }
+        
+        // Call callback after loading
+        if (callback) callback();
+      },
+      error: (err: any) => {
+        console.error('Error loading enterprises:', err);
+        this.errorMessage = 'Erreur lors du chargement des entreprises';
+        // Still call callback on error
+        if (callback) callback();
+      }
+    });
+  }
+
   getEntrepriseId(): void {
-    const stored = localStorage.getItem('entrepriseId');
-    if (stored) {
-      this.currentEntrepriseId = parseInt(stored);
+    let enterpriseId = localStorage.getItem('enterpriseId');
+    
+    if (!enterpriseId) {
+      const myLSkey = localStorage.getItem('myLSkey');
+      if (myLSkey) {
+        try {
+          const decoded = JSON.parse(atob(myLSkey));
+          enterpriseId = decoded.enterpriseId?.toString();
+          console.log('📦 Decoded token:', decoded);
+        } catch (e) {
+          console.error('❌ Failed to decode myLSkey:', e);
+        }
+      }
+    }
+
+    if (enterpriseId) {
+      this.currentEntrepriseId = parseInt(enterpriseId);
       console.log('✅ Enterprise ID loaded:', this.currentEntrepriseId);
+      this.updateSelectedEnterpriseName();
     } else {
-      this.errorMessage = '❌ Entreprise non définie. Veuillez vous reconnecter.';
-      console.error('❌ Enterprise ID not found');
+      console.warn('⚠️ No enterprise ID found in localStorage');
     }
   }
 
@@ -140,7 +185,6 @@ export class AddCommandeAchatComponent implements OnInit {
     return this.commandeForm.get('lignes') as FormArray;
   }
 
-  // ✅ CREATE A REUSABLE LIGNE GROUP
   createLigneGroup(data?: any): FormGroup {
     const montantHT = data ? (data.quantite || 1) * (data.prixUnitaireHT || 0) : 0;
     const montantTTC = data ? montantHT * (1 + (data.tva || 0) / 100) : 0;
@@ -219,84 +263,108 @@ export class AddCommandeAchatComponent implements OnInit {
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
- onSubmit(): void {
-  console.log('🔄 Form submit clicked');
-  console.log('Form valid?', this.commandeForm.valid);
-  console.log('currentEntrepriseId:', this.currentEntrepriseId);
-  console.log('Lines count:', this.lignesArray.length);
+  changeEnterprise(enterpriseId: number): void {
+    this.currentEntrepriseId = enterpriseId;
+    localStorage.setItem('enterpriseId', enterpriseId.toString());
+    this.updateSelectedEnterpriseName();
+    console.log('✅ Enterprise changed to:', enterpriseId);
+  }
 
-  // ✅ STEP 1: Validate form
-  if (!this.commandeForm.valid) {
-    this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
-    console.error('❌ Form not valid');
-    for (let key in this.commandeForm.controls) {
-      const control = this.commandeForm.get(key);
-      if (control && control.invalid) {
-        console.error(`Field "${key}" is invalid:`, control.errors);
+  updateSelectedEnterpriseName(): void {
+    const selected = this.entreprises.find(e => e.id === this.currentEntrepriseId);
+    this.selectedEntrepriseName = selected ? selected.nom : 'Chargement...';
+  }
+
+  onSubmit(): void {
+    console.log('🔄 Form submit clicked');
+    console.log('Form valid?', this.commandeForm.valid);
+    console.log('currentEntrepriseId:', this.currentEntrepriseId);
+    console.log('Lines count:', this.lignesArray.length);
+
+    if (!this.commandeForm.valid) {
+      this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
+      console.error('❌ Form not valid');
+      for (let key in this.commandeForm.controls) {
+        const control = this.commandeForm.get(key);
+        if (control && control.invalid) {
+          console.error(`Field "${key}" is invalid:`, control.errors);
+        }
+      }
+      return;
+    }
+
+    if (!this.currentEntrepriseId) {
+      this.errorMessage = '❌ Sélectionnez une entreprise avant de créer la commande';
+      console.error('❌ No enterprise ID');
+      return;
+    }
+
+    if (this.lignesArray.length === 0) {
+      this.errorMessage = '❌ Au moins une ligne de commande est requise';
+      console.error('❌ No lines');
+      return;
+    }
+
+    for (let i = 0; i < this.lignesArray.length; i++) {
+      const ligne = this.lignesArray.at(i);
+      const articleId = ligne.get('articleAchatId')?.value;
+      
+      if (!articleId || articleId === null || isNaN(articleId)) {
+        this.errorMessage = `❌ Ligne ${i + 1}: Article obligatoire et doit être numérique`;
+        console.error(`❌ Line ${i + 1} has invalid article ID:`, articleId);
+        return;
       }
     }
-    return;
+
+    console.log('✅ All validations passed. Building payload...');
+    
+    const formData = this.commandeForm.getRawValue();
+    const payload = {
+      reference: formData.reference,
+      dateCommande: formData.dateCommande,
+      dateLivraisonPrevue: formData.dateLivraisonPrevue,
+      fournisseurId: parseInt(formData.fournisseurId),
+      statut: formData.statut,
+      note: formData.note,
+      montantHT: this.totalHT,
+      montantTVA: this.totalTVA,
+      montantTTC: this.totalTTC,
+      entrepriseId: this.currentEntrepriseId,
+      lignes: formData.lignes.map((ligne: any) => {
+        const articleId = parseInt(ligne.articleAchatId);
+        if (isNaN(articleId)) {
+          throw new Error(`Invalid article ID in line: ${ligne.articleAchatId}`);
+        }
+        return {
+          articleAchatId: articleId,
+          quantite: parseFloat(ligne.quantite),
+          prixUnitaireHT: parseFloat(ligne.prixUnitaireHT),
+          tva: parseFloat(ligne.tva)
+        };
+      })
+    };
+
+    console.log('📝 Payload ready:', payload);
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    console.log('🚀 Sending to backend...');
+    this.commandeAchatService.createCommande(payload).subscribe({
+      next: (response: any) => {
+        console.log('✅✅✅ SUCCESS! Response:', response);
+        this.isLoading = false;
+        alert('✅ Commande créée avec succès!');
+        this.router.navigate(['/commande-achat/list']);
+      },
+      error: (err: any) => {
+        console.error('❌❌❌ ERROR! Response:', err);
+        this.isLoading = false;
+        const errorMsg = err?.error?.message || err?.message || 'Erreur lors de la création';
+        this.errorMessage = errorMsg;
+        alert('❌ ' + errorMsg);
+      }
+    });
   }
-
-  // ✅ STEP 2: Check enterprise
-  if (!this.currentEntrepriseId) {
-    this.errorMessage = '❌ Entreprise non définie. Veuillez vous reconnecter.';
-    console.error('❌ No enterprise ID');
-    return;
-  }
-
-  // ✅ STEP 3: Check lines exist
-  if (this.lignesArray.length === 0) {
-    this.errorMessage = '❌ Au moins une ligne de commande est requise';
-    console.error('❌ No lines');
-    return;
-  }
-
-  // ✅ STEP 4: Build payload
-  console.log('✅ All validations passed. Building payload...');
-  
-  const formData = this.commandeForm.getRawValue();
-  const payload = {
-    reference: formData.reference,
-    dateCommande: formData.dateCommande,
-    dateLivraisonPrevue: formData.dateLivraisonPrevue,
-    fournisseurId: parseInt(formData.fournisseurId), // ✅ Parse as int
-    statut: formData.statut,
-    note: formData.note,
-    montantHT: this.totalHT,
-    montantTVA: this.totalTVA,
-    montantTTC: this.totalTTC,
-    entrepriseId: this.currentEntrepriseId,
-    lignes: formData.lignes.map((ligne: any) => ({
-      articleAchatId: parseInt(ligne.articleAchatId), // ✅ Parse as int
-      quantite: parseFloat(ligne.quantite),
-      prixUnitaireHT: parseFloat(ligne.prixUnitaireHT),
-      tva: parseFloat(ligne.tva)
-    }))
-  };
-
-  console.log('📝 Payload ready:', payload);
-  this.isLoading = true;
-  this.errorMessage = '';
-
-  // ✅ STEP 5: Make API call
-  console.log('🚀 Sending to backend...');
-  this.commandeAchatService.createCommande(payload).subscribe({
-    next: (response: any) => {
-      console.log('✅✅✅ SUCCESS! Response:', response);
-      this.isLoading = false;
-      alert('✅ Commande créée avec succès!');
-      this.router.navigate(['/commande-achat/list']);
-    },
-    error: (err: any) => {
-      console.error('❌❌❌ ERROR! Response:', err);
-      this.isLoading = false;
-      const errorMsg = err?.error?.message || err?.message || 'Erreur lors de la création';
-      this.errorMessage = errorMsg;
-      alert('❌ ' + errorMsg);
-    }
-  });
-}
 
   onCancel(): void {
     this.cancel();

@@ -46,9 +46,11 @@ export class CommandeAchatService {
     return this.http.get<CommandeAchat[]>(`${this.baseUrl}/entreprise/${entrepriseId}`, { headers: this.getHeaders() });
   }
 
-  createCommande(commande: CommandeAchat): Observable<CommandeAchat> {
-    return this.http.post<CommandeAchat>(this.baseUrl, commande, { headers: this.getHeaders() });
-  }
+  createCommande(payload: any): Observable<any> {
+  console.log('📤 Sending to backend:', payload);
+  return this.http.post<any>(`${this.baseUrl}/add`, payload, { headers: this.getHeaders() });
+  // ↑ ADD /add HERE
+}
 
   updateCommande(id: number, commande: CommandeAchat): Observable<CommandeAchat> {
     return this.http.put<CommandeAchat>(`${this.baseUrl}/${id}`, commande, { headers: this.getHeaders() });

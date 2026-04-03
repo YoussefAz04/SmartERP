@@ -37,13 +37,10 @@ export class SigninComponent implements OnInit {
 
   responseLogin!: PermissionDto;
   
-  navigation() {
+ navigation() {
     console.log('🔐 Sign In clicked');
-    console.log('Form valid:', this.loginForm.valid);
-    console.log('Form data:', this.loginForm.value);
     
     if (!this.loginForm.valid) {
-      console.warn('❌ Form invalid');
       this.errorMessage = 'Please fill in username and password';
       return;
     }
@@ -56,57 +53,57 @@ export class SigninComponent implements OnInit {
       password: this.loginForm.get('password')?.value
     };
 
-    console.log('📤 Sending:', credentials);
-
     this.authService.login(credentials).subscribe({
       next: (response: any) => {
         console.log('✅ Login success:', response);
+        console.log('📋 Response data:', {
+          id: response.id,
+          username: response.username,
+          entrepriseId: response.entrepriseId,
+          entrepriseName: response.entrepriseName
+        });
         
-        // ✅ FIXED: Save user data with correct field names matching backend Response.java
+        // ✅ SAVE TO LOCALSTORAGE
         localStorage.removeItem("myLSkey");
         localStorage.setItem('myLSkey', btoa(JSON.stringify({
           token: response.token,
-          name: response.name,              // ✅ FIXED: was response.userName
-          username: response.username,      // ✅ ADDED
-          userId: response.id,              // ✅ FIXED: was response.idUsers
-          permission: response.permission,  // ✅ FIXED: was response.permissionDtos
-          entreprise: response.entreprise,
-          roles: response.roles,            // ✅ ADDED: array of role name strings
-          roleId: response.roleId           // ✅ FIXED: was response.idRoleUser
+          name: response.name,
+          username: response.username,
+          userId: response.id,
+          permission: response.permission,
+          roles: response.roles,
+          roleId: response.roleId,
+          entrepriseId: response.entrepriseId || 1,  // ✅ Use 1 as fallback
+          entrepriseName: response.entrepriseName || 'Default Enterprise'
         })));
 
-        console.log('✅ User saved to localStorage');
-        console.log('📋 Permissions saved:', response.permission);
+        // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY
+        const entrepriseId = response.entrepriseId || 1;
+        localStorage.setItem('entrepriseId', entrepriseId.toString());
+        console.log('✅ Enterprise ID saved to localStorage:', entrepriseId);
 
-        // ✅ FIXED: Use response.roleId instead of response.idRoleUser
         if (response.roleId) {
           this.moduleService.updateStatusByRole(response.roleId).subscribe(
             () => console.log("✅ Sidebar updated"),
-            (err) => console.error("⚠️ Sidebar error:", err)
+            (err: any) => console.error("⚠️ Sidebar error:", err)
           );
         }
 
-        console.log('📍 Navigating to:', routes.adminDashboard);
         setTimeout(() => {
           this.router.navigate([routes.adminDashboard]).then((success) => {
             if (success) {
               console.log('✅ Navigation successful');
             } else {
-              console.error('❌ Navigation failed');
               this.router.navigate(['/enterprise/listEnterprise']);
             }
             this.loading = false;
-          }).catch((err) => {
-            console.error('❌ Navigation error:', err);
-            this.loading = false;
-            this.router.navigate(['/enterprise/listEnterprise']);
           });
         }, 500);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('❌ Login failed:', error);
         this.loading = false;
-        this.errorMessage = error.error?.message || `Login failed: ${error.status}`;
+        this.errorMessage = 'Invalid credentials';
       }
     });
   }

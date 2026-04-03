@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.entity.CommandeAchat;
 import BuissnesManager.BuissnesManager.entity.FactureAchat;
 import BuissnesManager.BuissnesManager.dto.CommandeAchatDto;
+import BuissnesManager.BuissnesManager.dto.LigneCommandeAchatDto;
 import BuissnesManager.BuissnesManager.service.CommandeAchatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,19 +59,28 @@ public class CommandeAchatController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<?> createCommande(@RequestBody CommandeAchatDto dto) {
         try {
-            logger.info("🆕 Creating new commande");
+            logger.info("📥 Received DTO from frontend:");
+            logger.info("   Reference: {}", dto.getReference());
+            logger.info("   Fournisseur ID: {}", dto.getFournisseurId());
+            logger.info("   Enterprise ID: {}", dto.getEntrepriseId());
+            logger.info("   Number of lines: {}", dto.getLignes() != null ? dto.getLignes().size() : 0);
+            
+            if (dto.getLignes() != null) {
+                for (int i = 0; i < dto.getLignes().size(); i++) {
+                    LigneCommandeAchatDto ligne = dto.getLignes().get(i);
+                    logger.info("   Line {}: articleAchatId={}, quantite={}, prix={}", 
+                        i + 1, ligne.getArticleAchatId(), ligne.getQuantite(), ligne.getPrixUnitaireHT());
+                }
+            }
+            
             CommandeAchat commande = commandeAchatService.createCommande(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(commande);
-        } catch (RuntimeException e) {
-            logger.error("❌ Error creating commande: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+            return ResponseEntity.ok(commande);
         } catch (Exception e) {
-            logger.error("❌ Unexpected error creating commande", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de la création de la commande"));
+            logger.error("❌ Error creating commande: {}", e.getMessage(), e);
+            return ResponseEntity.status(400).body("Error: " + e.getMessage());
         }
     }
 
