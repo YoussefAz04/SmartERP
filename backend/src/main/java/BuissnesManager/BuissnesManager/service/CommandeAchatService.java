@@ -31,7 +31,7 @@ public class CommandeAchatService {
     private FournisseurRepo fournisseurRepo;
 
     @Autowired
-    private ArticleAchatRepo articleAchatRepo;
+    private ArticleRepository articleRepository;  // ✅ CHANGED from ArticleAchatRepo
 
     @Autowired
     private EntrepriseRepo entrepriseRepo;
@@ -113,27 +113,27 @@ public class CommandeAchatService {
 
                 try {
                     logger.info("=== PROCESSING LINE {} ===", lineNumber);
-                    logger.info("   articleAchatId from DTO: {}", ligneDto.getArticleAchatId());
+                    logger.info("   articleId from DTO: {}", ligneDto.getArticleAchatId());
                     logger.info("   quantite from DTO: {}", ligneDto.getQuantite());
                     logger.info("   prixUnitaireHT from DTO: {}", ligneDto.getPrixUnitaireHT());
 
                     // ✅ VALIDATE ARTICLE ID - DO NOT SKIP, THROW ERROR INSTEAD
                     if (ligneDto.getArticleAchatId() == null) {
-                        logger.error("❌ Line {}: articleAchatId is NULL!", lineNumber);
+                        logger.error("❌ Line {}: articleId is NULL!", lineNumber);
                         throw new RuntimeException(
-                                String.format("Ligne %d: articleAchatId is NULL. Sélectionnez un article!", lineNumber)
+                                String.format("Ligne %d: articleId is NULL. Sélectionnez un article!", lineNumber)
                         );
                     }
 
                     if (ligneDto.getArticleAchatId() <= 0) {
-                        logger.error("❌ Line {}: articleAchatId is INVALID: {}", lineNumber, ligneDto.getArticleAchatId());
+                        logger.error("❌ Line {}: articleId is INVALID: {}", lineNumber, ligneDto.getArticleAchatId());
                         throw new RuntimeException(
                                 String.format("Ligne %d: Article ID invalide: %d", lineNumber, ligneDto.getArticleAchatId())
                         );
                     }
 
-                    // ✅ FETCH AND VALIDATE THE ARTICLE EXISTS
-                    ArticleAchat article = articleAchatRepo.findById(ligneDto.getArticleAchatId())
+                    // ✅ FETCH AND VALIDATE THE ARTICLE EXISTS - USE Article ENTITY
+                    Article article = articleRepository.findById(ligneDto.getArticleAchatId())
                             .orElseThrow(() -> {
                                 logger.error("❌ Line {}: Article not found with ID: {}", lineNumber, ligneDto.getArticleAchatId());
                                 return new RuntimeException(
@@ -147,25 +147,24 @@ public class CommandeAchatService {
                     // ✅ CREATE LINE ITEM WITH ALL VALIDATIONS
                     LigneCommandeAchat ligne = new LigneCommandeAchat();
 
-                    // ✅ KEY FIX: Merge the article to ensure it's managed by Hibernate
-                    ArticleAchat managedArticle = entityManager.merge(article);
-                    ligne.setArticleAchat(managedArticle);
+                    // ✅ SET ARTICLE - NO NEED TO MERGE
+                    ligne.setArticle(article);
 
                     ligne.setQuantite(ligneDto.getQuantite() != null ? ligneDto.getQuantite() : BigDecimal.ONE);
-                    ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT() != null ? ligneDto.getPrixUnitaireHT() : BigDecimal.ZERO);
+                    ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT() != null ? ligneDto.getPrixUnitaireHT() : BigDecimal.ZERO);  // ✅ DEFAULT TO ZERO
                     ligne.setTva(ligneDto.getTva() != null ? ligneDto.getTva() : BigDecimal.ZERO);
                     ligne.setMontantHT(ligneDto.getMontantHT() != null ? ligneDto.getMontantHT() : BigDecimal.ZERO);
                     ligne.setMontantTTC(ligneDto.getMontantTTC() != null ? ligneDto.getMontantTTC() : BigDecimal.ZERO);
                     ligne.setCommandeAchat(saved);
 
-                    logger.info("📝 Line {}: Setting articleAchat to ID={}", lineNumber, managedArticle.getId());
-                    logger.info("📝 Line {}: Before save - articleAchat={}", lineNumber, ligne.getArticleAchat());
+                    logger.info("📝 Line {}: Setting article to ID={}", lineNumber, article.getId());
+                    logger.info("📝 Line {}: Before save - article={}", lineNumber, ligne.getArticle());
 
                     // ✅ SAVE LINE
-                    LigneCommandeAchat savedLigne = ligneCommandeAchatRepository.save(ligne);
+                    LigneCommandeAchat savedLigne = ligneCommandeAchatRepository.saveAndFlush(ligne);
 
-                    logger.info("📝 Line {}: After save - ID={}, articleAchat={}", 
-                            lineNumber, savedLigne.getId(), savedLigne.getArticleAchat());
+                    logger.info("📝 Line {}: After save - ID={}, article={}", 
+                            lineNumber, savedLigne.getId(), savedLigne.getArticle());
 
                     lineCount++;
                     logger.info("✅ Line {} saved successfully", lineNumber);
@@ -267,8 +266,8 @@ public class CommandeAchatService {
         if (commande.getLignes() != null) {
             for (LigneCommandeAchat ligneCommande : commande.getLignes()) {
                 LigneFactureAchat ligneFacture = new LigneFactureAchat();
-                ligneFacture.setDesignation(ligneCommande.getArticleAchat() != null
-                        ? ligneCommande.getArticleAchat().getNom() : "");
+                ligneFacture.setDesignation(ligneCommande.getArticle() != null  // ✅ CHANGED from getArticleAchat
+                        ? ligneCommande.getArticle().getNom() : "");
                 ligneFacture.setQuantite(ligneCommande.getQuantite());
                 ligneFacture.setPrixUnitaireHT(ligneCommande.getPrixUnitaireHT() != null
                         ? ligneCommande.getPrixUnitaireHT() : BigDecimal.ZERO);

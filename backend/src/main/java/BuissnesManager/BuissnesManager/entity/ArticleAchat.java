@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "article_achat")
+@Table(name = "article")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,35 +19,29 @@ public class ArticleAchat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "reference")
+    private String reference;
+
+    @Column(name = "nom", nullable = false)
     private String nom;
 
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "prix_unitaire", precision = 15, scale = 2)
+    @Column(name = "prix_achat", precision = 15, scale = 2)
     private BigDecimal prixUnitaire;
 
-    private Integer quantite;
+    @Column(name = "prix_vente", precision = 15, scale = 2)
+    private BigDecimal prixVente;
 
-    private String unite;
+    @Column(name = "actif")
+    private Boolean actif;
 
-    private String sku;
-
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "fournisseur_id")
-    @JsonIgnoreProperties("articleAchats")
-    private Fournisseur fournisseur;
-
-    @ManyToOne
-    @JoinColumn(name = "categorie_fournisseur_id")
-    @JsonIgnoreProperties("articleAchats")
-    private CategorieFournisseur categorieFournisseur;
 
     @PrePersist
     protected void onCreate() {

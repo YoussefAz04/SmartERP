@@ -25,7 +25,7 @@ public class LigneCommandeAchat {
     @Column(precision = 15, scale = 2)
     private BigDecimal quantite;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "prix_unitaireht", precision = 15, scale = 2)  // ← REMOVE nullable = false
     private BigDecimal prixUnitaireHT;
 
     @Column(precision = 5, scale = 2)
@@ -44,11 +44,11 @@ public class LigneCommandeAchat {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // ✅ KEY FIX: Add nullable = false to ensure article_achat_id is required
-    @ManyToOne(fetch = FetchType.EAGER)  // ✅ Change to EAGER to load immediately
-    @JoinColumn(name = "article_achat_id", nullable = false)  // ✅ nullable = false
-    @JsonIgnoreProperties({"lignesCommandeAchat", "fournisseur", "categorieFournisseur"})
-    private ArticleAchat articleAchat;
+    // ✅ FIXED: Use Article instead of ArticleAchat
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "article_id", nullable = false)
+    @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
+    private Article article;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "commande_achat_id", nullable = false)
