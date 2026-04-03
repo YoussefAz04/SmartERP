@@ -144,6 +144,15 @@ public class CommandeAchatService {
 
                     logger.info("✅ Line {}: Article found: ID={}, Nom={}", lineNumber, article.getId(), article.getNom());
 
+                    // ✅ VALIDATE prixUnitaireHT BEFORE INSERTION
+                    if (ligneDto.getPrixUnitaireHT() == null) {
+                        logger.error("❌ Line {}: prixUnitaireHT is NULL! Cannot insert into database.", lineNumber);
+                        throw new RuntimeException(
+                                String.format("Ligne %d: Le prix unitaire HT est obligatoire.", lineNumber)
+                        );
+                    }
+                    logger.info("   prixUnitaireHT validated: {}", ligneDto.getPrixUnitaireHT());
+
                     // ✅ CREATE LINE ITEM WITH ALL VALIDATIONS
                     LigneCommandeAchat ligne = new LigneCommandeAchat();
 
@@ -152,7 +161,7 @@ public class CommandeAchatService {
                     ligne.setArticleAchat(managedArticle);
 
                     ligne.setQuantite(ligneDto.getQuantite() != null ? ligneDto.getQuantite() : BigDecimal.ONE);
-                    ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT() != null ? ligneDto.getPrixUnitaireHT() : BigDecimal.ZERO);
+                    ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT());
                     ligne.setTva(ligneDto.getTva() != null ? ligneDto.getTva() : BigDecimal.ZERO);
                     ligne.setMontantHT(ligneDto.getMontantHT() != null ? ligneDto.getMontantHT() : BigDecimal.ZERO);
                     ligne.setMontantTTC(ligneDto.getMontantTTC() != null ? ligneDto.getMontantTTC() : BigDecimal.ZERO);
