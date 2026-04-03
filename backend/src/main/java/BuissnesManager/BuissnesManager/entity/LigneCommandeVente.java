@@ -45,8 +45,7 @@ public class LigneCommandeVente {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "article_id", nullable = false)
-    @JsonIgnoreProperties({"lignesCommandeVente", "articleAchat", "client"})
+    @JoinColumn(name = "article_id")  // ✅ Match the SQL schema
     private ArticleVente articleVente;
 
     @ManyToOne
