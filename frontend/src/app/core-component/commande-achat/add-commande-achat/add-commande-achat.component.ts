@@ -229,9 +229,16 @@ export class AddCommandeAchatComponent implements OnInit {
         prixUnitaireHT: 0
       });
     }
-    this.calculateLineAmount(index);
-    this.calculateTotals();
+  } else {
+    console.warn(`❌ No article ID selected`);
+    ligneControl.patchValue({
+      prixUnitaireHT: 0  // ← DEFAULT TO 0 IF NULL
+    });
   }
+  
+  this.calculateLineAmount(index);
+  this.calculateTotals();
+}
   compareNumbers(a: any, b: any): boolean {
   return a === b;
 }
