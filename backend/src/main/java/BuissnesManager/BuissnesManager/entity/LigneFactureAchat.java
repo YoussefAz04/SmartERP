@@ -21,21 +21,22 @@ public class LigneFactureAchat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "article_nom")
     private String designation;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "quantite", precision = 15, scale = 2, nullable = false)
     private BigDecimal quantite;
 
-    @Column(precision = 15, scale = 2, nullable = false)
+    @Column(name = "prix_unitaire_ht", precision = 15, scale = 2, nullable = false)
     private BigDecimal prixUnitaireHT;
 
-    @Column(precision = 5, scale = 2)
+    @Column(name = "taux_tva", precision = 5, scale = 2)
     private BigDecimal tva;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "montant_ht", precision = 15, scale = 2)
     private BigDecimal montantHT;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "montant_ttc", precision = 15, scale = 2)
     private BigDecimal montantTTC;
 
     @CreationTimestamp
