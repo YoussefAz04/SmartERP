@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,10 +27,10 @@ public class Article {
 
     private String description;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "prix_achat", precision = 15, scale = 2)
     private BigDecimal prixAchat;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "prix_vente", precision = 15, scale = 2)
     private BigDecimal prixVente;
 
     @Column(precision = 5, scale = 2)
@@ -40,11 +38,10 @@ public class Article {
 
     private boolean actif = true;
 
-    @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToOne
@@ -61,4 +58,16 @@ public class Article {
     @JoinColumn(name = "entreprise_id")
     @JsonIgnore
     private Entreprise entreprise;
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) createdAt = now;
+        if (updatedAt == null) updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

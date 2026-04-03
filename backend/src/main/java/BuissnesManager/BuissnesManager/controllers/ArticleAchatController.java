@@ -37,39 +37,10 @@ public class ArticleAchatController {
         }
     }
 
-    @GetMapping("/fournisseur/{fournisseurId}")
-    public ResponseEntity<List<ArticleAchat>> getArticleAchatByFournisseur(@PathVariable Long fournisseurId) {
-        try {
-            return ResponseEntity.ok(articleAchatService.getArticleAchatByFournisseur(fournisseurId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/categorie/{categorieId}")
-    public ResponseEntity<List<ArticleAchat>> getArticleAchatByCategorie(@PathVariable Long categorieId) {
-        try {
-            return ResponseEntity.ok(articleAchatService.getArticleAchatByCategorie(categorieId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PostMapping("/add/{fournisseurId}")
-    public ResponseEntity<ArticleAchat> addArticleAchat(@RequestBody ArticleAchat articleAchat,
-                                                         @PathVariable Long fournisseurId) {
-        try {
-            ArticleAchat created = articleAchatService.addArticleAchat(articleAchat, fournisseurId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
     @PostMapping("/add")
-    public ResponseEntity<ArticleAchat> addArticleAchatWithoutFournisseur(@RequestBody ArticleAchat articleAchat) {
+    public ResponseEntity<ArticleAchat> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
         try {
-            ArticleAchat created = articleAchatService.addArticleAchat(articleAchat, null);
+            ArticleAchat created = articleAchatService.addArticleAchat(articleAchat);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
