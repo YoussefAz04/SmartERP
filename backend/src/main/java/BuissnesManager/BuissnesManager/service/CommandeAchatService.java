@@ -133,6 +133,7 @@ public class CommandeAchatService {
         facture.setStatut("EN_ATTENTE");
         facture.setDescription("Facture générée automatiquement depuis la commande " + commande.getReference());
         facture.setFournisseur(commande.getFournisseur());
+        facture.setEntreprise(commande.getEntreprise());
         facture.setCommandeAchat(commande);
         FactureAchat savedFacture = factureAchatRepository.save(facture);
         savedFacture.setReferance("FA-" + String.format("%04d", savedFacture.getId()));
