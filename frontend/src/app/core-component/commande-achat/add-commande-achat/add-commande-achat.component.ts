@@ -211,14 +211,23 @@ export class AddCommandeAchatComponent implements OnInit {
   onArticleChange(index: number): void {
     const ligneControl = this.lignesArray.at(index);
     const articleId = ligneControl.get('articleAchatId')?.value;
-    
+
     if (articleId) {
       const article = this.articles.find((a: any) => a.id === articleId);
       if (article) {
         ligneControl.patchValue({
-          prixUnitaireHT: article.prixAchat || article.prixUnitaire || 0
+          prixUnitaireHT: article.prixAchat || article.prixUnitaire || 0,
+          tva: article.tva || 0
+        });
+      } else {
+        ligneControl.patchValue({
+          prixUnitaireHT: 0
         });
       }
+    } else {
+      ligneControl.patchValue({
+        prixUnitaireHT: 0
+      });
     }
     this.calculateLineAmount(index);
     this.calculateTotals();
