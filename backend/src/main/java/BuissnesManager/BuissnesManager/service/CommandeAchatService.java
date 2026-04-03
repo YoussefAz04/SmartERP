@@ -4,17 +4,22 @@ import BuissnesManager.BuissnesManager.dto.CommandeAchatDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeAchatDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CommandeAchatService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommandeAchatService.class);
 
     @Autowired
     private CommandeAchatRepository commandeAchatRepository;
@@ -118,11 +123,21 @@ public class CommandeAchatService {
 
     @Transactional
     public FactureAchat validerCommande(Long id) {
+        logger.info("Début de la validation de la commande achat id={}", id);
         CommandeAchat commande = commandeAchatRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CommandeAchat non trouvée avec id: " + id));
+                .orElseThrow(() -> {
+                    logger.error("CommandeAchat non trouvée avec id={}", id);
+                    return new RuntimeException("CommandeAchat non trouvée avec id: " + id);
+                });
 
-        commande.setStatut("VALIDEE");
+        if (commande.getEntreprise() == null) {
+            logger.error("Entreprise non définie pour la commande id={}", id);
+            throw new RuntimeException("Entreprise non définie pour la commande id: " + id);
+        }
+
+        commande.setStatut("CONFIRMEE");
         commandeAchatRepository.save(commande);
+        logger.info("Statut de la commande id={} mis à jour à CONFIRMEE", id);
 
         FactureAchat facture = new FactureAchat();
         facture.setDateAchat(LocalDate.now().toString());
@@ -138,6 +153,7 @@ public class CommandeAchatService {
         FactureAchat savedFacture = factureAchatRepository.save(facture);
         savedFacture.setReferance("FA-" + String.format("%04d", savedFacture.getId()));
         savedFacture = factureAchatRepository.save(savedFacture);
+        logger.info("Facture achat créée avec id={} et référence={}", savedFacture.getId(), savedFacture.getReferance());
 
         List<LigneCommandeAchat> lignesCommande = ligneCommandeAchatRepository.findByCommandeAchatId(id);
         for (LigneCommandeAchat ligneCommande : lignesCommande) {
@@ -145,15 +161,27 @@ public class CommandeAchatService {
             if (ligneCommande.getArticleAchat() != null) {
                 ligneFacture.setDesignation(ligneCommande.getArticleAchat().getNom());
             }
-            ligneFacture.setQuantite(ligneCommande.getQuantite());
-            ligneFacture.setPrixUnitaireHT(ligneCommande.getPrixUnitaireHT());
-            ligneFacture.setTva(ligneCommande.getTva());
-            ligneFacture.setMontantHT(ligneCommande.getMontantHT());
-            ligneFacture.setMontantTTC(ligneCommande.getMontantTTC());
+            BigDecimal quantite = ligneCommande.getQuantite() != null ? ligneCommande.getQuantite() : BigDecimal.ZERO;
+            BigDecimal prixUnitaireHT = ligneCommande.getPrixUnitaireHT() != null ? ligneCommande.getPrixUnitaireHT() : BigDecimal.ZERO;
+            BigDecimal tva = ligneCommande.getTva() != null ? ligneCommande.getTva() : BigDecimal.ZERO;
+            BigDecimal montantHT = ligneCommande.getMontantHT() != null
+                    ? ligneCommande.getMontantHT()
+                    : quantite.multiply(prixUnitaireHT).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal montantTTC = ligneCommande.getMontantTTC() != null
+                    ? ligneCommande.getMontantTTC()
+                    : montantHT.multiply(BigDecimal.ONE.add(tva.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP))).setScale(2, RoundingMode.HALF_UP);
+            ligneFacture.setQuantite(quantite);
+            ligneFacture.setPrixUnitaireHT(prixUnitaireHT);
+            ligneFacture.setTva(tva);
+            ligneFacture.setMontantHT(montantHT);
+            ligneFacture.setMontantTTC(montantTTC);
             ligneFacture.setFactureAchat(savedFacture);
             ligneFactureAchatRepository.save(ligneFacture);
+            logger.info("Ligne facture créée: designation={}, prixUnitaireHT={}, montantHT={}, montantTTC={}",
+                    ligneFacture.getDesignation(), prixUnitaireHT, montantHT, montantTTC);
         }
 
+        logger.info("Validation de la commande id={} terminée avec succès. Facture id={}", id, savedFacture.getId());
         return savedFacture;
     }
 
