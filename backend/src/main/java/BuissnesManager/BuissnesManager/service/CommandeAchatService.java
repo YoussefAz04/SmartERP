@@ -146,12 +146,22 @@ public class CommandeAchatService {
 
                     // ✅ VALIDATE prixUnitaireHT BEFORE INSERTION
                     if (ligneDto.getPrixUnitaireHT() == null) {
-                        logger.error("❌ Line {}: prixUnitaireHT is NULL! Cannot insert into database.", lineNumber);
+                        logger.error("❌ Line {}: prixUnitaireHT is NULL from frontend DTO!", lineNumber);
+                        logger.error("   Full DTO: {}", ligneDto);
                         throw new RuntimeException(
-                                String.format("Ligne %d: Le prix unitaire HT est obligatoire.", lineNumber)
+                                String.format("Ligne %d: Le prix unitaire HT est obligatoire. Veuillez saisir un prix.", lineNumber)
                         );
                     }
-                    logger.info("   prixUnitaireHT validated: {}", ligneDto.getPrixUnitaireHT());
+
+                    // ✅ Validate it's greater than zero
+                    if (ligneDto.getPrixUnitaireHT().compareTo(BigDecimal.ZERO) <= 0) {
+                        logger.error("❌ Line {}: prixUnitaireHT is <= 0: {}", lineNumber, ligneDto.getPrixUnitaireHT());
+                        throw new RuntimeException(
+                                String.format("Ligne %d: Le prix unitaire HT doit être supérieur à 0.", lineNumber)
+                        );
+                    }
+
+                    logger.info("✅ Line {}: prixUnitaireHT validated: {}", lineNumber, ligneDto.getPrixUnitaireHT());
 
                     // ✅ CREATE LINE ITEM WITH ALL VALIDATIONS
                     LigneCommandeAchat ligne = new LigneCommandeAchat();
