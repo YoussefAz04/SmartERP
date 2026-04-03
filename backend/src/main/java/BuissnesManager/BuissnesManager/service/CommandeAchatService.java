@@ -20,6 +20,7 @@ import java.util.Optional;
 public class CommandeAchatService {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandeAchatService.class);
+    private static final BigDecimal PERCENTAGE_DIVISOR = new BigDecimal("100");
 
     @Autowired
     private CommandeAchatRepository commandeAchatRepository;
@@ -169,7 +170,7 @@ public class CommandeAchatService {
                     : quantite.multiply(prixUnitaireHT).setScale(2, RoundingMode.HALF_UP);
             BigDecimal montantTTC = ligneCommande.getMontantTTC() != null
                     ? ligneCommande.getMontantTTC()
-                    : montantHT.multiply(BigDecimal.ONE.add(tva.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP))).setScale(2, RoundingMode.HALF_UP);
+                    : montantHT.multiply(BigDecimal.ONE.add(tva.divide(PERCENTAGE_DIVISOR, 4, RoundingMode.HALF_UP))).setScale(2, RoundingMode.HALF_UP);
             ligneFacture.setQuantite(quantite);
             ligneFacture.setPrixUnitaireHT(prixUnitaireHT);
             ligneFacture.setTva(tva);
@@ -177,7 +178,7 @@ public class CommandeAchatService {
             ligneFacture.setMontantTTC(montantTTC);
             ligneFacture.setFactureAchat(savedFacture);
             ligneFactureAchatRepository.save(ligneFacture);
-            logger.info("Ligne facture créée: designation={}, prixUnitaireHT={}, montantHT={}, montantTTC={}",
+            logger.debug("Ligne facture créée: designation={}, prixUnitaireHT={}, montantHT={}, montantTTC={}",
                     ligneFacture.getDesignation(), prixUnitaireHT, montantHT, montantTTC);
         }
 
