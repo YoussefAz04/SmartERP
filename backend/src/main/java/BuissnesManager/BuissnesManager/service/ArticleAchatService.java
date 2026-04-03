@@ -26,13 +26,7 @@ public class ArticleAchatService {
 
     @Transactional
     public Article addArticleAchat(ArticleAchat input) {
-        Article article = new Article();
-        article.setNom(input.getNom());
-        article.setDescription(input.getDescription());
-        article.setReference(input.getReference());
-        article.setPrixAchat(input.getPrixUnitaire());
-        article.setPrixVente(input.getPrixVente());
-        article.setActif(input.getActif() != null ? input.getActif() : true);
+        Article article = mapToArticle(input, new Article());
         return articleRepository.save(article);
     }
 
@@ -41,14 +35,19 @@ public class ArticleAchatService {
         Article existing = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + id));
 
-        if (updated.getNom() != null) existing.setNom(updated.getNom());
-        if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
-        if (updated.getPrixUnitaire() != null) existing.setPrixAchat(updated.getPrixUnitaire());
-        if (updated.getPrixVente() != null) existing.setPrixVente(updated.getPrixVente());
-        if (updated.getReference() != null) existing.setReference(updated.getReference());
-        if (updated.getActif() != null) existing.setActif(updated.getActif());
+        mapToArticle(updated, existing);
 
         return articleRepository.save(existing);
+    }
+
+    private Article mapToArticle(ArticleAchat source, Article target) {
+        if (source.getNom() != null) target.setNom(source.getNom());
+        if (source.getDescription() != null) target.setDescription(source.getDescription());
+        if (source.getReference() != null) target.setReference(source.getReference());
+        if (source.getPrixUnitaire() != null) target.setPrixAchat(source.getPrixUnitaire());
+        if (source.getPrixVente() != null) target.setPrixVente(source.getPrixVente());
+        if (source.getActif() != null) target.setActif(source.getActif());
+        return target;
     }
 
     @Transactional
