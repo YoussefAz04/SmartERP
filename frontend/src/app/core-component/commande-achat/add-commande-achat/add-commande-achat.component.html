@@ -145,6 +145,11 @@
     </div>
   </div>
 
+    <!-- Error Message -->
+  <div class="alert alert-danger mt-3" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
   <!-- Actions -->
   <div class="card mt-4">
     <div class="card-body d-flex gap-2 justify-content-end">
