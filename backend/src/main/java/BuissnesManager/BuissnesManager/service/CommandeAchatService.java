@@ -31,7 +31,7 @@ public class CommandeAchatService {
     private FournisseurRepo fournisseurRepo;
 
     @Autowired
-    private ArticleRepository articleRepository;  // ✅ CHANGED from ArticleAchatRepo
+    private ArticleRepository articleRepository;
 
     @Autowired
     private EntrepriseRepo entrepriseRepo;
@@ -117,7 +117,7 @@ public class CommandeAchatService {
                     logger.info("   quantite from DTO: {}", ligneDto.getQuantite());
                     logger.info("   prixUnitaireHT from DTO: {}", ligneDto.getPrixUnitaireHT());
 
-                    // ✅ VALIDATE ARTICLE ID - DO NOT SKIP, THROW ERROR INSTEAD
+                    // ✅ VALIDATE ARTICLE ID
                     if (ligneDto.getArticleAchatId() == null) {
                         logger.error("❌ Line {}: articleId is NULL!", lineNumber);
                         throw new RuntimeException(
@@ -132,7 +132,7 @@ public class CommandeAchatService {
                         );
                     }
 
-                    // ✅ FETCH AND VALIDATE THE ARTICLE EXISTS - USE Article ENTITY
+                    // ✅ FETCH AND VALIDATE THE ARTICLE EXISTS
                     Article article = articleRepository.findById(ligneDto.getArticleAchatId())
                             .orElseThrow(() -> {
                                 logger.error("❌ Line {}: Article not found with ID: {}", lineNumber, ligneDto.getArticleAchatId());
@@ -153,7 +153,7 @@ public class CommandeAchatService {
                         );
                     }
 
-                    // ✅ Validate it's greater than zero
+                    // ✅ VALIDATE prixUnitaireHT > 0
                     if (ligneDto.getPrixUnitaireHT().compareTo(BigDecimal.ZERO) <= 0) {
                         logger.error("❌ Line {}: prixUnitaireHT is <= 0: {}", lineNumber, ligneDto.getPrixUnitaireHT());
                         throw new RuntimeException(
@@ -163,7 +163,7 @@ public class CommandeAchatService {
 
                     logger.info("✅ Line {}: prixUnitaireHT validated: {}", lineNumber, ligneDto.getPrixUnitaireHT());
 
-                    // ✅ CREATE LINE ITEM: set scalar fields first, then relationships
+                    // ✅ CREATE LINE ITEM: SET SCALAR FIELDS FIRST
                     LigneCommandeAchat ligne = new LigneCommandeAchat();
 
                     ligne.setQuantite(ligneDto.getQuantite() != null ? ligneDto.getQuantite() : BigDecimal.ONE);
@@ -255,16 +255,19 @@ public class CommandeAchatService {
         CommandeAchat commande = commandeAchatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
 
-        if ("VALIDEE".equals(commande.getStatut())) {
-            throw new RuntimeException("Cette commande est déjà validée.");
+        // ✅ CHECK CONSTRAINT VALID VALUES: 'BROUILLON', 'EN_ATTENTE', 'CONFIRMEE', 'RECUE', 'ANNULEE'
+        if ("CONFIRMEE".equals(commande.getStatut())) {
+            throw new RuntimeException("Cette commande a déjà été confirmée.");
         }
         if ("ANNULEE".equals(commande.getStatut())) {
-            throw new RuntimeException("Impossible de valider une commande annulée.");
+            throw new RuntimeException("Impossible de confirmer une commande annulée.");
         }
 
-        commande.setStatut("VALIDEE");
+        // ✅ CHANGE TO CONFIRMEE (VALID CHECK CONSTRAINT VALUE)
+        commande.setStatut("CONFIRMEE");
         commandeAchatRepository.save(commande);
 
+        // ✅ CREATE INVOICE
         FactureAchat facture = new FactureAchat();
         facture.setReferance("FAC-" + commande.getReference());
         facture.setDateAchat(commande.getDateCommande() != null
@@ -282,10 +285,12 @@ public class CommandeAchatService {
 
         FactureAchat savedFacture = factureAchatRepository.save(facture);
 
-        if (commande.getLignes() != null) {
+        // ✅ CREATE INVOICE LINES FROM ORDER LINES
+        if (commande.getLignes() != null && !commande.getLignes().isEmpty()) {
             for (LigneCommandeAchat ligneCommande : commande.getLignes()) {
                 LigneFactureAchat ligneFacture = new LigneFactureAchat();
-                ligneFacture.setDesignation(ligneCommande.getArticle() != null  // ✅ CHANGED from getArticleAchat
+
+                ligneFacture.setDesignation(ligneCommande.getArticle() != null
                         ? ligneCommande.getArticle().getNom() : "");
                 ligneFacture.setQuantite(ligneCommande.getQuantite());
                 ligneFacture.setPrixUnitaireHT(ligneCommande.getPrixUnitaireHT() != null
@@ -294,11 +299,12 @@ public class CommandeAchatService {
                 ligneFacture.setMontantHT(ligneCommande.getMontantHT());
                 ligneFacture.setMontantTTC(ligneCommande.getMontantTTC());
                 ligneFacture.setFactureAchat(savedFacture);
-                ligneFactureAchatRepository.save(ligneFacture);
+
+                ligneFactureAchatRepository.saveAndFlush(ligneFacture);
             }
         }
 
-        logger.info("✅ Commande {} validated, facture {} created", id, savedFacture.getId());
+        logger.info("✅ Commande {} confirmed, facture {} created", id, savedFacture.getId());
         return savedFacture;
     }
 
@@ -306,17 +312,58 @@ public class CommandeAchatService {
     public CommandeAchat annulerCommande(Long id) {
         CommandeAchat commande = commandeAchatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+
         if ("ANNULEE".equals(commande.getStatut())) {
             throw new RuntimeException("Cette commande est déjà annulée.");
         }
+
         commande.setStatut("ANNULEE");
+        logger.info("✅ Commande {} cancelled", id);
         return commandeAchatRepository.save(commande);
     }
 
+    @Transactional
     public void deleteCommande(Long id) {
-        if (!commandeAchatRepository.existsById(id)) {
-            throw new RuntimeException("Commande non trouvée avec id: " + id);
+        CommandeAchat commande = commandeAchatRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+
+        // ✅ BEST APPROACH: Check if order is CONFIRMED (has associated invoice)
+        // Prevent deletion if it has invoices (business data integrity)
+        if ("CONFIRMEE".equals(commande.getStatut())) {
+            throw new RuntimeException(
+                    "Impossible de supprimer une commande confirmée. Veuillez d'abord annuler la commande."
+            );
         }
+
+        // ✅ STEP 1: Delete all associated invoice lines (if any exist)
+        List<LigneFactureAchat> factureLines = commande.getLignes().stream()
+                .flatMap(ligne -> ligneFactureAchatRepository.findAll().stream()
+                        .filter(facLigne -> facLigne.getFactureAchat().getCommandeAchat().getId().equals(id)))
+                .toList();
+
+        if (!factureLines.isEmpty()) {
+            ligneFactureAchatRepository.deleteAll(factureLines);
+            logger.info("✅ All associated invoice lines deleted for commande {}", id);
+        }
+
+        // ✅ STEP 2: Delete all associated invoices
+        List<FactureAchat> invoices = factureAchatRepository.findAll().stream()
+                .filter(facture -> facture.getCommandeAchat() != null && facture.getCommandeAchat().getId().equals(id))
+                .toList();
+
+        if (!invoices.isEmpty()) {
+            factureAchatRepository.deleteAll(invoices);
+            logger.info("✅ All associated invoices deleted for commande {}", id);
+        }
+
+        // ✅ STEP 3: Delete all order lines
+        if (commande.getLignes() != null && !commande.getLignes().isEmpty()) {
+            ligneCommandeAchatRepository.deleteAll(commande.getLignes());
+            logger.info("✅ All lines deleted for commande {}", id);
+        }
+
+        // ✅ STEP 4: Delete the order itself
         commandeAchatRepository.deleteById(id);
+        logger.info("✅ Commande {} and all associated data deleted", id);
     }
 }
