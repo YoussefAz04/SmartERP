@@ -1,58 +1,138 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CommandeAchatService } from '../../../core/service/commande-achat/commande-achat.service';
-import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
-import { ArticleAchat } from '../../../model/article-achat.model';
-import { Fournisseur } from '../../../model/fournisseur.model';
+import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 
 @Component({
   selector: 'app-add-commande-achat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-commande-achat.component.html',
   styleUrl: './add-commande-achat.component.scss'
 })
 export class AddCommandeAchatComponent implements OnInit {
+
   commandeForm!: FormGroup;
-  fournisseurs: Fournisseur[] = [];
-  articles: ArticleAchat[] = [];
-  isLoading = false;
-  submitted = false;
   isEditMode = false;
-  commandeId: number | null = null;
+  isLoading = false;
+  errorMessage = '';
+  fournisseurs: any[] = [];
+  articles: any[] = [];
+  
+  currentEntrepriseId: number | null = null;
+  totalHT = 0;
+  totalTVA = 0;
+  totalTTC = 0;
 
   constructor(
-    private commandeAchatService: CommandeAchatService,
-    private articleAchatService: ArticleAchatService,
-    private fournisseurService: FournisseurService,
     private fb: FormBuilder,
+    private commandeAchatService: CommandeAchatService,
+    private fournisseurService: FournisseurService,
+    private articleAchatService: ArticleAchatService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.getEntrepriseId();
     this.loadFournisseurs();
     this.loadArticles();
-
-    this.commandeId = this.route.snapshot.params['id'] ? Number(this.route.snapshot.params['id']) : null;
-    if (this.commandeId) {
-      this.isEditMode = true;
-      this.loadCommande(this.commandeId);
-    }
+    this.checkEditMode();
+    
+    // ✅ LISTEN TO FORM VALUE CHANGES TO CALCULATE TOTALS
+    this.lignesArray.valueChanges.subscribe(() => {
+      this.calculateTotals();
+    });
   }
 
   initializeForm(): void {
     this.commandeForm = this.fb.group({
-      reference: ['', [Validators.required]],
-      dateCommande: ['', [Validators.required]],
-      dateLivraisonPrevue: [''],
-      fournisseurId: [null],
+      reference: ['', Validators.required],
+      dateCommande: [new Date().toISOString().split('T')[0], Validators.required],
+      dateLivraisonPrevue: ['', Validators.required],
+      fournisseurId: [null, Validators.required],
+      statut: ['EN_ATTENTE'],
       note: [''],
       lignes: this.fb.array([])
+    });
+  }
+
+  getEntrepriseId(): void {
+    const stored = localStorage.getItem('entrepriseId');
+    if (stored) {
+      this.currentEntrepriseId = parseInt(stored);
+      console.log('✅ Enterprise ID loaded:', this.currentEntrepriseId);
+    } else {
+      this.errorMessage = '❌ Entreprise non définie. Veuillez vous reconnecter.';
+      console.error('❌ Enterprise ID not found');
+    }
+  }
+
+  checkEditMode(): void {
+    this.route.params.subscribe((params: any) => {
+      if (params['id']) {
+        this.isEditMode = true;
+        this.loadCommande(params['id']);
+      }
+    });
+  }
+
+  loadCommande(id: number): void {
+    this.commandeAchatService.getCommandeById(id).subscribe({
+      next: (commande: any) => {
+        this.populateForm(commande);
+      },
+      error: (err: any) => {
+        console.error('Error loading commande:', err);
+        this.errorMessage = 'Erreur lors du chargement de la commande';
+      }
+    });
+  }
+
+  populateForm(commande: any): void {
+    this.commandeForm.patchValue({
+      reference: commande.reference,
+      dateCommande: commande.dateCommande,
+      dateLivraisonPrevue: commande.dateLivraisonPrevue,
+      fournisseurId: commande.fournisseurId,
+      statut: commande.statut,
+      note: commande.note
+    });
+
+    if (commande.lignes && commande.lignes.length > 0) {
+      const lignesArray = this.lignesArray;
+      commande.lignes.forEach((ligne: any) => {
+        lignesArray.push(this.createLigneGroup(ligne));
+      });
+      this.calculateTotals();
+    }
+  }
+
+  loadFournisseurs(): void {
+    this.fournisseurService.getAllFournisseurs().subscribe({
+      next: (data: any) => {
+        this.fournisseurs = data;
+        console.log('✅ Fournisseurs loaded:', this.fournisseurs);
+      },
+      error: (err: any) => {
+        console.error('Error loading fournisseurs:', err);
+      }
+    });
+  }
+
+  loadArticles(): void {
+    this.articleAchatService.getAllArticlesAchat().subscribe({
+      next: (data: any) => {
+        this.articles = data;
+        console.log('✅ Articles loaded:', this.articles);
+      },
+      error: (err: any) => {
+        console.error('Error loading articles:', err);
+      }
     });
   }
 
@@ -60,167 +140,169 @@ export class AddCommandeAchatComponent implements OnInit {
     return this.commandeForm.get('lignes') as FormArray;
   }
 
-  addLigne(): void {
-    const ligneGroup = this.fb.group({
-      articleAchatId: [null],
-      quantite: [1, [Validators.required, Validators.min(0.01)]],
-      prixUnitaireHT: [0, [Validators.required, Validators.min(0)]],
-      tva: [20],
-      montantHT: [{ value: 0, disabled: true }],
-      montantTTC: [{ value: 0, disabled: true }]
+  // ✅ CREATE A REUSABLE LIGNE GROUP
+  createLigneGroup(data?: any): FormGroup {
+    const montantHT = data ? (data.quantite || 1) * (data.prixUnitaireHT || 0) : 0;
+    const montantTTC = data ? montantHT * (1 + (data.tva || 0) / 100) : 0;
+
+    return this.fb.group({
+      articleAchatId: [data?.articleAchat?.id || data?.articleAchatId || null, Validators.required],
+      quantite: [data?.quantite || 1, [Validators.required, Validators.min(1)]],
+      prixUnitaireHT: [data?.prixUnitaireHT || 0, [Validators.required, Validators.min(0)]],
+      tva: [data?.tva || 0, [Validators.required, Validators.min(0)]],
+      montantHT: [{ value: montantHT, disabled: true }],
+      montantTTC: [{ value: montantTTC, disabled: true }]
     });
+  }
 
-    ligneGroup.get('quantite')?.valueChanges.subscribe(() => this.calculateLigne(ligneGroup));
-    ligneGroup.get('prixUnitaireHT')?.valueChanges.subscribe(() => this.calculateLigne(ligneGroup));
-    ligneGroup.get('tva')?.valueChanges.subscribe(() => this.calculateLigne(ligneGroup));
-
-    this.lignesArray.push(ligneGroup);
+  addLigne(): void {
+    this.lignesArray.push(this.createLigneGroup());
   }
 
   removeLigne(index: number): void {
     this.lignesArray.removeAt(index);
-  }
-
-  calculateLigne(ligneGroup: FormGroup): void {
-    const quantite = ligneGroup.get('quantite')?.value || 0;
-    const prix = ligneGroup.get('prixUnitaireHT')?.value || 0;
-    const tva = ligneGroup.get('tva')?.value || 0;
-    const montantHT = quantite * prix;
-    const montantTTC = montantHT * (1 + tva / 100);
-    ligneGroup.get('montantHT')?.setValue(montantHT.toFixed(2), { emitEvent: false });
-    ligneGroup.get('montantTTC')?.setValue(montantTTC.toFixed(2), { emitEvent: false });
-  }
-
-  get totalHT(): number {
-    let total = 0;
-    this.lignesArray.controls.forEach(ctrl => total += parseFloat(ctrl.get('montantHT')?.value || 0));
-    return total;
-  }
-
-  get totalTVA(): number {
-    let total = 0;
-    this.lignesArray.controls.forEach(ctrl => {
-      const ht = parseFloat(ctrl.get('montantHT')?.value || 0);
-      const ttc = parseFloat(ctrl.get('montantTTC')?.value || 0);
-      total += ttc - ht;
-    });
-    return total;
-  }
-
-  get totalTTC(): number {
-    let total = 0;
-    this.lignesArray.controls.forEach(ctrl => total += parseFloat(ctrl.get('montantTTC')?.value || 0));
-    return total;
-  }
-
-  loadFournisseurs(): void {
-    this.fournisseurService.getAllFournisseurs().subscribe({
-      next: (data) => { this.fournisseurs = data; },
-      error: (err) => console.error('Erreur chargement fournisseurs:', err)
-    });
-  }
-
-  loadArticles(): void {
-    this.articleAchatService.getAllArticlesAchat().subscribe({
-      next: (data) => { this.articles = data; },
-      error: (err) => console.error('Erreur chargement articles:', err)
-    });
+    this.calculateTotals();
   }
 
   onArticleChange(index: number): void {
-    const ligneGroup = this.lignesArray.at(index) as FormGroup;
-    const articleId = ligneGroup.get('articleAchatId')?.value;
+    const ligneControl = this.lignesArray.at(index);
+    const articleId = ligneControl.get('articleAchatId')?.value;
+    
     if (articleId) {
-      const article = this.articles.find(a => a.id === Number(articleId));
-      if (article && article.prixUnitaire) {
-        ligneGroup.get('prixUnitaireHT')?.setValue(article.prixUnitaire);
-        this.calculateLigne(ligneGroup);
+      const article = this.articles.find((a: any) => a.id === articleId);
+      if (article) {
+        ligneControl.patchValue({
+          prixUnitaireHT: article.prixUnitaire || 0
+        });
       }
     }
+    this.calculateLineAmount(index);
+    this.calculateTotals();
   }
 
-  loadCommande(id: number): void {
-    this.commandeAchatService.getCommandeById(id).subscribe({
-      next: (commande) => {
-        this.commandeForm.patchValue({
-          reference: commande.reference,
-          dateCommande: commande.dateCommande,
-          dateLivraisonPrevue: commande.dateLivraisonPrevue,
-          fournisseurId: commande.fournisseur?.id,
-          note: commande.note
-        });
-        if (commande.lignes) {
-          commande.lignes.forEach(ligne => {
-            const ligneGroup = this.fb.group({
-              articleAchatId: [ligne.articleAchat?.id],
-              quantite: [ligne.quantite, [Validators.required, Validators.min(0.01)]],
-              prixUnitaireHT: [ligne.prixUnitaireHT, [Validators.required, Validators.min(0)]],
-              tva: [ligne.tva || 20],
-              montantHT: [{ value: ligne.montantHT, disabled: true }],
-              montantTTC: [{ value: ligne.montantTTC, disabled: true }]
-            });
-            ligneGroup.get('quantite')?.valueChanges.subscribe(() => this.calculateLigne(ligneGroup));
-            ligneGroup.get('prixUnitaireHT')?.valueChanges.subscribe(() => this.calculateLigne(ligneGroup));
-            ligneGroup.get('tva')?.valueChanges.subscribe(() => this.calculateLigne(ligneGroup));
-            this.lignesArray.push(ligneGroup);
-          });
-        }
-      },
-      error: (err) => console.error('Erreur chargement commande:', err)
+  calculateLineAmount(index: number): void {
+    const ligneControl = this.lignesArray.at(index);
+    const quantite = parseFloat(ligneControl.get('quantite')?.value || 0);
+    const prixUnitaire = parseFloat(ligneControl.get('prixUnitaireHT')?.value || 0);
+    const tva = parseFloat(ligneControl.get('tva')?.value || 0);
+
+    const montantHT = quantite * prixUnitaire;
+    const montantTTC = montantHT * (1 + tva / 100);
+
+    ligneControl.patchValue({
+      montantHT: Number(montantHT.toFixed(2)),
+      montantTTC: Number(montantTTC.toFixed(2))
+    }, { emitEvent: false });
+  }
+
+  calculateTotals(): void {
+    let totalHT = 0;
+    let totalTTC = 0;
+
+    this.lignesArray.controls.forEach((control: any, index: number) => {
+      this.calculateLineAmount(index);
+      const ht = parseFloat(control.get('montantHT')?.value || 0);
+      const ttc = parseFloat(control.get('montantTTC')?.value || 0);
+      totalHT += ht;
+      totalTTC += ttc;
     });
+
+    this.totalHT = Number(totalHT.toFixed(2));
+    this.totalTVA = Number((totalTTC - totalHT).toFixed(2));
+    this.totalTTC = Number(totalTTC.toFixed(2));
+
+    console.log('💰 Totals calculated:', { totalHT: this.totalHT, totalTVA: this.totalTVA, totalTTC: this.totalTTC });
   }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.commandeForm.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+    return !!(field && field.invalid && (field.dirty || field.touched));
   }
+
+ onSubmit(): void {
+  console.log('🔄 Form submit clicked');
+  console.log('Form valid?', this.commandeForm.valid);
+  console.log('currentEntrepriseId:', this.currentEntrepriseId);
+  console.log('Lines count:', this.lignesArray.length);
+
+  // ✅ STEP 1: Validate form
+  if (!this.commandeForm.valid) {
+    this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
+    console.error('❌ Form not valid');
+    for (let key in this.commandeForm.controls) {
+      const control = this.commandeForm.get(key);
+      if (control && control.invalid) {
+        console.error(`Field "${key}" is invalid:`, control.errors);
+      }
+    }
+    return;
+  }
+
+  // ✅ STEP 2: Check enterprise
+  if (!this.currentEntrepriseId) {
+    this.errorMessage = '❌ Entreprise non définie. Veuillez vous reconnecter.';
+    console.error('❌ No enterprise ID');
+    return;
+  }
+
+  // ✅ STEP 3: Check lines exist
+  if (this.lignesArray.length === 0) {
+    this.errorMessage = '❌ Au moins une ligne de commande est requise';
+    console.error('❌ No lines');
+    return;
+  }
+
+  // ✅ STEP 4: Build payload
+  console.log('✅ All validations passed. Building payload...');
+  
+  const formData = this.commandeForm.getRawValue();
+  const payload = {
+    reference: formData.reference,
+    dateCommande: formData.dateCommande,
+    dateLivraisonPrevue: formData.dateLivraisonPrevue,
+    fournisseurId: parseInt(formData.fournisseurId), // ✅ Parse as int
+    statut: formData.statut,
+    note: formData.note,
+    montantHT: this.totalHT,
+    montantTVA: this.totalTVA,
+    montantTTC: this.totalTTC,
+    entrepriseId: this.currentEntrepriseId,
+    lignes: formData.lignes.map((ligne: any) => ({
+      articleAchatId: parseInt(ligne.articleAchatId), // ✅ Parse as int
+      quantite: parseFloat(ligne.quantite),
+      prixUnitaireHT: parseFloat(ligne.prixUnitaireHT),
+      tva: parseFloat(ligne.tva)
+    }))
+  };
+
+  console.log('📝 Payload ready:', payload);
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  // ✅ STEP 5: Make API call
+  console.log('🚀 Sending to backend...');
+  this.commandeAchatService.createCommande(payload).subscribe({
+    next: (response: any) => {
+      console.log('✅✅✅ SUCCESS! Response:', response);
+      this.isLoading = false;
+      alert('✅ Commande créée avec succès!');
+      this.router.navigate(['/commande-achat/list']);
+    },
+    error: (err: any) => {
+      console.error('❌❌❌ ERROR! Response:', err);
+      this.isLoading = false;
+      const errorMsg = err?.error?.message || err?.message || 'Erreur lors de la création';
+      this.errorMessage = errorMsg;
+      alert('❌ ' + errorMsg);
+    }
+  });
+}
 
   onCancel(): void {
-    this.router.navigate(['/commande-achat/list']);
+    this.cancel();
   }
 
-  onSubmit(): void {
-    this.submitted = true;
-    if (this.commandeForm.valid) {
-      this.isLoading = true;
-      const formValue = this.commandeForm.getRawValue();
-      const commandeData: any = {
-        reference: formValue.reference,
-        dateCommande: formValue.dateCommande,
-        dateLivraisonPrevue: formValue.dateLivraisonPrevue || null,
-        fournisseurId: formValue.fournisseurId ? Number(formValue.fournisseurId) : null,
-        note: formValue.note,
-        montantHT: this.totalHT,
-        montantTVA: this.totalTVA,
-        montantTTC: this.totalTTC,
-        statut: 'EN_ATTENTE',
-        lignes: formValue.lignes.map((l: any) => ({
-          articleAchatId: l.articleAchatId ? Number(l.articleAchatId) : null,
-          quantite: l.quantite,
-          prixUnitaireHT: l.prixUnitaireHT,
-          tva: l.tva,
-          montantHT: parseFloat(l.montantHT || 0),
-          montantTTC: parseFloat(l.montantTTC || 0)
-        }))
-      };
-
-      const request = this.isEditMode && this.commandeId
-        ? this.commandeAchatService.updateCommande(this.commandeId, commandeData)
-        : this.commandeAchatService.createCommande(commandeData);
-
-      request.subscribe({
-        next: () => {
-          this.isLoading = false;
-          alert(this.isEditMode ? '✅ Commande modifiée avec succès!' : '✅ Commande créée avec succès!');
-          this.router.navigate(['/commande-achat/list']);
-        },
-        error: (err: any) => {
-          this.isLoading = false;
-          alert('❌ Erreur: ' + (err.error?.message || err.message || 'Une erreur est survenue'));
-        }
-      });
-    } else {
-      alert('⚠ Veuillez remplir correctement tous les champs obligatoires');
-    }
+  cancel(): void {
+    this.router.navigate(['/commande-achat/list']);
   }
 }

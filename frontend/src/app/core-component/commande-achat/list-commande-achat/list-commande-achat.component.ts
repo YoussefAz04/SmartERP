@@ -20,8 +20,9 @@ export class ListCommandeAchatComponent implements OnInit {
   selectedStatut = '';
   lastGeneratedFacture: any = null;
   showFactureModal = false;
+  errorMessage = '';
 
-  statuts = ['EN_ATTENTE', 'VALIDEE', 'ANNULEE'];
+  statuts = ['EN_ATTENTE', 'CONFIRMEE', 'RECUE', 'ANNULEA'];
 
   constructor(
     private commandeAchatService: CommandeAchatService,
@@ -39,9 +40,11 @@ export class ListCommandeAchatComponent implements OnInit {
         this.commandes = data;
         this.applyFilters();
         this.isLoading = false;
+        console.log('✅ Commandes loaded:', data);
       },
       error: (err) => {
-        console.error('Erreur lors du chargement:', err);
+        console.error('❌ Erreur lors du chargement:', err);
+        this.errorMessage = 'Erreur lors du chargement des commandes';
         this.isLoading = false;
       }
     });
@@ -66,53 +69,74 @@ export class ListCommandeAchatComponent implements OnInit {
   }
 
   validerCommande(id: number): void {
-    if (!confirm('Valider cette commande ? Une facture achat sera automatiquement générée.')) return;
+    if (!confirm('Valider cette commande ? Une facture achat sera automatiquement générée.')) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.commandeAchatService.validerCommande(id).subscribe({
       next: (facture) => {
         this.lastGeneratedFacture = facture;
         this.showFactureModal = true;
         this.loadCommandes();
+        console.log('✅ Commande validée ! Facture achat générée:', facture);
         alert('✅ Commande validée ! Facture achat générée : ' + facture.referance);
       },
       error: (err) => {
-        console.error('Erreur validation:', err);
-        alert('❌ Erreur lors de la validation.');
+        this.isLoading = false;
+        console.error('❌ Erreur validation:', err);
+        
+        // Extract detailed error message from backend
+        const errorMessage = err?.error?.message || 
+                           err?.message || 
+                           'Erreur lors de la validation';
+        
+        this.errorMessage = errorMessage;
+        console.error('Message d\'erreur détaillé:', errorMessage);
+        alert('❌ Erreur lors de la validation:\n\n' + errorMessage);
       }
     });
   }
 
   annulerCommande(id: number): void {
     if (!confirm('Annuler cette commande ?')) return;
+    
     this.commandeAchatService.annulerCommande(id).subscribe({
       next: () => {
         this.loadCommandes();
         alert('✅ Commande annulée.');
       },
       error: (err) => {
-        console.error('Erreur annulation:', err);
-        alert('❌ Erreur lors de l\'annulation.');
+        console.error('❌ Erreur annulation:', err);
+        const errorMessage = err?.error?.message || 'Erreur lors de l\'annulation';
+        alert('❌ ' + errorMessage);
       }
     });
   }
 
   deleteCommande(id: number): void {
     if (!confirm('Supprimer cette commande ?')) return;
+    
     this.commandeAchatService.deleteCommande(id).subscribe({
       next: () => {
         this.loadCommandes();
         alert('✅ Commande supprimée.');
       },
       error: (err) => {
-        console.error('Erreur suppression:', err);
-        alert('❌ Erreur lors de la suppression.');
+        console.error('❌ Erreur suppression:', err);
+        const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
+        alert('❌ ' + errorMessage);
       }
     });
   }
 
   getStatutBadgeClass(statut?: string): string {
     switch (statut) {
-      case 'VALIDEE': return 'badge bg-success';
-      case 'ANNULEE': return 'badge bg-danger';
+      case 'CONFIRMEE': return 'badge bg-success';
+      case 'RECUE': return 'badge bg-info';
+      case 'ANNULEA': return 'badge bg-danger';
       case 'EN_ATTENTE': return 'badge bg-warning text-dark';
       default: return 'badge bg-secondary';
     }

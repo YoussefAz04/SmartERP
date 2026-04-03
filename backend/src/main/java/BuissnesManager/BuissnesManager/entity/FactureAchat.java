@@ -20,14 +20,12 @@ public class FactureAchat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
+    private Long id;
 
-    private String  dateAchat;
-    private String referance ;
+    private String dateAchat;
+    private String referance;
 
     private Double montantTotal;
-
-
     private Double montantHT;
     private Double montantTVA;
     private Double montantTTC;
@@ -35,18 +33,13 @@ public class FactureAchat {
     private Double remise;
 
     private String modePaiement;
-
     private String statut;
-
     private String description;
-
     private String cheminFichier;
-
-
 
     @OneToOne(mappedBy = "factureAchat")
     @JsonIgnoreProperties(value = "factureAchat")
-    private DetaisFactureAchat detaisFactureAchat ;
+    private DetaisFactureAchat detaisFactureAchat;
 
     @ManyToOne
     @JoinColumn(name = "fournisseur_id")
@@ -58,17 +51,14 @@ public class FactureAchat {
     @JsonIgnoreProperties({"factureAchats", "lignes", "fournisseur", "entreprise"})
     private CommandeAchat commandeAchat;
 
+    // ✅ FIXED: Single entreprise field with proper relationship
     @ManyToOne
     @JoinColumn(name = "entreprise_id")
-    @JsonIgnore
+    @JsonIgnoreProperties({"modules", "factureAchats", "factureVentes"})
     private Entreprise entreprise;
 
     @OneToMany(mappedBy = "factureAchat")
     @JsonIgnoreProperties("factureAchat")
     private List<LigneFactureAchat> lignes;
-    @ManyToOne
-    @JoinColumn(name = "entreprise_id")
-    @JsonIgnoreProperties({"modules", "factureAchats", "factureVentes"})
-    private Entreprise entreprise;
 
 }
