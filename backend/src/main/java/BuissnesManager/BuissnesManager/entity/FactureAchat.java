@@ -61,5 +61,9 @@ public class FactureAchat {
     @OneToMany(mappedBy = "factureAchat")
     @JsonIgnoreProperties("factureAchat")
     private List<LigneFactureAchat> lignes;
+    @ManyToOne
+    @JoinColumn(name = "entreprise_id")
+    @JsonIgnoreProperties({"modules", "factureAchats", "factureVentes"})
+    private Entreprise entreprise;
 
 }

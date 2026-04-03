@@ -79,18 +79,33 @@ export class SidebarService {
   }
 
 
-  generateSidebarData(modules: ModuleTittle[]) {
+generateSidebarData(modules: ModuleTittle[]) {
+
+    // 🔄 Mapping: DB name → Display name (professional French ERP names)
+    const titleMap: { [key: string]: string } = {
+  'Gestion Article achat': "Les Articles d'Achats",
+  'Gestion Article vente': 'Les Articles de Ventes',
+  'Gestion Stock': 'Gestion des Stocks',        // ← just add a new line
+  'Gestion Fournisseur': 'Les Fournisseurs',     // ← like this
+};
+
+    const menuValueMap: { [key: string]: string } = {
+      // Add any sub-module name overrides here, e.g.:
+      'Liste Article': 'Liste des Articles',
+      // 'Bon Commande': 'Bons de Commande',
+    };
+
     const data = modules.map(moduleTitle => {
       const activeModules = moduleTitle.modules.filter((mod: Module) => mod.status === true);
 
       return {
-        tittle: moduleTitle.moduleTittle,
+        tittle: titleMap[moduleTitle.moduleTittle] || moduleTitle.moduleTittle,
         showAsTab: false,
         separateRoute: false,
         hasSubRoute: activeModules.some((mod: Module) => mod.sousModules.length > 0),
         showSubRoute: true,
         menu: activeModules.map((mod: Module) => ({
-          menuValue: mod.title,
+          menuValue: menuValueMap[mod.title] || mod.title,
           hasSubRoute: mod.sousModules.length > 0,
           showSubRoute: true,
           icon: 'grid',
@@ -108,7 +123,6 @@ export class SidebarService {
 
     this.sidebarDataSubject.next(data);
   }
-
 
   // public sidebarData1 = [
   //   {

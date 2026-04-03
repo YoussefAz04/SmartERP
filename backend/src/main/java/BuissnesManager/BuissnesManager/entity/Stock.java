@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,18 +21,19 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "quantite_entree")
-    private Integer quantiteEntree;
+    @Column(name = "quantite_entree", precision = 15, scale = 2)
+    private BigDecimal quantiteEntree;
 
-    @Column(name = "quantite_disponible")
-    private Integer quantiteDisponible;
+    @Column(name = "quantite_disponible", precision = 15, scale = 2)
+    private BigDecimal quantiteDisponible;
 
-    @Column(name = "quantite_reserve")
-    private Integer quantiteReserve;
+    @Column(name = "quantite_reserve", precision = 15, scale = 2)
+    private BigDecimal quantiteReserve;
 
-    @Column(name = "quantite_vendue")
-    private Integer quantiteVendue;
+    @Column(name = "quantite_vendue", precision = 15, scale = 2)
+    private BigDecimal quantiteVendue;
 
+    @Column(name = "emplacement")
     private String localisation;
 
     @Column(name = "date_dernier_inventaire")
