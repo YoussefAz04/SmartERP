@@ -346,8 +346,8 @@ export class AddCommandeAchatComponent implements OnInit {
     
     // Validate price
     const prixNum = parseFloat(prix);
-    if (prix === undefined || prix === null || isNaN(prixNum) || prixNum < 0) {
-      this.errorMessage = `❌ Ligne ${i + 1}: Prix unitaire invalide`;
+    if (prix === undefined || prix === null || isNaN(prixNum) || prixNum <= 0) {
+      this.errorMessage = `❌ Ligne ${i + 1}: Prix unitaire doit être supérieur à 0`;
       console.error(`❌ Line ${i + 1} - Invalid price:`, prix);
       return;
     }
