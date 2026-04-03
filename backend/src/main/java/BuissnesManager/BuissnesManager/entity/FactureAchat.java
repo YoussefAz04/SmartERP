@@ -58,6 +58,11 @@ public class FactureAchat {
     @JsonIgnoreProperties({"factureAchats", "lignes", "fournisseur", "entreprise"})
     private CommandeAchat commandeAchat;
 
+    @ManyToOne
+    @JoinColumn(name = "entreprise_id")
+    @JsonIgnore
+    private Entreprise entreprise;
+
     @OneToMany(mappedBy = "factureAchat")
     @JsonIgnoreProperties("factureAchat")
     private List<LigneFactureAchat> lignes;
