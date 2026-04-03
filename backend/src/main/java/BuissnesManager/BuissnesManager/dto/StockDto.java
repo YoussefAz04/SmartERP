@@ -11,7 +11,6 @@ public class StockDto {
     private String localisation;
     private LocalDateTime dateDernierInventaire;
     private Long articleAchatId;
-    private Long articleVenteId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -38,9 +37,6 @@ public class StockDto {
 
     public Long getArticleAchatId() { return articleAchatId; }
     public void setArticleAchatId(Long articleAchatId) { this.articleAchatId = articleAchatId; }
-
-    public Long getArticleVenteId() { return articleVenteId; }
-    public void setArticleVenteId(Long articleVenteId) { this.articleVenteId = articleVenteId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

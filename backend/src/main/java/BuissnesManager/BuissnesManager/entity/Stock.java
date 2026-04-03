@@ -48,12 +48,7 @@ public class Stock {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "article_achat_id", nullable = false)
+    @JoinColumn(name = "article_id", nullable = false)
     @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
     private Article articleAchat;
-
-    @ManyToOne
-    @JoinColumn(name = "article_vente_id")
-    @JsonIgnoreProperties("stocks")
-    private ArticleVente articleVente;
 }

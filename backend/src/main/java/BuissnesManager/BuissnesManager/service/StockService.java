@@ -17,8 +17,6 @@ public class StockService {
     private StockRepository stockRepository;
     @Autowired
     private ArticleRepository articleRepository;
-    @Autowired
-    private ArticleVenteRepo articleVenteRepo;
 
     // ✅ Helper method to convert any number to BigDecimal
     private BigDecimal toBigDecimal(Object value) {
@@ -42,11 +40,6 @@ public class StockService {
             Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé: " + dto.getArticleAchatId()));
             stock.setArticleAchat(articleAchat);
-        }
-        if (dto.getArticleVenteId() != null) {
-            ArticleVente articleVente = articleVenteRepo.findById(dto.getArticleVenteId())
-                    .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé: " + dto.getArticleVenteId()));
-            stock.setArticleVente(articleVente);
         }
         return stockRepository.save(stock);
     }
@@ -76,11 +69,6 @@ public class StockService {
             Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé"));
             stock.setArticleAchat(articleAchat);
-        }
-        if (dto.getArticleVenteId() != null) {
-            ArticleVente articleVente = articleVenteRepo.findById(dto.getArticleVenteId())
-                    .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé"));
-            stock.setArticleVente(articleVente);
         }
         return stockRepository.save(stock);
     }
