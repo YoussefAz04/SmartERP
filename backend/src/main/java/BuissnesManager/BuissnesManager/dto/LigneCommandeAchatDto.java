@@ -14,9 +14,18 @@ public class LigneCommandeAchatDto {
     @JsonProperty("articleAchatId")
     private Long articleAchatId;
     
+    @JsonProperty("quantite")
     private BigDecimal quantite;
+
+    @JsonProperty("prixUnitaireHT")
     private BigDecimal prixUnitaireHT;
+
+    @JsonProperty("tva")
     private BigDecimal tva;
+
+    @JsonProperty("montantHT")
     private BigDecimal montantHT;
+
+    @JsonProperty("montantTTC")
     private BigDecimal montantTTC;
 }
