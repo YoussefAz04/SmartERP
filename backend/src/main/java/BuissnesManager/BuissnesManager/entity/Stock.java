@@ -49,8 +49,8 @@ public class Stock {
 
     @ManyToOne
     @JoinColumn(name = "article_achat_id", nullable = false)
-    @JsonIgnoreProperties("stocks")
-    private ArticleAchat articleAchat;
+    @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
+    private Article articleAchat;
 
     @ManyToOne
     @JoinColumn(name = "article_vente_id")

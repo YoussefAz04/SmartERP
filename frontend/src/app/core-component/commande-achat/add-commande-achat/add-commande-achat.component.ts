@@ -216,7 +216,7 @@ export class AddCommandeAchatComponent implements OnInit {
       const article = this.articles.find((a: any) => a.id === articleId);
       if (article) {
         ligneControl.patchValue({
-          prixUnitaireHT: article.prixUnitaire || 0
+          prixUnitaireHT: article.prixAchat || article.prixUnitaire || 0
         });
       }
     }
@@ -371,7 +371,9 @@ export class AddCommandeAchatComponent implements OnInit {
         articleAchatId: articleId,
         quantite: parseFloat(ligne.quantite),
         prixUnitaireHT: parseFloat(ligne.prixUnitaireHT),
-        tva: parseFloat(ligne.tva || 0)
+        tva: parseFloat(ligne.tva || 0),
+        montantHT: parseFloat(ligne.montantHT || 0),
+        montantTTC: parseFloat(ligne.montantTTC || 0)
       };
     })
   };
