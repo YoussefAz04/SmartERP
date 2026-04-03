@@ -163,27 +163,27 @@ public class CommandeAchatService {
 
                     logger.info("✅ Line {}: prixUnitaireHT validated: {}", lineNumber, ligneDto.getPrixUnitaireHT());
 
-                    // ✅ CREATE LINE ITEM WITH ALL VALIDATIONS
+                    // ✅ CREATE LINE ITEM: set scalar fields first, then relationships
                     LigneCommandeAchat ligne = new LigneCommandeAchat();
-
-                    // ✅ SET ARTICLE - NO NEED TO MERGE
-                    ligne.setArticle(article);
 
                     ligne.setQuantite(ligneDto.getQuantite() != null ? ligneDto.getQuantite() : BigDecimal.ONE);
                     ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT());
                     ligne.setTva(ligneDto.getTva() != null ? ligneDto.getTva() : BigDecimal.ZERO);
                     ligne.setMontantHT(ligneDto.getMontantHT() != null ? ligneDto.getMontantHT() : BigDecimal.ZERO);
                     ligne.setMontantTTC(ligneDto.getMontantTTC() != null ? ligneDto.getMontantTTC() : BigDecimal.ZERO);
+
+                    // ✅ SET RELATIONSHIPS AFTER SCALAR FIELDS
+                    ligne.setArticle(article);
                     ligne.setCommandeAchat(saved);
 
-                    logger.info("📝 Line {}: Setting article to ID={}", lineNumber, article.getId());
-                    logger.info("📝 Line {}: Before save - article={}", lineNumber, ligne.getArticle());
+                    logger.info("📝 Line {}: Before save - prixUnitaireHT={}, article={}",
+                            lineNumber, ligne.getPrixUnitaireHT(), ligne.getArticle().getId());
 
                     // ✅ SAVE LINE
                     LigneCommandeAchat savedLigne = ligneCommandeAchatRepository.saveAndFlush(ligne);
 
-                    logger.info("📝 Line {}: After save - ID={}, article={}", 
-                            lineNumber, savedLigne.getId(), savedLigne.getArticle());
+                    logger.info("📝 Line {}: After save - prixUnitaireHT={}, ID={}",
+                            lineNumber, savedLigne.getPrixUnitaireHT(), savedLigne.getId());
 
                     lineCount++;
                     logger.info("✅ Line {} saved successfully", lineNumber);

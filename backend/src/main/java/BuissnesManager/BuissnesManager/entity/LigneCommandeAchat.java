@@ -25,7 +25,7 @@ public class LigneCommandeAchat {
     @Column(precision = 15, scale = 2)
     private BigDecimal quantite;
 
-    @Column(name = "prix_unitaireht", precision = 15, scale = 2)  // ← REMOVE nullable = false
+    @Column(name = "prix_unitaireht", precision = 15, scale = 2, nullable = false)
     private BigDecimal prixUnitaireHT;
 
     @Column(precision = 5, scale = 2)
