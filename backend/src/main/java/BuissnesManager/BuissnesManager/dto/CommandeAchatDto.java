@@ -4,12 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CommandeAchatDto {
     private Long id;
     private String reference;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd")  // ← ADD THIS
     private LocalDate dateCommande;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd")  // ← ADD THIS
     private LocalDate dateLivraisonPrevue;
+    
     private String statut;
     private BigDecimal montantHT;
     private BigDecimal montantTVA;

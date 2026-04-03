@@ -44,13 +44,14 @@ public class LigneCommandeAchat {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "article_achat_id")
+    // ✅ KEY FIX: Add nullable = false to ensure article_achat_id is required
+    @ManyToOne(fetch = FetchType.EAGER)  // ✅ Change to EAGER to load immediately
+    @JoinColumn(name = "article_achat_id", nullable = false)  // ✅ nullable = false
     @JsonIgnoreProperties({"lignesCommandeAchat", "fournisseur", "categorieFournisseur"})
     private ArticleAchat articleAchat;
 
-    @ManyToOne
-    @JoinColumn(name = "commande_achat_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "commande_achat_id", nullable = false)
     @JsonIgnore
     private CommandeAchat commandeAchat;
 }

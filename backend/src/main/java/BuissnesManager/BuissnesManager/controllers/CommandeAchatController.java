@@ -68,11 +68,18 @@ public class CommandeAchatController {
             logger.info("   Enterprise ID: {}", dto.getEntrepriseId());
             logger.info("   Number of lines: {}", dto.getLignes() != null ? dto.getLignes().size() : 0);
             
-            if (dto.getLignes() != null) {
+            // ✅ LOG EACH LINE IN DETAIL
+            if (dto.getLignes() != null && !dto.getLignes().isEmpty()) {
                 for (int i = 0; i < dto.getLignes().size(); i++) {
                     LigneCommandeAchatDto ligne = dto.getLignes().get(i);
-                    logger.info("   Line {}: articleAchatId={}, quantite={}, prix={}", 
-                        i + 1, ligne.getArticleAchatId(), ligne.getQuantite(), ligne.getPrixUnitaireHT());
+                    logger.info("   ========== LINE {} ==========", i + 1);
+                    logger.info("      articleAchatId: {} (type: {})", 
+                        ligne.getArticleAchatId(), 
+                        ligne.getArticleAchatId() == null ? "NULL" : ligne.getArticleAchatId().getClass().getSimpleName());
+                    logger.info("      quantite: {}", ligne.getQuantite());
+                    logger.info("      prixUnitaireHT: {}", ligne.getPrixUnitaireHT());
+                    logger.info("      tva: {}", ligne.getTva());
+                    logger.info("   ===========================");
                 }
             }
             
@@ -80,10 +87,13 @@ public class CommandeAchatController {
             return ResponseEntity.ok(commande);
         } catch (Exception e) {
             logger.error("❌ Error creating commande: {}", e.getMessage(), e);
-            return ResponseEntity.status(400).body("Error: " + e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            errorResponse.put("details", e.getCause() != null ? e.getCause().getMessage() : "No details");
+            errorResponse.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(400).body(errorResponse);
         }
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCommande(@PathVariable Long id, @RequestBody CommandeAchatDto dto) {
         try {

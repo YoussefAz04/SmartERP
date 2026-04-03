@@ -1,11 +1,17 @@
 package BuissnesManager.BuissnesManager.dto;
 
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.math.BigDecimal;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LigneCommandeAchatDto {
     
-    @JsonProperty("articleAchatId")  // ✅ MAP THE FIELD CORRECTLY
+    @JsonProperty("articleAchatId")
     private Long articleAchatId;
     
     private BigDecimal quantite;
@@ -13,65 +19,4 @@ public class LigneCommandeAchatDto {
     private BigDecimal tva;
     private BigDecimal montantHT;
     private BigDecimal montantTTC;
-    
-    // Getters and Setters
-    public Long getArticleAchatId() {
-        return articleAchatId;
-    }
-    
-    public void setArticleAchatId(Long articleAchatId) {
-        this.articleAchatId = articleAchatId;
-    }
-    
-    public BigDecimal getQuantite() {
-        return quantite;
-    }
-    
-    public void setQuantite(BigDecimal quantite) {
-        this.quantite = quantite;
-    }
-    
-    public BigDecimal getPrixUnitaireHT() {
-        return prixUnitaireHT;
-    }
-    
-    public void setPrixUnitaireHT(BigDecimal prixUnitaireHT) {
-        this.prixUnitaireHT = prixUnitaireHT;
-    }
-    
-    public BigDecimal getTva() {
-        return tva;
-    }
-    
-    public void setTva(BigDecimal tva) {
-        this.tva = tva;
-    }
-    
-    public BigDecimal getMontantHT() {
-        return montantHT;
-    }
-    
-    public void setMontantHT(BigDecimal montantHT) {
-        this.montantHT = montantHT;
-    }
-    
-    public BigDecimal getMontantTTC() {
-        return montantTTC;
-    }
-    
-    public void setMontantTTC(BigDecimal montantTTC) {
-        this.montantTTC = montantTTC;
-    }
-    
-    @Override
-    public String toString() {
-        return "LigneCommandeAchatDto{" +
-                "articleAchatId=" + articleAchatId +
-                ", quantite=" + quantite +
-                ", prixUnitaireHT=" + prixUnitaireHT +
-                ", tva=" + tva +
-                ", montantHT=" + montantHT +
-                ", montantTTC=" + montantTTC +
-                '}';
-    }
 }

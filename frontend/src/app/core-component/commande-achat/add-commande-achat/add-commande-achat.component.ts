@@ -223,6 +223,9 @@ export class AddCommandeAchatComponent implements OnInit {
     this.calculateLineAmount(index);
     this.calculateTotals();
   }
+  compareNumbers(a: any, b: any): boolean {
+  return a === b;
+}
 
   calculateLineAmount(index: number): void {
     const ligneControl = this.lignesArray.at(index);
@@ -275,96 +278,125 @@ export class AddCommandeAchatComponent implements OnInit {
     this.selectedEntrepriseName = selected ? selected.nom : 'Chargement...';
   }
 
-  onSubmit(): void {
-    console.log('🔄 Form submit clicked');
-    console.log('Form valid?', this.commandeForm.valid);
-    console.log('currentEntrepriseId:', this.currentEntrepriseId);
-    console.log('Lines count:', this.lignesArray.length);
+ onSubmit(): void {
+  console.log('🔄 Form submit clicked');
+  console.log('Form valid?', this.commandeForm.valid);
+  console.log('currentEntrepriseId:', this.currentEntrepriseId);
+  console.log('Lines count:', this.lignesArray.length);
 
-    if (!this.commandeForm.valid) {
-      this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
-      console.error('❌ Form not valid');
-      for (let key in this.commandeForm.controls) {
-        const control = this.commandeForm.get(key);
-        if (control && control.invalid) {
-          console.error(`Field "${key}" is invalid:`, control.errors);
-        }
-      }
-      return;
-    }
-
-    if (!this.currentEntrepriseId) {
-      this.errorMessage = '❌ Sélectionnez une entreprise avant de créer la commande';
-      console.error('❌ No enterprise ID');
-      return;
-    }
-
-    if (this.lignesArray.length === 0) {
-      this.errorMessage = '❌ Au moins une ligne de commande est requise';
-      console.error('❌ No lines');
-      return;
-    }
-
-    for (let i = 0; i < this.lignesArray.length; i++) {
-      const ligne = this.lignesArray.at(i);
-      const articleId = ligne.get('articleAchatId')?.value;
-      
-      if (!articleId || articleId === null || isNaN(articleId)) {
-        this.errorMessage = `❌ Ligne ${i + 1}: Article obligatoire et doit être numérique`;
-        console.error(`❌ Line ${i + 1} has invalid article ID:`, articleId);
-        return;
-      }
-    }
-
-    console.log('✅ All validations passed. Building payload...');
-    
-    const formData = this.commandeForm.getRawValue();
-    const payload = {
-      reference: formData.reference,
-      dateCommande: formData.dateCommande,
-      dateLivraisonPrevue: formData.dateLivraisonPrevue,
-      fournisseurId: parseInt(formData.fournisseurId),
-      statut: formData.statut,
-      note: formData.note,
-      montantHT: this.totalHT,
-      montantTVA: this.totalTVA,
-      montantTTC: this.totalTTC,
-      entrepriseId: this.currentEntrepriseId,
-      lignes: formData.lignes.map((ligne: any) => {
-        const articleId = parseInt(ligne.articleAchatId);
-        if (isNaN(articleId)) {
-          throw new Error(`Invalid article ID in line: ${ligne.articleAchatId}`);
-        }
-        return {
-          articleAchatId: articleId,
-          quantite: parseFloat(ligne.quantite),
-          prixUnitaireHT: parseFloat(ligne.prixUnitaireHT),
-          tva: parseFloat(ligne.tva)
-        };
-      })
-    };
-
-    console.log('📝 Payload ready:', payload);
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    console.log('🚀 Sending to backend...');
-    this.commandeAchatService.createCommande(payload).subscribe({
-      next: (response: any) => {
-        console.log('✅✅✅ SUCCESS! Response:', response);
-        this.isLoading = false;
-        alert('✅ Commande créée avec succès!');
-        this.router.navigate(['/commande-achat/list']);
-      },
-      error: (err: any) => {
-        console.error('❌❌❌ ERROR! Response:', err);
-        this.isLoading = false;
-        const errorMsg = err?.error?.message || err?.message || 'Erreur lors de la création';
-        this.errorMessage = errorMsg;
-        alert('❌ ' + errorMsg);
-      }
-    });
+  // ✅ STEP 1: Validate form structure
+  if (!this.commandeForm.valid) {
+    this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
+    console.error('❌ Form not valid');
+    return;
   }
+
+  // ✅ STEP 2: Check enterprise is selected
+  if (!this.currentEntrepriseId) {
+    this.errorMessage = '❌ Sélectionnez une entreprise avant de créer la commande';
+    console.error('❌ No enterprise ID');
+    return;
+  }
+
+  // ✅ STEP 3: Check at least one line exists
+  if (this.lignesArray.length === 0) {
+    this.errorMessage = '❌ Au moins une ligne de commande est requise';
+    console.error('❌ No lines');
+    return;
+  }
+
+  // ✅ STEP 4: VALIDATE EACH LINE COMPLETELY
+  for (let i = 0; i < this.lignesArray.length; i++) {
+    const ligne = this.lignesArray.at(i);
+    const articleId = ligne.get('articleAchatId')?.value;
+    const quantite = ligne.get('quantite')?.value;
+    const prix = ligne.get('prixUnitaireHT')?.value;
+    const tva = ligne.get('tva')?.value;
+    
+    // Validate article is selected
+    if (!articleId || articleId === '' || articleId === null || isNaN(articleId)) {
+      this.errorMessage = `❌ Ligne ${i + 1}: Sélectionnez un article SVP`;
+      console.error(`❌ Line ${i + 1} - Invalid article ID:`, articleId);
+      return;
+    }
+    
+    // Validate quantity
+    const quantiteNum = parseFloat(quantite);
+    if (!quantite || isNaN(quantiteNum) || quantiteNum <= 0) {
+      this.errorMessage = `❌ Ligne ${i + 1}: Quantité doit être > 0`;
+      console.error(`❌ Line ${i + 1} - Invalid quantity:`, quantite);
+      return;
+    }
+    
+    // Validate price
+    const prixNum = parseFloat(prix);
+    if (prix === undefined || prix === null || isNaN(prixNum) || prixNum < 0) {
+      this.errorMessage = `❌ Ligne ${i + 1}: Prix unitaire invalide`;
+      console.error(`❌ Line ${i + 1} - Invalid price:`, prix);
+      return;
+    }
+    
+    // Validate TVA
+    const tvaNum = parseFloat(tva || 0);
+    if (isNaN(tvaNum) || tvaNum < 0 || tvaNum > 100) {
+      this.errorMessage = `❌ Ligne ${i + 1}: TVA doit être entre 0 et 100`;
+      console.error(`❌ Line ${i + 1} - Invalid TVA:`, tva);
+      return;
+    }
+  }
+
+  console.log('✅ All validations passed. Building payload...');
+  
+  const formData = this.commandeForm.getRawValue();
+  const payload = {
+    reference: formData.reference,
+    dateCommande: formData.dateCommande,
+    dateLivraisonPrevue: formData.dateLivraisonPrevue,
+    fournisseurId: parseInt(formData.fournisseurId),
+    statut: formData.statut,
+    note: formData.note,
+    montantHT: this.totalHT,
+    montantTVA: this.totalTVA,
+    montantTTC: this.totalTTC,
+    entrepriseId: this.currentEntrepriseId,
+    lignes: formData.lignes.map((ligne: any, index: number) => {
+      const articleId = parseInt(ligne.articleAchatId);
+      console.log(`Line ${index}: articleId = ${articleId}, isNaN = ${isNaN(articleId)}`);
+      
+      if (isNaN(articleId)) {
+        throw new Error(`Line ${index + 1}: Invalid article ID`);
+      }
+      
+      return {
+        articleAchatId: articleId,
+        quantite: parseFloat(ligne.quantite),
+        prixUnitaireHT: parseFloat(ligne.prixUnitaireHT),
+        tva: parseFloat(ligne.tva || 0)
+      };
+    })
+  };
+
+  console.log('📝 Payload ready:', payload);
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  console.log('🚀 Sending to backend...');
+  this.commandeAchatService.createCommande(payload).subscribe({
+    next: (response: any) => {
+      console.log('✅✅✅ SUCCESS! Response:', response);
+      this.isLoading = false;
+      alert('✅ Commande créée avec succès!');
+      this.router.navigate(['/commande-achat/list']);
+    },
+    error: (err: any) => {
+      console.error('❌❌❌ ERROR! Response:', err);
+      this.isLoading = false;
+      const errorMsg = err?.error?.message || err?.message || 'Erreur lors de la création';
+      this.errorMessage = errorMsg;
+      alert('❌ ' + errorMsg);
+    }
+  });
+}
 
   onCancel(): void {
     this.cancel();

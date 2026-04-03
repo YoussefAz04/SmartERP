@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,12 +20,22 @@ public class StockService {
     @Autowired
     private ArticleVenteRepo articleVenteRepo;
 
+    // ✅ Helper method to convert any number to BigDecimal
+    private BigDecimal toBigDecimal(Object value) {
+        if (value == null) return BigDecimal.ZERO;
+        if (value instanceof BigDecimal) return (BigDecimal) value;
+        if (value instanceof Integer) return new BigDecimal((Integer) value);
+        if (value instanceof Long) return new BigDecimal((Long) value);
+        if (value instanceof Double) return new BigDecimal((Double) value);
+        return new BigDecimal(value.toString());
+    }
+
     public Stock createStock(StockDto dto) {
         Stock stock = new Stock();
-        stock.setQuantiteEntree(dto.getQuantiteEntree());
-        stock.setQuantiteDisponible(dto.getQuantiteDisponible());
-        stock.setQuantiteReserve(dto.getQuantiteReserve());
-        stock.setQuantiteVendue(dto.getQuantiteVendue());
+        stock.setQuantiteEntree(toBigDecimal(dto.getQuantiteEntree()));
+        stock.setQuantiteDisponible(toBigDecimal(dto.getQuantiteDisponible()));
+        stock.setQuantiteReserve(toBigDecimal(dto.getQuantiteReserve()));
+        stock.setQuantiteVendue(toBigDecimal(dto.getQuantiteVendue()));
         stock.setLocalisation(dto.getLocalisation());
         stock.setDateDernierInventaire(dto.getDateDernierInventaire());
         if (dto.getArticleAchatId() != null) {
@@ -55,10 +66,10 @@ public class StockService {
     public Stock updateStock(Long id, StockDto dto) {
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Stock non trouvé avec id: " + id));
-        if (dto.getQuantiteEntree() != null) stock.setQuantiteEntree(dto.getQuantiteEntree());
-        if (dto.getQuantiteDisponible() != null) stock.setQuantiteDisponible(dto.getQuantiteDisponible());
-        if (dto.getQuantiteReserve() != null) stock.setQuantiteReserve(dto.getQuantiteReserve());
-        if (dto.getQuantiteVendue() != null) stock.setQuantiteVendue(dto.getQuantiteVendue());
+        if (dto.getQuantiteEntree() != null) stock.setQuantiteEntree(toBigDecimal(dto.getQuantiteEntree()));
+        if (dto.getQuantiteDisponible() != null) stock.setQuantiteDisponible(toBigDecimal(dto.getQuantiteDisponible()));
+        if (dto.getQuantiteReserve() != null) stock.setQuantiteReserve(toBigDecimal(dto.getQuantiteReserve()));
+        if (dto.getQuantiteVendue() != null) stock.setQuantiteVendue(toBigDecimal(dto.getQuantiteVendue()));
         if (dto.getLocalisation() != null) stock.setLocalisation(dto.getLocalisation());
         if (dto.getDateDernierInventaire() != null) stock.setDateDernierInventaire(dto.getDateDernierInventaire());
         if (dto.getArticleAchatId() != null) {

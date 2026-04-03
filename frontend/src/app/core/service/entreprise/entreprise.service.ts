@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class EntrepriseService {
-  private baseUrl = `${environment.apiUrl}/entreprises`;
+  private baseUrl = `${environment.apiUrl}/entreprise`;
 
   constructor(private http: HttpClient) {}
 
@@ -17,7 +17,7 @@ export class EntrepriseService {
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
     } else {
-      console.warn('No token found in localStorage');
+      console.warn('⚠️ No token found in localStorage');
     }
     return headers;
   }
@@ -36,44 +36,45 @@ export class EntrepriseService {
     return null;
   }
 
-  // ✅ GET ALL ENTERPRISES
+  // ✅ GET ALL ENTERPRISES - Matches backend: GET /entreprise/getAll
   getAllEntreprises(): Observable<any[]> {
+    console.log('🔍 Loading enterprises from:', `${this.baseUrl}/getAll`);
     return this.http.get<any[]>(
-      `${this.baseUrl}/getAllEntreprises`,
+      `${this.baseUrl}/getAll`,
       { headers: this.getHeaders() }
     );
   }
 
-  // ✅ GET ENTERPRISE BY ID
+  // ✅ GET ENTERPRISE BY ID - Matches backend: GET /entreprise/getById/{id}
   getEntrepriseById(id: number): Observable<any> {
     return this.http.get<any>(
-      `${this.baseUrl}/getEntrepriseById/${id}`,
+      `${this.baseUrl}/getById/${id}`,
       { headers: this.getHeaders() }
     );
   }
 
-  // ✅ ADD ENTERPRISE
+  // ✅ ADD ENTERPRISE - Matches backend: POST /entreprise/create
   ajouterEntreprise(data: any): Observable<any> {
     return this.http.post<any>(
-      `${this.baseUrl}/addEntreprise`,
+      `${this.baseUrl}/create`,
       data,
       { headers: this.getHeaders() }
     );
   }
 
-  // ✅ UPDATE ENTERPRISE
+  // ✅ UPDATE ENTERPRISE - Matches backend: PUT /entreprise/update/{id}
   updateEntreprise(id: number, data: any): Observable<any> {
     return this.http.put<any>(
-      `${this.baseUrl}/updateEntreprise/${id}`,
+      `${this.baseUrl}/update/${id}`,
       data,
       { headers: this.getHeaders() }
     );
   }
 
-  // ✅ DELETE ENTERPRISE
+  // ✅ DELETE ENTERPRISE - Matches backend: DELETE /entreprise/delete/{id}
   deleteEntreprise(id: number): Observable<any> {
     return this.http.delete<any>(
-      `${this.baseUrl}/deleteEntreprise/${id}`,
+      `${this.baseUrl}/delete/${id}`,
       { headers: this.getHeaders() }
     );
   }
