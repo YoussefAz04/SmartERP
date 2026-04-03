@@ -208,25 +208,25 @@ export class AddCommandeAchatComponent implements OnInit {
     this.calculateTotals();
   }
 
- onArticleChange(index: number): void {
-  const ligneControl = this.lignesArray.at(index);
-  const articleId = ligneControl.get('articleAchatId')?.value;
-  
-  console.log(`📝 Article changed - Index: ${index}, ArticleId: ${articleId}`);
-  
-  if (articleId) {
-    const article = this.articles.find((a: any) => a.id === articleId);
-    if (article) {
-      const price = article.prixAchat || article.prixUnitaire || 0;
-      console.log(`✅ Article found: ${article.nom}, Price: ${price}`);
-      ligneControl.patchValue({
-        prixUnitaireHT: price,
-        tva: article.tva || 0  // ← Also set default TVA from article
-      });
+  onArticleChange(index: number): void {
+    const ligneControl = this.lignesArray.at(index);
+    const articleId = ligneControl.get('articleAchatId')?.value;
+
+    if (articleId) {
+      const article = this.articles.find((a: any) => a.id === articleId);
+      if (article) {
+        ligneControl.patchValue({
+          prixUnitaireHT: article.prixAchat || article.prixUnitaire || 0,
+          tva: article.tva || 0
+        });
+      } else {
+        ligneControl.patchValue({
+          prixUnitaireHT: 0
+        });
+      }
     } else {
-      console.warn(`❌ Article NOT found with ID: ${articleId}`);
       ligneControl.patchValue({
-        prixUnitaireHT: 0  // ← DEFAULT TO 0 IF NOT FOUND
+        prixUnitaireHT: 0
       });
     }
   } else {
