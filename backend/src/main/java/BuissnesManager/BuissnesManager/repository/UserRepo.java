@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface UserRepo extends JpaRepository<User,Long> {
     public Optional<User> findByEmail(String email);
     public Optional<User> findByUsername(String email);
+    
 
 //    @Query("select u from User u where u.membre = Null")
 //    Optional<User> getAllUserNotAffectedToMembre();

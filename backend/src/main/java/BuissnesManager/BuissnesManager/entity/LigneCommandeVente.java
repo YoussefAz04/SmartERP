@@ -44,11 +44,11 @@ public class LigneCommandeVente {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "article_id")  // ✅ Match the SQL schema
     private ArticleVente articleVente;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "commande_vente_id")
     @JsonIgnore
     private CommandeVente commandeVente;

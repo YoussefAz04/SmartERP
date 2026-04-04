@@ -50,7 +50,7 @@ public class LigneCommandeAchat {
     @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
     private Article article;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "commande_achat_id", nullable = false)
     @JsonIgnore
     private CommandeAchat commandeAchat;

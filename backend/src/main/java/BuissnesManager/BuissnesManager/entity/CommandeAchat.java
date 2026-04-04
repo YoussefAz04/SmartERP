@@ -61,7 +61,7 @@ public class CommandeAchat {
     @JsonIgnore
     private Entreprise entreprise;
 
-    @OneToMany(mappedBy = "commandeAchat")
+    @OneToMany(mappedBy = "commandeAchat", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("commandeAchat")
     private List<LigneCommandeAchat> lignes;
 }

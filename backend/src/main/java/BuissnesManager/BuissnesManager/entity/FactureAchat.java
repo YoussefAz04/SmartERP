@@ -57,7 +57,7 @@ public class FactureAchat {
     @JsonIgnoreProperties({"modules", "factureAchats", "factureVentes"})
     private Entreprise entreprise;
 
-    @OneToMany(mappedBy = "factureAchat")
+    @OneToMany(mappedBy = "factureAchat", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("factureAchat")
     private List<LigneFactureAchat> lignes;
 
