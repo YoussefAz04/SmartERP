@@ -49,21 +49,19 @@ public class Article {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // ✅ FIXED: Changed LAZY to EAGER for API serialization
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categorie_article_id")
     @JsonIgnoreProperties("articles")
     private CategorieArticle categorieArticle;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "mesure_id")
     @JsonIgnoreProperties("articles")
     private Mesure mesure;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "entreprise_id", nullable = false)
     @JsonIgnore
     private Entreprise entreprise;
-
-    // ❌ REMOVED @PrePersist/@PreUpdate hooks
-    // Let Hibernate @CreationTimestamp/@UpdateTimestamp handle timestamps automatically
 }
