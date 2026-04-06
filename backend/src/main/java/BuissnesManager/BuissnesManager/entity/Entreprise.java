@@ -50,9 +50,6 @@ public class Entreprise {
     @JsonIgnore
     private List<User> users;
 
-    @OneToMany(mappedBy = "entreprise")
-    @JsonIgnore
-    private List<Departement> departements;
 
     @ManyToMany()
     private List<Client> clients;

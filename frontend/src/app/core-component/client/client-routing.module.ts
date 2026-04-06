@@ -20,9 +20,10 @@ const routes: Routes = [
     path: 'addClient',
     component: AddClientComponent,
   },{
-    path: 'addCategorie',
+    path: 'addCategorieClient',
     component: AddCategorieClientComponent,
   },
+  
 ];
 
 @NgModule({
