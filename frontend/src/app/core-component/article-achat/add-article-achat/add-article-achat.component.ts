@@ -15,8 +15,6 @@ import { EntrepriseService } from '../../../core/service/entreprise/entreprise.s
 export class AddArticleAchatComponent implements OnInit {
   articleForm!: FormGroup;
   entreprises: any[] = [];
-  categories: any[] = [];
-  mesures: any[] = [];
   isLoading = false;
   submitted = false;
 
@@ -30,8 +28,6 @@ export class AddArticleAchatComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadEntreprises();
-    this.loadCategories();
-    this.loadMesures();
   }
 
   initializeForm(): void {
@@ -41,9 +37,6 @@ export class AddArticleAchatComponent implements OnInit {
       nom: ['', [Validators.required, Validators.minLength(2)]],
       description: [''],
       prixUnitaire: [null, [Validators.required, Validators.min(0)]],
-      prixVente: [null, [Validators.required, Validators.min(0)]],
-      categorieArticleId: [null],
-      mesureId: [null],
     });
   }
 
@@ -56,20 +49,6 @@ export class AddArticleAchatComponent implements OnInit {
     this.entrepriseService.getAllEntreprises().subscribe({
       next: (data) => { this.entreprises = data; },
       error: (err) => { console.error('Erreur chargement entreprises:', err); }
-    });
-  }
-
-  loadCategories(): void {
-    this.articleAchatService.getAllCategories().subscribe({
-      next: (data) => { this.categories = data; },
-      error: (err) => { console.error('Erreur chargement catégories:', err); }
-    });
-  }
-
-  loadMesures(): void {
-    this.articleAchatService.getAllMesures().subscribe({
-      next: (data) => { this.mesures = data; },
-      error: (err) => { console.error('Erreur chargement mesures:', err); }
     });
   }
 
@@ -87,10 +66,7 @@ export class AddArticleAchatComponent implements OnInit {
         nom: formValue.nom.trim(),
         description: formValue.description?.trim() || '',
         prixUnitaire: formValue.prixUnitaire,
-        prixVente: formValue.prixVente,
         entrepriseId: Number(formValue.entrepriseId),
-        categorieArticleId: formValue.categorieArticleId ? Number(formValue.categorieArticleId) : null,
-        mesureId: formValue.mesureId ? Number(formValue.mesureId) : null,
         actif: true,
       };
 
