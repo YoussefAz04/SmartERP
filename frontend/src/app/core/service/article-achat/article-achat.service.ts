@@ -50,11 +50,16 @@ export class ArticleAchatService {
     return this.http.get<ArticleAchat[]>(`${this.baseUrl}/categorie/${categorieId}`, { headers: this.getHeaders() });
   }
 
-  addArticleAchat(articleAchat: ArticleAchat, fournisseurId?: number): Observable<ArticleAchat> {
-    const url = fournisseurId
-      ? `${this.baseUrl}/add/${fournisseurId}`
-      : `${this.baseUrl}/add`;
-    return this.http.post<ArticleAchat>(url, articleAchat, { headers: this.getHeaders() });
+  addArticleAchat(articleAchat: ArticleAchat): Observable<ArticleAchat> {
+    return this.http.post<ArticleAchat>(`${this.baseUrl}/add`, articleAchat, { headers: this.getHeaders() });
+  }
+
+  getAllCategories(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/api/articles/categories`, { headers: this.getHeaders() });
+  }
+
+  getAllMesures(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/api/articles/mesures`, { headers: this.getHeaders() });
   }
 
   updateArticleAchat(id: number, articleAchat: ArticleAchat): Observable<ArticleAchat> {

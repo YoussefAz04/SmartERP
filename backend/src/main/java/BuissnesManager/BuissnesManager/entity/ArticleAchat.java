@@ -24,4 +24,9 @@ public class ArticleAchat {
     private Boolean actif;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // IDs for relations
+    private Long entrepriseId;
+    private Long categorieArticleId;
+    private Long mesureId;
 }

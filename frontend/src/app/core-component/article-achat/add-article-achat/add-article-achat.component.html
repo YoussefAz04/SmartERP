@@ -23,6 +23,32 @@
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
+                <label class="form-label">Entreprise <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="entrepriseId"
+                  [class.is-invalid]="isFieldInvalid('entrepriseId')">
+                  <option value="">-- Sélectionnez une entreprise --</option>
+                  <option *ngFor="let e of entreprises" [value]="e.id">{{ e.nom }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('entrepriseId')">
+                  L'entreprise est requise
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Référence <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="reference"
+                  placeholder="Référence unique de l'article" [class.is-invalid]="isFieldInvalid('reference')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('reference')">
+                  <span *ngIf="articleForm.get('reference')?.hasError('required')">La référence est requise</span>
+                  <span *ngIf="articleForm.get('reference')?.hasError('minlength')">Min 2 caractères</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
                 <label class="form-label">Nom <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" formControlName="nom"
                   placeholder="Nom de l'article" [class.is-invalid]="isFieldInvalid('nom')">
@@ -35,9 +61,9 @@
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
-                <label class="form-label">Prix Unitaire <span class="text-danger">*</span></label>
+                <label class="form-label">Prix d'Achat <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="prixUnitaire"
-                  placeholder="Prix unitaire" [class.is-invalid]="isFieldInvalid('prixUnitaire')">
+                  placeholder="Prix d'achat" [class.is-invalid]="isFieldInvalid('prixUnitaire')">
                 <div class="invalid-feedback" *ngIf="isFieldInvalid('prixUnitaire')">
                   <span *ngIf="articleForm.get('prixUnitaire')?.hasError('required')">Le prix est requis</span>
                   <span *ngIf="articleForm.get('prixUnitaire')?.hasError('min')">Le prix doit être positif</span>
@@ -47,36 +73,32 @@
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
-                <label class="form-label">Quantité <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" formControlName="quantite"
-                  placeholder="Quantité" [class.is-invalid]="isFieldInvalid('quantite')">
-                <div class="invalid-feedback" *ngIf="isFieldInvalid('quantite')">
-                  <span *ngIf="articleForm.get('quantite')?.hasError('required')">La quantité est requise</span>
-                  <span *ngIf="articleForm.get('quantite')?.hasError('min')">La quantité doit être positive</span>
+                <label class="form-label">Prix de Vente <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="prixVente"
+                  placeholder="Prix de vente" [class.is-invalid]="isFieldInvalid('prixVente')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('prixVente')">
+                  <span *ngIf="articleForm.get('prixVente')?.hasError('required')">Le prix de vente est requis</span>
+                  <span *ngIf="articleForm.get('prixVente')?.hasError('min')">Le prix doit être positif</span>
                 </div>
               </div>
             </div>
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
-                <label class="form-label">Unité</label>
-                <input type="text" class="form-control" formControlName="unite" placeholder="ex: pcs, kg, L">
+                <label class="form-label">Catégorie</label>
+                <select class="form-select" formControlName="categorieArticleId">
+                  <option value="">-- Sélectionnez une catégorie --</option>
+                  <option *ngFor="let c of categories" [value]="c.id">{{ c.libelle || c.code }}</option>
+                </select>
               </div>
             </div>
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
-                <label class="form-label">SKU / Référence</label>
-                <input type="text" class="form-control" formControlName="sku" placeholder="Code SKU ou référence">
-              </div>
-            </div>
-
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Fournisseur</label>
-                <select class="form-select" formControlName="fournisseurId">
-                  <option value="">-- Sélectionnez un fournisseur --</option>
-                  <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+                <label class="form-label">Unité de Mesure</label>
+                <select class="form-select" formControlName="mesureId">
+                  <option value="">-- Sélectionnez une unité --</option>
+                  <option *ngFor="let m of mesures" [value]="m.id">{{ m.libelle || m.code }}</option>
                 </select>
               </div>
             </div>

@@ -89,6 +89,14 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
+    public List<CategorieArticle> getAllCategories() {
+        return categorieArticleRepository.findAll();
+    }
+
+    public List<Mesure> getAllMesures() {
+        return mesureRepository.findAll();
+    }
+
     public void deleteArticle(Long id) {
         if (!articleRepository.existsById(id)) {
             throw new RuntimeException("Article non trouvé avec id: " + id);
