@@ -58,7 +58,7 @@ public class StockAutomationService {
 
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.ENTREE);
-            mouvement.setQuantite(quantite.intValue());
+            mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
             mouvement.setReferenceCommande(referenceCommande);
             mouvement.setMotif("Réception commande achat " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
@@ -112,7 +112,7 @@ public class StockAutomationService {
 
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.SORTIE);
-            mouvement.setQuantite(quantite.intValue());
+            mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
             mouvement.setReferenceCommande(referenceCommande);
             mouvement.setMotif("Livraison commande vente " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());

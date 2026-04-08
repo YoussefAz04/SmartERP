@@ -100,9 +100,10 @@ public class CommandeVenteController {
             BonLivraison bon = commandeVenteService.livrerCommande(id);
             return ResponseEntity.ok(bon);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Erreur lors de la livraison: " + e.getMessage()));
         }
     }
 
@@ -128,5 +129,18 @@ public class CommandeVenteController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    public static class ErrorResponse {
+        private String message;
+        private long timestamp;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+            this.timestamp = System.currentTimeMillis();
+        }
+
+        public String getMessage() { return message; }
+        public long getTimestamp() { return timestamp; }
     }
 }

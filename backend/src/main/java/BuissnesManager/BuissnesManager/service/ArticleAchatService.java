@@ -25,7 +25,7 @@ public class ArticleAchatService {
     }
 
     public List<Article> getArticleAchatByFournisseur(Long fournisseurId) {
-        return articleRepository.findByFournisseurId(fournisseurId);
+        return articleRepository.findArticlesOrderedFromFournisseur(fournisseurId);
     }
 
     public List<Article> getArticleAchatByCategorie(Long categorieId) {
