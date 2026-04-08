@@ -97,9 +97,9 @@ export class AddArticleAchatComponent implements OnInit {
       this.articleAchatService.addArticleAchat(articleData).subscribe({
         next: () => {
           this.isLoading = false;
-          alert('✓ Article achat ajouté avec succès!');
-          this.articleForm.reset();
           this.submitted = false;
+          this.articleForm.reset();
+          alert('✓ Article achat ajouté avec succès!');
           this.router.navigate(['/article-achat/listArticleAchat']);
         },
         error: (err: any) => {
