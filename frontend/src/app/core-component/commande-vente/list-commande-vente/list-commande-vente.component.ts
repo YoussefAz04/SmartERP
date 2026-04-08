@@ -81,6 +81,21 @@ export class ListCommandeVenteComponent implements OnInit {
     });
   }
 
+  livrerCommande(id: number): void {
+    if (!confirm('Marquer cette commande comme livrée ? Le stock sera automatiquement décrémenté.')) return;
+    this.commandeVenteService.livrerCommande(id).subscribe({
+      next: (bon) => {
+        this.loadCommandes();
+        alert('✅ Commande livrée ! Bon de livraison créé : ' + bon.reference + '. Le stock a été mis à jour.');
+      },
+      error: (err) => {
+        console.error('Erreur livraison:', err);
+        const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la livraison';
+        alert('❌ Erreur lors de la livraison:\n\n' + errorMessage);
+      }
+    });
+  }
+
   annulerCommande(id: number): void {
     if (!confirm('Annuler cette commande ?')) return;
     this.commandeVenteService.annulerCommande(id).subscribe({

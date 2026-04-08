@@ -100,6 +100,29 @@ export class ListCommandeAchatComponent implements OnInit {
     });
   }
 
+  recevoirCommande(id: number): void {
+    if (!confirm('Marquer cette commande comme reçue ? Le stock sera automatiquement mis à jour.')) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.commandeAchatService.recevoirCommande(id).subscribe({
+      next: (bon) => {
+        this.loadCommandes();
+        this.isLoading = false;
+        alert('✅ Commande reçue ! Bon de réception créé : ' + bon.reference + '. Le stock a été mis à jour.');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la réception';
+        this.errorMessage = errorMessage;
+        alert('❌ Erreur lors de la réception:\n\n' + errorMessage);
+      }
+    });
+  }
+
   annulerCommande(id: number): void {
     if (!confirm('Annuler cette commande ?')) return;
     

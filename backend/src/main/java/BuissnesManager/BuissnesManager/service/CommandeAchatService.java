@@ -43,6 +43,12 @@ public class CommandeAchatService {
     private LigneFactureAchatRepository ligneFactureAchatRepository;
 
     @Autowired
+    private BonReceptionRepository bonReceptionRepository;
+
+    @Autowired
+    private StockAutomationService stockAutomationService;
+
+    @Autowired
     private EntityManager entityManager;
 
     public List<CommandeAchat> getAllCommandes() {
@@ -320,6 +326,35 @@ public class CommandeAchatService {
         commande.setStatut("ANNULEE");
         logger.info("✅ Commande {} cancelled", id);
         return commandeAchatRepository.save(commande);
+    }
+
+    @Transactional
+    public BonReception recevoirCommande(Long id) {
+        CommandeAchat commande = commandeAchatRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+
+        if ("ANNULEE".equals(commande.getStatut())) {
+            throw new RuntimeException("Impossible de réceptionner une commande annulée.");
+        }
+        if ("RECUE".equals(commande.getStatut())) {
+            throw new RuntimeException("Cette commande a déjà été réceptionnée.");
+        }
+
+        commande.setStatut("RECUE");
+        commandeAchatRepository.save(commande);
+
+        BonReception bon = new BonReception();
+        bon.setReference("BR-" + commande.getReference());
+        bon.setDateReception(LocalDate.now());
+        bon.setStatut("RECU");
+        bon.setCommandeAchat(commande);
+        bon.setEntreprise(commande.getEntreprise());
+        BonReception savedBon = bonReceptionRepository.save(bon);
+
+        stockAutomationService.incrementStockFromReception(id, commande.getReference());
+
+        logger.info("✅ Commande {} received, bon réception {} created, stock updated", id, savedBon.getId());
+        return savedBon;
     }
 
     @Transactional

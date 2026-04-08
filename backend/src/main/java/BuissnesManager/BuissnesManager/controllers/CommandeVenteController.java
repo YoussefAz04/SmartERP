@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
+import BuissnesManager.BuissnesManager.entity.BonLivraison;
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
 import BuissnesManager.BuissnesManager.entity.FactureVente;
 import BuissnesManager.BuissnesManager.service.CommandeVenteService;
@@ -93,6 +94,19 @@ public class CommandeVenteController {
         }
     }
 
+    @PutMapping("/{id}/livrer")
+    public ResponseEntity<?> livrerCommande(@PathVariable Long id) {
+        try {
+            BonLivraison bon = commandeVenteService.livrerCommande(id);
+            return ResponseEntity.ok(bon);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Erreur lors de la livraison: " + e.getMessage()));
+        }
+    }
+
     @PutMapping("/{id}/annuler")
     public ResponseEntity<CommandeVente> annulerCommande(@PathVariable Long id) {
         try {
@@ -115,5 +129,18 @@ public class CommandeVenteController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    public static class ErrorResponse {
+        private String message;
+        private long timestamp;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+            this.timestamp = System.currentTimeMillis();
+        }
+
+        public String getMessage() { return message; }
+        public long getTimestamp() { return timestamp; }
     }
 }

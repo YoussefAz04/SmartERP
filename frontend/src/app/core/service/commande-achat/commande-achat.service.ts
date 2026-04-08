@@ -60,6 +60,10 @@ export class CommandeAchatService {
     return this.http.put<any>(`${this.baseUrl}/${id}/valider`, {}, { headers: this.getHeaders() });
   }
 
+  recevoirCommande(id: number): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}/recevoir`, {}, { headers: this.getHeaders() });
+  }
+
   annulerCommande(id: number): Observable<CommandeAchat> {
     return this.http.put<CommandeAchat>(`${this.baseUrl}/${id}/annuler`, {}, { headers: this.getHeaders() });
   }

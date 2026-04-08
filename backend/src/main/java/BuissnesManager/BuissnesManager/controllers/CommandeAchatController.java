@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.entity.BonReception;
 import BuissnesManager.BuissnesManager.entity.CommandeAchat;
 import BuissnesManager.BuissnesManager.entity.FactureAchat;
 import BuissnesManager.BuissnesManager.dto.CommandeAchatDto;
@@ -140,6 +141,23 @@ public class CommandeAchatController {
             logger.error("❌ [VALIDATION CRITICAL ERROR] Unexpected error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Erreur lors de la génération de la facture: " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/recevoir")
+    public ResponseEntity<?> recevoirCommande(@PathVariable Long id) {
+        try {
+            logger.info("📦 [RECEPTION] Receiving order ID: {}", id);
+            BonReception bon = commandeAchatService.recevoirCommande(id);
+            logger.info("✅ [RECEPTION] Bon réception {} created, stock updated", bon.getId());
+            return ResponseEntity.ok(bon);
+        } catch (RuntimeException e) {
+            logger.error("❌ [RECEPTION ERROR] {}", e.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("❌ [RECEPTION CRITICAL ERROR] Unexpected error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Erreur lors de la réception: " + e.getMessage()));
         }
     }
 
