@@ -2,6 +2,8 @@ package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.ArticleDto;
 import BuissnesManager.BuissnesManager.entity.Article;
+import BuissnesManager.BuissnesManager.entity.CategorieArticle;
+import BuissnesManager.BuissnesManager.entity.Mesure;
 import BuissnesManager.BuissnesManager.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -83,6 +85,24 @@ public class ArticleController {
             return ResponseEntity.ok(article);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategorieArticle>> getAllCategories() {
+        try {
+            return ResponseEntity.ok(articleService.getAllCategories());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/mesures")
+    public ResponseEntity<List<Mesure>> getAllMesures() {
+        try {
+            return ResponseEntity.ok(articleService.getAllMesures());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

@@ -3,8 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
-import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
-import { Fournisseur } from '../../../model/fournisseur.model';
+import { EntrepriseService } from '../../../core/service/entreprise/entreprise.service';
 
 @Component({
   selector: 'app-add-article-achat',
@@ -15,31 +14,36 @@ import { Fournisseur } from '../../../model/fournisseur.model';
 })
 export class AddArticleAchatComponent implements OnInit {
   articleForm!: FormGroup;
-  fournisseurs: Fournisseur[] = [];
+  entreprises: any[] = [];
+  categories: any[] = [];
+  mesures: any[] = [];
   isLoading = false;
   submitted = false;
 
   constructor(
     private articleAchatService: ArticleAchatService,
-    private fournisseurService: FournisseurService,
+    private entrepriseService: EntrepriseService,
     private fb: FormBuilder,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
-    this.loadFournisseurs();
+    this.loadEntreprises();
+    this.loadCategories();
+    this.loadMesures();
   }
 
   initializeForm(): void {
     this.articleForm = this.fb.group({
+      entrepriseId: [null, [Validators.required]],
+      reference: ['', [Validators.required, Validators.minLength(2)]],
       nom: ['', [Validators.required, Validators.minLength(2)]],
       description: [''],
       prixUnitaire: [null, [Validators.required, Validators.min(0)]],
-      quantite: [0, [Validators.required, Validators.min(0)]],
-      unite: [''],
-      sku: [''],
-      fournisseurId: [null],
+      prixVente: [null, [Validators.required, Validators.min(0)]],
+      categorieArticleId: [null],
+      mesureId: [null],
     });
   }
 
@@ -48,10 +52,24 @@ export class AddArticleAchatComponent implements OnInit {
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
   }
 
-  loadFournisseurs(): void {
-    this.fournisseurService.getAllFournisseurs().subscribe({
-      next: (data) => { this.fournisseurs = data; },
-      error: (err) => { console.error('Erreur chargement fournisseurs:', err); }
+  loadEntreprises(): void {
+    this.entrepriseService.getAllEntreprises().subscribe({
+      next: (data) => { this.entreprises = data; },
+      error: (err) => { console.error('Erreur chargement entreprises:', err); }
+    });
+  }
+
+  loadCategories(): void {
+    this.articleAchatService.getAllCategories().subscribe({
+      next: (data) => { this.categories = data; },
+      error: (err) => { console.error('Erreur chargement catégories:', err); }
+    });
+  }
+
+  loadMesures(): void {
+    this.articleAchatService.getAllMesures().subscribe({
+      next: (data) => { this.mesures = data; },
+      error: (err) => { console.error('Erreur chargement mesures:', err); }
     });
   }
 
@@ -65,18 +83,22 @@ export class AddArticleAchatComponent implements OnInit {
       this.isLoading = true;
       const formValue = this.articleForm.value;
       const articleData: any = {
+        reference: formValue.reference.trim(),
         nom: formValue.nom.trim(),
         description: formValue.description?.trim() || '',
         prixUnitaire: formValue.prixUnitaire,
-        quantite: formValue.quantite,
-        unite: formValue.unite?.trim() || '',
-        sku: formValue.sku?.trim() || '',
+        prixVente: formValue.prixVente,
+        entrepriseId: Number(formValue.entrepriseId),
+        categorieArticleId: formValue.categorieArticleId ? Number(formValue.categorieArticleId) : null,
+        mesureId: formValue.mesureId ? Number(formValue.mesureId) : null,
+        actif: true,
       };
-      const fournisseurId = formValue.fournisseurId ? Number(formValue.fournisseurId) : undefined;
 
-      this.articleAchatService.addArticleAchat(articleData, fournisseurId).subscribe({
+      this.articleAchatService.addArticleAchat(articleData).subscribe({
         next: () => {
           this.isLoading = false;
+          this.submitted = false;
+          this.articleForm.reset();
           alert('✓ Article achat ajouté avec succès!');
           this.router.navigate(['/article-achat/listArticleAchat']);
         },
