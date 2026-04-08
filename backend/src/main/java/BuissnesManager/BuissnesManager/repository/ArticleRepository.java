@@ -20,4 +20,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query("SELECT a FROM Article a WHERE a.entreprise.id = :entrepriseId AND a.categorieArticle.id = :categorieId")
     List<Article> findByEntrepriseIdAndCategorieId(@Param("entrepriseId") Long entrepriseId, @Param("categorieId") Long categorieId);
+
+    @Query("SELECT DISTINCT l.article FROM LigneCommandeAchat l WHERE l.commandeAchat.fournisseur.id = :fournisseurId")
+    List<Article> findByFournisseurId(@Param("fournisseurId") Long fournisseurId);
 }

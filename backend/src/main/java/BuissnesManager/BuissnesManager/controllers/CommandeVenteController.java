@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
+import BuissnesManager.BuissnesManager.entity.BonLivraison;
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
 import BuissnesManager.BuissnesManager.entity.FactureVente;
 import BuissnesManager.BuissnesManager.service.CommandeVenteService;
@@ -88,6 +89,18 @@ public class CommandeVenteController {
             return ResponseEntity.ok(facture);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/{id}/livrer")
+    public ResponseEntity<?> livrerCommande(@PathVariable Long id) {
+        try {
+            BonLivraison bon = commandeVenteService.livrerCommande(id);
+            return ResponseEntity.ok(bon);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

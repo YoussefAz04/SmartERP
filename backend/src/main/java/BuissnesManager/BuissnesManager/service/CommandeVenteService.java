@@ -30,6 +30,10 @@ public class CommandeVenteService {
     private FactureVenteRepository factureVenteRepository;
     @Autowired
     private LigneFactureVenteRepository ligneFactureVenteRepository;
+    @Autowired
+    private BonLivraisonRepository bonLivraisonRepository;
+    @Autowired
+    private StockAutomationService stockAutomationService;
 
     @Transactional
     public CommandeVente createCommande(CommandeVenteDto dto) {
@@ -161,6 +165,34 @@ public class CommandeVenteService {
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
         commande.setStatut("ANNULEE");
         return commandeVenteRepository.save(commande);
+    }
+
+    @Transactional
+    public BonLivraison livrerCommande(Long id) {
+        CommandeVente commande = commandeVenteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
+
+        if ("ANNULEE".equals(commande.getStatut())) {
+            throw new RuntimeException("Impossible de livrer une commande annulée.");
+        }
+        if ("LIVREE".equals(commande.getStatut())) {
+            throw new RuntimeException("Cette commande a déjà été livrée.");
+        }
+
+        commande.setStatut("LIVREE");
+        commandeVenteRepository.save(commande);
+
+        BonLivraison bon = new BonLivraison();
+        bon.setReference("BL-" + commande.getReference());
+        bon.setDateLivraison(LocalDate.now());
+        bon.setStatut("LIVRE");
+        bon.setCommandeVente(commande);
+        bon.setEntreprise(commande.getEntreprise());
+        BonLivraison savedBon = bonLivraisonRepository.save(bon);
+
+        stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
+
+        return savedBon;
     }
 
     public BigDecimal calculateTotal(Long commandeId) {

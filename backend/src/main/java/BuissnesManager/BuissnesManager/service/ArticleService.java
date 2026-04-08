@@ -28,7 +28,6 @@ public class ArticleService {
         article.setDescription(dto.getDescription());
         article.setPrixAchat(dto.getPrixAchat());
         article.setPrixVente(dto.getPrixVente());
-        article.setTva(dto.getTva());
         article.setActif(dto.isActif());
         if (dto.getCategorieArticleId() != null) {
             CategorieArticle cat = categorieArticleRepository.findById(dto.getCategorieArticleId())
@@ -76,7 +75,6 @@ public class ArticleService {
         if (dto.getDescription() != null) article.setDescription(dto.getDescription());
         if (dto.getPrixAchat() != null) article.setPrixAchat(dto.getPrixAchat());
         if (dto.getPrixVente() != null) article.setPrixVente(dto.getPrixVente());
-        if (dto.getTva() != null) article.setTva(dto.getTva());
         article.setActif(dto.isActif());
         if (dto.getCategorieArticleId() != null) {
             CategorieArticle cat = categorieArticleRepository.findById(dto.getCategorieArticleId())

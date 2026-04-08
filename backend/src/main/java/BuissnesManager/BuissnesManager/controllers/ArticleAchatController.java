@@ -38,6 +38,24 @@ public class ArticleAchatController {
         }
     }
 
+    @GetMapping("/fournisseur/{fournisseurId}")
+    public ResponseEntity<List<Article>> getArticleAchatByFournisseur(@PathVariable Long fournisseurId) {
+        try {
+            return ResponseEntity.ok(articleAchatService.getArticleAchatByFournisseur(fournisseurId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/categorie/{categorieId}")
+    public ResponseEntity<List<Article>> getArticleAchatByCategorie(@PathVariable Long categorieId) {
+        try {
+            return ResponseEntity.ok(articleAchatService.getArticleAchatByCategorie(categorieId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<Article> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
         try {

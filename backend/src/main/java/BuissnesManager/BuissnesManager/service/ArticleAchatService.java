@@ -24,6 +24,14 @@ public class ArticleAchatService {
         return articleRepository.findById(id);
     }
 
+    public List<Article> getArticleAchatByFournisseur(Long fournisseurId) {
+        return articleRepository.findByFournisseurId(fournisseurId);
+    }
+
+    public List<Article> getArticleAchatByCategorie(Long categorieId) {
+        return articleRepository.findByCategorieArticleId(categorieId);
+    }
+
     @Transactional
     public Article addArticleAchat(ArticleAchat input) {
         Article article = mapToArticle(input, new Article());
