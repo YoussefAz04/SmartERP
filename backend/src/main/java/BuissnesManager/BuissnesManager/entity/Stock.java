@@ -49,6 +49,6 @@ public class Stock {
 
     @ManyToOne
     @JoinColumn(name = "article_id", nullable = false)
-    @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
     private Article articleAchat;
 }

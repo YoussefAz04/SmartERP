@@ -69,7 +69,7 @@ public class Article {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fournisseur_id")
-    @JsonIgnoreProperties({"articles", "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Fournisseur fournisseur;
 
     @ManyToOne(fetch = FetchType.LAZY)
