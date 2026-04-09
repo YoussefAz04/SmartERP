@@ -12,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,13 +47,33 @@ public class Entreprise {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "entreprise")
+    @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
+    @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Client> clients = new ArrayList<>();
 
-    @ManyToMany()
-    private List<Client> clients;
+    @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Fournisseur> fournisseurs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Article> articles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CommandeAchat> commandesAchat = new ArrayList<>();
+
+    @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CommandeVente> commandesVente = new ArrayList<>();
+
+    @OneToMany(mappedBy = "entreprise", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<FactureAchat> facturesAchat = new ArrayList<>();
 
     @OneToOne(mappedBy = "entreprise")
     @JsonIgnoreProperties(value = "entreprise")

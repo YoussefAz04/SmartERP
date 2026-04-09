@@ -5,8 +5,10 @@ import BuissnesManager.BuissnesManager.dto.PermissionDto;
 import BuissnesManager.BuissnesManager.dto.RegisterRequest;
 import BuissnesManager.BuissnesManager.dto.RegisterResponse;
 import BuissnesManager.BuissnesManager.dto.Response;
+import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
+import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
@@ -42,6 +44,9 @@ public class AuthController {
 
     @Autowired
     private RoleRepo roleRepo;
+
+    @Autowired
+    private EntrepriseRepo entrepriseRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -87,6 +92,18 @@ public class AuthController {
             newUser.setEmail(request.getEmail());
             newUser.setPassword(passwordEncoder.encode(request.getPassword()));
             newUser.setEnabled(true);
+
+            // Assign enterprise if provided
+            if (request.getEnterpriseId() != null) {
+                Entreprise entreprise = entrepriseRepo.findById(request.getEnterpriseId())
+                        .orElse(null);
+                if (entreprise != null) {
+                    newUser.setEntreprise(entreprise);
+                    System.out.println("✅ User assigned to enterprise: " + entreprise.getNom());
+                } else {
+                    System.out.println("⚠️ Enterprise not found with id: " + request.getEnterpriseId());
+                }
+            }
 
             // Assign default USER role
             Role userRole = roleRepo.findByName("USER")
@@ -165,17 +182,17 @@ public class AuthController {
             response.setRoles(roleNames);
             response.setPermission(permissionDtoList);
 
-            // ✅ SET ENTERPRISE ID - Use a default or from first enterprise
-            Long entrepriseId = 1L;  // ✅ DEFAULT: Change to match your first enterprise ID
-            String entrepriseName = "Default Enterprise";
+            // ✅ SET ENTERPRISE ID - Get from user's assigned enterprise
+            Long entrepriseId = null;
+            String entrepriseName = null;
 
-            // ✅ TRY TO GET FROM USER IF AVAILABLE
+            // ✅ GET FROM USER IF AVAILABLE
             if (user.getEntreprise() != null) {
                 entrepriseId = user.getEntreprise().getId();
                 entrepriseName = user.getEntreprise().getNom();
                 System.out.println("✅ Enterprise from user: " + entrepriseId + " - " + entrepriseName);
             } else {
-                System.out.println("⚠️ User has no enterprise - using default: " + entrepriseId);
+                System.out.println("⚠️ User has no enterprise assigned");
             }
 
             response.setEntrepriseId(entrepriseId);
