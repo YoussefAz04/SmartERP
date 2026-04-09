@@ -170,6 +170,8 @@ export class AdminDashboardComponent implements OnInit {
   updateChart(): void {
     if (!this.stats) return;
     const salesData = (this.stats.monthlySalesChart || []).map(m => m.amount || 0);
+    // Purchase values are negated so they display below zero on the stacked bar chart
+    // (negative = outgoing money, positive = incoming money)
     const purchaseData = (this.stats.monthlyPurchasesChart || []).map(m => -(m.amount || 0));
     const maxVal = Math.max(...salesData, 1);
     const minVal = Math.min(...purchaseData, -1);

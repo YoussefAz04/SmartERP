@@ -35,7 +35,7 @@ public class DashboardController {
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error fetching dashboard stats: " + e.getMessage());
+                    .body("Error fetching dashboard stats. Please try again later.");
         }
     }
 }

@@ -113,7 +113,7 @@ public class DashboardService {
         // --- Customer Metrics ---
         Long totalCustomers = clientRepo.getTotalClients(entrepriseId);
         stats.setTotalCustomers(orZeroLong(totalCustomers));
-        // New customers this month is not directly tracked; using 0 as placeholder
+        // TODO: Track client creation dates to support new-customers-this-month metric
         stats.setNewCustomersThisMonth(0L);
 
         // Top customers
