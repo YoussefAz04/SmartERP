@@ -49,20 +49,20 @@ export class AddCommandeVenteComponent implements OnInit {
 
   loadEntrepriseId(): void {
     // Try both key variants used across the application
-    let stored = localStorage.getItem('entrepriseId') || localStorage.getItem('enterpriseId');
-    if (!stored) {
+    let entrepriseIdString = localStorage.getItem('entrepriseId') || localStorage.getItem('enterpriseId');
+    if (!entrepriseIdString) {
       const raw = localStorage.getItem('myLSkey');
       if (raw) {
         try {
           const decoded = JSON.parse(atob(raw));
-          stored = (decoded.entrepriseId || decoded.enterpriseId)?.toString() || null;
+          entrepriseIdString = (decoded.entrepriseId || decoded.enterpriseId)?.toString() || null;
         } catch (e) {
           console.error('Error decoding myLSkey:', e);
         }
       }
     }
-    if (stored) {
-      this.currentEntrepriseId = parseInt(stored, 10);
+    if (entrepriseIdString) {
+      this.currentEntrepriseId = parseInt(entrepriseIdString, 10);
     } else {
       console.warn('No entrepriseId found in localStorage');
     }

@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.entity.CategorieFournisseur;
 import BuissnesManager.BuissnesManager.entity.Fournisseur;
+import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.FournisseurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class FournisseurController {
 
     @Autowired
     private FournisseurService fournisseurService;
+
+    @Autowired
+    private JWTUtil jwtUtil;
 
     // ✅ ADD FOURNISSEUR
     @PostMapping("/addFournisseur/{idCategorie}")
@@ -41,8 +45,17 @@ public class FournisseurController {
 
     // ✅ GET FOURNISSEURS BY ENTERPRISE
     @GetMapping("/byEntreprise/{entrepriseId}")
-    public ResponseEntity<List<Fournisseur>> getFournisseursByEntreprise(@PathVariable Long entrepriseId) {
+    public ResponseEntity<List<Fournisseur>> getFournisseursByEntreprise(
+            @PathVariable Long entrepriseId,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                Long tokenEntrepriseId = jwtUtil.getEntrepriseIdFromToken(token);
+                if (tokenEntrepriseId != null && !tokenEntrepriseId.equals(entrepriseId)) {
+                    return ResponseEntity.status(403).build();
+                }
+            }
             return ResponseEntity.ok(fournisseurService.getFournisseursByEntreprise(entrepriseId));
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
