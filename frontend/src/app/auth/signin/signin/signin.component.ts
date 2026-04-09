@@ -84,7 +84,7 @@ export class SigninComponent implements OnInit {
 
         // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
         const entrepriseId = response.entrepriseId;
-        if (entrepriseId != null) {
+        if (entrepriseId !== null && entrepriseId !== undefined) {
           localStorage.setItem('entrepriseId', entrepriseId.toString());
           localStorage.setItem('enterpriseId', entrepriseId.toString());
           console.log('✅ Enterprise ID saved to localStorage:', entrepriseId);

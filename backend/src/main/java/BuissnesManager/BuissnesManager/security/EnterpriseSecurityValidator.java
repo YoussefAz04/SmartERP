@@ -23,7 +23,7 @@ public class EnterpriseSecurityValidator {
      */
     public Long extractEnterpriseIdFromToken(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Invalid authorization header");
+            throw new RuntimeException("Authorization header must be present and start with 'Bearer '");
         }
         String token = authHeader.substring(7);
         return jwtUtil.getEntrepriseIdFromToken(token);

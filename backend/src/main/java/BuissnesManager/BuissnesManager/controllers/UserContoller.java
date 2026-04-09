@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.dto.UserRequest;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.entity.UserDTO;
+import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.ImageService;
 import BuissnesManager.BuissnesManager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class UserContoller {
     private UserService userService ;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private JWTUtil jwtUtil;
     @GetMapping("/test")
     public ResponseEntity<?> testToken() {
         return ResponseEntity.ok("Token valide");
@@ -53,8 +56,18 @@ public class UserContoller {
     }
 
     @GetMapping("/byEntreprise/{entrepriseId}")
-    public ResponseEntity<?> getUsersByEntreprise(@PathVariable Long entrepriseId) {
+    public ResponseEntity<?> getUsersByEntreprise(
+            @PathVariable Long entrepriseId,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
+            // Verify requesting user belongs to the same enterprise
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                Long tokenEntrepriseId = jwtUtil.getEntrepriseIdFromToken(token);
+                if (tokenEntrepriseId != null && !tokenEntrepriseId.equals(entrepriseId)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+                }
+            }
             return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByEnterprise(entrepriseId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
