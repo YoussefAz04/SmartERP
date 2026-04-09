@@ -33,6 +33,11 @@ public class ClientService {
         return clientRepo.findAll();
     }
 
+    // ✅ GET CLIENTS BY ENTERPRISE
+    public List<Client> getClientsByEntreprise(Long entrepriseId) {
+        return clientRepo.findByEntrepriseId(entrepriseId);
+    }
+
     // ✅ GET CLIENT BY ID
     public Client getClientById(Long idClient) {
         return clientRepo.findById(idClient)

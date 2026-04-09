@@ -39,6 +39,16 @@ public class ClientController {
         }
     }
 
+    // ✅ GET CLIENTS BY ENTERPRISE
+    @GetMapping("/byEntreprise/{entrepriseId}")
+    public ResponseEntity<List<Client>> getClientsByEntreprise(@PathVariable Long entrepriseId) {
+        try {
+            return ResponseEntity.ok(clientService.getClientsByEntreprise(entrepriseId));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     // ✅ GET CLIENT BY ID
     @GetMapping("/getClientById/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable Long id) {

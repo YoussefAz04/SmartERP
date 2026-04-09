@@ -39,6 +39,16 @@ public class FournisseurController {
         }
     }
 
+    // ✅ GET FOURNISSEURS BY ENTERPRISE
+    @GetMapping("/byEntreprise/{entrepriseId}")
+    public ResponseEntity<List<Fournisseur>> getFournisseursByEntreprise(@PathVariable Long entrepriseId) {
+        try {
+            return ResponseEntity.ok(fournisseurService.getFournisseursByEntreprise(entrepriseId));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     // ✅ GET FOURNISSEUR BY ID
     @GetMapping("/getFournisseurById/{id}")
     public ResponseEntity<Fournisseur> getFournisseurById(@PathVariable Long id) {

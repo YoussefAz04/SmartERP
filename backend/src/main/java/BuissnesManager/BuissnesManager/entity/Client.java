@@ -31,6 +31,11 @@ public class Client {
     @JsonIgnore
     private CategorieClient categorieClient;
 
+    @ManyToOne
+    @JoinColumn(name = "entreprise_id")
+    @JsonIgnore
+    private Entreprise entreprise;
+
     @ManyToMany
     @JsonIgnore
     private List<Entreprise> entreprises;
