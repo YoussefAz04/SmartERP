@@ -18,4 +18,19 @@ public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Lo
 
     @Query("SELECT c FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.dateCommande BETWEEN :debut AND :fin")
     List<CommandeAchat> findByEntrepriseIdAndDateRange(@Param("entrepriseId") Long entrepriseId, @Param("debut") LocalDate debut, @Param("fin") LocalDate fin);
+
+    @Query("SELECT COALESCE(SUM(c.montantTTC), 0) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId")
+    Double getTotalPurchases(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId")
+    Long getTotalPurchaseOrders(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT c.statut, COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId GROUP BY c.statut")
+    List<Object[]> getPurchaseOrderStatusBreakdown(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COALESCE(SUM(c.montantTTC), 0) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.dateCommande BETWEEN :debut AND :fin")
+    Double getPurchasesInPeriod(@Param("entrepriseId") Long entrepriseId, @Param("debut") LocalDate debut, @Param("fin") LocalDate fin);
+
+    @Query("SELECT FUNCTION('MONTH', c.dateCommande), COALESCE(SUM(c.montantTTC), 0) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND FUNCTION('YEAR', c.dateCommande) = :year GROUP BY FUNCTION('MONTH', c.dateCommande) ORDER BY FUNCTION('MONTH', c.dateCommande)")
+    List<Object[]> getMonthlyPurchases(@Param("entrepriseId") Long entrepriseId, @Param("year") int year);
 }
