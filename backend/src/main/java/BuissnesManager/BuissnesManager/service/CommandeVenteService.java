@@ -4,6 +4,8 @@ import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeVenteDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import java.util.Optional;
 
 @Service
 public class CommandeVenteService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommandeVenteService.class);
 
     @Autowired
     private CommandeVenteRepository commandeVenteRepository;
@@ -143,6 +147,8 @@ public class CommandeVenteService {
         savedFacture = factureVenteRepository.save(savedFacture);
 
         List<LigneCommandeVente> lignesCommande = ligneCommandeVenteRepository.findByCommandeVenteId(id);
+        logger.info("📝 Creating {} invoice lines for facture {}", lignesCommande.size(), savedFacture.getId());
+        List<LigneFactureVente> savedLignes = new java.util.ArrayList<>();
         for (LigneCommandeVente ligneCommande : lignesCommande) {
             LigneFactureVente ligneFacture = new LigneFactureVente();
             if (ligneCommande.getArticleVente() != null) {
@@ -154,10 +160,38 @@ public class CommandeVenteService {
             ligneFacture.setMontantHT(ligneCommande.getMontantHT());
             ligneFacture.setMontantTTC(ligneCommande.getMontantTTC());
             ligneFacture.setFactureVente(savedFacture);
-            ligneFactureVenteRepository.save(ligneFacture);
+            savedLignes.add(ligneFactureVenteRepository.save(ligneFacture));
         }
 
+        if (savedLignes.isEmpty()) {
+            logger.warn("⚠️ No invoice lines created for facture {}", savedFacture.getId());
+        } else {
+            recalculateInvoiceAmounts(savedFacture, savedLignes);
+        }
+
+        logger.info("✅ Commande {} validated, facture {} created with {} lines", id, savedFacture.getId(), savedLignes.size());
         return savedFacture;
+    }
+
+    private void recalculateInvoiceAmounts(FactureVente facture, List<LigneFactureVente> lignes) {
+        BigDecimal totalHT = BigDecimal.ZERO;
+        BigDecimal totalTVA = BigDecimal.ZERO;
+        BigDecimal totalTTC = BigDecimal.ZERO;
+
+        for (LigneFactureVente ligne : lignes) {
+            BigDecimal montantHT = ligne.getMontantHT() != null ? ligne.getMontantHT() : BigDecimal.ZERO;
+            BigDecimal montantTTC = ligne.getMontantTTC() != null ? ligne.getMontantTTC() : BigDecimal.ZERO;
+            totalHT = totalHT.add(montantHT);
+            totalTVA = totalTVA.add(montantTTC.subtract(montantHT));
+            totalTTC = totalTTC.add(montantTTC);
+        }
+
+        facture.setMontantHT(totalHT);
+        facture.setMontantTVA(totalTVA);
+        facture.setMontantTTC(totalTTC);
+
+        factureVenteRepository.save(facture);
+        logger.info("✅ Invoice amounts recalculated: HT={}, TVA={}, TTC={}", totalHT, totalTVA, totalTTC);
     }
 
     public CommandeVente annulerCommande(Long id) {
