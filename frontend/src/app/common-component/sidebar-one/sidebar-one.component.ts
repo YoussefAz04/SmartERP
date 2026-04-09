@@ -118,13 +118,15 @@ export class SidebarOneComponent implements OnInit {
 
     if (item) {
       let currentUser: any = JSON.parse(atob(item));
-      this.idRoleLogin = currentUser.idRole ;
+      this.idRoleLogin = currentUser.roleId;
 
     }
-    this.moduleService.updateStatusByRole(this.idRoleLogin).subscribe(()=>{ this.sidebar.getAllModuleTitles().subscribe(modules => {
-      this.sidebar.generateSidebarData(modules);
-      console.log('Sidebar data:', this.sidebar.sidebarData1);
-    });})
+    if (this.idRoleLogin) {
+      this.moduleService.updateStatusByRole(this.idRoleLogin).subscribe(()=>{ this.sidebar.getAllModuleTitles().subscribe(modules => {
+        this.sidebar.generateSidebarData(modules);
+        console.log('Sidebar data:', this.sidebar.sidebarData1);
+      });})
+    }
 
   }
 

@@ -125,10 +125,11 @@ export class HeaderComponent implements OnInit{
       this.userName = currentUser?.name;
       console.log('Token:', currentUser?.token);
       console.log('Permissions:', currentUser?.permission);
-      
-      // ✅ FIXED: Add null check for entreprise
-      if (currentUser?.entreprise && currentUser.entreprise.nom) {
-        console.log('Entreprise:', currentUser.entreprise.nom);
+
+      // Use entrepriseName stored at login, fall back to entreprise.nom if available
+      const entrepriseName = currentUser?.entrepriseName || currentUser?.entreprise?.nom;
+      if (entrepriseName) {
+        console.log('Entreprise:', entrepriseName);
       } else {
         console.log('⚠️ Entreprise not set or is null');
       }
