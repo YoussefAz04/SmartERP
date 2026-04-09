@@ -61,12 +61,76 @@
 
             <div class="col-lg-6">
               <div class="input-blocks mb-3">
+                <label class="form-label">SKU <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="sku"
+                  placeholder="Stock Keeping Unit" [class.is-invalid]="isFieldInvalid('sku')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('sku')">
+                  Le SKU est requis
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
                 <label class="form-label">Prix d'Achat <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="prixUnitaire"
-                  placeholder="Prix d'achat" [class.is-invalid]="isFieldInvalid('prixUnitaire')">
+                  placeholder="Prix d'achat" min="0" step="0.01" [class.is-invalid]="isFieldInvalid('prixUnitaire')">
                 <div class="invalid-feedback" *ngIf="isFieldInvalid('prixUnitaire')">
                   <span *ngIf="articleForm.get('prixUnitaire')?.hasError('required')">Le prix est requis</span>
                   <span *ngIf="articleForm.get('prixUnitaire')?.hasError('min')">Le prix doit être positif</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Quantité <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="quantite"
+                  placeholder="Quantité" min="0" [class.is-invalid]="isFieldInvalid('quantite')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('quantite')">
+                  <span *ngIf="articleForm.get('quantite')?.hasError('required')">La quantité est requise</span>
+                  <span *ngIf="articleForm.get('quantite')?.hasError('min')">La quantité doit être positive</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Unité <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="unite"
+                  [class.is-invalid]="isFieldInvalid('unite')">
+                  <option *ngFor="let unit of units" [value]="unit">{{ unit }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('unite')">
+                  L'unité est requise
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Fournisseur <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="fournisseurId"
+                  [class.is-invalid]="isFieldInvalid('fournisseurId')">
+                  <option [ngValue]="null">-- Sélectionnez un fournisseur --</option>
+                  <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('fournisseurId')">
+                  Le fournisseur est requis
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="input-blocks mb-3">
+                <label class="form-label">Catégorie <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="categorieArticleId"
+                  [class.is-invalid]="isFieldInvalid('categorieArticleId')">
+                  <option [ngValue]="null">-- Sélectionnez une catégorie --</option>
+                  <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.libelle || cat.code }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('categorieArticleId')">
+                  La catégorie est requise
                 </div>
               </div>
             </div>
@@ -94,3 +158,4 @@
     </div>
   </div>
 </div>
+

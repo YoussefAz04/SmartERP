@@ -50,13 +50,13 @@ export class ArticleAchatService {
     return this.http.get<ArticleAchat[]>(`${this.baseUrl}/categorie/${categorieId}`, { headers: this.getHeaders() });
   }
 
-  // ✅ FIXED: Send fournisseurId in body, not in URL
-  addArticleAchat(articleAchat: ArticleAchat, fournisseurId?: number): Observable<ArticleAchat> {
-    const payload = {
-      ...articleAchat,
-      fournisseurId: fournisseurId || null
-    };
-    return this.http.post<ArticleAchat>(`${this.baseUrl}/add`, payload, { headers: this.getHeaders() });
+  addArticleAchat(articleAchat: ArticleAchat): Observable<ArticleAchat> {
+    return this.http.post<ArticleAchat>(`${this.baseUrl}/add`, articleAchat, { headers: this.getHeaders() });
+  }
+
+  getCategoriesArticle(): Observable<any[]> {
+    const categoriesUrl = `${environment.apiUrl}/api/articles/categories`;
+    return this.http.get<any[]>(categoriesUrl, { headers: this.getHeaders() });
   }
 
   updateArticleAchat(id: number, articleAchat: ArticleAchat): Observable<ArticleAchat> {
