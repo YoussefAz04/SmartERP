@@ -53,9 +53,7 @@ public class ArticleVenteService {
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + articleAchatId));
             articleVente.setArticleAchat(articleAchat);
 
-            stockRepository.findByArticleAchatId(articleAchatId)
-                    .stream()
-                    .findFirst()
+            stockRepository.findFirstByArticleAchatId(articleAchatId)
                     .ifPresent(articleVente::setStock);
         }
         if (clientId != null) {
