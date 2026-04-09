@@ -47,7 +47,7 @@ public class ArticleVente {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "article_id", nullable = false)
+    @JoinColumn(name = "article_achat_id", nullable = false)
     @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
     private Article articleAchat;
 
