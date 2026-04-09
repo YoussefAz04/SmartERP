@@ -1,5 +1,12 @@
-import { Fournisseur } from './fournisseur.model';
-import { CategorieFournisseur } from './categorieFournisseur.model';
+export interface ArticleAchatCategorie {
+  id?: number;
+  nom?: string;
+}
+
+export interface ArticleAchatFournisseur {
+  id?: number;
+  nom?: string;
+}
 
 export interface ArticleAchat {
   id?: number;
@@ -8,7 +15,6 @@ export interface ArticleAchat {
   description?: string;
   prixUnitaire?: number;
   prixAchat?: number;
-  prixVente?: number;
   quantite?: number;
   unite?: string;
   sku?: string;
@@ -16,8 +22,9 @@ export interface ArticleAchat {
   entrepriseId?: number;
   categorieArticleId?: number;
   mesureId?: number;
+  fournisseurId?: number;
   createdAt?: Date;
   updatedAt?: Date;
-  fournisseur?: Fournisseur;
-  categorieFournisseur?: CategorieFournisseur;
+  fournisseur?: ArticleAchatFournisseur;
+  categorieArticle?: ArticleAchatCategorie;
 }

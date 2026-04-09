@@ -238,7 +238,7 @@ export class ArticleAchatComponent implements OnInit {
       a.quantite ?? '',
       a.unite ?? '',
       a.fournisseur?.nom ?? '',
-      a.categorieFournisseur?.nom ?? '',
+      a.categorieArticle?.nom ?? '',
       a.createdAt ? new Date(a.createdAt).toLocaleDateString('fr-FR') : ''
     ]);
 
