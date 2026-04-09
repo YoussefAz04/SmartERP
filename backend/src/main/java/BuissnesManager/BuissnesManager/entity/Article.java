@@ -31,12 +31,20 @@ public class Article {
     @Column(name = "description")
     private String description;
 
-    // ✅ FIXED: Explicit column names with proper precision/scale
     @Column(name = "prix_achat", precision = 15, scale = 2)
     private BigDecimal prixAchat;
 
     @Column(name = "prix_vente", precision = 15, scale = 2)
     private BigDecimal prixVente;
+
+    @Column(name = "quantite")
+    private Integer quantite;
+
+    @Column(name = "sku")
+    private String sku;
+
+    @Column(name = "unite")
+    private String unite;
 
     @Column(name = "actif")
     private boolean actif = true;
@@ -51,19 +59,21 @@ public class Article {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categorie_article_id")
-    @JsonIgnoreProperties("articles")
+    @JsonIgnoreProperties({"articles", "hibernateLazyInitializer", "handler"})
     private CategorieArticle categorieArticle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mesure_id")
-    @JsonIgnoreProperties("articles")
+    @JsonIgnoreProperties({"articles", "hibernateLazyInitializer", "handler"})
     private Mesure mesure;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fournisseur_id")
+    @JsonIgnoreProperties({"articles", "hibernateLazyInitializer", "handler"})
+    private Fournisseur fournisseur;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entreprise_id", nullable = false)
     @JsonIgnore
     private Entreprise entreprise;
-
-    // ❌ REMOVED @PrePersist/@PreUpdate hooks
-    // Let Hibernate @CreationTimestamp/@UpdateTimestamp handle timestamps automatically
 }

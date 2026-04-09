@@ -1,20 +1,15 @@
 package BuissnesManager.BuissnesManager.service;
 
-import BuissnesManager.BuissnesManager.entity.Article;
-import BuissnesManager.BuissnesManager.entity.ArticleAchat;
-import BuissnesManager.BuissnesManager.entity.CategorieArticle;
-import BuissnesManager.BuissnesManager.entity.Entreprise;
-import BuissnesManager.BuissnesManager.entity.Mesure;
-import BuissnesManager.BuissnesManager.repository.ArticleRepository;
-import BuissnesManager.BuissnesManager.repository.CategorieArticleRepository;
-import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
-import BuissnesManager.BuissnesManager.repository.MesureRepository;
+import BuissnesManager.BuissnesManager.dto.ArticleAchatResponseDto;
+import BuissnesManager.BuissnesManager.entity.*;
+import BuissnesManager.BuissnesManager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ArticleAchatService {
@@ -31,20 +26,30 @@ public class ArticleAchatService {
     @Autowired
     private MesureRepository mesureRepository;
 
-    public List<Article> getAllArticlesAchat() {
-        return articleRepository.findAll();
+    @Autowired
+    private FournisseurRepo fournisseurRepo;
+
+    public List<ArticleAchatResponseDto> getAllArticlesAchat() {
+        return articleRepository.findAllWithRelations().stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Article> getArticleAchatById(Long id) {
-        return articleRepository.findById(id);
+    public Optional<ArticleAchatResponseDto> getArticleAchatById(Long id) {
+        return articleRepository.findByIdWithRelations(id)
+                .map(this::toResponseDto);
     }
 
-    public List<Article> getArticleAchatByFournisseur(Long fournisseurId) {
-        return articleRepository.findArticlesOrderedFromFournisseur(fournisseurId);
+    public List<ArticleAchatResponseDto> getArticleAchatByFournisseur(Long fournisseurId) {
+        return articleRepository.findArticlesOrderedFromFournisseur(fournisseurId).stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public List<Article> getArticleAchatByCategorie(Long categorieId) {
-        return articleRepository.findByCategorieArticleId(categorieId);
+    public List<ArticleAchatResponseDto> getArticleAchatByCategorie(Long categorieId) {
+        return articleRepository.findByCategorieArticleId(categorieId).stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -57,9 +62,7 @@ public class ArticleAchatService {
     public Article updateArticleAchat(Long id, ArticleAchat updated) {
         Article existing = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + id));
-
         mapToArticle(updated, existing);
-
         return articleRepository.save(existing);
     }
 
@@ -68,7 +71,9 @@ public class ArticleAchatService {
         if (source.getDescription() != null) target.setDescription(source.getDescription());
         if (source.getReference() != null) target.setReference(source.getReference());
         if (source.getPrixUnitaire() != null) target.setPrixAchat(source.getPrixUnitaire());
-        if (source.getPrixVente() != null) target.setPrixVente(source.getPrixVente());
+        if (source.getQuantite() != null) target.setQuantite(source.getQuantite());
+        if (source.getSku() != null) target.setSku(source.getSku());
+        if (source.getUnite() != null) target.setUnite(source.getUnite());
         if (source.getActif() != null) target.setActif(source.getActif());
         if (source.getEntrepriseId() != null) {
             Entreprise entreprise = entrepriseRepo.findById(source.getEntrepriseId())
@@ -85,7 +90,48 @@ public class ArticleAchatService {
                     .orElseThrow(() -> new RuntimeException("Mesure non trouvée: " + source.getMesureId()));
             target.setMesure(mesure);
         }
+        if (source.getFournisseurId() != null) {
+            Fournisseur fournisseur = fournisseurRepo.findById(source.getFournisseurId())
+                    .orElseThrow(() -> new RuntimeException("Fournisseur non trouvé: " + source.getFournisseurId()));
+            target.setFournisseur(fournisseur);
+        }
         return target;
+    }
+
+    private ArticleAchatResponseDto toResponseDto(Article article) {
+        ArticleAchatResponseDto dto = new ArticleAchatResponseDto();
+        dto.setId(article.getId());
+        dto.setReference(article.getReference());
+        dto.setNom(article.getNom());
+        dto.setDescription(article.getDescription());
+        dto.setPrixUnitaire(article.getPrixAchat());
+        dto.setQuantite(article.getQuantite());
+        dto.setSku(article.getSku());
+        dto.setUnite(article.getUnite());
+        dto.setActif(article.isActif());
+        dto.setCreatedAt(article.getCreatedAt());
+        dto.setUpdatedAt(article.getUpdatedAt());
+
+        if (article.getFournisseur() != null) {
+            dto.setFournisseur(new ArticleAchatResponseDto.FournisseurInfo(
+                    article.getFournisseur().getId(),
+                    article.getFournisseur().getNom()
+            ));
+        }
+
+        if (article.getCategorieArticle() != null) {
+            String nom = article.getCategorieArticle().getLibelle() != null
+                    ? article.getCategorieArticle().getLibelle()
+                    : (article.getCategorieArticle().getCode() != null
+                            ? article.getCategorieArticle().getCode()
+                            : "");
+            dto.setCategorieArticle(new ArticleAchatResponseDto.CategorieArticleInfo(
+                    article.getCategorieArticle().getId(),
+                    nom
+            ));
+        }
+
+        return dto;
     }
 
     @Transactional

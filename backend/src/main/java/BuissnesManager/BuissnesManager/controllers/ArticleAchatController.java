@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.dto.ArticleAchatResponseDto;
 import BuissnesManager.BuissnesManager.entity.Article;
 import BuissnesManager.BuissnesManager.entity.ArticleAchat;
 import BuissnesManager.BuissnesManager.service.ArticleAchatService;
@@ -19,7 +20,7 @@ public class ArticleAchatController {
     private ArticleAchatService articleAchatService;
 
     @GetMapping
-    public ResponseEntity<List<Article>> getAllArticlesAchat() {
+    public ResponseEntity<List<ArticleAchatResponseDto>> getAllArticlesAchat() {
         try {
             return ResponseEntity.ok(articleAchatService.getAllArticlesAchat());
         } catch (Exception e) {
@@ -28,7 +29,7 @@ public class ArticleAchatController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Article> getArticleAchatById(@PathVariable Long id) {
+    public ResponseEntity<ArticleAchatResponseDto> getArticleAchatById(@PathVariable Long id) {
         try {
             return articleAchatService.getArticleAchatById(id)
                     .map(ResponseEntity::ok)
@@ -39,7 +40,7 @@ public class ArticleAchatController {
     }
 
     @GetMapping("/fournisseur/{fournisseurId}")
-    public ResponseEntity<List<Article>> getArticleAchatByFournisseur(@PathVariable Long fournisseurId) {
+    public ResponseEntity<List<ArticleAchatResponseDto>> getArticleAchatByFournisseur(@PathVariable Long fournisseurId) {
         try {
             return ResponseEntity.ok(articleAchatService.getArticleAchatByFournisseur(fournisseurId));
         } catch (Exception e) {
@@ -48,7 +49,7 @@ public class ArticleAchatController {
     }
 
     @GetMapping("/categorie/{categorieId}")
-    public ResponseEntity<List<Article>> getArticleAchatByCategorie(@PathVariable Long categorieId) {
+    public ResponseEntity<List<ArticleAchatResponseDto>> getArticleAchatByCategorie(@PathVariable Long categorieId) {
         try {
             return ResponseEntity.ok(articleAchatService.getArticleAchatByCategorie(categorieId));
         } catch (Exception e) {

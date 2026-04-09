@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * Plain DTO/POJO representing an article achat.
+ * Plain DTO/POJO representing an article achat input payload.
  * Not a JPA entity – backed by the Article entity mapped to the "article" table.
  */
 @Getter
@@ -21,6 +21,9 @@ public class ArticleAchat {
     private String description;
     private BigDecimal prixUnitaire;
     private BigDecimal prixVente;
+    private Integer quantite;
+    private String sku;
+    private String unite;
     private Boolean actif;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -29,4 +32,5 @@ public class ArticleAchat {
     private Long entrepriseId;
     private Long categorieArticleId;
     private Long mesureId;
+    private Long fournisseurId;
 }
