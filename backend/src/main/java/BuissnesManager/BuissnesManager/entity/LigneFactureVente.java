@@ -47,10 +47,11 @@ public class LigneFactureVente {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "facture_vente_id")
+    @JoinColumn(name = "facture_de_vente_id")  // ✅ FIXED: Changed from facture_vente_id
     @JsonIgnore
     private FactureVente factureVente;
-
+    
+    // ✅ ADD THIS: Validate and set defaults before persisting
     @PrePersist
     protected void prePersist() {
         if (this.prixUnitaireHT == null) {

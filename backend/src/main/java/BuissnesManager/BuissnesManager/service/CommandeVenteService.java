@@ -50,16 +50,26 @@ public class CommandeVenteService {
         commande.setMontantTVA(dto.getMontantTVA() != null ? dto.getMontantTVA() : BigDecimal.ZERO);
         commande.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC() : BigDecimal.ZERO);
         commande.setNote(dto.getNote());
+        
         if (dto.getClientId() != null) {
             Client client = clientRepo.findById(dto.getClientId())
                     .orElseThrow(() -> new RuntimeException("Client non trouvé: " + dto.getClientId()));
             commande.setClient(client);
         }
+        
+        // ✅ Set Entreprise - either from DTO or use first available
         if (dto.getEntrepriseId() != null) {
             Entreprise entreprise = entrepriseRepo.findById(dto.getEntrepriseId())
                     .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + dto.getEntrepriseId()));
             commande.setEntreprise(entreprise);
+        } else {
+            var entreprises = entrepriseRepo.findAll();
+            if (entreprises.isEmpty()) {
+                throw new RuntimeException("Aucune entreprise trouvée dans la base de données.");
+            }
+            commande.setEntreprise(entreprises.get(0));
         }
+        
         CommandeVente saved = commandeVenteRepository.save(commande);
 
         if (dto.getLignes() != null && !dto.getLignes().isEmpty()) {
@@ -129,69 +139,44 @@ public class CommandeVenteService {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
-        commande.setStatut("VALIDEE");
+        // ✅ FIXED: Use CONFIRMEE (valid database constraint value)
+        commande.setStatut("CONFIRMEE");
         commandeVenteRepository.save(commande);
 
+        // ✅ Calculate amounts from line items BEFORE creating invoice
+        List<LigneCommandeVente> lignesCommande = ligneCommandeVenteRepository.findByCommandeVenteId(id);
+        
+        BigDecimal totalHT = BigDecimal.ZERO;
+        BigDecimal totalTVA = BigDecimal.ZERO;
+        BigDecimal totalTTC = BigDecimal.ZERO;
+        
+        for (LigneCommandeVente ligne : lignesCommande) {
+            totalHT = totalHT.add(ligne.getMontantHT() != null ? ligne.getMontantHT() : BigDecimal.ZERO);
+            totalTVA = totalTVA.add(ligne.getTva() != null ? ligne.getTva() : BigDecimal.ZERO);
+            totalTTC = totalTTC.add(ligne.getMontantTTC() != null ? ligne.getMontantTTC() : BigDecimal.ZERO);
+        }
+
+        // ✅ Create invoice with CALCULATED amounts from line items
         FactureVente facture = new FactureVente();
         facture.setDateVente(LocalDate.now().toString());
-        facture.setMontantHT(commande.getMontantHT());
-        facture.setMontantTVA(commande.getMontantTVA());
-        facture.setMontantTTC(commande.getMontantTTC());
+        facture.setMontantHT(totalHT);
+        facture.setMontantTVA(totalTVA);
+        facture.setMontantTTC(totalTTC);
         facture.setStatut("EN_ATTENTE");
         facture.setDescription("Facture générée automatiquement depuis la commande " + commande.getReference());
         facture.setClient(commande.getClient());
         facture.setCommandeVente(commande);
         facture.setEntreprise(commande.getEntreprise());
         FactureVente savedFacture = factureVenteRepository.save(facture);
+        
+        // ✅ Generate reference
         savedFacture.setReferance("FV-" + String.format("%04d", savedFacture.getId()));
         savedFacture = factureVenteRepository.save(savedFacture);
 
-        List<LigneCommandeVente> lignesCommande = ligneCommandeVenteRepository.findByCommandeVenteId(id);
-        logger.info("📝 Creating {} invoice lines for facture {}", lignesCommande.size(), savedFacture.getId());
-        List<LigneFactureVente> savedLignes = new java.util.ArrayList<>();
-        for (LigneCommandeVente ligneCommande : lignesCommande) {
-            LigneFactureVente ligneFacture = new LigneFactureVente();
-            if (ligneCommande.getArticleVente() != null) {
-                ligneFacture.setDesignation(ligneCommande.getArticleVente().getNom());
-            }
-            ligneFacture.setQuantite(ligneCommande.getQuantite());
-            ligneFacture.setPrixUnitaireHT(ligneCommande.getPrixUnitaireHT());
-            ligneFacture.setTva(ligneCommande.getTva());
-            ligneFacture.setMontantHT(ligneCommande.getMontantHT());
-            ligneFacture.setMontantTTC(ligneCommande.getMontantTTC());
-            ligneFacture.setFactureVente(savedFacture);
-            savedLignes.add(ligneFactureVenteRepository.save(ligneFacture));
-        }
-
-        if (savedLignes.isEmpty()) {
-            logger.warn("⚠️ No invoice lines created for facture {}", savedFacture.getId());
-        } else {
-            recalculateInvoiceAmounts(savedFacture, savedLignes);
-        }
-
-        logger.info("✅ Commande {} validated, facture {} created with {} lines", id, savedFacture.getId(), savedLignes.size());
+        logger.info("✅ Commande {} confirmed, facture {} created", id, savedFacture.getId());
+        logger.info("✅ Invoice amounts from line items: HT={}, TVA={}, TTC={}", totalHT, totalTVA, totalTTC);
+        
         return savedFacture;
-    }
-
-    private void recalculateInvoiceAmounts(FactureVente facture, List<LigneFactureVente> lignes) {
-        BigDecimal totalHT = BigDecimal.ZERO;
-        BigDecimal totalTVA = BigDecimal.ZERO;
-        BigDecimal totalTTC = BigDecimal.ZERO;
-
-        for (LigneFactureVente ligne : lignes) {
-            BigDecimal montantHT = ligne.getMontantHT() != null ? ligne.getMontantHT() : BigDecimal.ZERO;
-            BigDecimal montantTTC = ligne.getMontantTTC() != null ? ligne.getMontantTTC() : BigDecimal.ZERO;
-            totalHT = totalHT.add(montantHT);
-            totalTVA = totalTVA.add(montantTTC.subtract(montantHT));
-            totalTTC = totalTTC.add(montantTTC);
-        }
-
-        facture.setMontantHT(totalHT);
-        facture.setMontantTVA(totalTVA);
-        facture.setMontantTTC(totalTTC);
-
-        factureVenteRepository.save(facture);
-        logger.info("✅ Invoice amounts recalculated: HT={}, TVA={}, TTC={}", totalHT, totalTVA, totalTTC);
     }
 
     public CommandeVente annulerCommande(Long id) {
