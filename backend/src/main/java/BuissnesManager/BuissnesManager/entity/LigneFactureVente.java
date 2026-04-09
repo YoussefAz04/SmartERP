@@ -50,4 +50,23 @@ public class LigneFactureVente {
     @JoinColumn(name = "facture_vente_id")
     @JsonIgnore
     private FactureVente factureVente;
+
+    @PrePersist
+    protected void prePersist() {
+        if (this.prixUnitaireHT == null) {
+            this.prixUnitaireHT = new BigDecimal("0.00");
+        }
+        if (this.quantite == null) {
+            this.quantite = new BigDecimal("1.00");
+        }
+        if (this.tva == null) {
+            this.tva = new BigDecimal("0.00");
+        }
+        if (this.montantHT == null) {
+            this.montantHT = new BigDecimal("0.00");
+        }
+        if (this.montantTTC == null) {
+            this.montantTTC = new BigDecimal("0.00");
+        }
+    }
 }

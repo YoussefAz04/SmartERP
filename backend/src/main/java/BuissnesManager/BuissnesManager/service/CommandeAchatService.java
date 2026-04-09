@@ -292,7 +292,9 @@ public class CommandeAchatService {
         FactureAchat savedFacture = factureAchatRepository.save(facture);
 
         // ✅ CREATE INVOICE LINES FROM ORDER LINES
+        List<LigneFactureAchat> savedLignes = new java.util.ArrayList<>();
         if (commande.getLignes() != null && !commande.getLignes().isEmpty()) {
+            logger.info("📝 Creating {} invoice lines for facture {}", commande.getLignes().size(), savedFacture.getId());
             for (LigneCommandeAchat ligneCommande : commande.getLignes()) {
                 LigneFactureAchat ligneFacture = new LigneFactureAchat();
 
@@ -306,12 +308,40 @@ public class CommandeAchatService {
                 ligneFacture.setMontantTTC(ligneCommande.getMontantTTC());
                 ligneFacture.setFactureAchat(savedFacture);
 
-                ligneFactureAchatRepository.saveAndFlush(ligneFacture);
+                savedLignes.add(ligneFactureAchatRepository.saveAndFlush(ligneFacture));
             }
         }
 
-        logger.info("✅ Commande {} confirmed, facture {} created", id, savedFacture.getId());
+        if (savedLignes.isEmpty()) {
+            logger.warn("⚠️ No invoice lines created for facture {}", savedFacture.getId());
+        } else {
+            recalculateInvoiceAmounts(savedFacture, savedLignes);
+        }
+
+        logger.info("✅ Commande {} confirmed, facture {} created with {} lines", id, savedFacture.getId(), savedLignes.size());
         return savedFacture;
+    }
+
+    private void recalculateInvoiceAmounts(FactureAchat facture, List<LigneFactureAchat> lignes) {
+        BigDecimal totalHT = BigDecimal.ZERO;
+        BigDecimal totalTVA = BigDecimal.ZERO;
+        BigDecimal totalTTC = BigDecimal.ZERO;
+
+        for (LigneFactureAchat ligne : lignes) {
+            BigDecimal montantHT = ligne.getMontantHT() != null ? ligne.getMontantHT() : BigDecimal.ZERO;
+            BigDecimal montantTTC = ligne.getMontantTTC() != null ? ligne.getMontantTTC() : BigDecimal.ZERO;
+            totalHT = totalHT.add(montantHT);
+            totalTVA = totalTVA.add(montantTTC.subtract(montantHT));
+            totalTTC = totalTTC.add(montantTTC);
+        }
+
+        facture.setMontantHT(totalHT.doubleValue());
+        facture.setMontantTVA(totalTVA.doubleValue());
+        facture.setMontantTTC(totalTTC.doubleValue());
+        facture.setMontantTotal(totalTTC.doubleValue());
+
+        factureAchatRepository.save(facture);
+        logger.info("✅ Invoice amounts recalculated: HT={}, TVA={}, TTC={}", totalHT, totalTVA, totalTTC);
     }
 
     @Transactional
