@@ -30,6 +30,9 @@ public class StockAutomationService {
     @Autowired
     private LigneCommandeVenteRepository ligneCommandeVenteRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     /**
      * Increments stock for all articles in a purchase order (CommandeAchat).
      * Called when the order is marked as received (RECUE).
@@ -118,6 +121,10 @@ public class StockAutomationService {
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
             stockMouvementRepo.save(mouvement);
+
+            if (stock.getSeuilMinimum() != null && newDisponible.compareTo(stock.getSeuilMinimum()) < 0) {
+                notificationService.createLowStockNotification(stock, article, article.getEntreprise(), newDisponible);
+            }
 
             logger.info("✅ Stock decremented for article {} by {}", article.getId(), quantite);
         }
