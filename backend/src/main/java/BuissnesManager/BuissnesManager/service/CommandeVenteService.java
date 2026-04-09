@@ -209,7 +209,7 @@ public class CommandeVenteService {
             throw new RuntimeException("Impossible de livrer une commande annulée.");
         }
         if ("LIVREE".equals(commande.getStatut())) {
-            throw new RuntimeException("Cette commande a déjà été livrée.");
+            throw new RuntimeException("Cette commande a déjà été livrée");
         }
 
         commande.setStatut("LIVREE");
