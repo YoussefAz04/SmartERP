@@ -16,4 +16,16 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     @Query("SELECT s FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId")
     List<Stock> findByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COALESCE(SUM(s.quantiteDisponible * s.articleAchat.prixAchat), 0) FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId")
+    Double getTotalStockValue(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COUNT(s) FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId AND s.seuilAlerte IS NOT NULL AND s.seuilAlerte > 0 AND s.quantiteDisponible < s.seuilAlerte")
+    Long getLowStockItemsCount(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COUNT(s) FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId AND (s.quantiteDisponible IS NULL OR s.quantiteDisponible = 0)")
+    Long getOutOfStockItemsCount(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COUNT(DISTINCT s.articleAchat.id) FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId")
+    Long getTotalSKUs(@Param("entrepriseId") Long entrepriseId);
 }

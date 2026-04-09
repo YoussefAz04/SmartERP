@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import {
@@ -26,6 +26,7 @@ import {
   tablePageSize,
 } from 'src/app/shared/shared.index';
 import Swal from 'sweetalert2';
+import { DashboardApiService, DashboardStatsDto } from 'src/app/core/service/dashboard/dashboard-api.service';
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;
 
@@ -53,10 +54,13 @@ export type ChartOptions = {
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
-export class AdminDashboardComponent {
+export class AdminDashboardComponent implements OnInit {
   initChecked = false;
   public routes = routes;
   public currency!: string;
+  public stats: DashboardStatsDto | null = null;
+  public statsLoading = true;
+  public statsError = false;
   @ViewChild('chart') chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
@@ -65,17 +69,18 @@ export class AdminDashboardComponent {
     private setting: SettingsService,
     private data: DataService,
     private pagination: PaginationService,
-    private router: Router
+    private router: Router,
+    private dashboardApiService: DashboardApiService
   ) {
     this.chartOptions = {
       series: [
         {
           name: 'Sales',
-          data: [130, 210, 300, 290, 150, 50, 210, 280, 105],
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
         {
           name: 'Purchase',
-          data: [-150, -90, -50, -180, -50, -70, -100, -90, -105],
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
       ],
       colors: ['#28C76F', '#EA5455'],
@@ -118,15 +123,8 @@ export class AdminDashboardComponent {
       },
       xaxis: {
         categories: [
-          ' Jan ',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
         ],
       },
       legend: { show: false },
@@ -147,6 +145,59 @@ export class AdminDashboardComponent {
       });
     });
   }
+
+  ngOnInit(): void {
+    this.loadDashboardStats();
+  }
+
+  loadDashboardStats(): void {
+    this.statsLoading = true;
+    this.statsError = false;
+    this.dashboardApiService.getDashboardStats().subscribe({
+      next: (data: DashboardStatsDto) => {
+        this.stats = data;
+        this.statsLoading = false;
+        this.updateChart();
+      },
+      error: (err: any) => {
+        console.error('Error loading dashboard stats:', err);
+        this.statsError = true;
+        this.statsLoading = false;
+      }
+    });
+  }
+
+  updateChart(): void {
+    if (!this.stats) return;
+    const salesData = (this.stats.monthlySalesChart || []).map(m => m.amount || 0);
+    const purchaseData = (this.stats.monthlyPurchasesChart || []).map(m => -(m.amount || 0));
+    const maxVal = Math.max(...salesData, 1);
+    const minVal = Math.min(...purchaseData, -1);
+
+    this.chartOptions = {
+      ...this.chartOptions,
+      series: [
+        { name: 'Sales', data: salesData },
+        { name: 'Purchase', data: purchaseData },
+      ],
+      yaxis: {
+        min: Math.floor(minVal * 1.2),
+        max: Math.ceil(maxVal * 1.2),
+        tickAmount: 5,
+      },
+    };
+  }
+
+  getOrderStatusEntries(): { key: string, value: number }[] {
+    if (!this.stats?.orderStatusBreakdown) return [];
+    return Object.entries(this.stats.orderStatusBreakdown).map(([key, value]) => ({ key, value }));
+  }
+
+  getPurchaseOrderStatusEntries(): { key: string, value: number }[] {
+    if (!this.stats?.purchaseOrderStatusBreakdown) return [];
+    return Object.entries(this.stats.purchaseOrderStatusBreakdown).map(([key, value]) => ({ key, value }));
+  }
+
   // pagination variables
   public tableData: Array<expiredproduct> = [];
   public pageSize = 10;
@@ -226,3 +277,4 @@ export class AdminDashboardComponent {
     }
   }
 }
+

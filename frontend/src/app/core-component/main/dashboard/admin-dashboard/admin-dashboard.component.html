@@ -1,100 +1,186 @@
-<div class="row">
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-widget w-100">
-      <div class="dash-widgetimg">
-        <span><img src="assets/img/icons/dash1.svg" alt="img"></span>
-      </div>
-      <div class="dash-widgetcontent">
-        <h5> $<span class="counters"  data-count="307144" [countUp]="307144" [options]="{ duration: 10 }">$307144</span></h5>
-        <h6>Total Purchase Due</h6>
-      </div>
-    </div>
+<!-- Loading / Error States -->
+<div *ngIf="statsLoading" class="text-center p-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
   </div>
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-widget dash1 w-100">
-      <div class="dash-widgetimg">
-        <span><img src="assets/img/icons/dash2.svg" alt="img"></span>
-      </div>
-      <div class="dash-widgetcontent">
-        <h5> $<span class="counters" data-count="4385.00" [countUp]="4385.00" [options]="{ duration: 10 }">$4385</span></h5>
-        <h6>Total Sales Due</h6>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-widget dash2 w-100">
-      <div class="dash-widgetimg">
-        <span><img src="assets/img/icons/dash3.svg" alt="img"></span>
-      </div>
-      <div class="dash-widgetcontent">
-        <h5> $<span class="counters" data-count="385656.50" [countUp]="385656.50" [options]="{ duration: 10 }">$385656</span></h5>
-        <h6>Total Sale Amount</h6>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-widget dash3 w-100">
-      <div class="dash-widgetimg">
-        <span><img src="assets/img/icons/dash4.svg" alt="img"></span>
-      </div>
-      <div class="dash-widgetcontent">
-        <h5> $<span class="counters" data-count="40000.00" [countUp]="40000.00" [options]="{ duration: 10 }">$400</span></h5>
-        <h6>Total Expense Amount</h6>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-count">
-      <div class="dash-counts">
-        <h4>100</h4>
-        <h5>Customers</h5>
-      </div>
-      <div class="dash-imgs">
-        <i class="feather icon-user"></i>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-count das1">
-      <div class="dash-counts">
-        <h4>110</h4>
-        <h5>Suppliers</h5>
-      </div>
-      <div class="dash-imgs">
-        <i class="feather icon-user-check"></i>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-count das2">
-      <div class="dash-counts">
-        <h4>150</h4>
-        <h5>Purchase Invoice</h5>
-      </div>
-      <div class="dash-imgs">
-        <img src="assets/img/icons/file-text-icon-01.svg" class="img-fluid" alt="icon">
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-3 col-sm-6 col-12 d-flex">
-    <div class="dash-count das3">
-      <div class="dash-counts">
-        <h4>170</h4>
-        <h5>Sales Invoice</h5>
-      </div>
-      <div class="dash-imgs">
-        <i class="feather icon-file"></i>
-      </div>
-    </div>
-  </div>
+  <p class="mt-2">Loading dashboard data...</p>
 </div>
-<!-- Button trigger modal -->
 
+<div *ngIf="statsError && !statsLoading" class="alert alert-warning mb-3" role="alert">
+  <i class="feather icon-alert-triangle me-2"></i>
+  Could not load real-time stats. Showing cached data if available.
+</div>
+
+<!-- ERP Dashboard Stats -->
+<div *ngIf="stats && !statsLoading">
+
+  <!-- Sales & Purchase Summary -->
+  <div class="row">
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-widget w-100">
+        <div class="dash-widgetimg">
+          <span><img src="assets/img/icons/dash1.svg" alt="img"></span>
+        </div>
+        <div class="dash-widgetcontent">
+          <h5>{{currency}}{{ stats.totalPurchases | number:'1.2-2' }}</h5>
+          <h6>Total Purchase Amount</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-widget dash1 w-100">
+        <div class="dash-widgetimg">
+          <span><img src="assets/img/icons/dash2.svg" alt="img"></span>
+        </div>
+        <div class="dash-widgetcontent">
+          <h5>{{currency}}{{ stats.accountsReceivable | number:'1.2-2' }}</h5>
+          <h6>Total Sales Due</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-widget dash2 w-100">
+        <div class="dash-widgetimg">
+          <span><img src="assets/img/icons/dash3.svg" alt="img"></span>
+        </div>
+        <div class="dash-widgetcontent">
+          <h5>{{currency}}{{ stats.totalSalesRevenue | number:'1.2-2' }}</h5>
+          <h6>Total Sale Amount</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-widget dash3 w-100">
+        <div class="dash-widgetimg">
+          <span><img src="assets/img/icons/dash4.svg" alt="img"></span>
+        </div>
+        <div class="dash-widgetcontent">
+          <h5>{{currency}}{{ stats.totalExpenses | number:'1.2-2' }}</h5>
+          <h6>Total Expense Amount</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Count Cards -->
+  <div class="row">
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-count">
+        <div class="dash-counts">
+          <h4>{{ stats.totalCustomers }}</h4>
+          <h5>Customers</h5>
+        </div>
+        <div class="dash-imgs">
+          <i class="feather icon-user"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-count das1">
+        <div class="dash-counts">
+          <h4>{{ stats.totalSKUs }}</h4>
+          <h5>Products (SKUs)</h5>
+        </div>
+        <div class="dash-imgs">
+          <i class="feather icon-box"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-count das2">
+        <div class="dash-counts">
+          <h4>{{ stats.totalPurchaseOrders }}</h4>
+          <h5>Purchase Orders</h5>
+        </div>
+        <div class="dash-imgs">
+          <img src="assets/img/icons/file-text-icon-01.svg" class="img-fluid" alt="icon">
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="dash-count das3">
+        <div class="dash-counts">
+          <h4>{{ stats.totalOrders }}</h4>
+          <h5>Sales Orders</h5>
+        </div>
+        <div class="dash-imgs">
+          <i class="feather icon-file"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory & Financial Cards -->
+  <div class="row mt-2">
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card flex-fill">
+        <div class="card-body d-flex align-items-center">
+          <div class="me-3">
+            <i class="feather icon-layers text-primary" style="font-size:2rem;"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 text-muted">Stock Value</h6>
+            <h5 class="mb-0">{{currency}}{{ stats.totalStockValue | number:'1.2-2' }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card flex-fill">
+        <div class="card-body d-flex align-items-center">
+          <div class="me-3">
+            <i class="feather icon-alert-triangle text-warning" style="font-size:2rem;"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 text-muted">Low Stock Items</h6>
+            <h5 class="mb-0 text-warning">{{ stats.lowStockItemsCount }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card flex-fill">
+        <div class="card-body d-flex align-items-center">
+          <div class="me-3">
+            <i class="feather icon-x-circle text-danger" style="font-size:2rem;"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 text-muted">Out of Stock</h6>
+            <h5 class="mb-0 text-danger">{{ stats.outOfStockItemsCount }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+      <div class="card flex-fill">
+        <div class="card-body d-flex align-items-center">
+          <div class="me-3">
+            <i class="feather icon-trending-up"
+               [class.text-success]="stats.profitLoss >= 0"
+               [class.text-danger]="stats.profitLoss < 0"
+               style="font-size:2rem;"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 text-muted">Profit / Loss</h6>
+            <h5 class="mb-0"
+                [class.text-success]="stats.profitLoss >= 0"
+                [class.text-danger]="stats.profitLoss < 0">
+              {{currency}}{{ stats.profitLoss | number:'1.2-2' }}
+            </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart & Top Products -->
 <div class="row">
   <div class="col-xl-7 col-sm-12 col-12 d-flex">
     <div class="card flex-fill">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">Purchase & Sales</h5>
+        <h5 class="card-title mb-0">Purchase &amp; Sales</h5>
         <div class="graph-sets">
           <ul class="mb-0">
             <li>
@@ -104,22 +190,6 @@
               <span>Purchase</span>
             </li>
           </ul>
-          <div class="dropdown dropdown-wraper">
-            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-              2023
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <li>
-                <a href="javascript:void(0);" class="dropdown-item">2023</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);" class="dropdown-item">2022</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);" class="dropdown-item">2021</a>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
       <div class="card-body">
@@ -140,71 +210,103 @@
   <div class="col-xl-5 col-sm-12 col-12 d-flex">
     <div class="card flex-fill default-cover mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h4 class="card-title mb-0">Recent Products</h4>
-        <div class="view-all-link">
-          <a href="javascript:void(0);" class="view-all d-flex align-items-center">
-            View All<span class="ps-2 d-flex align-items-center"><i class="feather icon-arrow-right feather-16"></i></span>
-          </a>
-        </div>
+        <h4 class="card-title mb-0">Top Products</h4>
       </div>
       <div class="card-body">
-        <div class="table-responsive dataview">
+        <div class="table-responsive dataview" *ngIf="stats && stats.topProducts && stats.topProducts.length > 0">
           <table class="table dashboard-recent-products">
             <thead>
               <tr>
                 <th>#</th>
-                <th>Products</th>
-                <th>Price</th>
+                <th>Product</th>
+                <th>Qty Sold</th>
+                <th>Revenue</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td class="productimgname">
-                  <a [routerLink]="routes.productList" class="product-img">
-                    <img src="assets/img/products/stock-img-01.png" alt="product">
-                  </a>
-                  <a [routerLink]="routes.productList">Lenevo 3rd Generation</a>
-                </td>
-                <td>$12500</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td class="productimgname">
-                  <a [routerLink]="routes.productList" class="product-img">
-                    <img src="assets/img/products/stock-img-06.png" alt="product">
-                  </a>
-                  <a [routerLink]="routes.productList">Bold V3.2</a>
-                </td>
-                <td>$1600</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td class="productimgname">
-                  <a [routerLink]="routes.productList" class="product-img">
-                    <img src="assets/img/products/stock-img-02.png" alt="product">
-                  </a>
-                  <a [routerLink]="routes.productList">Nike Jordan</a>
-                </td>
-                <td>$2000</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td class="productimgname">
-                  <a [routerLink]="routes.productList" class="product-img">
-                    <img src="assets/img/products/stock-img-03.png" alt="product">
-                  </a>
-                  <a [routerLink]="routes.productList">Apple Series 5 Watch</a>
-                </td>
-                <td>$800</td>
-              </tr>
+              @for (product of stats.topProducts; track product; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ product.productName }}</td>
+                  <td>{{ product.quantitySold }}</td>
+                  <td>{{currency}}{{ product.revenue | number:'1.2-2' }}</td>
+                </tr>
+              }
             </tbody>
           </table>
+        </div>
+        <div *ngIf="!stats || !stats.topProducts || stats.topProducts.length === 0" class="text-center text-muted p-3">
+          No product data available
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Top Customers & Order Status -->
+<div class="row">
+  <div class="col-xl-6 col-sm-12 col-12 d-flex">
+    <div class="card flex-fill">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Top Customers</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive" *ngIf="stats && stats.topCustomers && stats.topCustomers.length > 0">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Orders</th>
+                <th>Total Spent</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (customer of stats.topCustomers; track customer; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ customer.name }}</td>
+                  <td>{{ customer.ordersCount }}</td>
+                  <td>{{currency}}{{ customer.totalSpent | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="!stats || !stats.topCustomers || stats.topCustomers.length === 0" class="text-center text-muted p-3">
+          No customer data available
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6 col-sm-12 col-12 d-flex">
+    <div class="card flex-fill">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Order Status Breakdown</h5>
+      </div>
+      <div class="card-body">
+        <div *ngIf="stats">
+          <h6 class="text-muted mb-2">Sales Orders</h6>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            @for (entry of getOrderStatusEntries(); track entry) {
+              <span class="badge bg-primary">{{ entry.key }}: {{ entry.value }}</span>
+            }
+            <span *ngIf="getOrderStatusEntries().length === 0" class="text-muted">No data</span>
+          </div>
+          <h6 class="text-muted mb-2">Purchase Orders</h6>
+          <div class="d-flex flex-wrap gap-2">
+            @for (entry of getPurchaseOrderStatusEntries(); track entry) {
+              <span class="badge bg-secondary">{{ entry.key }}: {{ entry.value }}</span>
+            }
+            <span *ngIf="getPurchaseOrderStatusEntries().length === 0" class="text-muted">No data</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Expired Products Table (unchanged) -->
 <div class="card">
   <div class="card-header">
     <h4 class="card-title">Expired Products</h4>
