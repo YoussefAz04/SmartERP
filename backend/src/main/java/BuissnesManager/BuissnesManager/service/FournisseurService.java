@@ -33,6 +33,11 @@ public class FournisseurService {
         return fournisseurRepo.findAll();
     }
 
+    // ✅ GET FOURNISSEURS BY ENTERPRISE
+    public List<Fournisseur> getFournisseursByEntreprise(Long entrepriseId) {
+        return fournisseurRepo.findByEntrepriseId(entrepriseId);
+    }
+
     // ✅ GET FOURNISSEUR BY ID
     public Fournisseur getFournisseurById(Long id) {
         return fournisseurRepo.findById(id)

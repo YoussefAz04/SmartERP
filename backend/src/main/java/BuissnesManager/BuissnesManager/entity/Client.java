@@ -31,6 +31,13 @@ public class Client {
     @JsonIgnore
     private CategorieClient categorieClient;
 
+    // Primary enterprise association (entreprise_id column) used for enterprise-scoped queries
+    @ManyToOne
+    @JoinColumn(name = "entreprise_id")
+    @JsonIgnore
+    private Entreprise entreprise;
+
+    // Legacy many-to-many kept for backward compatibility with the client_entreprises junction table
     @ManyToMany
     @JsonIgnore
     private List<Entreprise> entreprises;

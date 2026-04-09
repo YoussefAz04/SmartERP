@@ -23,6 +23,7 @@ export class AddCommandeVenteComponent implements OnInit {
   submitted = false;
   isEditMode = false;
   commandeId: number | null = null;
+  currentEntrepriseId: number | null = null;
 
   constructor(
     private commandeVenteService: CommandeVenteService,
@@ -37,11 +38,33 @@ export class AddCommandeVenteComponent implements OnInit {
     this.initializeForm();
     this.loadClients();
     this.loadArticles();
+    this.loadEntrepriseId();
 
     this.commandeId = this.route.snapshot.params['id'] ? Number(this.route.snapshot.params['id']) : null;
     if (this.commandeId) {
       this.isEditMode = true;
       this.loadCommande(this.commandeId);
+    }
+  }
+
+  loadEntrepriseId(): void {
+    // Try both key variants used across the application
+    let entrepriseIdString = localStorage.getItem('entrepriseId') || localStorage.getItem('enterpriseId');
+    if (!entrepriseIdString) {
+      const raw = localStorage.getItem('myLSkey');
+      if (raw) {
+        try {
+          const decoded = JSON.parse(atob(raw));
+          entrepriseIdString = (decoded.entrepriseId || decoded.enterpriseId)?.toString() || null;
+        } catch (e) {
+          console.error('Error decoding myLSkey:', e);
+        }
+      }
+    }
+    if (entrepriseIdString) {
+      this.currentEntrepriseId = parseInt(entrepriseIdString, 10);
+    } else {
+      console.warn('No entrepriseId found in localStorage');
     }
   }
 
@@ -189,6 +212,7 @@ export class AddCommandeVenteComponent implements OnInit {
         dateCommande: formValue.dateCommande,
         dateLivraisonPrevue: formValue.dateLivraisonPrevue || null,
         clientId: formValue.clientId ? Number(formValue.clientId) : null,
+        entrepriseId: this.currentEntrepriseId,
         note: formValue.note,
         montantHT: this.totalHT,
         montantTVA: this.totalTVA,

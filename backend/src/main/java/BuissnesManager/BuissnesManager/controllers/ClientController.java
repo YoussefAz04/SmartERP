@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.entity.CategorieClient;
 import BuissnesManager.BuissnesManager.entity.Client;
+import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private JWTUtil jwtUtil;
 
     // ✅ ADD CLIENT
     @PostMapping("/addClient/{idCategorie}")
@@ -34,6 +38,25 @@ public class ClientController {
     public ResponseEntity<List<Client>> getAllClients() {
         try {
             return ResponseEntity.ok(clientService.getAllClient());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    // ✅ GET CLIENTS BY ENTERPRISE
+    @GetMapping("/byEntreprise/{entrepriseId}")
+    public ResponseEntity<List<Client>> getClientsByEntreprise(
+            @PathVariable Long entrepriseId,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                Long tokenEntrepriseId = jwtUtil.getEntrepriseIdFromToken(token);
+                if (tokenEntrepriseId != null && !tokenEntrepriseId.equals(entrepriseId)) {
+                    return ResponseEntity.status(403).build();
+                }
+            }
+            return ResponseEntity.ok(clientService.getClientsByEntreprise(entrepriseId));
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }

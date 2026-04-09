@@ -77,9 +77,10 @@ export class SigninComponent implements OnInit {
           entrepriseName: response.entrepriseName || 'Default Enterprise'
         })));
 
-        // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY
+        // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
         const entrepriseId = response.entrepriseId || 1;
         localStorage.setItem('entrepriseId', entrepriseId.toString());
+        localStorage.setItem('enterpriseId', entrepriseId.toString());
         console.log('✅ Enterprise ID saved to localStorage:', entrepriseId);
 
         if (response.roleId) {

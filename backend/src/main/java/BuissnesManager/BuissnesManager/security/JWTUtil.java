@@ -47,14 +47,34 @@ public class JWTUtil {
         List<String> roleNames = user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toList());
-        
+
+        Long entrepriseId = user.getEntreprise() != null ? user.getEntreprise().getId() : null;
+
         return JWT.create()
                 .withSubject(username)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
                 .withIssuer(issuer)
                 .withClaim("roles", roleNames)
+                .withClaim("userId", user.getId())
+                .withClaim("entrepriseId", entrepriseId)
                 .sign(algorithm);
+    }
+
+    public Long getEntrepriseIdFromToken(String token) {
+        try {
+            return getVerifier().verify(token).getClaim("entrepriseId").asLong();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Long getUserIdFromToken(String token) {
+        try {
+            return getVerifier().verify(token).getClaim("userId").asLong();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String extractUsername(String token) {
