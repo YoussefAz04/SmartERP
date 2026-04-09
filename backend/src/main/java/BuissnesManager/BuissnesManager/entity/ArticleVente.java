@@ -47,12 +47,17 @@ public class ArticleVente {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "article_id", nullable = false)
-    @JsonIgnoreProperties({"lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
+    @JoinColumn(name = "article_achat_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lignesCommandeAchat", "mesure", "entreprise"})
     private Article articleAchat;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
-    @JsonIgnoreProperties("articleVentes")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "articleVentes"})
     private Client client;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stock_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Stock stock;
 }

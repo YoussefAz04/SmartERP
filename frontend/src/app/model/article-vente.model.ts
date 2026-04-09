@@ -1,5 +1,6 @@
 import { ArticleAchat } from './article-achat.model';
 import { Client } from './client.model';
+import { Stock } from './stock.model';
 
 export interface ArticleVente {
   id?: number;
@@ -14,4 +15,5 @@ export interface ArticleVente {
   updatedAt?: Date;
   articleAchat?: ArticleAchat;
   client?: Client;
+  stock?: Stock;
 }
