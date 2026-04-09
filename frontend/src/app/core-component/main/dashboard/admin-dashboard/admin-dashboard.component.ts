@@ -61,6 +61,9 @@ export class AdminDashboardComponent implements OnInit {
   public stats: DashboardStatsDto | null = null;
   public statsLoading = true;
   public statsError = false;
+  public userName: string = 'User';
+  public enterpriseName: string = 'Enterprise';
+  public today: Date = new Date();
   @ViewChild('chart') chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
@@ -148,6 +151,24 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboardStats();
+    this.loadUserInfo();
+  }
+
+  loadUserInfo(): void {
+    try {
+      const item = localStorage.getItem('myLSkey');
+      if (item) {
+        const user = JSON.parse(atob(item));
+        const token = user.token;
+        if (token && token.split('.').length === 3) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          this.userName = payload.firstName || payload.username || 'User';
+          this.enterpriseName = payload.enterpriseName || 'Enterprise';
+        }
+      }
+    } catch (e) {
+      // keep defaults
+    }
   }
 
   loadDashboardStats(): void {
