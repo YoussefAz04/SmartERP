@@ -28,6 +28,7 @@ export class AddArticleAchatComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.loadEntreprises();
+    this.autoSetEntrepriseId();
   }
 
   initializeForm(): void {
@@ -38,6 +39,21 @@ export class AddArticleAchatComponent implements OnInit {
       description: [''],
       prixUnitaire: [null, [Validators.required, Validators.min(0)]],
     });
+  }
+
+  autoSetEntrepriseId(): void {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const user = JSON.parse(atob(item));
+        const entrepriseId = user.entrepriseId;
+        if (entrepriseId) {
+          this.articleForm.patchValue({ entrepriseId });
+        }
+      } catch (e) {
+        console.error('❌ Failed to read entrepriseId from localStorage:', e);
+      }
+    }
   }
 
   isFieldInvalid(fieldName: string): boolean {
