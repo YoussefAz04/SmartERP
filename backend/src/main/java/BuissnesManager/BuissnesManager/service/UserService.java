@@ -88,6 +88,27 @@ public class UserService {
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
+
+    // Get users belonging to a specific enterprise
+    public List<User> getUsersByEnterprise(Long enterpriseId) {
+        return userRepository.findByEntrepriseId(enterpriseId);
+    }
+
+    // Check if user belongs to the given enterprise
+    public boolean isUserInEnterprise(Long userId, Long enterpriseId) {
+        Optional<User> user = userRepository.findById(userId);
+        return user.isPresent() && user.get().getEntreprise() != null
+                && user.get().getEntreprise().getId().equals(enterpriseId);
+    }
+
+    // Validate enterprise access - throws if user does not belong to the enterprise
+    public void validateEnterpriseAccess(Long userId, Long requiredEnterpriseId) {
+        if (!isUserInEnterprise(userId, requiredEnterpriseId)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "User does not belong to enterprise " + requiredEnterpriseId);
+        }
+    }
+
     public List<UserDTO> getAllUsersDTO() {
         List<User> users = userRepository.findAll();
         return users.stream().map(user -> {

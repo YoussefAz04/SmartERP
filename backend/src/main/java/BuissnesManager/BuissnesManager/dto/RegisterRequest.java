@@ -5,6 +5,7 @@ public class RegisterRequest {
     private String email;
     private String password;
     private String name;
+    private Long enterpriseId;
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -17,4 +18,7 @@ public class RegisterRequest {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public Long getEnterpriseId() { return enterpriseId; }
+    public void setEnterpriseId(Long enterpriseId) { this.enterpriseId = enterpriseId; }
 }

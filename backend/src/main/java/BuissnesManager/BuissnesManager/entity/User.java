@@ -54,6 +54,7 @@ public class User {
     private boolean enabled = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entreprise_id")
     @JsonIgnore
     private Entreprise entreprise;
 

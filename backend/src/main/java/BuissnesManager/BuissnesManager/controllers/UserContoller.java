@@ -51,6 +51,15 @@ public class UserContoller {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/byEntreprise/{entrepriseId}")
+    public ResponseEntity<?> getUsersByEntreprise(@PathVariable Long entrepriseId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByEnterprise(entrepriseId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
     @GetMapping("/getAllUsersDTo")
     public  ResponseEntity<?> getAllUsersDTO(){
         try {

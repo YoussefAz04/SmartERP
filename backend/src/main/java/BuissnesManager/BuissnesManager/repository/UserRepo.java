@@ -3,16 +3,24 @@ package BuissnesManager.BuissnesManager.repository;
 import BuissnesManager.BuissnesManager.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepo extends JpaRepository<User,Long> {
-    public Optional<User> findByEmail(String email);
-    public Optional<User> findByUsername(String email);
-    
+    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
 
-//    @Query("select u from User u where u.membre = Null")
-//    Optional<User> getAllUserNotAffectedToMembre();
+    // Find all users belonging to a specific enterprise
+    List<User> findByEntrepriseId(Long entrepriseId);
 
+    // Find a user by ID and enterprise (security check)
+    Optional<User> findByIdAndEntrepriseId(Long id, Long entrepriseId);
 
+    // Check existence by username
+    boolean existsByUsername(String username);
+
+    // Check existence by email
+    boolean existsByEmail(String email);
 }

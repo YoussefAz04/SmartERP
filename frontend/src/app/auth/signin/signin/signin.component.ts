@@ -73,15 +73,22 @@ export class SigninComponent implements OnInit {
           permission: response.permission,
           roles: response.roles,
           roleId: response.roleId,
-          entrepriseId: response.entrepriseId || 1,  // ✅ Use 1 as fallback
-          entrepriseName: response.entrepriseName || 'Default Enterprise'
+          entrepriseId: response.entrepriseId,
+          entrepriseName: response.entrepriseName,
+          // ✅ Provide entreprise object so components can access currentUser.entreprise.nom
+          entreprise: {
+            id: response.entrepriseId,
+            nom: response.entrepriseName
+          }
         })));
 
         // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
-        const entrepriseId = response.entrepriseId || 1;
-        localStorage.setItem('entrepriseId', entrepriseId.toString());
-        localStorage.setItem('enterpriseId', entrepriseId.toString());
-        console.log('✅ Enterprise ID saved to localStorage:', entrepriseId);
+        const entrepriseId = response.entrepriseId;
+        if (entrepriseId != null) {
+          localStorage.setItem('entrepriseId', entrepriseId.toString());
+          localStorage.setItem('enterpriseId', entrepriseId.toString());
+          console.log('✅ Enterprise ID saved to localStorage:', entrepriseId);
+        }
 
         if (response.roleId) {
           this.moduleService.updateStatusByRole(response.roleId).subscribe(
