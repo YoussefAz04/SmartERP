@@ -33,6 +33,12 @@ public class Stock {
     @Column(name = "quantite_vendue", precision = 15, scale = 2)
     private BigDecimal quantiteVendue;
 
+    @Column(name = "seuil_minimum", precision = 15, scale = 2)
+    private BigDecimal seuilMinimum;
+
+    @Column(name = "seuil_alerte", precision = 15, scale = 2)
+    private BigDecimal seuilAlerte;
+
     @Column(name = "emplacement")
     private String localisation;
 
