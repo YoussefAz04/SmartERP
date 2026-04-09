@@ -47,8 +47,12 @@ public class Stock {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
     private Article articleAchat;
+
+    @OneToOne(mappedBy = "stock", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "stock", "articleAchat", "client"})
+    private ArticleVente articleVente;
 }

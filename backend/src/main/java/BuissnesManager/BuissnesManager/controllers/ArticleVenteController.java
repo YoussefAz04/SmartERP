@@ -47,15 +47,20 @@ public class ArticleVenteController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ArticleVente> addArticleVente(
+    public ResponseEntity<?> addArticleVente(
             @RequestBody ArticleVente articleVente,
             @RequestParam(required = false) Long articleAchatId,
             @RequestParam(required = false) Long clientId) {
         try {
+            if (articleAchatId == null) {
+                return ResponseEntity.badRequest().body("articleAchatId is required");
+            }
             ArticleVente created = articleVenteService.addArticleVente(articleVente, articleAchatId, clientId);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating article vente");
         }
     }
 

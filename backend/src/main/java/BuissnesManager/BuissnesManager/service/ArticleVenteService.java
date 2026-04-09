@@ -3,9 +3,11 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.entity.Article;
 import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.entity.Client;
+import BuissnesManager.BuissnesManager.entity.Stock;
 import BuissnesManager.BuissnesManager.repository.ArticleRepository;
 import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
+import BuissnesManager.BuissnesManager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,9 @@ public class ArticleVenteService {
 
     @Autowired
     private ClientRepo clientRepo;
+
+    @Autowired
+    private StockRepository stockRepository;
 
     public List<ArticleVente> getAllArticlesVente() {
         return articleVenteRepo.findAll();
@@ -47,6 +52,11 @@ public class ArticleVenteService {
             Article articleAchat = articleRepository.findById(articleAchatId)
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + articleAchatId));
             articleVente.setArticleAchat(articleAchat);
+
+            stockRepository.findByArticleAchatId(articleAchatId)
+                    .stream()
+                    .findFirst()
+                    .ifPresent(articleVente::setStock);
         }
         if (clientId != null) {
             Client client = clientRepo.findById(clientId)

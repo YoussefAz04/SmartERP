@@ -50,13 +50,13 @@ public class Fournisseur {
         updatedAt = LocalDateTime.now();
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categorie_fournisseur_id")
-    @JsonIgnoreProperties("fournisseurs")
+    @JsonIgnoreProperties({"fournisseurs", "hibernateLazyInitializer", "handler"})
     private CategorieFournisseur categorieFournisseur;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entreprise_id")
-    @JsonIgnoreProperties("fournisseurs")
+    @JsonIgnoreProperties({"fournisseurs", "hibernateLazyInitializer", "handler"})
     private Entreprise entreprise;
 }
