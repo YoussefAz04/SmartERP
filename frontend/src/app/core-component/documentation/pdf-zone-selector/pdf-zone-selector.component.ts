@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import { HttpClient } from "@angular/common/http";
 import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -424,7 +425,7 @@ export class PdfZoneSelectorComponent implements OnInit {
     this.isLoading = true;
 
     try {
-      const response = await this.http.post('http://localhost:8020/api/zones/save-all', this.zones).toPromise();
+      const response = await this.http.post(`${environment.apiUrl}/api/zones/save-all`, this.zones).toPromise();
       console.log('Réponse du serveur:', response);
       alert(`${this.zones.length} zone(s) enregistrée(s) avec succès dans la base de données.`);
     } catch (error) {
@@ -449,7 +450,7 @@ export class PdfZoneSelectorComponent implements OnInit {
         zones: this.zones
       };
 
-      const response: any = await this.http.post('http://localhost:8020/api/zones/extract', requestData).toPromise();
+      const response: any = await this.http.post(`${environment.apiUrl}/api/zones/extract`, requestData).toPromise();
 
       this.extractionResults = response.results || [];
 

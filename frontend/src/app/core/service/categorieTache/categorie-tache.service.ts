@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {CategorieTache} from "../../../model/categorieTache.model";
 import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
@@ -8,7 +9,7 @@ import {HttpClient} from "@angular/common/http";
 })
 export class CategorieTacheService {
 
-  private baseUrl = 'http://localhost:8020/categorie-taches';
+  private baseUrl = `${environment.apiUrl}/categorie-taches`;
 
   constructor(private http: HttpClient) { }
 

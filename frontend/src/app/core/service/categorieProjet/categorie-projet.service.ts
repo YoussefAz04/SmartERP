@@ -1,4 +1,5 @@
 // src/app/core/service/categorie-projet/categorie-projet.service.ts
+import { environment } from '../../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,7 +9,7 @@ import {CategorieProjet} from "../../../model/CategorieProjet.model";
   providedIn: 'root'
 })
 export class CategorieProjetService {
-  private apiUrl = 'http://localhost:8020/categorieProjet';
+  private apiUrl = `${environment.apiUrl}/categorieProjet`;
 
   constructor(private http: HttpClient) {}
 

@@ -47,7 +47,6 @@ export class CommandeAchatService {
   }
 
   createCommande(payload: any): Observable<any> {
-  console.log('📤 Sending to backend:', payload);
   return this.http.post<any>(`${this.baseUrl}/add`, payload, { headers: this.getHeaders() });
   // ↑ ADD /add HERE
 }

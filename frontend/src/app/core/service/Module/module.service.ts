@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Module} from "../../../model/module.model";
@@ -10,7 +11,7 @@ import {SousModule} from "../../../model/sousModule.model";
 })
 export class ModuleService {
 
-  private apiUrl = 'http://localhost:8020/module'; // adapte au besoin
+  private apiUrl = `${environment.apiUrl}/module`; // adapte au besoin
 
   constructor(private http: HttpClient) {}
 

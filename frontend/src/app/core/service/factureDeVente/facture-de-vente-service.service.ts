@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {FactureVente} from "../../../model/FactureDeVente.model";
@@ -13,7 +14,7 @@ import autoTable from "jspdf-autotable";
 })
 export class FactureDeVenteServiceService {
 
-  private baseUrl = 'http://localhost:8020/factures-vente';
+  private baseUrl = `${environment.apiUrl}/factures-vente`;
 
   constructor(private http: HttpClient,
               private entrepriseService: EntrepriseService) {
@@ -230,7 +231,6 @@ export class FactureDeVenteServiceService {
 
         const formData = new FormData();
         formData.append("file", pdfBlob, `facture-${factureData.referance || 'vente'}.pdf`);
-        console.log("email client",factureData.client?.email)
         formData.append("to", factureData.client?.email || "sayarim558@gmail.com");
         formData.append("subject", "Votre facture de vente");
         formData.append("text", "Veuillez trouver ci-joint votre facture.");

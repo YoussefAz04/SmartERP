@@ -32,13 +32,11 @@ export class SigninComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('✅ SigninComponent initialized');
   }
 
   responseLogin!: PermissionDto;
   
  navigation() {
-    console.log('🔐 Sign In clicked');
     
     if (!this.loginForm.valid) {
       this.errorMessage = 'Please fill in username and password';
@@ -55,40 +53,31 @@ export class SigninComponent implements OnInit {
 
     this.authService.login(credentials).subscribe({
       next: (response: any) => {
-        try {
-          // Encode to base64 using a Unicode-safe approach
-          const payload = JSON.stringify({
-            token: response.token,
-            name: response.name,
-            username: response.username,
-            userId: response.id,
-            permission: response.permission,
-            roles: response.roles,
-            roleId: response.roleId,
-            entrepriseId: response.entrepriseId,
-            entrepriseName: response.entrepriseName,
-            entreprise: {
-              id: response.entrepriseId,
-              nom: response.entrepriseName
-            }
-          });
-          const encoded = btoa(unescape(encodeURIComponent(payload)));
-
-          localStorage.removeItem('myLSkey');
-          localStorage.setItem('myLSkey', encoded);
-
-          const entrepriseId = response.entrepriseId;
-          if (entrepriseId !== null && entrepriseId !== undefined) {
-            localStorage.setItem('entrepriseId', entrepriseId.toString());
-            localStorage.setItem('enterpriseId', entrepriseId.toString());
+        
+        // ✅ SAVE TO LOCALSTORAGE
+        localStorage.removeItem("myLSkey");
+        localStorage.setItem('myLSkey', btoa(JSON.stringify({
+          token: response.token,
+          name: response.name,
+          username: response.username,
+          userId: response.id,
+          permission: response.permission,
+          roles: response.roles,
+          roleId: response.roleId,
+          entrepriseId: response.entrepriseId,
+          entrepriseName: response.entrepriseName,
+          // ✅ Provide entreprise object so components can access currentUser.entreprise.nom
+          entreprise: {
+            id: response.entrepriseId,
+            nom: response.entrepriseName
           }
 
-          if (response.roleId) {
-            this.moduleService.updateStatusByRole(response.roleId).subscribe(
-              () => {},
-              (err: any) => console.error('⚠️ Sidebar update error:', err)
-            );
-          }
+        // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
+        const entrepriseId = response.entrepriseId;
+        if (entrepriseId !== null && entrepriseId !== undefined) {
+          localStorage.setItem('entrepriseId', entrepriseId.toString());
+          localStorage.setItem('enterpriseId', entrepriseId.toString());
+        }
 
           setTimeout(() => {
             const fallback = () => this.router.navigate([routes.dashboard]);
@@ -102,9 +91,18 @@ export class SigninComponent implements OnInit {
           this.loading = false;
           this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
         }
+
+        setTimeout(() => {
+          this.router.navigate([routes.adminDashboard]).then((success) => {
+            if (success) {
+            } else {
+              this.router.navigate(['/enterprise/listEnterprise']);
+            }
+            this.loading = false;
+          });
+        }, 500);
       },
       error: (error: any) => {
-        console.error('❌ Login failed:', error);
         this.loading = false;
         this.errorMessage = 'Identifiants invalides. Veuillez réessayer.';
       }

@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {Equipe} from "../../../model/equipe.model";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
@@ -8,7 +9,7 @@ import {EquipeDto} from "../../../model/equipeDto.model";
   providedIn: 'root'
 })
 export class EquipeService {
-  private apiUrl = 'http://localhost:8020/equipe';
+  private apiUrl = `${environment.apiUrl}/equipe`;
 
   constructor(private http: HttpClient) {}
 
