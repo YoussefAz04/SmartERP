@@ -115,7 +115,7 @@ export class AdminDashboardComponent implements OnInit {
     etatCommandes: 'État des Commandes',
     commandesVenteTitre: 'Commandes de Vente',
     commandesAchatTitre: "Commandes d'Achat",
-    aucunneDonnee: 'Aucune donnée',
+    aucuneDonnee: 'Aucune donnée',
     articlesExpires: 'Articles Expirés',
     sku: 'SKU',
     dateFabrication: 'Date de Fabrication',
@@ -184,8 +184,8 @@ export class AdminDashboardComponent implements OnInit {
       },
       xaxis: {
         categories: [
-          'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-          'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc',
+          'Jan', 'Fév', 'Mars', 'Avr', 'Mai', 'Juin',
+          'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc',
         ],
       },
       legend: { show: false },

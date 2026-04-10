@@ -252,14 +252,14 @@
         @for (entry of getOrderStatusEntries(); track entry) {
           <span class="status-badge badge-primary">{{ entry.key }}: {{ entry.value }}</span>
         }
-        <span *ngIf="getOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucunneDonnee }}</span>
+        <span *ngIf="getOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucuneDonnee }}</span>
       </div>
       <h6 class="status-subtitle mt-3">{{ labels.commandesAchatTitre }}</h6>
       <div class="status-badges">
         @for (entry of getPurchaseOrderStatusEntries(); track entry) {
           <span class="status-badge badge-secondary">{{ entry.key }}: {{ entry.value }}</span>
         }
-        <span *ngIf="getPurchaseOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucunneDonnee }}</span>
+        <span *ngIf="getPurchaseOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucuneDonnee }}</span>
       </div>
     </div>
   </div>
