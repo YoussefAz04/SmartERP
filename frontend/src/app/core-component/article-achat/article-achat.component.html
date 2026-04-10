@@ -3,108 +3,109 @@
 <!-- Hero Header -->
 <div class="achat-hero-header">
   <div class="hero-content">
-    <div class="hero-text">
+    <div>
       <div class="hero-badge">
-        <i class="feather icon-shopping-cart"></i>
+        <i class="feather icon-trending-up"></i>
         <span>Gestion des Achats</span>
       </div>
       <h1 class="hero-title">Articles Achat</h1>
-      <p class="hero-subtitle">Catalogue complet des articles d'approvisionnement</p>
+      <p class="hero-subtitle">Gérez efficacement vos articles d'achat et fournisseurs</p>
     </div>
     <div class="hero-actions">
       <button (click)="exportCSV()" class="btn-hero btn-hero-outline">
-        <i class="feather icon-download"></i>
-        <span>Exporter CSV</span>
+        <i class="feather icon-download"></i>Exporter CSV
       </button>
       <button (click)="addArticle()" class="btn-hero btn-hero-primary">
-        <i class="feather icon-plus"></i>
-        <span>Ajouter Article</span>
+        <i class="feather icon-plus-circle"></i>Ajouter Article
       </button>
     </div>
   </div>
 </div>
 
 <!-- KPI Cards -->
-<div class="row g-3 mb-4">
-  <div class="col-xl-3 col-sm-6">
-    <div class="kpi-card kpi-purple">
+<div class="row mb-4">
+  <div class="col-lg-3 col-md-6 col-sm-6">
+    <div class="card kpi-card kpi-purple">
       <div class="kpi-body">
-        <div class="kpi-info">
+        <div>
           <div class="kpi-number">{{ totalCount }}</div>
           <div class="kpi-label">Total Articles</div>
           <div class="kpi-trend">
-            <i class="feather icon-package"></i>
-            <span>Catalogue actif</span>
+            <i class="feather icon-arrow-up"></i>
+            <span>12% vs dernier mois</span>
           </div>
         </div>
         <div class="kpi-icon-wrap">
           <i class="feather icon-box"></i>
         </div>
       </div>
-      <div class="kpi-footer"><span>Voir le catalogue →</span></div>
+      <div class="kpi-footer">Articles en inventaire</div>
     </div>
   </div>
-  <div class="col-xl-3 col-sm-6">
-    <div class="kpi-card kpi-blue">
+
+  <div class="col-lg-3 col-md-6 col-sm-6">
+    <div class="card kpi-card kpi-blue">
       <div class="kpi-body">
-        <div class="kpi-info">
+        <div>
           <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
           <div class="kpi-label">Prix Moyen</div>
           <div class="kpi-trend">
-            <i class="feather icon-trending-up"></i>
-            <span>Par article</span>
+            <i class="feather icon-trending-down"></i>
+            <span>2.4% baisse</span>
           </div>
         </div>
         <div class="kpi-icon-wrap">
           <i class="feather icon-tag"></i>
         </div>
       </div>
-      <div class="kpi-footer"><span>Analyse des prix →</span></div>
+      <div class="kpi-footer">Par unité</div>
     </div>
   </div>
-  <div class="col-xl-3 col-sm-6">
-    <div class="kpi-card kpi-green">
+
+  <div class="col-lg-3 col-md-6 col-sm-6">
+    <div class="card kpi-card kpi-green">
       <div class="kpi-body">
-        <div class="kpi-info">
+        <div>
           <div class="kpi-number">{{ totalValue | number:'1.2-2' }}</div>
           <div class="kpi-label">Valeur Totale</div>
           <div class="kpi-trend">
-            <i class="feather icon-dollar-sign"></i>
-            <span>Investissement total</span>
+            <i class="feather icon-arrow-up"></i>
+            <span>8.5% hausse</span>
           </div>
         </div>
         <div class="kpi-icon-wrap">
           <i class="feather icon-dollar-sign"></i>
         </div>
       </div>
-      <div class="kpi-footer"><span>Voir les finances →</span></div>
+      <div class="kpi-footer">Inventaire valué</div>
     </div>
   </div>
-  <div class="col-xl-3 col-sm-6">
-    <div class="kpi-card kpi-orange">
+
+  <div class="col-lg-3 col-md-6 col-sm-6">
+    <div class="card kpi-card kpi-orange">
       <div class="kpi-body">
-        <div class="kpi-info">
+        <div>
           <div class="kpi-number">{{ uniqueFournisseurs.length }}</div>
           <div class="kpi-label">Fournisseurs</div>
           <div class="kpi-trend">
             <i class="feather icon-users"></i>
-            <span>Partenaires actifs</span>
+            <span>Actifs</span>
           </div>
         </div>
         <div class="kpi-icon-wrap">
           <i class="feather icon-users"></i>
         </div>
       </div>
-      <div class="kpi-footer"><span>Gérer les fournisseurs →</span></div>
+      <div class="kpi-footer">Partenaires</div>
     </div>
   </div>
 </div>
 
-<!-- Search & Filters -->
-<div class="filter-card mb-4">
+<!-- Filter Card -->
+<div class="card filter-card mb-3">
   <div class="filter-header">
     <i class="feather icon-filter"></i>
-    <span>Filtres &amp; Recherche</span>
+    Filtres & Recherche
   </div>
   <div class="filter-body">
     <div class="row g-3 align-items-end">
@@ -117,55 +118,57 @@
         </div>
       </div>
       <div class="col-md-2">
-        <label class="filter-label">Prix minimum</label>
+        <label class="filter-label">Prix Min</label>
         <div class="filter-input-group">
-          <i class="feather icon-arrow-down-circle filter-input-icon"></i>
+          <i class="feather icon-dollar-sign filter-input-icon"></i>
           <input type="number" class="filter-input" placeholder="0"
             [(ngModel)]="minPrice" (ngModelChange)="applyFilters()">
         </div>
       </div>
       <div class="col-md-2">
-        <label class="filter-label">Prix maximum</label>
+        <label class="filter-label">Prix Max</label>
         <div class="filter-input-group">
-          <i class="feather icon-arrow-up-circle filter-input-icon"></i>
+          <i class="feather icon-dollar-sign filter-input-icon"></i>
           <input type="number" class="filter-input" placeholder="∞"
             [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
         </div>
       </div>
       <div class="col-md-3">
         <label class="filter-label">Fournisseur</label>
-        <div class="filter-input-group">
-          <i class="feather icon-briefcase filter-input-icon"></i>
-          <select class="filter-input" [(ngModel)]="selectedFournisseur" (ngModelChange)="applyFilters()">
-            <option value="">Tous les fournisseurs</option>
-            @for (f of uniqueFournisseurs; track f) {
-              <option [value]="f">{{ f }}</option>
-            }
-          </select>
-        </div>
+        <select class="filter-input" [(ngModel)]="selectedFournisseur" (ngModelChange)="applyFilters()">
+          <option value="">Tous les fournisseurs</option>
+          @for (f of uniqueFournisseurs; track f) {
+            <option [value]="f">{{ f }}</option>
+          }
+        </select>
       </div>
       <div class="col-md-2">
         <button class="btn-reset w-100" (click)="resetFilters()">
-          <i class="feather icon-refresh-cw me-1"></i>Réinitialiser
+          <i class="feather icon-refresh-cw"></i>Réinitialiser
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Table Panel -->
-<div class="modern-panel">
+<!-- Articles Table -->
+<div class="card modern-panel">
   <div class="panel-header panel-header-primary">
-    <div class="panel-title">
+    <h5 class="panel-title">
       <i class="feather icon-list"></i>
-      Liste des Articles Achat
-      <span class="panel-badge">{{ filteredList.length }} article(s)</span>
+      Liste des Articles
+    </h5>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="panel-badge" style="background: rgba(255, 255, 255, 0.25); color: #fff;">
+        {{ filteredList.length }} article(s)
+      </span>
+      @if (selectedIds.size > 0) {
+        <button class="btn-bulk-delete" (click)="bulkDelete()">
+          <i class="feather icon-trash-2"></i>
+          Supprimer ({{ selectedIds.size }})
+        </button>
+      }
     </div>
-    @if (selectedIds.size > 0) {
-      <button class="btn-bulk-delete" (click)="bulkDelete()">
-        <i class="feather icon-trash-2 me-1"></i>Supprimer ({{ selectedIds.size }})
-      </button>
-    }
   </div>
   <div class="panel-body">
     <div class="table-responsive">
@@ -180,7 +183,7 @@
             </th>
             <th class="sortable" (click)="setSort('nom')">
               Nom
-              <i class="feather sort-icon"
+              <i class="feather sort-icon" 
                 [class.icon-chevron-up]="sortField==='nom' && sortAsc"
                 [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
                 [class.icon-chevrons-up]="sortField!=='nom'"></i>
@@ -192,13 +195,7 @@
                 [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
                 [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
             </th>
-            <th class="sortable" (click)="setSort('quantite')">
-              Quantité
-              <i class="feather sort-icon"
-                [class.icon-chevron-up]="sortField==='quantite' && sortAsc"
-                [class.icon-chevron-down]="sortField==='quantite' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='quantite'"></i>
-            </th>
+            <th class="sortable" (click)="setSort('quantite')">Quantité</th>
             <th>Unité</th>
             <th>SKU</th>
             <th>Fournisseur</th>
@@ -210,7 +207,7 @@
                 [class.icon-chevron-down]="sortField==='createdAt' && !sortAsc"
                 [class.icon-chevrons-up]="sortField!=='createdAt'"></i>
             </th>
-            <th class="text-center">Actions</th>
+            <th style="width: 80px; text-align: center;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -225,44 +222,44 @@
                 </td>
                 <td>
                   <div class="article-name">
-                    <div class="article-avatar">{{ (a.nom?.charAt(0) | uppercase) || '?' }}</div>
-                    <span class="fw-semibold">{{ a.nom }}</span>
+                    <div class="article-avatar">{{ a.nom.charAt(0).toUpperCase() }}</div>
+                    <span>{{ a.nom }}</span>
                   </div>
                 </td>
                 <td>
-                  <span class="price-badge">{{ a.prixUnitaire | number:'1.2-2' }} DH</span>
+                  <span class="price-badge">{{ a.prixUnitaire | number:'1.2-2' }}</span>
                 </td>
                 <td>
-                  <span class="qty-badge" [class.qty-low]="a.quantite < 10" [class.qty-ok]="a.quantite >= 10">
-                    {{ a.quantite }}
+                  <span class="qty-badge" 
+                    [class.qty-low]="(a.quantite ?? 0) < 10" 
+                    [class.qty-ok]="(a.quantite ?? 0) >= 10">
+                    {{ a.quantite ?? 0 }}
                   </span>
                 </td>
-                <td><span class="unit-pill">{{ a.unite }}</span></td>
-                <td><code class="sku-code">{{ a.sku }}</code></td>
                 <td>
-                  @if (a.fournisseur?.nom) {
-                    <span class="supplier-badge">
-                      <i class="feather icon-briefcase"></i>
-                      {{ a.fournisseur?.nom }}
-                    </span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  <span class="unit-pill">{{ a.unite }}</span>
                 </td>
                 <td>
-                  @if (a.categorieArticle?.nom) {
-                    <span class="category-pill">{{ a.categorieArticle?.nom }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  <span class="sku-code">{{ a.sku }}</span>
                 </td>
-                <td class="date-cell">{{ a.createdAt | date:'dd/MM/yyyy' }}</td>
-                <td class="text-center">
+                <td>
+                  <span class="supplier-badge">
+                    <i class="feather icon-briefcase"></i>
+                    {{ a.fournisseur?.nom || '-' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="category-pill">{{ a.categorieArticle?.nom || '-' }}</span>
+                </td>
+                <td class="date-cell">{{ a.createdAt | date:'shortDate' }}</td>
+                <td style="text-align: center;">
                   <div class="action-btns">
-                    <button class="action-btn action-btn-edit" (click)="editArticle(a.id)" title="Modifier">
+                    <button class="action-btn action-btn-edit" 
+                      (click)="editArticle(a.id)" title="Modifier">
                       <i class="feather icon-edit"></i>
                     </button>
-                    <button class="action-btn action-btn-delete" (click)="deleteArticle(a.id)" title="Supprimer">
+                    <button class="action-btn action-btn-delete" 
+                      (click)="deleteArticle(a.id)" title="Supprimer">
                       <i class="feather icon-trash-2"></i>
                     </button>
                   </div>
@@ -273,7 +270,11 @@
             <tr>
               <td colspan="10" class="empty-state">
                 <i class="feather icon-inbox empty-icon"></i>
-                <p>@if (isLoading) { Chargement en cours... } @else { Aucun article disponible }</p>
+                @if (isLoading) {
+                  <p>Chargement en cours...</p>
+                } @else {
+                  <p>Aucun article disponible</p>
+                }
               </td>
             </tr>
           }
@@ -282,4 +283,3 @@
     </div>
   </div>
 </div>
-

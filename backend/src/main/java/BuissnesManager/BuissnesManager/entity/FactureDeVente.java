@@ -10,44 +10,60 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "facture_de_vente")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class FactureDeVente{
+public class FactureDeVente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
-    private String  dateAchat;
-    private String referance ;
+    private Long id;
+    
+    @Column(name = "date_achat")
+    private String dateAchat;
+    
+    @Column(name = "referance")
+    private String referance;
 
+    @Column(name = "montant_total")
     private Double montantTotal;
 
-
+    @Column(name = "montant_ht")
     private Double montantHT;
+    
+    @Column(name = "montant_tva")
     private Double montantTVA;
+    
+    @Column(name = "montant_ttc")
     private Double montantTTC;
 
+    @Column(name = "remise")
     private Double remise;
 
+    @Column(name = "mode_paiement")
     private String modePaiement;
 
+    @Column(name = "statut")
     private String statut;
 
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "chemin_fichier")
     private String cheminFichier;
 
+    // ✅ ADD: Enterprise relationship
+    @ManyToOne
+    @JoinColumn(name = "entreprise_id", nullable = false)
+    private Entreprise entreprise;
 
-    @OneToOne(mappedBy = "factureDeVente", cascade = CascadeType.ALL )
+    @OneToOne(mappedBy = "factureDeVente", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = "factureDeVente")
-    private DetaisFactureDeVente detaisFactureDeVente ;
+    private DetaisFactureDeVente detaisFactureDeVente;
 
     @ManyToOne
     @JsonIgnoreProperties(value = "factureDeVentes")
-    private Client client ;
-
-
-
+    private Client client;
 }

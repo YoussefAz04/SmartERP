@@ -1,146 +1,137 @@
 package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
-import BuissnesManager.BuissnesManager.entity.BonLivraison;
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
-import BuissnesManager.BuissnesManager.entity.FactureVente;
+import BuissnesManager.BuissnesManager.entity.FactureDeVente;
 import BuissnesManager.BuissnesManager.service.CommandeVenteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/commandes-vente")
 public class CommandeVenteController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CommandeVenteController.class);
+
     @Autowired
     private CommandeVenteService commandeVenteService;
 
-    @GetMapping
-    public ResponseEntity<List<CommandeVente>> getAllCommandes() {
+    @PostMapping("/add")
+    public ResponseEntity<?> createCommande(@RequestBody CommandeVenteDto dto) {
         try {
-            return ResponseEntity.ok(commandeVenteService.getAllCommandes());
+            logger.info("? Received DTO from frontend:");
+            logger.info("   Reference: {}", dto.getReference());
+            logger.info("   Client ID: {}", dto.getClientId());
+            logger.info("   Enterprise ID: {}", dto.getEntrepriseId());
+            logger.info("   Number of lines: {}", dto.getLignes() != null ? dto.getLignes().size() : 0);
+
+            if (dto.getLignes() != null) {
+                for (int i = 0; i < dto.getLignes().size(); i++) {
+                    logger.info("   ========== LINE {} ==========", i + 1);
+                    logger.info("      articleAchatId: {} (type: Long)", dto.getLignes().get(i).getArticleVenteId());
+                    logger.info("      quantite: {}", dto.getLignes().get(i).getQuantite());
+                    logger.info("      prixUnitaireHT: {}", dto.getLignes().get(i).getPrixUnitaireHT());
+                    logger.info("      tva: {}", dto.getLignes().get(i).getTva());
+                    logger.info("   ===========================");
+                }
+            }
+
+            CommandeVente created = commandeVenteService.createCommande(dto);
+            return ResponseEntity.ok(created);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("Error creating commande: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllCommandes() {
+        try {
+            logger.info("? Getting all purchase orders");
+            List<CommandeVente> commandes = commandeVenteService.getAllCommandes();
+            return ResponseEntity.ok(commandes);
+        } catch (Exception e) {
+            logger.error("Error getting commandes: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommandeVente> getCommandeById(@PathVariable Long id) {
+    public ResponseEntity<?> getCommandeById(@PathVariable Long id) {
         try {
-            return commandeVenteService.getCommandeById(id)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+            logger.info("? Getting commande with ID: {}", id);
+            Optional<CommandeVente> commande = commandeVenteService.getCommandeById(id);
+            return commande.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/entreprise/{entrepriseId}")
-    public ResponseEntity<List<CommandeVente>> getCommandesByEntreprise(@PathVariable Long entrepriseId) {
-        try {
-            return ResponseEntity.ok(commandeVenteService.getCommandesByEntreprise(entrepriseId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<CommandeVente> createCommande(@RequestBody CommandeVenteDto dto) {
-        try {
-            CommandeVente commande = commandeVenteService.createCommande(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(commande);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            logger.error("Error getting commande: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommandeVente> updateCommande(@PathVariable Long id, @RequestBody CommandeVenteDto dto) {
+    public ResponseEntity<?> updateCommande(@PathVariable Long id, @RequestBody CommandeVenteDto dto) {
         try {
-            CommandeVente commande = commandeVenteService.updateCommande(id, dto);
-            return ResponseEntity.ok(commande);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            CommandeVente updated = commandeVenteService.updateCommande(id, dto);
+            return ResponseEntity.ok(updated);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("Error updating commande: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    @PatchMapping("/{id}/statut")
-    public ResponseEntity<CommandeVente> updateStatut(@PathVariable Long id, @RequestParam String statut) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCommande(@PathVariable Long id) {
         try {
-            CommandeVente commande = commandeVenteService.updateStatut(id, statut);
-            return ResponseEntity.ok(commande);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            commandeVenteService.deleteCommande(id);
+            return ResponseEntity.ok("Commande deleted successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("Error deleting commande: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}/valider")
-    public ResponseEntity<FactureVente> validerCommande(@PathVariable Long id) {
+    public ResponseEntity<?> validerCommande(@PathVariable Long id) {
         try {
-            FactureVente facture = commandeVenteService.validerCommande(id);
+            logger.info("? [VALIDATION] Starting invoice generation for order ID: {}", id);
+            
+            // ✅ FIXED: Return type is now FactureDeVente (not FactureVente)
+            FactureDeVente facture = commandeVenteService.validerCommande(id);
+            
+            logger.info("? [VALIDATION] Invoice created successfully with ID: {}", facture.getId());
             return ResponseEntity.ok(facture);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("? [VALIDATION] Error during validation: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/annuler")
+    public ResponseEntity<?> annulerCommande(@PathVariable Long id) {
+        try {
+            CommandeVente commande = commandeVenteService.annulerCommande(id);
+            return ResponseEntity.ok(commande);
+        } catch (Exception e) {
+            logger.error("Error cancelling commande: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}/livrer")
     public ResponseEntity<?> livrerCommande(@PathVariable Long id) {
         try {
-            BonLivraison bon = commandeVenteService.livrerCommande(id);
-            return ResponseEntity.ok(bon);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
+            return ResponseEntity.ok(commandeVenteService.livrerCommande(id));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de la livraison: " + e.getMessage()));
+            logger.error("Error delivering commande: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-    }
-
-    @PutMapping("/{id}/annuler")
-    public ResponseEntity<CommandeVente> annulerCommande(@PathVariable Long id) {
-        try {
-            CommandeVente commande = commandeVenteService.annulerCommande(id);
-            return ResponseEntity.ok(commande);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCommande(@PathVariable Long id) {
-        try {
-            commandeVenteService.deleteCommande(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    public static class ErrorResponse {
-        private String message;
-        private long timestamp;
-
-        public ErrorResponse(String message) {
-            this.message = message;
-            this.timestamp = System.currentTimeMillis();
-        }
-
-        public String getMessage() { return message; }
-        public long getTimestamp() { return timestamp; }
     }
 }

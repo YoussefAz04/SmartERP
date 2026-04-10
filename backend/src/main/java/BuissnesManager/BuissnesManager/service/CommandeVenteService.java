@@ -38,6 +38,9 @@ public class CommandeVenteService {
     private BonLivraisonRepository bonLivraisonRepository;
     @Autowired
     private StockAutomationService stockAutomationService;
+    
+    @Autowired
+    private FactureDeVenteRepo factureDeVenteRepository;
 
     @Transactional
     public CommandeVente createCommande(CommandeVenteDto dto) {
@@ -135,61 +138,54 @@ public class CommandeVenteService {
     }
 
     @Transactional
-    public FactureVente validerCommande(Long id) {
+    public FactureDeVente validerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
+        // ✅ Change status to CONFIRMEE (valid for database constraint)
         commande.setStatut("CONFIRMEE");
         commandeVenteRepository.save(commande);
 
-        // Calculate totals from order lines
+        // ✅ Calculate totals from order lines
         List<LigneCommandeVente> lignesCommande = ligneCommandeVenteRepository.findByCommandeVenteId(id);
-
-        BigDecimal totalHT = BigDecimal.ZERO;
-        BigDecimal totalTVA = BigDecimal.ZERO;
-        BigDecimal totalTTC = BigDecimal.ZERO;
-
+        
+        Double totalHT = 0.0;
+        Double totalTVA = 0.0;
+        Double totalTTC = 0.0;
+        
         for (LigneCommandeVente ligne : lignesCommande) {
-            totalHT = totalHT.add(ligne.getMontantHT() != null ? ligne.getMontantHT() : BigDecimal.ZERO);
-            totalTVA = totalTVA.add(ligne.getTva() != null ? ligne.getTva() : BigDecimal.ZERO);
-            totalTTC = totalTTC.add(ligne.getMontantTTC() != null ? ligne.getMontantTTC() : BigDecimal.ZERO);
+            BigDecimal ht = ligne.getMontantHT() != null ? ligne.getMontantHT() : BigDecimal.ZERO;
+            BigDecimal tva = ligne.getTva() != null ? ligne.getTva() : BigDecimal.ZERO;
+            BigDecimal ttc = ligne.getMontantTTC() != null ? ligne.getMontantTTC() : BigDecimal.ZERO;
+            
+            totalHT += ht.doubleValue();
+            totalTVA += tva.doubleValue();
+            totalTTC += ttc.doubleValue();
         }
 
-        // Create invoice
-        FactureVente facture = new FactureVente();
-        facture.setDateVente(LocalDate.now().toString());
+        // ✅ Use OLD FactureDeVente entity (NOT FactureVente)
+        FactureDeVente facture = new FactureDeVente();
+        facture.setDateAchat(LocalDate.now().toString());
         facture.setMontantHT(totalHT);
         facture.setMontantTVA(totalTVA);
         facture.setMontantTTC(totalTTC);
+        facture.setMontantTotal(totalTTC);
         facture.setStatut("EN_ATTENTE");
         facture.setDescription("Facture générée automatiquement depuis la commande " + commande.getReference());
         facture.setClient(commande.getClient());
-        facture.setCommandeVente(commande);
-        facture.setEntreprise(commande.getEntreprise());
-        FactureVente savedFacture = factureVenteRepository.save(facture);
+        facture.setModePaiement("A_DEFINIR");
+        facture.setEntreprise(commande.getEntreprise());  // ✅ ADD THIS LINE
+        
+        FactureDeVente savedFacture = factureDeVenteRepository.save(facture);
+        
+        // ✅ Generate reference
+        String referance = "FV-" + String.format("%04d", savedFacture.getId());
+        savedFacture.setReferance(referance);
+        savedFacture = factureDeVenteRepository.save(savedFacture);
 
-        savedFacture.setReferance("FV-" + String.format("%04d", savedFacture.getId()));
-        savedFacture = factureVenteRepository.save(savedFacture);
-
-        // Create invoice lines from order lines
-        for (LigneCommandeVente ligneCommande : lignesCommande) {
-            LigneFactureVente ligneFacture = new LigneFactureVente();
-            if (ligneCommande.getArticleVente() != null) {
-                ligneFacture.setDesignation(ligneCommande.getArticleVente().getNom());
-            } else {
-                ligneFacture.setDesignation("");
-            }
-            ligneFacture.setQuantite(ligneCommande.getQuantite() != null ? ligneCommande.getQuantite() : BigDecimal.ZERO);
-            ligneFacture.setPrixUnitaireHT(ligneCommande.getPrixUnitaireHT() != null ? ligneCommande.getPrixUnitaireHT() : BigDecimal.ZERO);
-            ligneFacture.setTva(ligneCommande.getTva() != null ? ligneCommande.getTva() : BigDecimal.ZERO);
-            ligneFacture.setMontantHT(ligneCommande.getMontantHT() != null ? ligneCommande.getMontantHT() : BigDecimal.ZERO);
-            ligneFacture.setMontantTTC(ligneCommande.getMontantTTC() != null ? ligneCommande.getMontantTTC() : BigDecimal.ZERO);
-            ligneFacture.setFactureVente(savedFacture);
-            ligneFactureVenteRepository.save(ligneFacture);
-        }
-
-        logger.info("✅ Commande {} confirmée, facture {} créée avec {} lignes", id, savedFacture.getId(), lignesCommande.size());
-
+        logger.info("✅ Commande {} confirmed, facture {} created with amounts: HT={}, TVA={}, TTC={}", 
+            id, savedFacture.getId(), totalHT, totalTVA, totalTTC);
+        
         return savedFacture;
     }
 
