@@ -32,13 +32,11 @@ export class SigninComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('✅ SigninComponent initialized');
   }
 
   responseLogin!: PermissionDto;
   
  navigation() {
-    console.log('🔐 Sign In clicked');
     
     if (!this.loginForm.valid) {
       this.errorMessage = 'Please fill in username and password';
@@ -55,13 +53,6 @@ export class SigninComponent implements OnInit {
 
     this.authService.login(credentials).subscribe({
       next: (response: any) => {
-        console.log('✅ Login success:', response);
-        console.log('📋 Response data:', {
-          id: response.id,
-          username: response.username,
-          entrepriseId: response.entrepriseId,
-          entrepriseName: response.entrepriseName
-        });
         
         // ✅ SAVE TO LOCALSTORAGE
         localStorage.removeItem("myLSkey");
@@ -87,7 +78,6 @@ export class SigninComponent implements OnInit {
         if (entrepriseId !== null && entrepriseId !== undefined) {
           localStorage.setItem('entrepriseId', entrepriseId.toString());
           localStorage.setItem('enterpriseId', entrepriseId.toString());
-          console.log('✅ Enterprise ID saved to localStorage:', entrepriseId);
         }
 
         if (response.roleId) {
@@ -100,7 +90,6 @@ export class SigninComponent implements OnInit {
         setTimeout(() => {
           this.router.navigate([routes.adminDashboard]).then((success) => {
             if (success) {
-              console.log('✅ Navigation successful');
             } else {
               this.router.navigate(['/enterprise/listEnterprise']);
             }
@@ -109,7 +98,6 @@ export class SigninComponent implements OnInit {
         }, 500);
       },
       error: (error: any) => {
-        console.error('❌ Login failed:', error);
         this.loading = false;
         this.errorMessage = 'Invalid credentials';
       }

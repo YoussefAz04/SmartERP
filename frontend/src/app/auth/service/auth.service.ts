@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable } from "rxjs";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { PermissionDto } from "../../model/permissionDto.model";
@@ -35,7 +36,7 @@ export interface AuthResponse {
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8020/api/auth';
+  private apiUrl = `${environment.apiUrl}/api/auth`;
   private tokenSubject = new BehaviorSubject<string | null>(this.getStoredToken());
   public token$ = this.tokenSubject.asObservable();
 
@@ -45,17 +46,14 @@ export class AuthService {
   ) {}
 
   login(credentials: AuthRequest): Observable<any> {
-    console.log('🔐 Login attempt:', credentials.username);
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
   register(data: RegisterRequest): Observable<any> {
-    console.log('📝 Register attempt:', data.username);
     return this.http.post<any>(`${this.apiUrl}/register`, data);
   }
 
   logout(): void {
-    console.log('🔓 Logging out...');
     
     localStorage.removeItem('authToken');
     localStorage.removeItem('token');
@@ -65,18 +63,14 @@ export class AuthService {
     
     this.tokenSubject.next(null);
 
-    console.log('✅ Auth data cleared');
 
     setTimeout(() => {
       this.router.navigate(['/auth/signin']).then((success) => {
         if (success) {
-          console.log('✅ Logged out and redirected to signin');
         } else {
-          console.error('❌ Navigation failed');
           window.location.href = '/auth/signin';
         }
       }).catch((err) => {
-        console.error('❌ Logout navigation error:', err);
         window.location.href = '/auth/signin';
       });
     }, 300);
@@ -92,7 +86,6 @@ export class AuthService {
   }
 
   setToken(token: string): void {
-    console.log('✅ Token saved');
     localStorage.setItem('token', token);
     localStorage.setItem('authToken', token);
     this.tokenSubject.next(token);
@@ -111,7 +104,6 @@ export class AuthService {
       const exp = payload.exp * 1000;
       return Date.now() >= exp;
     } catch (error) {
-      console.error('❌ Token decode error:', error);
       return true;
     }
   }
@@ -125,7 +117,6 @@ export class AuthService {
       if (!payload) return null;
       return JSON.parse(atob(payload));
     } catch (e) {
-      console.error('❌ Error decoding token:', e);
       return null;
     }
   }

@@ -56,6 +56,16 @@ public class FactureController {
         }
     }
 
+    @DeleteMapping("deleteFactureAchat/{id}")
+    public ResponseEntity<?> deleteFactureAchat(@PathVariable Long id) {
+        try {
+            factureService.deleteFactureAchat(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
 
 

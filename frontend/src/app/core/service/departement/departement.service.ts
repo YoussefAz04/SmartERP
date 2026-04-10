@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {Observable} from "rxjs";
 import {Departement} from "../../../model/departement.model";
 import {HttpClient} from "@angular/common/http";
@@ -10,7 +11,7 @@ import {DepartementDTO} from "../../../Dto/departement.dto";
 export class DepartementService {
 
   constructor(private http: HttpClient) {}
-  private baseUrl = 'http://localhost:8020/departement'; // à adapter
+  private baseUrl = `${environment.apiUrl}/departement`; // à adapter
 
 
   getAllDepartements(): Observable<DepartementDTO[]> {

@@ -19,7 +19,6 @@ export class FournisseurService {
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
     } else {
-      console.warn('No token found in localStorage');
     }
     return headers;
   }
@@ -31,7 +30,6 @@ export class FournisseurService {
         const user = JSON.parse(atob(item));
         return user.token || null;
       } catch (error) {
-        console.error('Error parsing token:', error);
         return null;
       }
     }
@@ -65,7 +63,6 @@ export class FournisseurService {
 
   // ✅ DELETE FOURNISSEUR
   deleteFournisseur(id: number): Observable<any> {
-    console.log('Deleting fournisseur:', id);
     return this.http.delete<any>(
       `${this.baseUrl}/deleteFournisseur/${id}`,
       { headers: this.getHeaders() }

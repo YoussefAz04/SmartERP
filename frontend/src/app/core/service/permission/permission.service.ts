@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Permission} from "../../../model/permission.model";
 import {Observable} from "rxjs";
@@ -9,7 +10,7 @@ import {PermissionDto} from "../../../model/permissionDto.model";
 })
 export class PermissionService {
 
-  private apiUrl = 'http://localhost:8020/permission'; // adapte l'URL de base
+  private apiUrl = `${environment.apiUrl}/permission`; // adapte l'URL de base
 
   constructor(private http: HttpClient) {}
 

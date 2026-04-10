@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CategorieDocument} from "../../../model/CategorieDocument.model";
@@ -9,7 +10,7 @@ import {Document, FileChemin} from "../../../model/Document.model";
   providedIn: 'root'
 })
 export class DocumentService {
-  private apiUrl = 'http://localhost:8020/document';
+  private apiUrl = `${environment.apiUrl}/document`;
 
   constructor(private http: HttpClient) { }
 

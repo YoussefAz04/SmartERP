@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import { SousTache } from 'src/app/model/sousTache.model';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
@@ -8,7 +9,7 @@ import {Observable} from "rxjs";
 })
 export class SousTacheService {
 
-  private apiUrl = 'http://localhost:8020/sous-taches';
+  private apiUrl = `${environment.apiUrl}/sous-taches`;
 
   constructor(private http: HttpClient) {}
 

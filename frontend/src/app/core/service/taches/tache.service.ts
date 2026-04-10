@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {StatutTache, Tache} from "../../../model/tache.model";
 import {Observable} from "rxjs";
@@ -9,7 +10,7 @@ import {SousTache} from "../../../model/sousTache.model";
 })
 export class TacheService {
 
-  private baseUrl = 'http://localhost:8020/taches';
+  private baseUrl = `${environment.apiUrl}/taches`;
 
   constructor(private http: HttpClient) {}
 
@@ -53,7 +54,7 @@ export class TacheService {
   }
 
   getSousTacheById(id: number): Observable<SousTache> {
-    return this.http.get<SousTache>(`http://localhost:8020/sous-taches/getById/${id}`);
+    return this.http.get<SousTache>(`${environment.apiUrl}/sous-taches/getById/${id}`);
   }
   updateSousTache(id: number, sousTache: SousTache): Observable<SousTache> {
     return this.http.put<SousTache>(`${this.baseUrl}/updateSousTache/${id}`, sousTache);

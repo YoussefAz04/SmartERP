@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Client} from "../../../model/client.model";
 import {Observable} from "rxjs";
@@ -8,7 +9,7 @@ import {CategorieClient} from "../../../model/categorieClient.model";
   providedIn: 'root'
 })
 export class ClientService {
-  private baseUrl = 'http://localhost:8020/clients';
+  private baseUrl = `${environment.apiUrl}/clients`;
 
   constructor(private http: HttpClient) { }
 
@@ -21,9 +22,7 @@ export class ClientService {
     
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
-      console.log('Token sent:', token.substring(0, 20) + '...');
     } else {
-      console.warn('No token found in localStorage');
     }
     
     return headers;
@@ -36,7 +35,6 @@ export class ClientService {
         const user = JSON.parse(atob(item));
         return user.token || null;
       } catch (error) {
-        console.error('Error parsing token:', error);
         return null;
       }
     }
@@ -70,7 +68,6 @@ export class ClientService {
 
   // ✅ DELETE CLIENT
   deleteClient(id: number): Observable<any> {
-    console.log('Deleting client:', id);
     return this.http.delete<any>(
       `${this.baseUrl}/deleteClient/${id}`,
       { headers: this.getHeaders() }
