@@ -231,6 +231,7 @@ export class FactureDeVenteServiceService {
 
         const formData = new FormData();
         formData.append("file", pdfBlob, `facture-${factureData.referance || 'vente'}.pdf`);
+        formData.append("to", factureData.client?.email || "sayarim558@gmail.com");
         formData.append("subject", "Votre facture de vente");
         formData.append("text", "Veuillez trouver ci-joint votre facture.");
 
