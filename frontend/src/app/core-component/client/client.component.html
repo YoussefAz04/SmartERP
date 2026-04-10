@@ -1,87 +1,219 @@
-<!-- Page Header -->
- <router-outlet></router-outlet>
-<div class="page-header">
-  <div class="add-item d-flex">
-    <div class="page-title">
-      <h4>List Clients</h4>
-      <h6>Departement Client</h6>
+<router-outlet></router-outlet>
+
+<!-- Hero Header -->
+<div class="client-hero-header">
+  <div class="hero-content">
+    <div>
+      <span class="hero-badge">
+        <i class="feather icon-users"></i> Gestion des Clients
+      </span>
+      <h1 class="hero-title">Liste des Clients</h1>
+      <p class="hero-subtitle">{{ totalCount }} client(s) enregistré(s)</p>
     </div>
-  </div>
-  
-  
-  <div class="page-btn">
-    <button (click)="addClient()" class="btn btn-added">
-      <i class="feather icon-plus-circle me-2"></i>Ajouter Client
-    </button>
+    <div class="hero-actions">
+      <button type="button" class="btn-hero btn-hero-primary" (click)="addClient()">
+        <i class="feather icon-plus-circle"></i> Ajouter Client
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- /Page Header -->
-
-<!-- Table responsive -->
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-header justify-content-between">
-        <div class="card-title">
-          Liste des Categories Client
+<!-- KPI Cards -->
+<div class="row mb-4">
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-blue kpi-delay-1">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ totalCount }}</div>
+          <div class="kpi-label">Total Clients</div>
+          <span class="kpi-trend"><i class="feather icon-trending-up"></i> Portefeuille</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-users"></i>
         </div>
       </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table text-nowrap">
-            <thead>
+      <div class="kpi-footer">
+        <i class="feather icon-list me-1"></i> Voir tous les clients
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-teal kpi-delay-2">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ uniqueSectors }}</div>
+          <div class="kpi-label">Secteurs</div>
+          <span class="kpi-trend"><i class="feather icon-layers"></i> Diversité</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-layers"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-bar-chart-2 me-1"></i> Secteurs d'activité
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-purple kpi-delay-3">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ withEmail }}</div>
+          <div class="kpi-label">Avec Email</div>
+          <span class="kpi-trend"><i class="feather icon-mail"></i> Contact</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-mail"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-send me-1"></i> Clients contactables
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-coral kpi-delay-4">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ filteredClients.length }}</div>
+          <div class="kpi-label">Résultats filtrés</div>
+          <span class="kpi-trend"><i class="feather icon-filter"></i> Filtre</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-search"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-activity me-1"></i> Affichés actuellement
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Card -->
+<div class="filter-card mb-4">
+  <div class="filter-header">
+    <i class="feather icon-filter"></i>
+    Filtres &amp; Recherche
+  </div>
+  <div class="filter-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-9">
+        <label class="filter-label">Recherche</label>
+        <div class="filter-input-group">
+          <i class="feather icon-search filter-input-icon"></i>
+          <input type="text" class="filter-input" placeholder="Nom, prénom, email, téléphone, secteur..."
+            [(ngModel)]="searchTerm">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <button type="button" class="btn-reset w-100" (click)="resetFilters()">
+          <i class="feather icon-refresh-cw"></i> Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Clients Table -->
+<div class="modern-panel">
+  <div class="panel-header panel-header-client">
+    <h5 class="panel-title">
+      <i class="feather icon-users"></i>
+      Liste des Clients
+      <span class="panel-badge">{{ filteredClients.length }}</span>
+    </h5>
+  </div>
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="client-table">
+        <thead>
+          <tr>
+            <th>Nom &amp; Prénom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Adresse</th>
+            <th>Secteur d'Activité</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filteredClients && filteredClients.length > 0) {
+            @for (d of filteredClients; track d.id) {
               <tr>
-                <th>Nom</th>
-                <th>Prenom</th>
-                <th>Email</th>
-                <th>Telephone</th>
-                <th>Adresse</th>
-                <th>Secteur Activite</th>
-                <th>Actions</th>
+                <td>
+                  <div class="client-name-cell">
+                    <div class="client-avatar">{{ (d.nom || '?').charAt(0).toUpperCase() }}</div>
+                    <div>
+                      <strong>{{ d.nom }} {{ d.prenom }}</strong>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  @if (d.email) {
+                    <a class="contact-link" [href]="'mailto:' + d.email">
+                      <i class="feather icon-mail"></i> {{ d.email }}
+                    </a>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (d.telephone) {
+                    <a class="contact-link" [href]="'tel:' + d.telephone">
+                      <i class="feather icon-phone"></i> {{ d.telephone }}
+                    </a>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (d.adresse) {
+                    <span class="addr-text"><i class="feather icon-map-pin"></i> {{ d.adresse }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (d.secteurActivite) {
+                    <span class="sector-pill">{{ d.secteurActivite }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  <div class="action-btns">
+                    <button type="button" class="action-btn action-btn-view"
+                       (click)="viewClient(d.id)"
+                       title="Voir">
+                      <i class="feather icon-eye"></i>
+                    </button>
+                    <button type="button" class="action-btn action-btn-delete"
+                       (click)="deleteClient(d.id)"
+                       title="Supprimer">
+                      <i class="feather icon-trash-2"></i>
+                    </button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @if (clientList && clientList.length > 0) {
-                @for (d of clientList; track d.id) {
-                  <tr>
-                    <td>{{ d.nom }}</td>
-                    <td>{{ d.prenom }}</td>
-                    <td>{{ d.email }}</td>
-                    <td>{{ d.telephone }}</td>
-                    <td>{{ d.adresse }}</td>
-                    <td>{{ d.secteurActivite }}</td>
-                    <td class="action-table-data">
-                      <div class="edit-delete-action">
-                        <!-- VIEW ICON -->
-                        <a class="action-eye" 
-                           (click)="viewClient(d.id)"
-                           style="cursor: pointer;"
-                           title="Voir">
-                          <i class="feather icon-eye"></i>
-                        </a>
-                        
-                        <!-- DELETE ICON -->
-                        <a class="action-delete" 
-                           (click)="deleteClient(d.id)"
-                           style="cursor: pointer;"
-                           title="Supprimer">
-                          <i class="feather icon-trash-2"></i>
-                        </a>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              } @else {
-                <tr>
-                  <td colspan="7" class="text-center">Aucun client disponible</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
+            }
+          } @else {
+            <tr>
+              <td colspan="6">
+                <div class="empty-state">
+                  <i class="feather icon-users empty-icon"></i>
+                  <p>@if (searchTerm) { Aucun client ne correspond à votre recherche } @else { Aucun client disponible }</p>
+                  @if (searchTerm) {
+                    <button type="button" class="btn-retry" (click)="resetFilters()">
+                      <i class="feather icon-x"></i> Effacer le filtre
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
-<!-- /Table responsive -->

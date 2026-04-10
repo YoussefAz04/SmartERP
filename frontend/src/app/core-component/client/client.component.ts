@@ -4,6 +4,7 @@ import { Router, RouterOutlet } from "@angular/router";
 import { Client } from "../../model/client.model";
 import { MatTooltip } from "@angular/material/tooltip";
 import { NgForOf, NgIf, CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 import { ResponseDto } from "../../model/reponseDto.model";
 import { PermissionDto } from "../../model/permissionDto.model";
 
@@ -15,7 +16,8 @@ import { PermissionDto } from "../../model/permissionDto.model";
     NgForOf,
     NgIf,
     CommonModule,
-    RouterOutlet
+    RouterOutlet,
+    FormsModule
   ],
   templateUrl: './client.component.html',
   styleUrl: './client.component.scss'
@@ -23,6 +25,25 @@ import { PermissionDto } from "../../model/permissionDto.model";
 export class ClientComponent implements OnInit, AfterViewInit {
   clientList: Client[] = [];
   isDeleting = false;
+  searchTerm: string = '';
+
+  get filteredClients(): Client[] {
+    if (!this.searchTerm.trim()) return this.clientList;
+    const term = this.searchTerm.toLowerCase();
+    return this.clientList.filter(c =>
+      (c.nom?.toLowerCase().includes(term)) ||
+      (c.prenom?.toLowerCase().includes(term)) ||
+      (c.email?.toLowerCase().includes(term)) ||
+      (c.telephone?.toLowerCase().includes(term)) ||
+      (c.secteurActivite?.toLowerCase().includes(term))
+    );
+  }
+
+  get totalCount(): number { return this.clientList.length; }
+  get uniqueSectors(): number { return new Set(this.clientList.map(c => c.secteurActivite).filter(Boolean)).size; }
+  get withEmail(): number { return this.clientList.filter(c => c.email).length; }
+
+  resetFilters(): void { this.searchTerm = ''; }
   
   permissionClient: PermissionDto = {
     create: false,

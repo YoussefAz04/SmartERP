@@ -4,6 +4,7 @@ import { routes } from 'src/app/core/helpers/routes';
 import {EntrepriseService} from "../../core/service/entreprise/entreprise.service";
 import {Entreprise} from "../../model/entreprise.model";
 import {DatePipe, NgForOf, NgIf} from "@angular/common";
+import {FormsModule} from "@angular/forms";
 import {MatTooltip} from "@angular/material/tooltip";
 import {PermissionDto} from "../../model/permissionDto.model";
 import {AuthResponse} from "../../auth/service/auth.service";
@@ -18,7 +19,8 @@ import {ResponseDto} from "../../model/reponseDto.model";
     DatePipe,
     NgForOf,
     MatTooltip,
-    NgIf
+    NgIf,
+    FormsModule
   ],
   templateUrl: './entreprise.component.html',
   styleUrl: './entreprise.component.scss'
@@ -28,8 +30,28 @@ export class EntrepriseComponent implements OnInit{
   permissionEntreprise!: PermissionDto;
   public routes = routes;
   entreprises: Entreprise[] = [];
-  isLoading: boolean = true;  // ✅ ADD THIS
-  errorMessage: string = '';  // ✅ ADD THIS
+  isLoading: boolean = true;
+  errorMessage: string = '';
+  searchTerm: string = '';
+
+  get filteredEntreprises(): Entreprise[] {
+    if (!this.searchTerm.trim()) return this.entreprises;
+    const term = this.searchTerm.toLowerCase();
+    return this.entreprises.filter(e =>
+      (e.nom?.toLowerCase().includes(term)) ||
+      (e.raisonSociale?.toLowerCase().includes(term)) ||
+      (e.email?.toLowerCase().includes(term)) ||
+      (e.secteurActivite?.toLowerCase().includes(term)) ||
+      (e.adresse?.toLowerCase().includes(term))
+    );
+  }
+
+  get totalCount(): number { return this.entreprises.length; }
+  get withEmail(): number { return this.entreprises.filter(e => e.email).length; }
+  get withWebsite(): number { return this.entreprises.filter(e => e.siteWeb).length; }
+  get uniqueSectors(): number { return new Set(this.entreprises.map(e => e.secteurActivite).filter(Boolean)).size; }
+
+  resetFilters(): void { this.searchTerm = ''; }
 
   constructor(
     private entrepriseService: EntrepriseService,
