@@ -717,3 +717,27 @@
     th, td { padding: 10px 12px; }
   }
 }
+
+// ============================================================
+// Reduced Motion Accessibility
+// ============================================================
+@media (prefers-reduced-motion: reduce) {
+  .achat-hero-header,
+  .kpi-card,
+  .filter-card,
+  .modern-panel {
+    animation: none;
+  }
+
+  .kpi-card:hover {
+    transform: none;
+  }
+
+  .action-btn:hover {
+    transform: none;
+  }
+
+  .btn-hero:hover {
+    transform: none;
+  }
+}
