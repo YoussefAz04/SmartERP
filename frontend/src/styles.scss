@@ -43,6 +43,50 @@ $template-angular-theme: mat.define-light-theme((color: (primary: $template-angu
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-zoom.css");
 @import url("https://cdn.jsdelivr.net/npm/lightgallery@2.0.0-beta.4/css/lg-video.css");
 
+// Dark Mode Global Styles
+body.dark-mode {
+  background-color: #1a202c;
+  color: #e2e8f0;
+
+  a {
+    color: #90cdf4;
+  }
+
+  .card,
+  .modal-content,
+  .dropdown-menu {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .form-control,
+  .form-select {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+
+    &::placeholder {
+      color: #718096;
+    }
+
+    &:focus {
+      background-color: #2d3748;
+      color: #e2e8f0;
+      border-color: #667eea;
+    }
+  }
+
+  table {
+    color: #e2e8f0;
+
+    th,
+    td {
+      border-color: #4a5568;
+    }
+  }
+}
+
 // .show-sub-menu {
 //   display: block;
 //   animation: fadeIn 1s;
