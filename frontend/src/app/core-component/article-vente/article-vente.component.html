@@ -1,310 +1,200 @@
 <router-outlet></router-outlet>
 
-<!-- Hero Header -->
-<div class="vente-hero-header">
-  <div class="hero-content">
-    <div>
-      <div class="hero-badge">
-        <i class="feather icon-trending-up"></i>
-        <span>Gestion des Ventes</span>
-      </div>
-      <h1 class="hero-title">Articles Vente</h1>
-      <p class="hero-subtitle">Gérez vos articles de vente avec marges et prix optimisés</p>
+<!-- Page Header -->
+<div class="page-header">
+  <div class="add-item d-flex">
+    <div class="page-title">
+      <h4>Articles Vente</h4>
+      <h6>Liste des articles de vente</h6>
     </div>
-    <div class="hero-actions">
-      <button (click)="exportCSV()" class="btn-hero btn-hero-outline">
-        <i class="feather icon-download"></i>Exporter CSV
-      </button>
-      <button (click)="addArticle()" class="btn-hero btn-hero-primary">
-        <i class="feather icon-plus-circle"></i>Ajouter Article
-      </button>
-    </div>
+  </div>
+  <div class="page-btn d-flex gap-2">
+    <button (click)="exportCSV()" class="btn btn-secondary">
+      <i class="feather icon-download me-2"></i>Exporter CSV
+    </button>
+    <button (click)="addArticle()" class="btn btn-added">
+      <i class="feather icon-plus-circle me-2"></i>Ajouter Article Vente
+    </button>
   </div>
 </div>
 
-<!-- KPI Cards -->
+<!-- Stats Cards -->
 <div class="row mb-4">
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card kpi-card kpi-teal">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ totalCount }}</div>
-          <div class="kpi-label">Total Articles</div>
-          <div class="kpi-trend">
-            <i class="feather icon-arrow-up"></i>
-            <span>Références actives</span>
-          </div>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-shopping-cart"></i>
-        </div>
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count">
+      <div class="dash-counts">
+        <h4>{{ totalCount }}</h4>
+        <h5>Total Articles</h5>
       </div>
-      <div class="kpi-footer">Articles en vente</div>
+      <div class="dash-imgs">
+        <i class="feather icon-shopping-cart"></i>
+      </div>
     </div>
   </div>
-
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card kpi-card kpi-indigo">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
-          <div class="kpi-label">Prix Moyen Vente</div>
-          <div class="kpi-trend">
-            <i class="feather icon-trending-up"></i>
-            <span>Prix de vente</span>
-          </div>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-tag"></i>
-        </div>
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count das2">
+      <div class="dash-counts">
+        <h4>{{ avgPrice | number:'1.2-2' }}</h4>
+        <h5>Prix Moyen Vente</h5>
       </div>
-      <div class="kpi-footer">Par unité</div>
+      <div class="dash-imgs">
+        <i class="feather icon-tag"></i>
+      </div>
     </div>
   </div>
-
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card kpi-card kpi-emerald">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ avgMarkup | number:'1.1-1' }}%</div>
-          <div class="kpi-label">Markup Moyen</div>
-          <div class="kpi-trend">
-            <i class="feather icon-trending-up"></i>
-            <span>Marge commerciale</span>
-          </div>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-percent"></i>
-        </div>
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count das3">
+      <div class="dash-counts">
+        <h4>{{ avgMarkup | number:'1.1-1' }}%</h4>
+        <h5>Markup Moyen</h5>
       </div>
-      <div class="kpi-footer">Profit margin</div>
+      <div class="dash-imgs">
+        <i class="feather icon-percent"></i>
+      </div>
     </div>
   </div>
-
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card kpi-card kpi-amber">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ totalValue | number:'1.2-2' }}</div>
-          <div class="kpi-label">Valeur Totale</div>
-          <div class="kpi-trend">
-            <i class="feather icon-arrow-up"></i>
-            <span>Inventaire valué</span>
-          </div>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-dollar-sign"></i>
-        </div>
+  <div class="col-xl-3 col-sm-6">
+    <div class="card dash-count das4">
+      <div class="dash-counts">
+        <h4>{{ totalValue | number:'1.2-2' }}</h4>
+        <h5>Valeur Totale</h5>
       </div>
-      <div class="kpi-footer">En stock</div>
+      <div class="dash-imgs">
+        <i class="feather icon-dollar-sign"></i>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Filter Card -->
-<div class="card filter-card mb-3">
-  <div class="filter-header">
-    <i class="feather icon-filter"></i>
-    Filtres & Recherche
-  </div>
-  <div class="filter-body">
+<!-- Search & Filters -->
+<div class="card mb-3">
+  <div class="card-body">
     <div class="row g-3 align-items-end">
-      <div class="col-lg-2">
-        <label class="filter-label">Recherche</label>
-        <div class="filter-input-group">
-          <i class="feather icon-search filter-input-icon"></i>
-          <input type="text" class="filter-input" placeholder="Nom, SKU, article..."
-            [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
-        </div>
+      <div class="col-md-3">
+        <label class="form-label">Recherche</label>
+        <input type="text" class="form-control" placeholder="Nom, SKU, article achat..."
+          [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
       </div>
-      <div class="col-lg-2">
-        <label class="filter-label">Prix Min</label>
-        <div class="filter-input-group">
-          <i class="feather icon-dollar-sign filter-input-icon"></i>
-          <input type="number" class="filter-input" placeholder="0"
-            [(ngModel)]="minPrice" (ngModelChange)="applyFilters()">
-        </div>
+      <div class="col-md-2">
+        <label class="form-label">Prix min</label>
+        <input type="number" class="form-control" placeholder="0"
+          [(ngModel)]="minPrice" (ngModelChange)="applyFilters()">
       </div>
-      <div class="col-lg-2">
-        <label class="filter-label">Prix Max</label>
-        <div class="filter-input-group">
-          <i class="feather icon-dollar-sign filter-input-icon"></i>
-          <input type="number" class="filter-input" placeholder="∞"
-            [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
-        </div>
+      <div class="col-md-2">
+        <label class="form-label">Prix max</label>
+        <input type="number" class="form-control" placeholder="∞"
+          [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
       </div>
-      <div class="col-lg-2">
-        <label class="filter-label">Markup Min</label>
-        <div class="filter-input-group">
-          <i class="feather icon-percent filter-input-icon"></i>
-          <input type="number" class="filter-input" placeholder="0"
-            [(ngModel)]="minMarkup" (ngModelChange)="applyFilters()">
-        </div>
+      <div class="col-md-2">
+        <label class="form-label">Markup min (%)</label>
+        <input type="number" class="form-control" placeholder="0"
+          [(ngModel)]="minMarkup" (ngModelChange)="applyFilters()">
       </div>
-      <div class="col-lg-2">
-        <label class="filter-label">Markup Max</label>
-        <div class="filter-input-group">
-          <i class="feather icon-percent filter-input-icon"></i>
-          <input type="number" class="filter-input" placeholder="∞"
-            [(ngModel)]="maxMarkup" (ngModelChange)="applyFilters()">
-        </div>
+      <div class="col-md-1">
+        <label class="form-label">Markup max (%)</label>
+        <input type="number" class="form-control" placeholder="∞"
+          [(ngModel)]="maxMarkup" (ngModelChange)="applyFilters()">
       </div>
-      <div class="col-lg-2">
-        <button class="btn-reset w-100" (click)="resetFilters()">
-          <i class="feather icon-refresh-cw"></i>Réinitialiser
+      <div class="col-md-2">
+        <button class="btn btn-secondary w-100" (click)="resetFilters()">
+          <i class="feather icon-refresh-cw me-1"></i>Réinitialiser
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Articles Table -->
-<div class="card modern-panel">
-  <div class="panel-header panel-header-vente">
-    <h5 class="panel-title">
-      <i class="feather icon-list"></i>
-      Liste des Articles Vente
-    </h5>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <span class="panel-badge">
-        {{ filteredList.length }} article(s)
-      </span>
-      @if (selectedIds.size > 0) {
-        <button class="btn-bulk-delete" (click)="bulkDelete()">
-          <i class="feather icon-trash-2"></i>
-          Supprimer ({{ selectedIds.size }})
-        </button>
-      }
-    </div>
-  </div>
-  <div class="panel-body">
-    <div class="table-responsive">
-      <table class="vente-table">
-        <thead>
-          <tr>
-            <th class="col-check">
-              <label class="custom-checkbox">
-                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()">
-                <span class="checkmark"></span>
-              </label>
-            </th>
-            <th class="sortable" (click)="setSort('nom')">
-              Nom
-              <i class="feather sort-icon" 
-                [class.icon-chevron-up]="sortField==='nom' && sortAsc"
-                [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='nom'"></i>
-            </th>
-            <th class="sortable" (click)="setSort('prixUnitaire')">
-              Prix Unitaire
-              <i class="feather sort-icon"
-                [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
-                [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
-            </th>
-            <th class="sortable" (click)="setSort('quantite')">
-              Quantité
-              <i class="feather sort-icon"
-                [class.icon-chevron-up]="sortField==='quantite' && sortAsc"
-                [class.icon-chevron-down]="sortField==='quantite' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='quantite'"></i>
-            </th>
-            <th>Unité</th>
-            <th>SKU</th>
-            <th class="sortable" (click)="setSort('markup')">
-              Markup %
-              <i class="feather sort-icon"
-                [class.icon-chevron-up]="sortField==='markup' && sortAsc"
-                [class.icon-chevron-down]="sortField==='markup' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='markup'"></i>
-            </th>
-            <th>Article Achat</th>
-            <th class="sortable" (click)="setSort('createdAt')">
-              Créé le
-              <i class="feather sort-icon"
-                [class.icon-chevron-up]="sortField==='createdAt' && sortAsc"
-                [class.icon-chevron-down]="sortField==='createdAt' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='createdAt'"></i>
-            </th>
-            <th style="width: 80px; text-align: center;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (filteredList && filteredList.length > 0) {
-            @for (a of filteredList; track a.id) {
-              <tr [class.row-selected]="isSelected(a.id)">
-                <td class="col-check">
-                  <label class="custom-checkbox">
-                    <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)">
-                    <span class="checkmark"></span>
-                  </label>
-                </td>
-                <td>
-                  <div class="article-name">
-                    <div class="article-avatar article-avatar-vente">{{ a.nom?.charAt(0).toUpperCase() ?? 'A' }}</div>
-                    <span>{{ a.nom }}</span>
-                  </div>
-                </td>
-                <td>
-                  <span class="price-badge-vente">{{ a.prixUnitaire ?? 0 | number:'1.2-2' }}</span>
-                </td>
-                <td>
-                  <span class="qty-badge" 
-                    [class.qty-critical]="(a.quantite ?? 0) < 5" 
-                    [class.qty-low]="(a.quantite ?? 0) >= 5 && (a.quantite ?? 0) < 10"
-                    [class.qty-ok]="(a.quantite ?? 0) >= 10">
-                    {{ a.quantite ?? 0 }}
-                  </span>
-                </td>
-                <td>
-                  <span class="unit-pill">{{ a.unite ?? '-' }}</span>
-                </td>
-                <td>
-                  <span class="sku-code">{{ a.sku ?? '-' }}</span>
-                </td>
-                <td>
-                  <span class="markup-badge" 
-                    [class.markup-high]="(a.markup ?? 0) >= 30"
-                    [class.markup-medium]="(a.markup ?? 0) >= 15 && (a.markup ?? 0) < 30"
-                    [class.markup-low]="(a.markup ?? 0) < 15">
-                    {{ a.markup ?? '—' }}%
-                  </span>
-                </td>
-                <td>
-                  <span class="source-pill">
-                    <i class="feather icon-inbox"></i>
-                    {{ a.articleAchat?.nom ?? '-' }}
-                  </span>
-                </td>
-                <td class="date-cell">{{ a.createdAt | date:'shortDate' }}</td>
-                <td style="text-align: center;">
-                  <div class="action-btns">
-                    <button class="action-btn action-btn-edit" 
-                      (click)="editArticle(a.id)" title="Modifier">
-                      <i class="feather icon-edit"></i>
-                    </button>
-                    <button class="action-btn action-btn-delete" 
-                      (click)="deleteArticle(a.id)" title="Supprimer">
-                      <i class="feather icon-trash-2"></i>
-                    </button>
-                  </div>
-                </td>
+<!-- Table -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header justify-content-between">
+        <div class="card-title">
+          Liste des Articles Vente
+          <span class="badge bg-secondary ms-2">{{ filteredList.length }} article(s)</span>
+        </div>
+        @if (selectedIds.size > 0) {
+          <button class="btn btn-danger btn-sm" (click)="bulkDelete()">
+            <i class="feather icon-trash-2 me-1"></i>Supprimer ({{ selectedIds.size }})
+          </button>
+        }
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table text-nowrap">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()">
+                </th>
+                <th style="cursor:pointer" (click)="setSort('nom')">
+                  Nom <i class="feather" [class.icon-chevron-up]="sortField==='nom' && sortAsc"
+                    [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
+                    [class.icon-chevrons-up]="sortField!=='nom'"></i>
+                </th>
+                <th style="cursor:pointer" (click)="setSort('prixUnitaire')">
+                  Prix Unitaire <i class="feather" [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
+                    [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
+                    [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
+                </th>
+                <th style="cursor:pointer" (click)="setSort('quantite')">Quantité</th>
+                <th>Unité</th>
+                <th>SKU</th>
+                <th style="cursor:pointer" (click)="setSort('markup')">
+                  Markup (%) <i class="feather" [class.icon-chevron-up]="sortField==='markup' && sortAsc"
+                    [class.icon-chevron-down]="sortField==='markup' && !sortAsc"
+                    [class.icon-chevrons-up]="sortField!=='markup'"></i>
+                </th>
+                <th>Article Achat</th>
+                <th style="cursor:pointer" (click)="setSort('createdAt')">Créé le</th>
+                <th>Actions</th>
               </tr>
-            }
-          } @else {
-            <tr>
-              <td colspan="10" class="empty-state">
-                <i class="feather icon-inbox empty-icon"></i>
-                @if (isLoading) {
-                  <p>Chargement en cours...</p>
-                } @else {
-                  <p>Aucun article disponible</p>
+            </thead>
+            <tbody>
+              @if (filteredList && filteredList.length > 0) {
+                @for (a of filteredList; track a.id) {
+                  <tr [class.table-active]="isSelected(a.id)">
+                    <td>
+                      <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)">
+                    </td>
+                    <td>{{ a.nom }}</td>
+                    <td>{{ a.prixUnitaire | number:'1.2-2' }}</td>
+                    <td>{{ a.quantite }}</td>
+                    <td>{{ a.unite }}</td>
+                    <td>{{ a.sku }}</td>
+                    <td>
+                      @if (a.markup != null) {
+                        <span class="badge bg-success">{{ a.markup }}%</span>
+                      } @else {
+                        <span class="text-muted">—</span>
+                      }
+                    </td>
+                    <td>{{ a.articleAchat?.nom }}</td>
+                    <td>{{ a.createdAt | date:'shortDate' }}</td>
+                    <td class="action-table-data">
+                      <div class="edit-delete-action">
+                        <a class="action-edit" (click)="editArticle(a.id)" style="cursor:pointer" title="Modifier">
+                          <i class="feather icon-edit"></i>
+                        </a>
+                        <a class="action-delete" (click)="deleteArticle(a.id)" style="cursor:pointer" title="Supprimer">
+                          <i class="feather icon-trash-2"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
                 }
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+              } @else {
+                <tr>
+                  <td colspan="10" class="text-center">
+                    @if (isLoading) { Chargement... } @else { Aucun article disponible }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
