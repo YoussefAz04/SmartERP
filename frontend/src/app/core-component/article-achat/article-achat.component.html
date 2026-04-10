@@ -1,8 +1,280 @@
-<!-- Adjusted quantity display to handle null values -->
-<!-- Other lines of code remain unchanged -->
+<router-outlet></router-outlet>
 
-<!-- Quantity Display -->
-<span>Quantity: {{ a.quantite ?? 0 }}</span>
+<!-- Hero Header -->
+<div class="achat-hero-header">
+  <div class="hero-content">
+    <div>
+      <span class="hero-badge">
+        <i class="feather icon-shopping-bag"></i> Gestion des Achats
+      </span>
+      <h1 class="hero-title">Articles Achat</h1>
+      <p class="hero-subtitle">{{ totalCount }} article(s) dans le catalogue d'achat</p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-hero btn-hero-outline" (click)="exportCSV()">
+        <i class="feather icon-download"></i> Exporter CSV
+      </button>
+      <button class="btn-hero btn-hero-primary" (click)="addArticle()">
+        <i class="feather icon-plus-circle"></i> Ajouter Article
+      </button>
+    </div>
+  </div>
+</div>
 
-<!-- Quantity Badge Section -->
-<span class="badge">{{ a.quantite ? a.quantite : 0 }}</span>
+<!-- KPI Cards -->
+<div class="row mb-4">
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-purple" style="animation-delay: 0.1s">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ totalCount }}</div>
+          <div class="kpi-label">Total Articles</div>
+          <span class="kpi-trend"><i class="feather icon-trending-up"></i> Catalogue</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-shopping-bag"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-list me-1"></i> Voir tous les articles
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-blue" style="animation-delay: 0.2s">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
+          <div class="kpi-label">Prix Moyen Achat</div>
+          <span class="kpi-trend"><i class="feather icon-tag"></i> DT</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-tag"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-bar-chart-2 me-1"></i> Moyenne catalogue
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-green" style="animation-delay: 0.3s">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ uniqueFournisseurs.length }}</div>
+          <div class="kpi-label">Fournisseurs Actifs</div>
+          <span class="kpi-trend"><i class="feather icon-users"></i> Partenaires</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-users"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-user me-1"></i> Réseau fournisseurs
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 mb-4">
+    <div class="kpi-card kpi-orange" style="animation-delay: 0.4s">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ totalValue | number:'1.0-0' }}</div>
+          <div class="kpi-label">Valeur Totale Stock</div>
+          <span class="kpi-trend"><i class="feather icon-dollar-sign"></i> DT</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-dollar-sign"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-trending-up me-1"></i> Inventaire valorisé
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Card -->
+<div class="filter-card mb-4">
+  <div class="filter-header">
+    <i class="feather icon-filter"></i>
+    Filtres &amp; Recherche
+  </div>
+  <div class="filter-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="filter-label">Recherche</label>
+        <div class="filter-input-group">
+          <i class="feather icon-search filter-input-icon"></i>
+          <input type="text" class="filter-input" placeholder="Nom, SKU, description..."
+            [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <label class="filter-label">Prix min</label>
+        <div class="filter-input-group">
+          <i class="feather icon-trending-down filter-input-icon"></i>
+          <input type="number" class="filter-input" placeholder="0"
+            [(ngModel)]="minPrice" (ngModelChange)="applyFilters()">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <label class="filter-label">Prix max</label>
+        <div class="filter-input-group">
+          <i class="feather icon-trending-up filter-input-icon"></i>
+          <input type="number" class="filter-input" placeholder="∞"
+            [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="filter-label">Fournisseur</label>
+        <div class="filter-input-group">
+          <i class="feather icon-user filter-input-icon"></i>
+          <select class="filter-input" [(ngModel)]="selectedFournisseur" (ngModelChange)="applyFilters()">
+            <option value="">Tous les fournisseurs</option>
+            @for (f of uniqueFournisseurs; track f) {
+              <option [value]="f">{{ f }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <button class="btn-reset w-100" (click)="resetFilters()">
+          <i class="feather icon-refresh-cw"></i> Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Articles Table -->
+<div class="modern-panel">
+  <div class="panel-header panel-header-primary">
+    <h5 class="panel-title">
+      <i class="feather icon-shopping-bag"></i>
+      Liste des Articles Achat
+      <span class="panel-badge">{{ filteredList.length }}</span>
+    </h5>
+    @if (selectedIds.size > 0) {
+      <button class="btn-bulk-delete" (click)="bulkDelete()">
+        <i class="feather icon-trash-2"></i> Supprimer ({{ selectedIds.size }})
+      </button>
+    }
+  </div>
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="achat-table">
+        <thead>
+          <tr>
+            <th class="col-check">
+              <label class="custom-checkbox">
+                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()">
+                <span class="checkmark"></span>
+              </label>
+            </th>
+            <th class="sortable" (click)="setSort('nom')">
+              Nom <i class="feather sort-icon" [class.icon-chevron-up]="sortField==='nom' && sortAsc"
+                [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
+                [class.icon-chevrons-up]="sortField!=='nom'"></i>
+            </th>
+            <th class="sortable" (click)="setSort('prixUnitaire')">
+              Prix Unitaire <i class="feather sort-icon" [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
+                [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
+                [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
+            </th>
+            <th class="sortable" (click)="setSort('quantite')">Quantité</th>
+            <th>Unité</th>
+            <th>SKU</th>
+            <th>Fournisseur</th>
+            <th>Catégorie</th>
+            <th class="sortable" (click)="setSort('createdAt')">Créé le</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filteredList && filteredList.length > 0) {
+            @for (a of filteredList; track a.id) {
+              <tr [class.row-selected]="isSelected(a.id)">
+                <td class="col-check">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)">
+                    <span class="checkmark"></span>
+                  </label>
+                </td>
+                <td>
+                  <div class="article-name">
+                    <div class="article-avatar">{{ a.nom.charAt(0).toUpperCase() }}</div>
+                    <div>
+                      <strong>{{ a.nom }}</strong>
+                      @if (a.description) {
+                        <div style="font-size:11px; color:#9ca3af; white-space:normal; max-width:180px;">{{ a.description }}</div>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="price-badge">{{ (a.prixUnitaire ?? 0) | number:'1.2-2' }} DT</span>
+                </td>
+                <td>
+                  <span class="qty-badge" [class.qty-ok]="(a.quantite ?? 0) >= 5"
+                    [class.qty-low]="(a.quantite ?? 0) > 0 && (a.quantite ?? 0) < 5">
+                    {{ a.quantite ?? 0 }}
+                  </span>
+                </td>
+                <td>
+                  @if (a.unite) {
+                    <span class="unit-pill">{{ a.unite }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (a.sku) {
+                    <span class="sku-code">{{ a.sku }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (a.fournisseur?.nom) {
+                    <span class="supplier-badge">
+                      <i class="feather icon-user"></i> {{ a.fournisseur?.nom }}
+                    </span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @if (a.categorieArticle?.nom) {
+                    <span class="category-pill">{{ a.categorieArticle?.nom }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td class="date-cell">{{ a.createdAt | date:'dd/MM/yy' }}</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-btn action-btn-edit" (click)="editArticle(a.id)" title="Modifier">
+                      <i class="feather icon-edit"></i>
+                    </button>
+                    <button class="action-btn action-btn-delete" (click)="deleteArticle(a.id)" title="Supprimer">
+                      <i class="feather icon-trash-2"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          } @else {
+            <tr>
+              <td colspan="10">
+                <div class="empty-state">
+                  <i class="feather icon-shopping-bag empty-icon"></i>
+                  <p>@if (isLoading) { Chargement en cours... } @else { Aucun article d'achat trouvé }</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
