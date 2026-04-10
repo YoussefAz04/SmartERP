@@ -1,86 +1,86 @@
-<!-- Dashboard Header -->
+<!-- En-tête du Tableau de Bord -->
 <div class="dashboard-header">
   <div class="header-content">
     <div>
-      <h1 class="page-title">Dashboard</h1>
-      <p class="page-subtitle">Welcome back, {{ userName }}! 👋</p>
+      <h1 class="page-title">{{ labels.tableauBord }}</h1>
+      <p class="page-subtitle">{{ labels.bienvenue }}, {{ userName }}! 👋</p>
     </div>
     <div class="header-meta">
       <span class="enterprise-badge">{{ enterpriseName }}</span>
-      <span class="date-badge">{{ today | date: 'MMMM d, yyyy' }}</span>
+      <span class="date-badge">{{ today | date: 'd MMMM yyyy' }}</span>
     </div>
   </div>
 </div>
 
-<!-- Loading / Error States -->
+<!-- États de chargement / erreur -->
 <div *ngIf="statsLoading" class="text-center p-4">
   <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+    <span class="visually-hidden">Chargement...</span>
   </div>
-  <p class="mt-2">Loading dashboard data...</p>
+  <p class="mt-2">{{ labels.chargement }}</p>
 </div>
 
 <div *ngIf="statsError && !statsLoading" class="alert alert-warning mb-3" role="alert">
   <i class="feather icon-alert-triangle me-2"></i>
-  Could not load real-time stats. Showing cached data if available.
+  {{ labels.erreurChargement }}
 </div>
 
-<!-- ERP Dashboard Stats -->
+<!-- Statistiques ERP -->
 <div *ngIf="stats && !statsLoading">
 
-  <!-- Key Metrics Section -->
+  <!-- Section: Métriques Clés -->
   <div class="dashboard-section">
-    <h2 class="section-title">Key Metrics</h2>
+    <h2 class="section-title">{{ labels.metriquesCles }}</h2>
     <div class="metrics-grid">
       <app-stat-card
-        [label]="'Total Sales'"
+        [label]="labels.ventesTotales"
         [value]="currency + (stats.totalSalesRevenue | number:'1.2-2')"
         [icon]="'feather icon-bar-chart-2'"
         [color]="'blue'"
         [trend]="'up'"
-        [trendValue]="'Sales Revenue'">
+        [trendValue]="labels.revenuVentes">
       </app-stat-card>
 
       <app-stat-card
-        [label]="'Total Purchases'"
+        [label]="labels.achatsTotaux"
         [value]="currency + (stats.totalPurchases | number:'1.2-2')"
         [icon]="'feather icon-shopping-bag'"
         [color]="'orange'"
         [trend]="'up'"
-        [trendValue]="'Purchase Total'">
+        [trendValue]="labels.totalAchats">
       </app-stat-card>
 
       <app-stat-card
-        [label]="'Profit / Loss'"
+        [label]="labels.beneficePerte"
         [value]="currency + (stats.profitLoss | number:'1.2-2')"
         [icon]="'feather icon-trending-up'"
         [color]="'green'"
         [trend]="stats.profitLoss >= 0 ? 'up' : 'down'"
-        [trendValue]="stats.profitLoss >= 0 ? 'Profit' : 'Loss'">
+        [trendValue]="stats.profitLoss >= 0 ? labels.benefice : labels.perte">
       </app-stat-card>
 
       <app-stat-card
-        [label]="'Total Revenue'"
+        [label]="labels.chiffreAffaires"
         [value]="currency + (stats.totalRevenue | number:'1.2-2')"
         [icon]="'feather icon-dollar-sign'"
         [color]="'cyan'"
         [trend]="'up'"
-        [trendValue]="'Net Revenue'">
+        [trendValue]="labels.revenuNet">
       </app-stat-card>
     </div>
   </div>
 
-  <!-- Business Overview Section -->
+  <!-- Section: Aperçu Métier -->
   <div class="dashboard-section">
-    <h2 class="section-title">Business Overview</h2>
+    <h2 class="section-title">{{ labels.apercuMetier }}</h2>
     <div class="overview-grid">
       <div class="overview-card">
         <div class="overview-icon blue">
           <i class="feather icon-users"></i>
         </div>
         <h3>{{ stats.totalCustomers }}</h3>
-        <p>Total Customers</p>
-        <span class="overview-badge">+{{ stats.newCustomersThisMonth }} New</span>
+        <p>{{ labels.totalClients }}</p>
+        <span class="overview-badge">+{{ stats.newCustomersThisMonth }} {{ labels.nouveau }}</span>
       </div>
 
       <div class="overview-card">
@@ -88,8 +88,8 @@
           <i class="feather icon-box"></i>
         </div>
         <h3>{{ stats.totalSKUs }}</h3>
-        <p>Products (SKUs)</p>
-        <span class="overview-badge">In Stock</span>
+        <p>{{ labels.articlesSkus }}</p>
+        <span class="overview-badge">{{ labels.enStock }}</span>
       </div>
 
       <div class="overview-card">
@@ -97,8 +97,8 @@
           <i class="feather icon-file-text"></i>
         </div>
         <h3>{{ stats.totalOrders }}</h3>
-        <p>Sales Orders</p>
-        <span class="overview-badge">Active</span>
+        <p>{{ labels.commandesVente }}</p>
+        <span class="overview-badge">{{ labels.actif }}</span>
       </div>
 
       <div class="overview-card">
@@ -106,57 +106,57 @@
           <i class="feather icon-package"></i>
         </div>
         <h3>{{ stats.totalPurchaseOrders }}</h3>
-        <p>Purchase Orders</p>
-        <span class="overview-badge">Pending</span>
+        <p>{{ labels.commandesAchat }}</p>
+        <span class="overview-badge">{{ labels.enAttente }}</span>
       </div>
     </div>
   </div>
 
-  <!-- Inventory Status Section -->
+  <!-- Section: État du Stock -->
   <div class="dashboard-section">
-    <h2 class="section-title">Inventory Status</h2>
+    <h2 class="section-title">{{ labels.etatStock }}</h2>
     <div class="inventory-grid">
       <div class="inventory-card inv-primary">
         <div class="inventory-header">
           <i class="feather icon-layers"></i>
-          <span>Stock Value</span>
+          <span>{{ labels.valeurStock }}</span>
         </div>
         <h2 class="inventory-value">{{ currency }}{{ stats.totalStockValue | number:'1.2-2' }}</h2>
-        <p class="inventory-detail">Total inventory value</p>
+        <p class="inventory-detail">{{ labels.valeurTotalStock }}</p>
       </div>
 
       <div class="inventory-card inv-warning">
         <div class="inventory-header">
           <i class="feather icon-alert-triangle"></i>
-          <span>Low Stock</span>
+          <span>{{ labels.stockFaible }}</span>
         </div>
         <h2 class="inventory-value">{{ stats.lowStockItemsCount }}</h2>
-        <p class="inventory-detail">Items need attention</p>
+        <p class="inventory-detail">{{ labels.articlesAttention }}</p>
       </div>
 
       <div class="inventory-card inv-danger">
         <div class="inventory-header">
           <i class="feather icon-x-circle"></i>
-          <span>Out of Stock</span>
+          <span>{{ labels.ruptureStock }}</span>
         </div>
         <h2 class="inventory-value">{{ stats.outOfStockItemsCount }}</h2>
-        <p class="inventory-detail">Items unavailable</p>
+        <p class="inventory-detail">{{ labels.articlesIndisponibles }}</p>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- Charts & Analytics Section -->
+<!-- Section: Analytique -->
 <div class="dashboard-section">
-  <h2 class="section-title">Analytics</h2>
+  <h2 class="section-title">{{ labels.analytique }}</h2>
   <div class="charts-grid">
     <div class="chart-card">
       <div class="chart-card-header">
-        <h3>Purchase &amp; Sales</h3>
+        <h3>{{ labels.achatsVentes }}</h3>
         <div class="chart-legend">
-          <span class="legend-item legend-sales">Sales</span>
-          <span class="legend-item legend-purchase">Purchase</span>
+          <span class="legend-item legend-sales">{{ labels.ventes }}</span>
+          <span class="legend-item legend-purchase">{{ labels.achats }}</span>
         </div>
       </div>
       <div class="chart-card-body">
@@ -174,17 +174,17 @@
 
     <div class="chart-card">
       <div class="chart-card-header">
-        <h3>Top Products</h3>
+        <h3>{{ labels.meilleursArticles }}</h3>
       </div>
       <div class="chart-card-body">
         <div class="table-responsive" *ngIf="stats && stats.topProducts && stats.topProducts.length > 0">
           <table class="modern-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Product</th>
-                <th>Qty Sold</th>
-                <th>Revenue</th>
+                <th>{{ labels.numero }}</th>
+                <th>{{ labels.article }}</th>
+                <th>{{ labels.quantiteVendue }}</th>
+                <th>{{ labels.revenu }}</th>
               </tr>
             </thead>
             <tbody>
@@ -200,28 +200,28 @@
           </table>
         </div>
         <div *ngIf="!stats || !stats.topProducts || stats.topProducts.length === 0" class="empty-state">
-          No product data available
+          {{ labels.aucuneDonneeArticle }}
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Top Customers & Order Status -->
+<!-- Meilleurs Clients & État des Commandes -->
 <div class="charts-grid" *ngIf="stats">
   <div class="chart-card">
     <div class="chart-card-header">
-      <h3>Top Customers</h3>
+      <h3>{{ labels.meilleursClients }}</h3>
     </div>
     <div class="chart-card-body">
       <div class="table-responsive" *ngIf="stats.topCustomers && stats.topCustomers.length > 0">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Customer</th>
-              <th>Orders</th>
-              <th>Total Spent</th>
+              <th>{{ labels.numero }}</th>
+              <th>{{ labels.client }}</th>
+              <th>{{ labels.commandes }}</th>
+              <th>{{ labels.totalDepense }}</th>
             </tr>
           </thead>
           <tbody>
@@ -237,38 +237,38 @@
         </table>
       </div>
       <div *ngIf="!stats.topCustomers || stats.topCustomers.length === 0" class="empty-state">
-        No customer data available
+        {{ labels.aucunDonneeClient }}
       </div>
     </div>
   </div>
 
   <div class="chart-card">
     <div class="chart-card-header">
-      <h3>Order Status Breakdown</h3>
+      <h3>{{ labels.etatCommandes }}</h3>
     </div>
     <div class="chart-card-body">
-      <h6 class="status-subtitle">Sales Orders</h6>
+      <h6 class="status-subtitle">{{ labels.commandesVenteTitre }}</h6>
       <div class="status-badges">
         @for (entry of getOrderStatusEntries(); track entry) {
           <span class="status-badge badge-primary">{{ entry.key }}: {{ entry.value }}</span>
         }
-        <span *ngIf="getOrderStatusEntries().length === 0" class="empty-state">No data</span>
+        <span *ngIf="getOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucuneDonnee }}</span>
       </div>
-      <h6 class="status-subtitle mt-3">Purchase Orders</h6>
+      <h6 class="status-subtitle mt-3">{{ labels.commandesAchatTitre }}</h6>
       <div class="status-badges">
         @for (entry of getPurchaseOrderStatusEntries(); track entry) {
           <span class="status-badge badge-secondary">{{ entry.key }}: {{ entry.value }}</span>
         }
-        <span *ngIf="getPurchaseOrderStatusEntries().length === 0" class="empty-state">No data</span>
+        <span *ngIf="getPurchaseOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucuneDonnee }}</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Expired Products Table -->
+<!-- Tableau des Articles Expirés -->
 <div class="chart-card">
   <div class="chart-card-header">
-    <h3>Expired Products</h3>
+    <h3>{{ labels.articlesExpires }}</h3>
   </div>
   <div class="chart-card-body">
     <div class="table-responsive dataview">
@@ -282,11 +282,11 @@
                 <span class="checkmarks"></span>
               </label>
             </th>
-            <th mat-sort-header="product">Product</th>
-            <th mat-sort-header="sku">SKU</th>
-            <th mat-sort-header="date">Manufactured Date</th>
-            <th mat-sort-header="expireddate">Expired Date</th>
-            <th class="no-sort">Action</th>
+            <th mat-sort-header="product">{{ labels.article }}</th>
+            <th mat-sort-header="sku">{{ labels.sku }}</th>
+            <th mat-sort-header="date">{{ labels.dateFabrication }}</th>
+            <th mat-sort-header="expireddate">{{ labels.dateExpiration }}</th>
+            <th class="no-sort">{{ labels.action }}</th>
           </tr>
         </thead>
         <tbody>
@@ -301,7 +301,7 @@
               <td>
                 <div class="productimgname">
                   <a href="javascript:void(0);" class="product-img stock-img">
-                    <img [src]="data.img" alt="product">
+                    <img [src]="data.img" alt="article">
                   </a>
                   <a href="javascript:void(0);">{{data.product}}</a>
                 </div>
