@@ -1,15 +1,24 @@
-<!-- Page Header -->
-<div class="page-header">
-  <div class="add-item d-flex">
-    <div class="page-title">
-      <h4>Tableau de bord - Gestion des Stocks</h4>
-      <h6>Vue d'ensemble de l'inventaire</h6>
+<!-- Dashboard Header -->
+<div class="stock-dashboard-header">
+  <div class="header-content">
+    <div class="header-text">
+      <div class="header-badge">
+        <i class="feather icon-layers"></i>
+        <span>Gestion des Stocks</span>
+      </div>
+      <h1 class="header-title">Tableau de Bord</h1>
+      <p class="header-subtitle">Vue d'ensemble de votre inventaire en temps réel</p>
     </div>
-  </div>
-  <div class="page-btn">
-    <button class="btn btn-added" routerLink="/stock/list">
-      <i class="feather icon-list me-2"></i>Voir l'inventaire
-    </button>
+    <div class="header-actions">
+      <button class="btn-modern btn-modern-outline" routerLink="/stock/list">
+        <i class="feather icon-list"></i>
+        <span>Inventaire</span>
+      </button>
+      <button class="btn-modern btn-modern-primary" routerLink="/stock/adjust">
+        <i class="feather icon-plus"></i>
+        <span>Ajuster</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -27,102 +36,145 @@
   <!-- KPI Cards -->
   <div class="row g-3 mb-4">
     <div class="col-xl-3 col-sm-6">
-      <div class="card dash-widget">
-        <div class="card-body">
-          <span class="dash-widget-icon bg-primary text-white">
+      <div class="kpi-card kpi-purple">
+        <div class="kpi-body">
+          <div class="kpi-info">
+            <div class="kpi-number">{{ totalItems }}</div>
+            <div class="kpi-label">Articles en stock</div>
+            <div class="kpi-trend">
+              <i class="feather icon-trending-up"></i>
+              <span>Inventaire actif</span>
+            </div>
+          </div>
+          <div class="kpi-icon-wrap">
             <i class="feather icon-package"></i>
-          </span>
-          <div class="dash-widget-info">
-            <h3>{{ totalItems }}</h3>
-            <span>Articles en stock</span>
           </div>
+        </div>
+        <div class="kpi-footer">
+          <span>Voir l'inventaire →</span>
         </div>
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="card dash-widget">
-        <div class="card-body">
-          <span class="dash-widget-icon bg-success text-white">
+      <div class="kpi-card kpi-green">
+        <div class="kpi-body">
+          <div class="kpi-info">
+            <div class="kpi-number">{{ totalAvailable }}</div>
+            <div class="kpi-label">Quantité disponible</div>
+            <div class="kpi-trend">
+              <i class="feather icon-check-circle"></i>
+              <span>Unités en stock</span>
+            </div>
+          </div>
+          <div class="kpi-icon-wrap">
             <i class="feather icon-trending-up"></i>
-          </span>
-          <div class="dash-widget-info">
-            <h3>{{ totalAvailable }}</h3>
-            <span>Quantité disponible totale</span>
           </div>
+        </div>
+        <div class="kpi-footer">
+          <span>Voir le stock →</span>
         </div>
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="card dash-widget">
-        <div class="card-body">
-          <span class="dash-widget-icon bg-warning text-white">
+      <div class="kpi-card kpi-red">
+        <div class="kpi-body">
+          <div class="kpi-info">
+            <div class="kpi-number">{{ lowStockCount }}</div>
+            <div class="kpi-label">Ruptures de stock</div>
+            <div class="kpi-trend">
+              <i class="feather icon-alert-triangle"></i>
+              <span>À réapprovisionner</span>
+            </div>
+          </div>
+          <div class="kpi-icon-wrap">
             <i class="feather icon-alert-triangle"></i>
-          </span>
-          <div class="dash-widget-info">
-            <h3>{{ lowStockCount }}</h3>
-            <span>Ruptures de stock</span>
           </div>
+        </div>
+        <div class="kpi-footer">
+          <span>Voir les alertes →</span>
         </div>
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="card dash-widget">
-        <div class="card-body">
-          <span class="dash-widget-icon bg-info text-white">
-            <i class="feather icon-activity"></i>
-          </span>
-          <div class="dash-widget-info">
-            <h3>{{ movements.length }}</h3>
-            <span>Mouvements totaux</span>
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-body">
+          <div class="kpi-info">
+            <div class="kpi-number">{{ movements.length }}</div>
+            <div class="kpi-label">Mouvements totaux</div>
+            <div class="kpi-trend">
+              <i class="feather icon-activity"></i>
+              <span>Historique complet</span>
+            </div>
           </div>
+          <div class="kpi-icon-wrap">
+            <i class="feather icon-activity"></i>
+          </div>
+        </div>
+        <div class="kpi-footer">
+          <span>Voir l'historique →</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Quick Actions -->
-  <div class="row g-3 mb-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Actions rapides</h5>
-        </div>
-        <div class="card-body">
-          <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-primary" routerLink="/stock/list">
-              <i class="feather icon-list me-2"></i>Voir tout l'inventaire
-            </button>
-            <button class="btn btn-success" routerLink="/stock/adjust">
-              <i class="feather icon-edit me-2"></i>Ajuster le stock
-            </button>
-            <button class="btn btn-info text-white" routerLink="/stock/movements">
-              <i class="feather icon-clock me-2"></i>Historique des mouvements
-            </button>
-            <button class="btn btn-warning text-dark" routerLink="/stock/list">
-              <i class="feather icon-alert-triangle me-2"></i>Alertes stock bas
-            </button>
-          </div>
-        </div>
+  <div class="section-header">
+    <h2 class="section-title">Actions Rapides</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="actions-grid">
+    <div class="action-card action-blue" routerLink="/stock/list">
+      <div class="action-icon"><i class="feather icon-list"></i></div>
+      <div class="action-text">
+        <h4>Voir tout l'inventaire</h4>
+        <p>Liste complète des articles</p>
       </div>
+      <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
+    </div>
+    <div class="action-card action-green" routerLink="/stock/adjust">
+      <div class="action-icon"><i class="feather icon-edit-3"></i></div>
+      <div class="action-text">
+        <h4>Ajuster le stock</h4>
+        <p>Modifier les quantités</p>
+      </div>
+      <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
+    </div>
+    <div class="action-card action-teal" routerLink="/stock/movements">
+      <div class="action-icon"><i class="feather icon-clock"></i></div>
+      <div class="action-text">
+        <h4>Historique des mouvements</h4>
+        <p>Audit trail complet</p>
+      </div>
+      <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
+    </div>
+    <div class="action-card action-orange" routerLink="/stock/list">
+      <div class="action-icon"><i class="feather icon-alert-triangle"></i></div>
+      <div class="action-text">
+        <h4>Alertes stock bas</h4>
+        <p>Articles à réapprovisionner</p>
+      </div>
+      <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
     </div>
   </div>
 
+  <!-- Bottom Panels -->
   <div class="row g-3">
     <!-- Low Stock Items -->
     <div class="col-xl-6">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">
-            <i class="feather icon-alert-triangle text-warning me-2"></i>
-            Articles en rupture de stock
-          </h5>
-          <span class="badge bg-warning text-dark">{{ lowStockCount }}</span>
+      <div class="modern-panel h-100">
+        <div class="panel-header panel-header-danger">
+          <div class="panel-title">
+            <i class="feather icon-alert-triangle"></i>
+            Articles En Rupture De Stock
+            <span class="panel-badge">{{ lowStockCount }}</span>
+          </div>
+          <a routerLink="/stock/list" class="panel-link">Voir tout</a>
         </div>
-        <div class="card-body p-0">
+        <div class="panel-body">
           @if (lowStockItems.length > 0) {
             <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
+              <table class="table mb-0">
+                <thead>
                   <tr>
                     <th>Article</th>
                     <th>Localisation</th>
@@ -142,7 +194,12 @@
                         <span class="fw-bold text-danger">{{ stock.quantiteDisponible || 0 }}</span>
                       </td>
                       <td class="text-center">
-                        <span [class]="getStatusBadgeClass(stock)">{{ getStatusLabel(stock) }}</span>
+                        <span class="status-pill"
+                          [class.pill-danger]="getStockStatus(stock) === 'OUT_OF_STOCK'"
+                          [class.pill-warning]="getStockStatus(stock) === 'LOW_STOCK'"
+                          [class.pill-success]="getStockStatus(stock) === 'OK'">
+                          {{ getStatusLabel(stock) }}
+                        </span>
                       </td>
                       <td>
                         <a [routerLink]="['/stock/view', stock.id]" class="btn btn-sm btn-outline-primary">
@@ -166,19 +223,19 @@
 
     <!-- Recent Movements -->
     <div class="col-xl-6">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">
-            <i class="feather icon-activity text-primary me-2"></i>
-            Derniers mouvements
-          </h5>
-          <a routerLink="/stock/movements" class="btn btn-sm btn-outline-primary">Voir tout</a>
+      <div class="modern-panel h-100">
+        <div class="panel-header panel-header-primary">
+          <div class="panel-title">
+            <i class="feather icon-activity"></i>
+            Derniers Mouvements
+          </div>
+          <a routerLink="/stock/movements" class="panel-link">Voir tout</a>
         </div>
-        <div class="card-body p-0">
+        <div class="panel-body">
           @if (recentMovements.length > 0) {
             <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
+              <table class="table mb-0">
+                <thead>
                   <tr>
                     <th>Date</th>
                     <th>Type</th>
@@ -191,7 +248,12 @@
                     <tr>
                       <td>{{ mvt.dateMouvement | date:'dd/MM/yy HH:mm' }}</td>
                       <td>
-                        <span [class]="getMovementBadgeClass(mvt.typeMouvement)">
+                        <span class="movement-pill"
+                          [class.pill-entree]="mvt.typeMouvement === 'ENTREE'"
+                          [class.pill-sortie]="mvt.typeMouvement === 'SORTIE'"
+                          [class.pill-ajustement]="mvt.typeMouvement === 'AJUSTEMENT'"
+                          [class.pill-reservation]="mvt.typeMouvement === 'RESERVATION'"
+                          [class.pill-default]="mvt.typeMouvement !== 'ENTREE' && mvt.typeMouvement !== 'SORTIE' && mvt.typeMouvement !== 'AJUSTEMENT' && mvt.typeMouvement !== 'RESERVATION'">
                           {{ mvt.typeMouvement }}
                         </span>
                       </td>
