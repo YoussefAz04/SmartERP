@@ -43,8 +43,8 @@ export class SigninComponent implements OnInit {
     const passwordCtrl = this.loginForm.get('password');
 
     console.log('Form validity:', this.loginForm.valid);
-    console.log('Username:', usernameCtrl?.value, '(valid:', usernameCtrl?.valid, ')');
-    console.log('Password:', passwordCtrl?.value, '(valid:', passwordCtrl?.valid, ')');
+    console.log('Username filled:', !!usernameCtrl?.value, '(valid:', usernameCtrl?.valid, ')');
+    console.log('Password filled:', !!passwordCtrl?.value, '(valid:', passwordCtrl?.valid, ')');
     console.log('Form errors:', JSON.stringify(this.loginForm.errors));
     console.log('Username errors:', JSON.stringify(usernameCtrl?.errors));
     console.log('Password errors:', JSON.stringify(passwordCtrl?.errors));
