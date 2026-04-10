@@ -1,19 +1,191 @@
+// ===== SEARCH =====
+.top-nav-search {
+  position: relative;
+}
+
+.searchinputs {
+  position: relative;
+  input {
+    width: 280px;
+    padding: 8px 36px 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: all 0.3s;
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+      width: 320px;
+    }
+  }
+  &.active input {
+    border-color: #667eea;
+  }
+  .search-addon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+    &:hover { color: #333; }
+  }
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 320px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  z-index: 9999;
+  padding: 12px 0;
+
+  .search-info {
+    padding: 8px 16px;
+    h6 {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .search-tags {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        padding: 6px 0;
+        border-bottom: 1px solid #f5f5f5;
+        &:last-child { border: none; }
+        a {
+          display: flex;
+          align-items: center;
+          color: #333;
+          font-size: 13px;
+          text-decoration: none;
+          &:hover { color: #667eea; }
+        }
+      }
+    }
+  }
+}
+
+// ===== SPIN ANIMATION =====
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.spin-icon { animation: spin 1s linear infinite; }
+
+// ===== NOTIFICATIONS =====
+.notifications {
+  .unread {
+    background: #f0f4ff;
+    border-left: 3px solid #667eea;
+    cursor: pointer;
+    &:hover { background: #e8eeff; }
+  }
+  .notification-message {
+    transition: background 0.2s;
+    &:hover { background: #f9f9f9; }
+  }
+}
+
+// ===== USER INITIALS AVATAR =====
+.user-initials-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.user-initials-avatar-lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+// ===== THEME TOGGLE =====
 .theme-toggle-icon {
   cursor: pointer;
   padding: 10px;
   border-radius: 50%;
   transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover { background: rgba(0,0,0,0.06); }
+  i { font-size: 18px; color: #555; }
 }
 
-.theme-toggle-icon:hover {
-  background: rgba(0, 0, 0, 0.05);
+// ===== DARK MODE =====
+body.dark-mode {
+  .searchinputs input {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #eee;
+    &:focus { border-color: #764ba2; }
+  }
+  .search-dropdown {
+    background: #2d2d2d;
+    border-color: #444;
+    .search-info h6 { color: #aaa; }
+    .search-tags li a { color: #ddd; }
+    p.text-muted { color: #888 !important; }
+  }
+  .notifications .unread { background: #2a2f4a; border-left-color: #764ba2; }
+  .theme-toggle-icon i { color: #ccc; }
+  .theme-toggle-icon:hover { background: rgba(255,255,255,0.08); }
 }
 
-.theme-toggle-icon .icon-moon {
-  font-size: 24px;
-  color: #555;
+// ===== BADGES =====
+.badge-primary { background-color: #667eea; color: #fff; }
+.badge-success { background-color: #28a745; color: #fff; }
+.badge-warning { background-color: #ffc107; color: #333; }
+
+// ===== PROFILE DROPDOWN =====
+.menu-drop-user {
+  .profileset {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    .user-img {
+      position: relative;
+    }
+    .profilesets {
+      h5 { font-size: 14px; font-weight: 600; margin: 0; }
+      h6 { font-size: 12px; color: #888; margin: 2px 0; }
+      small { font-size: 11px; }
+    }
+  }
 }
 
-.theme-toggle-icon .icon-moon.active {
-  color: #ffc107; /* Jaune doré pour indiquer actif */
+// ===== RESPONSIVE =====
+@media (max-width: 768px) {
+  .searchinputs input {
+    width: 180px;
+    &:focus { width: 200px; }
+  }
+  .search-dropdown { min-width: 260px; }
 }
+

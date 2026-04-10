@@ -1,18 +1,20 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
-import {CommonService, SettingsService, SidebarService} from 'src/app/core/core.index';
+import { Subject, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { CommonService, SettingsService, SidebarService } from 'src/app/core/core.index';
 import { WebstorageService } from 'src/app/shared/webstorage.service';
 import { routes } from 'src/app/core/helpers/routes';
-import {ResponseDto} from "../../model/reponseDto.model";
-import {Role} from "../../model/role.model";
-import {AuthService} from "../../auth/service/auth.service";
+import { ResponseDto } from "../../model/reponseDto.model";
+import { AuthService } from "../../auth/service/auth.service";
+import { HeaderService, SearchResult, Notification } from './header.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit{
+export class HeaderComponent implements OnInit {
   themeMode: string = 'light_mode';
   lightMode: boolean = false;
 
@@ -29,14 +31,36 @@ export class HeaderComponent implements OnInit{
   page = '';
   last = '';
 
+  // Search
+  searchQuery: string = '';
+  searchResults: SearchResult[] = [];
+  isSearching: boolean = false;
+  showSearchDropdown: boolean = false;
+  private searchSubject = new Subject<string>();
+
+  // Notifications
+  notifications: Notification[] = [];
+  unreadCount: number = 0;
+  isLoadingNotifications: boolean = false;
+
+  // Enterprise
+  entrepriseName: string = '';
+  entrepriseId: number | null = null;
+
+  // Profile
+  userInitials: string = '';
+
+  userName!: string | undefined;
+  roleName!: string[];
+
   constructor(
     private Router: Router,
     private common: CommonService,
     private sidebar: SidebarService,
     private webStorage: WebstorageService,
     private settings: SettingsService,
-    private authService : AuthService
-
+    private authService: AuthService,
+    private headerService: HeaderService
   ) {
     this.activePath = this.Router.url.split('/')[2];
     this.Router.events.subscribe((data: RouterEvent) => {
@@ -63,11 +87,31 @@ export class HeaderComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.lightMode=true;
+    this.lightMode = true;
     this.getUserAuthData();
-    }
 
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (!query || query.length < 2) {
+          this.searchResults = [];
+          this.showSearchDropdown = false;
+          return of([]);
+        }
+        this.isSearching = true;
+        return this.headerService.searchGlobal(query).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe((results: SearchResult[]) => {
+      this.searchResults = results;
+      this.isSearching = false;
+      this.showSearchDropdown = results.length > 0;
+    });
 
+    this.loadNotifications();
+  }
 
   public logout(): void {
     this.webStorage.Logout();
@@ -96,45 +140,73 @@ export class HeaderComponent implements OnInit{
       document.exitFullscreen();
     }
   }
+
   public changeThemeMode(theme: string): void {
     this.settings.themeMode.next(theme);
-    if(theme.includes('light_mode')){
-         this.lightMode= true ;
-    }else if(theme.includes('dark_mode')){
-      this.lightMode= false ;
-
-    }else {
-      this.lightMode= false ;
+    if (theme.includes('light_mode')) {
+      this.lightMode = true;
+    } else if (theme.includes('dark_mode')) {
+      this.lightMode = false;
+    } else {
+      this.lightMode = false;
     }
     localStorage.setItem('themeMode', theme);
   }
 
-
-
-
-  userName! : string | undefined ;
-  roleName!: string[]
-
-  getUserAuthData(){
+  getUserAuthData() {
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
 
     if (item) {
       currentUser = JSON.parse(atob(item));
-      console.log('User connecté:', currentUser?.name);
       this.userName = currentUser?.name;
-      console.log('Token:', currentUser?.token);
-      console.log('Permissions:', currentUser?.permission);
 
-      // Use entrepriseName stored at login, fall back to entreprise.nom if available
-      const entrepriseName = currentUser?.entrepriseName || currentUser?.entreprise?.nom;
-      if (entrepriseName) {
-        console.log('Entreprise:', entrepriseName);
-      } else {
-        console.log('⚠️ Entreprise not set or is null');
+      this.entrepriseName = currentUser?.entrepriseName || currentUser?.entreprise?.nom || '';
+      this.entrepriseId = currentUser?.entrepriseId || currentUser?.entreprise?.id || null;
+
+      if (this.userName) {
+        const parts = this.userName.trim().split(' ');
+        this.userInitials = parts.length > 1
+          ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+          : this.userName.substring(0, 2).toUpperCase();
       }
     }
-    this.roleName = this.authService.getRoles() ;
+    this.roleName = this.authService.getRoles();
   }
 
+  onSearchInput(query: string): void {
+    this.searchSubject.next(query);
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.showSearchDropdown = false;
+  }
+
+  loadNotifications(): void {
+    this.isLoadingNotifications = true;
+    this.headerService.getNotifications().subscribe(notifs => {
+      this.notifications = notifs;
+      this.unreadCount = notifs.filter(n => !n.lu).length;
+      this.isLoadingNotifications = false;
+    });
+  }
+
+  markAllRead(): void {
+    this.headerService.markAllNotificationsRead().subscribe(() => {
+      this.notifications.forEach(n => n.lu = true);
+      this.unreadCount = 0;
+    });
+  }
+
+  markRead(id: number): void {
+    this.headerService.markNotificationRead(id).subscribe(() => {
+      const notif = this.notifications.find(n => n.id === id);
+      if (notif) {
+        notif.lu = true;
+        this.unreadCount = Math.max(0, this.unreadCount - 1);
+      }
+    });
+  }
 }

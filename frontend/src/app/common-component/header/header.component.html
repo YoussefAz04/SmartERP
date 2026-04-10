@@ -2,14 +2,14 @@
 <div class="header">
 
   <!-- Logo -->
-  <div class="header-left active" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')" >
-    <a [routerLink] = "routes.adminDashboard" class="logo logo-normal">
+  <div class="header-left active" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')">
+    <a [routerLink]="routes.adminDashboard" class="logo logo-normal">
       <img src="assets/img/logo.png" alt="">
     </a>
-    <a [routerLink] = "routes.adminDashboard" class="logo logo-white">
+    <a [routerLink]="routes.adminDashboard" class="logo logo-white">
       <img src="assets/img/logo-white.png" alt="">
     </a>
-    <a [routerLink] = "routes.adminDashboard" class="logo-small">
+    <a [routerLink]="routes.adminDashboard" class="logo-small">
       <img src="assets/img/logo-small.png" alt="">
     </a>
     <a id="toggle_btn" href="javascript:void(0);" (click)="toggleSidebar()" [ngClass]="{'d-none': page === 'pos'}">
@@ -29,225 +29,177 @@
   <!-- Header Menu -->
   <ul class="nav user-menu">
 
-    <!-- Search -->
+    <!-- Recherche -->
     <li class="nav-item nav-searchinputs">
       <div class="top-nav-search">
         <a href="javascript:void(0);" class="responsive-search">
           <i class="fa fa-search"></i>
         </a>
-        <form action="#" class="dropdown">
-          <div class="searchinputs dropdown-toggle" id="dropdownMenuClickable" data-bs-toggle="dropdown"
-            data-bs-auto-close="false">
-            <input type="text" placeholder="Search">
-            <div class="search-addon">
-              <span><i class="feather icon-x-circle feather-14"></i></span>
-            </div>
+        <div class="searchinputs" [class.active]="showSearchDropdown">
+          <input
+            type="text"
+            placeholder="Rechercher clients, articles, commandes..."
+            [(ngModel)]="searchQuery"
+            (input)="onSearchInput(searchQuery)"
+            (blur)="showSearchDropdown = false"
+            autocomplete="off"
+          />
+          <div class="search-addon">
+            <span *ngIf="!isSearching" (click)="clearSearch()">
+              <i class="feather icon-x-circle feather-14"></i>
+            </span>
+            <span *ngIf="isSearching">
+              <i class="feather icon-loader feather-14 spin-icon"></i>
+            </span>
           </div>
-          <div class="dropdown-menu search-dropdown" aria-labelledby="dropdownMenuClickable">
-            <div class="search-info">
-              <h6><span><i class="feather icon-search" class="feather icon-16"></i></span>Recent Searches
-              </h6>
-              <ul class="search-tags">
-                <li><a href="javascript:void(0);">Products</a></li>
-                <li><a href="javascript:void(0);">Sales</a></li>
-                <li><a href="javascript:void(0);">Applications</a></li>
-              </ul>
-            </div>
-            <div class="search-info">
-              <h6><span><i class="feather icon-help-circle" class="feather icon-16"></i></span>Help</h6>
-              <p>How to Change Product Volume from 0 to 200 on Inventory management</p>
-              <p>Change Product Name</p>
-            </div>
-            <div class="search-info">
-              <h6><span><i class="feather icon-user" class="feather icon-16"></i></span>Customers</h6>
-              <ul class="customers">
-                <li>
-                  <a href="javascript:void(0);">Aron Varu<img src="assets/img/profiles/avator1.jpg" alt=""
-                      class="img-fluid"></a>
-                </li>
-                <li>
-                  <a href="javascript:void(0);">Jonita<img src="assets/img/profiles/avatar-01.jpg" alt=""
-                      class="img-fluid"></a>
-                </li>
-                <li>
-                  <a href="javascript:void(0);">Aaron<img src="assets/img/profiles/avatar-10.jpg" alt=""
-                      class="img-fluid"></a>
-                </li>
-              </ul>
-            </div>
+        </div>
+        <!-- Dropdown résultats -->
+        <div class="dropdown-menu search-dropdown show" *ngIf="showSearchDropdown" (mousedown)="$event.preventDefault()">
+          <div class="search-info" *ngIf="searchResults.length === 0 && !isSearching">
+            <p class="text-muted p-2">Aucun résultat trouvé</p>
           </div>
-        </form>
+          <div class="search-info" *ngIf="searchResults.length > 0">
+            <h6><i class="feather icon-search me-1"></i> Résultats de recherche</h6>
+            <ul class="search-tags">
+              <li *ngFor="let result of searchResults">
+                <a href="javascript:void(0);">
+                  <span class="badge me-1"
+                    [class.badge-primary]="result.type === 'Client'"
+                    [class.badge-success]="result.type === 'Article'"
+                    [class.badge-warning]="result.type === 'Commande'">
+                    {{ result.type }}
+                  </span>
+                  {{ result.nom }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </li>
-    <!-- /Search -->
+    <!-- /Recherche -->
 
-
-    <!--dark Mode and light-->
+    <!-- Mode sombre / clair -->
     <div class="theme-toggle-icon" *ngIf="lightMode" (click)="changeThemeMode('dark_mode')" title="Activer le mode sombre">
       <i class="feather icon-moon"></i>
     </div>
-
     <div class="theme-toggle-icon" *ngIf="!lightMode" (click)="changeThemeMode('light_mode')" title="Activer le mode clair">
       <i class="feather icon-sun"></i>
     </div>
-    <!--/dark Mode and light -->
+    <!-- /Mode sombre / clair -->
 
     <li class="nav-item nav-item-box">
       <a href="javascript:void(0);" id="btnFullscreen" (click)="fullscreen()">
         <i class="feather icon-maximize"></i>
       </a>
     </li>
+
     <li class="nav-item nav-item-box">
-      <a [routerLink] = "routes.email">
-        <i class="feather icon-mail"></i>
-        <span class="badge rounded-pill">1</span>
-      </a>
+      <a [routerLink]="routes.generalSettings"><i class="feather icon-settings"></i></a>
     </li>
+
     <!-- Notifications -->
     <li class="nav-item dropdown nav-item-box">
       <a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
-        <i class="feather icon-bell"></i><span class="badge rounded-pill">2</span>
+        <i class="feather icon-bell"></i>
+        <span class="badge rounded-pill" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
       </a>
       <div class="dropdown-menu notifications">
         <div class="topnav-dropdown-header">
           <span class="notification-title">Notifications</span>
-          <a href="javascript:void(0)" class="clear-noti"> Clear All </a>
+          <a href="javascript:void(0);" class="clear-noti" (click)="markAllRead()">Tout marquer lu</a>
         </div>
         <div class="noti-content">
-          <ul class="notification-list">
-            <li class="notification-message">
-              <a [routerLink] = "routes.activities">
+          <div *ngIf="isLoadingNotifications" class="text-center p-3">
+            <i class="feather icon-loader spin-icon"></i> Chargement...
+          </div>
+          <ul class="notification-list" *ngIf="!isLoadingNotifications">
+            <li class="notification-message" *ngFor="let notif of notifications"
+                [class.unread]="!notif.lu" (click)="markRead(notif.id)">
+              <a href="javascript:void(0);">
                 <div class="media d-flex">
                   <span class="avatar flex-shrink-0">
-                    <img alt="" src="assets/img/profiles/avatar-02.jpg">
+                    <i class="feather icon-bell" style="font-size:20px;padding:8px;"></i>
                   </span>
                   <div class="media-body flex-grow-1">
-                    <p class="noti-details"><span class="noti-title">John Doe</span> added
-                      new task <span class="noti-title">Patient appointment booking</span>
-                    </p>
-                    <p class="noti-time"><span class="notification-time">4 mins ago</span>
-                    </p>
+                    <p class="noti-details">{{ notif.message }}</p>
+                    <p class="noti-time"><span class="notification-time">{{ notif.date | date:'dd/MM/yyyy HH:mm' }}</span></p>
                   </div>
                 </div>
               </a>
             </li>
-            <li class="notification-message">
-              <a [routerLink] = "routes.activities">
-                <div class="media d-flex">
-                  <span class="avatar flex-shrink-0">
-                    <img alt="" src="assets/img/profiles/avatar-03.jpg">
-                  </span>
-                  <div class="media-body flex-grow-1">
-                    <p class="noti-details"><span class="noti-title">Tarah Shropshire</span>
-                      changed the task name <span class="noti-title">Appointment booking
-                        with payment gateway</span>
-                    </p>
-                    <p class="noti-time"><span class="notification-time">6 mins ago</span>
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </li>
-            <li class="notification-message">
-              <a [routerLink] = "routes.activities">
-                <div class="media d-flex">
-                  <span class="avatar flex-shrink-0">
-                    <img alt="" src="assets/img/profiles/avatar-06.jpg">
-                  </span>
-                  <div class="media-body flex-grow-1">
-                    <p class="noti-details"><span class="noti-title">Misty Tison</span>
-                      added <span class="noti-title">Domenic Houston</span> and <span class="noti-title">Claire
-                        Mapes</span> to project <span class="noti-title">Doctor available module</span>
-                    </p>
-                    <p class="noti-time"><span class="notification-time">8 mins ago</span>
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </li>
-            <li class="notification-message">
-              <a [routerLink] = "routes.activities">
-                <div class="media d-flex">
-                  <span class="avatar flex-shrink-0">
-                    <img alt="" src="assets/img/profiles/avatar-17.jpg">
-                  </span>
-                  <div class="media-body flex-grow-1">
-                    <p class="noti-details"><span class="noti-title">Rolland Webber</span>
-                      completed task <span class="noti-title">Patient and Doctor video conferencing</span>
-                    </p>
-                    <p class="noti-time"><span class="notification-time">12 mins ago</span></p>
-                  </div>
-                </div>
-              </a>
-            </li>
-            <li class="notification-message">
-              <a [routerLink] = "routes.activities">
-                <div class="media d-flex">
-                  <span class="avatar flex-shrink-0">
-                    <img alt="" src="assets/img/profiles/avatar-13.jpg">
-                  </span>
-                  <div class="media-body flex-grow-1">
-                    <p class="noti-details"><span class="noti-title">Bernardo Galaviz</span>
-                      added new task <span class="noti-title">Private chat module</span>
-                    </p>
-                    <p class="noti-time"><span class="notification-time">2 days ago</span></p>
-                  </div>
-                </div>
-              </a>
+            <li *ngIf="notifications.length === 0" class="p-3 text-center text-muted">
+              Aucune notification
             </li>
           </ul>
         </div>
         <div class="topnav-dropdown-footer">
-          <a [routerLink] = "routes.activities">View all Notifications</a>
+          <a [routerLink]="routes.activities">Voir toutes les notifications</a>
         </div>
       </div>
     </li>
     <!-- /Notifications -->
 
-    <li class="nav-item nav-item-box">
-      <a [routerLink] = "routes.generalSettings"><i class="feather icon-settings"></i></a>
-    </li>
+    <!-- Profil utilisateur -->
     <li class="nav-item dropdown has-arrow main-drop">
       <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
         <span class="user-info">
           <span class="user-letter">
-            <img src="assets/img/profiles/avator1.jpg" alt="" class="img-fluid">
+            <span class="user-initials-avatar" *ngIf="userInitials">{{ userInitials }}</span>
+            <img src="assets/img/profiles/avator1.jpg" alt="" class="img-fluid" *ngIf="!userInitials">
           </span>
           <span class="user-detail">
             <span class="user-name">{{ userName }}</span>
-            <span class="user-role">{{ roleName }}</span>
+            <span class="user-role">{{ roleName?.[0] || 'Utilisateur' }}</span>
           </span>
         </span>
       </a>
       <div class="dropdown-menu menu-drop-user">
         <div class="profilename">
           <div class="profileset">
-            <span class="user-img"><img src="assets/img/profiles/avator1.jpg" alt="">
-              <span class="status online"></span></span>
+            <span class="user-img">
+              <span class="user-initials-avatar-lg" *ngIf="userInitials">{{ userInitials }}</span>
+              <span class="status online"></span>
+            </span>
             <div class="profilesets">
               <h5>{{ userName }}</h5>
+              <h6>{{ roleName?.[0] || 'Utilisateur' }}</h6>
+              <small class="text-muted" *ngIf="entrepriseName">
+                <i class="feather icon-briefcase me-1"></i>{{ entrepriseName }}
+              </small>
             </div>
           </div>
           <hr class="m-0">
-          <a class="dropdown-item" [routerLink] = "routes.profile"> <i class="me-2 feather icon-user"></i> My Profile</a>
-          <a class="dropdown-item" [routerLink] = "routes.generalSettings"><i class="me-2 feather icon-settings"></i>Settings</a>
+          <a class="dropdown-item" [routerLink]="routes.profile">
+            <i class="me-2 feather icon-user"></i> Mon Profil
+          </a>
+          <a class="dropdown-item" [routerLink]="routes.generalSettings">
+            <i class="me-2 feather icon-settings"></i> Paramètres
+          </a>
           <hr class="m-0">
-          <!-- ✅ FIXED: Changed from routerLink to (click)="logout()" -->
-          <a class="dropdown-item logout pb-0" (click)="logout()" style="cursor: pointer;"><img src="assets/img/icons/log-out.svg" class="me-2" alt="img">Logout</a>
+          <a class="dropdown-item logout pb-0" (click)="logout()" style="cursor: pointer;">
+            <img src="assets/img/icons/log-out.svg" class="me-2" alt="img"> Déconnexion
+          </a>
         </div>
       </div>
     </li>
+    <!-- /Profil utilisateur -->
+
   </ul>
   <!-- /Header Menu -->
 
-  <!-- Mobile Menu -->
+  <!-- Menu Mobile -->
   <div class="dropdown mobile-user-menu">
-    <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i
-        class="fa fa-ellipsis-v"></i></a>
+    <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-ellipsis-v"></i>
+    </a>
     <div class="dropdown-menu dropdown-menu-right">
-      <a class="dropdown-item" [routerLink] = "routes.profile">My Profile</a>
-      <a class="dropdown-item" [routerLink] = "routes.generalSettings">Settings</a>
-      <!-- ✅ FIXED: Changed from routerLink to (click)="logout()" -->
-      <a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Logout</a>
+      <a class="dropdown-item" [routerLink]="routes.profile">Mon Profil</a>
+      <a class="dropdown-item" [routerLink]="routes.generalSettings">Paramètres</a>
+      <a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Déconnexion</a>
     </div>
-  *
+  </div>
+  <!-- /Menu Mobile -->
+
+</div>
+<!-- /Header -->
