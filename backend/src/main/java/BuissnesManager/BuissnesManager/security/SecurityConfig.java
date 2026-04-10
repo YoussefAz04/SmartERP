@@ -94,17 +94,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/v3/api-docs/**",
-                                "/api/**",
                                 "/module/**",
-                                "/departement/**",
-                                "/permission/**",
-                                "/clients/**",           // ✅ ALL client endpoints (including DELETE)
-                                "/document/**",
-                                "/facture/**",
-                                "/factures-vente/**",
-                                "/fournisseurs/**",
-                                "/articles-achat/**",
-                                "/articles-vente/**"
+                                "/permission/**"
                         ).permitAll()
                         // All other endpoints require authentication
                         .anyRequest().authenticated()

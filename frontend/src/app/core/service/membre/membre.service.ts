@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Membre} from "../../../model/membre.model";
 import {Observable} from "rxjs";
@@ -11,7 +12,7 @@ import { MembreDto } from 'src/app/model/membreDto.model';
 })
 export class MembreService {
 
-  private apiUrl = `http://localhost:8020/membre`;
+  private apiUrl = `${environment.apiUrl}/membre`;
 
   constructor(private http: HttpClient) {}
 

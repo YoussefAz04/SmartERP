@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Evenement} from "../../../model/evenement.model";
 import {Observable} from "rxjs";
@@ -9,7 +10,7 @@ import {CategorieEvenement} from "../../../model/categorieEvenement.model";
 })
 export class EvenementService {
 
-  private apiUrl = 'http://localhost:8020/evenement';
+  private apiUrl = `${environment.apiUrl}/evenement`;
 
   constructor(private http: HttpClient) {}
 

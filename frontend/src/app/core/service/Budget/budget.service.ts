@@ -1,4 +1,5 @@
 // src/app/services/budget.service.ts
+import { environment } from '../../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,7 +9,7 @@ import {Budget} from "../../../model/budget.model";
   providedIn: 'root'
 })
 export class BudgetService {
-  private apiUrl = 'http://localhost:8020/budgets';
+  private apiUrl = `${environment.apiUrl}/budgets`;
 
   constructor(private http: HttpClient) {}
 

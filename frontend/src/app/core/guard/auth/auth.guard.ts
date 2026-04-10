@@ -12,7 +12,7 @@ export class AuthGuard  {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    if (localStorage.getItem('authorized')) {
+    if (localStorage.getItem('myLSkey')) {
       return true;
     } else {
       this.router.navigate(['/auth/signin']);

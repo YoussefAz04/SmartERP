@@ -111,6 +111,13 @@ public FactureAchat getById(Long id){
                 .orElseThrow(() -> new RuntimeException("FactureAchat non trouvée avec id " + id));
     }
 
+    public void deleteFactureAchat(Long id) {
+        if (!factureAchatRepo.existsById(id)) {
+            throw new RuntimeException("FactureAchat non trouvée avec id " + id);
+        }
+        factureAchatRepo.deleteById(id);
+    }
+
 
 
 

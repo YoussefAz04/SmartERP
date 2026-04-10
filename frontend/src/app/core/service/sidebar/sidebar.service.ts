@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import {BehaviorSubject, Observable} from 'rxjs';
 import { routes } from '../../core.index';
 import {HttpClient} from "@angular/common/http";
@@ -18,7 +19,7 @@ export class SidebarService {
 
 
 
-  private baseUrl = 'http://localhost:8020/module/getAllModulesTittle';
+  private baseUrl = `${environment.apiUrl}/module/getAllModulesTittle`;
   constructor(private http: HttpClient) {
 
   }

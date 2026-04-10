@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {Depense} from "../../../model/depense.model";
@@ -10,7 +11,7 @@ import {BudgetPerformanceDto} from "../../../model/budgetPerformanceDto.model";
 })
 export class DepenseService {
 
-  private baseUrl = 'http://localhost:8020/depenses'; // URL de ton backend
+  private baseUrl = `${environment.apiUrl}/depenses`; // URL de ton backend
 
   constructor(private http: HttpClient) { }
 

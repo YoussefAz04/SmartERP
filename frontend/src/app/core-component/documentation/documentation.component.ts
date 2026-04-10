@@ -1,5 +1,6 @@
 // documentation.component.ts
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import {DecimalPipe, NgForOf, NgIf, NgStyle} from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -281,7 +282,7 @@ export class DocumentationComponent implements AfterViewInit {
 
     formData.append('zones', JSON.stringify(backendZones));
 
-    this.http.post<ZoneExtractionResult[]>('http://localhost:8020/api/pdf/extract-zones', formData)
+    this.http.post<ZoneExtractionResult[]>(`${environment.apiUrl}/api/pdf/extract-zones`, formData)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error('Erreur lors de l\'extraction:', error);

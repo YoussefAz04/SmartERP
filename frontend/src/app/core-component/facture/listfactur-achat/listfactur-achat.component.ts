@@ -41,7 +41,16 @@ export class ListfacturAchatComponent implements OnInit{
   }
 
   deleteFacture(id: number | undefined) {
-
+    if (id === undefined) return;
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette facture ?')) return;
+    this.factureService.deleteFactureAchat(id).subscribe({
+      next: () => {
+        this.factureAchatList = this.factureAchatList.filter(f => f.id !== id);
+      },
+      error: () => {
+        alert('Erreur lors de la suppression de la facture.');
+      }
+    });
   }
 
   getUserAuthData(){
@@ -50,17 +59,12 @@ export class ListfacturAchatComponent implements OnInit{
 
     if (item) {
       currentUser = JSON.parse(atob(item));
-      console.log('User connecté:', currentUser?.name);
 
-      console.log('Token:', currentUser?.token);
-      console.log('Permissions:', currentUser?.permission);
       currentUser?.permission.map(per =>{
         if (per.moduleTitle == "Achat"){
           this.permissionAchat = per ;
-          console.log("permission Achat" ,this.permissionAchat);
         }
       })
-      console.log('Achat:', currentUser?.entreprise.nom);
     }
   }
 }
