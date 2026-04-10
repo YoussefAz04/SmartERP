@@ -162,7 +162,7 @@
           <tr *ngFor="let e of filteredEntreprises">
             <td>
               <div class="ent-name-cell">
-                <div class="ent-avatar">{{ e.nom.charAt(0).toUpperCase() }}</div>
+                <div class="ent-avatar">{{ (e.nom || '?').charAt(0).toUpperCase() }}</div>
                 <div>
                   <strong>{{ e.nom }}</strong>
                   <div class="ent-meta">{{ e.adresse || '—' }}</div>
