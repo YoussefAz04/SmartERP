@@ -219,6 +219,12 @@
   }
 }
 
+// KPI animation delays
+.kpi-delay-1 { animation-delay: 0.1s; }
+.kpi-delay-2 { animation-delay: 0.2s; }
+.kpi-delay-3 { animation-delay: 0.3s; }
+.kpi-delay-4 { animation-delay: 0.4s; }
+
 // ============================================================
 // Filter Card
 // ============================================================
@@ -732,5 +738,29 @@
 
   .vente-table {
     th, td { padding: 10px 12px; }
+  }
+}
+
+// ============================================================
+// Reduced Motion Accessibility
+// ============================================================
+@media (prefers-reduced-motion: reduce) {
+  .vente-hero-header,
+  .kpi-card,
+  .filter-card,
+  .modern-panel {
+    animation: none;
+  }
+
+  .kpi-card:hover {
+    transform: none;
+  }
+
+  .action-btn:hover {
+    transform: none;
+  }
+
+  .btn-hero:hover {
+    transform: none;
   }
 }

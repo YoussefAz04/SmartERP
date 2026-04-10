@@ -11,10 +11,10 @@
       <p class="hero-subtitle">{{ totalCount }} article(s) dans le catalogue d'achat</p>
     </div>
     <div class="hero-actions">
-      <button class="btn-hero btn-hero-outline" (click)="exportCSV()">
+      <button type="button" class="btn-hero btn-hero-outline" (click)="exportCSV()">
         <i class="feather icon-download"></i> Exporter CSV
       </button>
-      <button class="btn-hero btn-hero-primary" (click)="addArticle()">
+      <button type="button" class="btn-hero btn-hero-primary" (click)="addArticle()">
         <i class="feather icon-plus-circle"></i> Ajouter Article
       </button>
     </div>
@@ -138,7 +138,7 @@
         </div>
       </div>
       <div class="col-md-2">
-        <button class="btn-reset w-100" (click)="resetFilters()">
+        <button type="button" class="btn-reset w-100" (click)="resetFilters()">
           <i class="feather icon-refresh-cw"></i> Réinitialiser
         </button>
       </div>
@@ -155,7 +155,7 @@
       <span class="panel-badge">{{ filteredList.length }}</span>
     </h5>
     @if (selectedIds.size > 0) {
-      <button class="btn-bulk-delete" (click)="bulkDelete()">
+      <button type="button" class="btn-bulk-delete" (click)="bulkDelete()">
         <i class="feather icon-trash-2"></i> Supprimer ({{ selectedIds.size }})
       </button>
     }
@@ -167,7 +167,7 @@
           <tr>
             <th class="col-check">
               <label class="custom-checkbox">
-                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()">
+                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()" aria-label="Sélectionner tous les articles">
                 <span class="checkmark"></span>
               </label>
             </th>
@@ -196,7 +196,7 @@
               <tr [class.row-selected]="isSelected(a.id)">
                 <td class="col-check">
                   <label class="custom-checkbox">
-                    <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)">
+                    <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)" [attr.aria-label]="'Sélectionner ' + a.nom">
                     <span class="checkmark"></span>
                   </label>
                 </td>
@@ -253,10 +253,10 @@
                 <td class="date-cell">{{ a.createdAt | date:'dd/MM/yy' }}</td>
                 <td>
                   <div class="action-btns">
-                    <button class="action-btn action-btn-edit" (click)="editArticle(a.id)" title="Modifier">
+                    <button type="button" class="action-btn action-btn-edit" (click)="editArticle(a.id)" title="Modifier">
                       <i class="feather icon-edit"></i>
                     </button>
-                    <button class="action-btn action-btn-delete" (click)="deleteArticle(a.id)" title="Supprimer">
+                    <button type="button" class="action-btn action-btn-delete" (click)="deleteArticle(a.id)" title="Supprimer">
                       <i class="feather icon-trash-2"></i>
                     </button>
                   </div>
