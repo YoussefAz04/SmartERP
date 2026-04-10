@@ -216,7 +216,7 @@ export class AdminDashboardComponent implements OnInit {
     try {
       const item = localStorage.getItem('myLSkey');
       if (item) {
-        const user = JSON.parse(atob(item));
+        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
         const token = user.token;
         if (token && token.split('.').length === 3) {
           const payload = JSON.parse(atob(token.split('.')[1]));

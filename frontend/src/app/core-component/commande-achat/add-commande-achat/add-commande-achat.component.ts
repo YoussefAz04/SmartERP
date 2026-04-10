@@ -99,7 +99,7 @@ export class AddCommandeAchatComponent implements OnInit {
       const myLSkey = localStorage.getItem('myLSkey');
       if (myLSkey) {
         try {
-          const decoded = JSON.parse(atob(myLSkey));
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(myLSkey))));
           enterpriseId = decoded.enterpriseId?.toString();
           console.log('📦 Decoded token:', decoded);
         } catch (e) {

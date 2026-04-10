@@ -117,7 +117,7 @@ export class SidebarOneComponent implements OnInit {
     const item = localStorage.getItem('myLSkey');
 
     if (item) {
-      let currentUser: any = JSON.parse(atob(item));
+      let currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
       this.idRoleLogin = currentUser.roleId;
 
     }

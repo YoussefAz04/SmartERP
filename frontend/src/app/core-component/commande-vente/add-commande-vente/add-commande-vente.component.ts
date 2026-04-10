@@ -54,7 +54,7 @@ export class AddCommandeVenteComponent implements OnInit {
       const raw = localStorage.getItem('myLSkey');
       if (raw) {
         try {
-          const decoded = JSON.parse(atob(raw));
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
           entrepriseIdString = (decoded.entrepriseId || decoded.enterpriseId)?.toString() || null;
         } catch (e) {
           console.error('Error decoding myLSkey:', e);

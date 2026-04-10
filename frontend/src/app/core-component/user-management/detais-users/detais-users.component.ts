@@ -91,7 +91,7 @@ export class DetaisUsersComponent implements OnInit {
     
     if (item) {
       try {
-        const currentUser: ResponseDto = JSON.parse(atob(item));
+        const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach(per => {

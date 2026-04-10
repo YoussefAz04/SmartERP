@@ -93,7 +93,7 @@ export class EntrepriseComponent implements OnInit{
 
     if (item) {
       try {
-        currentUser = JSON.parse(atob(item));
+        currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
         console.log('✅ User connected:', currentUser?.name);
         console.log('Token:', currentUser?.token);
         console.log('Permissions:', currentUser?.permission);

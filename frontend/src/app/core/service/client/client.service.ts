@@ -33,7 +33,7 @@ export class ClientService {
     const item = localStorage.getItem('myLSkey');
     if (item) {
       try {
-        const user = JSON.parse(atob(item));
+        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
         return user.token || null;
       } catch (error) {
         console.error('Error parsing token:', error);

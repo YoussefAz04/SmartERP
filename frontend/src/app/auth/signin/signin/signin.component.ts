@@ -55,63 +55,58 @@ export class SigninComponent implements OnInit {
 
     this.authService.login(credentials).subscribe({
       next: (response: any) => {
-        console.log('✅ Login success:', response);
-        console.log('📋 Response data:', {
-          id: response.id,
-          username: response.username,
-          entrepriseId: response.entrepriseId,
-          entrepriseName: response.entrepriseName
-        });
-        
-        // ✅ SAVE TO LOCALSTORAGE
-        localStorage.removeItem("myLSkey");
-        localStorage.setItem('myLSkey', btoa(JSON.stringify({
-          token: response.token,
-          name: response.name,
-          username: response.username,
-          userId: response.id,
-          permission: response.permission,
-          roles: response.roles,
-          roleId: response.roleId,
-          entrepriseId: response.entrepriseId,
-          entrepriseName: response.entrepriseName,
-          // ✅ Provide entreprise object so components can access currentUser.entreprise.nom
-          entreprise: {
-            id: response.entrepriseId,
-            nom: response.entrepriseName
-          }
-        })));
-
-        // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
-        const entrepriseId = response.entrepriseId;
-        if (entrepriseId !== null && entrepriseId !== undefined) {
-          localStorage.setItem('entrepriseId', entrepriseId.toString());
-          localStorage.setItem('enterpriseId', entrepriseId.toString());
-          console.log('✅ Enterprise ID saved to localStorage:', entrepriseId);
-        }
-
-        if (response.roleId) {
-          this.moduleService.updateStatusByRole(response.roleId).subscribe(
-            () => console.log("✅ Sidebar updated"),
-            (err: any) => console.error("⚠️ Sidebar error:", err)
-          );
-        }
-
-        setTimeout(() => {
-          this.router.navigate([routes.adminDashboard]).then((success) => {
-            if (success) {
-              console.log('✅ Navigation successful');
-            } else {
-              this.router.navigate(['/enterprise/listEnterprise']);
+        try {
+          // Encode to base64 using a Unicode-safe approach
+          const payload = JSON.stringify({
+            token: response.token,
+            name: response.name,
+            username: response.username,
+            userId: response.id,
+            permission: response.permission,
+            roles: response.roles,
+            roleId: response.roleId,
+            entrepriseId: response.entrepriseId,
+            entrepriseName: response.entrepriseName,
+            entreprise: {
+              id: response.entrepriseId,
+              nom: response.entrepriseName
             }
-            this.loading = false;
           });
-        }, 500);
+          const encoded = btoa(unescape(encodeURIComponent(payload)));
+
+          localStorage.removeItem('myLSkey');
+          localStorage.setItem('myLSkey', encoded);
+
+          const entrepriseId = response.entrepriseId;
+          if (entrepriseId !== null && entrepriseId !== undefined) {
+            localStorage.setItem('entrepriseId', entrepriseId.toString());
+            localStorage.setItem('enterpriseId', entrepriseId.toString());
+          }
+
+          if (response.roleId) {
+            this.moduleService.updateStatusByRole(response.roleId).subscribe(
+              () => {},
+              (err: any) => console.error('⚠️ Sidebar update error:', err)
+            );
+          }
+
+          setTimeout(() => {
+            const fallback = () => this.router.navigate([routes.dashboard]);
+            this.router.navigate([routes.adminDashboard])
+              .then((success) => { if (!success) fallback(); })
+              .catch(fallback)
+              .finally(() => { this.loading = false; });
+          }, 300);
+        } catch (err) {
+          console.error('❌ Error saving session:', err);
+          this.loading = false;
+          this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+        }
       },
       error: (error: any) => {
         console.error('❌ Login failed:', error);
         this.loading = false;
-        this.errorMessage = 'Invalid credentials';
+        this.errorMessage = 'Identifiants invalides. Veuillez réessayer.';
       }
     });
   }
