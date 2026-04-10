@@ -266,7 +266,7 @@ export class UsersComponent implements OnInit {
   
   if (item) {
     try {
-      const currentUser: ResponseDto = JSON.parse(atob(item));
+      const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
       console.log('User connecté:', currentUser?.name);
       console.log('Token:', currentUser?.token);
       console.log('Permissions:', currentUser?.permission);

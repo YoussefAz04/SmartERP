@@ -52,7 +52,7 @@ export class DetaisSousTacheComponent implements OnInit{
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
+      currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
       console.log('User connecté:', currentUser?.name);
 
       console.log('Token:', currentUser?.token);

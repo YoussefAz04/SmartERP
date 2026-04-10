@@ -71,7 +71,6 @@ export class SigninComponent implements OnInit {
             id: response.entrepriseId,
             nom: response.entrepriseName
           }
-        })));
 
         // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
         const entrepriseId = response.entrepriseId;
@@ -80,11 +79,17 @@ export class SigninComponent implements OnInit {
           localStorage.setItem('enterpriseId', entrepriseId.toString());
         }
 
-        if (response.roleId) {
-          this.moduleService.updateStatusByRole(response.roleId).subscribe(
-            () => console.log("✅ Sidebar updated"),
-            (err: any) => console.error("⚠️ Sidebar error:", err)
-          );
+          setTimeout(() => {
+            const fallback = () => this.router.navigate([routes.dashboard]);
+            this.router.navigate([routes.adminDashboard])
+              .then((success) => { if (!success) fallback(); })
+              .catch(fallback)
+              .finally(() => { this.loading = false; });
+          }, 300);
+        } catch (err) {
+          console.error('❌ Error saving session:', err);
+          this.loading = false;
+          this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
         }
 
         setTimeout(() => {
@@ -99,7 +104,7 @@ export class SigninComponent implements OnInit {
       },
       error: (error: any) => {
         this.loading = false;
-        this.errorMessage = 'Invalid credentials';
+        this.errorMessage = 'Identifiants invalides. Veuillez réessayer.';
       }
     });
   }

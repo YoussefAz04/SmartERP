@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit{
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
+      currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
       this.userId = currentUser?.userId ;
     }
     if (this.userId != null){

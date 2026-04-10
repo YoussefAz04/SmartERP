@@ -74,7 +74,7 @@ export class DepartementComponent implements OnInit{
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
+      currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
       if (currentUser?.userId){
         this.idUser = currentUser?.userId ;
         console.log("userId" , this.idUser);
@@ -90,7 +90,7 @@ export class DepartementComponent implements OnInit{
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
+      currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
       console.log('User connecté:', currentUser?.name);
       console.log('Token:', currentUser?.token);
       console.log('Permissions:', currentUser?.permission);

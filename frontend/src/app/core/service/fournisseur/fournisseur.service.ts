@@ -27,7 +27,7 @@ export class FournisseurService {
     const item = localStorage.getItem('myLSkey');
     if (item) {
       try {
-        const user = JSON.parse(atob(item));
+        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
         return user.token || null;
       } catch (error) {
         return null;

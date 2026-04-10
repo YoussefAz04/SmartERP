@@ -137,7 +137,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
 
     if (item) {
       try {
-        currentUser = JSON.parse(atob(item));
+        currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
         console.log('User connecté:', currentUser?.name);
         console.log('Token:', currentUser?.token);
         console.log('Permissions:', currentUser?.permission);

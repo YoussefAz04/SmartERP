@@ -58,7 +58,7 @@ export class AddArticleAchatComponent implements OnInit {
     const item = localStorage.getItem('myLSkey');
     if (item) {
       try {
-        const user = JSON.parse(atob(item));
+        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
         const entrepriseId = user.entrepriseId;
         if (entrepriseId) {
           this.articleForm.patchValue({ entrepriseId });

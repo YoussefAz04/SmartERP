@@ -57,7 +57,7 @@ export class FactureDeVenteServiceService {
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
+      currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
 
       if (currentUser?.entreprise.id) {
         this.entrepriseService.getEntrepriseById(currentUser.entreprise.id).subscribe(data => {
@@ -207,7 +207,7 @@ export class FactureDeVenteServiceService {
     const item = localStorage.getItem('myLSkey');
     if (!item) return;
 
-    const currentUser: ResponseDto = JSON.parse(atob(item));
+    const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
 
     if (currentUser?.entreprise.id) {
       this.entrepriseService.getEntrepriseById(currentUser.entreprise.id).subscribe(data => {

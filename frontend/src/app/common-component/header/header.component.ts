@@ -158,7 +158,7 @@ export class HeaderComponent implements OnInit {
     let currentUser: ResponseDto | null = null;
 
     if (item) {
-      currentUser = JSON.parse(atob(item));
+      currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
       this.userName = currentUser?.name;
 
       this.entrepriseName = currentUser?.entrepriseName || currentUser?.entreprise?.nom || '';
