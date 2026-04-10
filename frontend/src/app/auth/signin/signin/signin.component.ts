@@ -36,8 +36,8 @@ export class SigninComponent implements OnInit {
 
   responseLogin!: PermissionDto;
   
- navigation() {
-    
+  navigation() {
+     
     if (!this.loginForm.valid) {
       this.errorMessage = 'Please fill in username and password';
       return;
@@ -79,12 +79,12 @@ export class SigninComponent implements OnInit {
           }
         })));
 
-        // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
-        const entrepriseId = response.entrepriseId;
-        if (entrepriseId !== null && entrepriseId !== undefined) {
-          localStorage.setItem('entrepriseId', entrepriseId.toString());
-          localStorage.setItem('enterpriseId', entrepriseId.toString());
-        }
+          // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
+          const entrepriseId = response.entrepriseId;
+          if (entrepriseId !== null && entrepriseId !== undefined) {
+            localStorage.setItem('entrepriseId', entrepriseId.toString());
+            localStorage.setItem('enterpriseId', entrepriseId.toString());
+          }
 
         setTimeout(() => {
           const fallback = () => this.router.navigate([routes.dashboard]);
