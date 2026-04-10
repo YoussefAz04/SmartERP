@@ -37,7 +37,21 @@ export class SigninComponent implements OnInit {
   responseLogin!: PermissionDto;
   
   navigation() {
-     
+    console.log('✅ Sign In clicked');
+
+    const usernameCtrl = this.loginForm.get('username');
+    const passwordCtrl = this.loginForm.get('password');
+
+    console.log('Form validity:', this.loginForm.valid);
+    console.log('Username filled:', !!usernameCtrl?.value, '(valid:', usernameCtrl?.valid, ')');
+    console.log('Password filled:', !!passwordCtrl?.value, '(valid:', passwordCtrl?.valid, ')');
+    console.log('Form errors:', JSON.stringify(this.loginForm.errors));
+    console.log('Username errors:', JSON.stringify(usernameCtrl?.errors));
+    console.log('Password errors:', JSON.stringify(passwordCtrl?.errors));
+
+    // Mark all controls as touched so validation messages appear
+    this.loginForm.markAllAsTouched();
+
     if (!this.loginForm.valid) {
       this.errorMessage = 'Please fill in username and password';
       return;
