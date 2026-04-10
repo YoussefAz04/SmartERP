@@ -41,7 +41,7 @@
             placeholder="Rechercher clients, articles, commandes..."
             [(ngModel)]="searchQuery"
             (input)="onSearchInput(searchQuery)"
-            (blur)="showSearchDropdown = false"
+            (blur)="onSearchBlur()"
             autocomplete="off"
           />
           <div class="search-addon">
@@ -54,7 +54,7 @@
           </div>
         </div>
         <!-- Dropdown résultats -->
-        <div class="dropdown-menu search-dropdown show" *ngIf="showSearchDropdown" (mousedown)="$event.preventDefault()">
+        <div class="dropdown-menu search-dropdown show" *ngIf="showSearchDropdown">
           <div class="search-info" *ngIf="searchResults.length === 0 && !isSearching">
             <p class="text-muted p-2">Aucun résultat trouvé</p>
           </div>

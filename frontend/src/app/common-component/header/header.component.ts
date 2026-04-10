@@ -165,13 +165,19 @@ export class HeaderComponent implements OnInit {
       this.entrepriseId = currentUser?.entrepriseId || currentUser?.entreprise?.id || null;
 
       if (this.userName) {
-        const parts = this.userName.trim().split(' ');
+        const parts = this.userName.trim().split(' ').filter(p => p.length > 0);
         this.userInitials = parts.length > 1
           ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
           : this.userName.substring(0, 2).toUpperCase();
       }
     }
     this.roleName = this.authService.getRoles();
+  }
+
+  onSearchBlur(): void {
+    setTimeout(() => {
+      this.showSearchDropdown = false;
+    }, 200);
   }
 
   onSearchInput(query: string): void {

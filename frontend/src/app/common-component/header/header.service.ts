@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -28,7 +28,8 @@ export class HeaderService {
   constructor(private http: HttpClient) {}
 
   searchGlobal(query: string): Observable<SearchResult[]> {
-    return this.http.get<SearchResult[]>(`${this.apiUrl}/api/search?q=${encodeURIComponent(query)}`).pipe(
+    const params = new HttpParams().set('q', query);
+    return this.http.get<SearchResult[]>(`${this.apiUrl}/api/search`, { params }).pipe(
       catchError(() => {
         const lowerQuery = query.toLowerCase();
         const clients$ = this.http.get<any[]>(`${this.apiUrl}/clients/getAllClients`).pipe(
