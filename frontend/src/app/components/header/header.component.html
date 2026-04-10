@@ -1,0 +1,187 @@
+<header class="header" (click)="closeDropdowns()">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="header-logo">
+      <a routerLink="/dashboard" class="logo">
+        <i class="fas fa-chart-line"></i>
+        <span>ERP</span>
+      </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="header-search" (click)="$event.stopPropagation()">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          placeholder="Rechercher clients, articles, commandes..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange($event)"
+          class="search-input">
+        <span *ngIf="isSearching" class="search-spinner">
+          <i class="fas fa-spinner fa-spin"></i>
+        </span>
+      </div>
+
+      <!-- Search Results Dropdown -->
+      <div *ngIf="showSearchResults && (searchResults.clients.length > 0 || searchResults.articles.length > 0 || searchResults.orders.length > 0)" class="search-dropdown">
+
+        <!-- Clients -->
+        <div *ngIf="searchResults.clients.length > 0" class="search-section">
+          <h4 class="search-section-title">Clients</h4>
+          <div *ngFor="let client of searchResults.clients"
+               class="search-result-item"
+               (click)="navigateToResult('client', client.id)">
+            <i class="fas fa-user-circle"></i>
+            <div class="result-info">
+              <span class="result-name">{{ client.nom }} {{ client.prenom }}</span>
+              <span class="result-detail">{{ client.email }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Articles -->
+        <div *ngIf="searchResults.articles.length > 0" class="search-section">
+          <h4 class="search-section-title">Articles</h4>
+          <div *ngFor="let article of searchResults.articles"
+               class="search-result-item"
+               (click)="navigateToResult('article', article.id)">
+            <i class="fas fa-box"></i>
+            <div class="result-info">
+              <span class="result-name">{{ article.nom }}</span>
+              <span class="result-detail">SKU: {{ article.code }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders -->
+        <div *ngIf="searchResults.orders.length > 0" class="search-section">
+          <h4 class="search-section-title">Commandes</h4>
+          <div *ngFor="let order of searchResults.orders"
+               class="search-result-item"
+               (click)="navigateToResult('order', order.id)">
+            <i class="fas fa-file-invoice"></i>
+            <div class="result-info">
+              <span class="result-name">{{ order.reference }}</span>
+              <span class="result-detail">{{ order.statut }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="header-actions">
+      <!-- Theme Toggle -->
+      <button class="action-btn theme-toggle" (click)="toggleTheme()" title="Changer le thème">
+        <i class="fas" [ngClass]="isDarkMode ? 'fa-sun' : 'fa-moon'"></i>
+      </button>
+
+      <!-- Email Shortcut -->
+      <a href="mailto:support@erp.com" class="action-btn" title="Envoyer un email">
+        <i class="fas fa-envelope"></i>
+      </a>
+
+      <!-- Notifications -->
+      <div class="action-group" (click)="$event.stopPropagation()">
+        <button class="action-btn notifications-btn" (click)="toggleNotifications()" title="Notifications" [ngClass]="{'has-badge': unreadCount > 0}">
+          <i class="fas fa-bell"></i>
+          <span *ngIf="unreadCount > 0" class="notification-badge">{{ unreadCount }}</span>
+        </button>
+
+        <!-- Notifications Dropdown -->
+        <div *ngIf="showNotifications" class="notifications-dropdown">
+          <div class="notifications-header">
+            <h3>Notifications</h3>
+            <button *ngIf="unreadCount > 0"
+                    (click)="markAllNotificationsAsRead()"
+                    class="mark-all-btn">
+              Marquer tout comme lu
+            </button>
+          </div>
+
+          <div *ngIf="notifications.length === 0" class="no-notifications">
+            <i class="fas fa-inbox"></i>
+            <p>Pas de notifications</p>
+          </div>
+
+          <div *ngIf="notifications.length > 0" class="notifications-list">
+            <div *ngFor="let notification of notifications"
+                 class="notification-item"
+                 [ngClass]="{ 'unread': !notification.read }"
+                 (click)="markNotificationAsRead(notification)">
+              <i class="fas fa-info-circle"></i>
+              <div class="notification-content">
+                <p class="notification-title">{{ notification.title }}</p>
+                <p class="notification-message">{{ notification.message }}</p>
+                <span class="notification-time">{{ notification.createdAt | date: 'short' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Dropdown -->
+      <div class="action-group profile-group" (click)="$event.stopPropagation()">
+        <button class="action-btn profile-btn" (click)="toggleProfileDropdown()" title="Profil">
+          <div class="user-avatar">{{ userInitials }}</div>
+          <span class="user-name">{{ currentUser.firstName }}</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <!-- Profile Dropdown Menu -->
+        <div *ngIf="showProfileDropdown" class="profile-dropdown">
+          <!-- User Info -->
+          <div class="profile-header">
+            <div class="profile-avatar-large">{{ userInitials }}</div>
+            <div class="profile-info">
+              <h4>{{ currentUser.firstName }} {{ currentUser.lastName }}</h4>
+              <p>{{ currentUser.email }}</p>
+              <p class="enterprise-name">{{ currentEnterprise.name }}</p>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Menu Items -->
+          <button class="dropdown-item" (click)="goToProfile()">
+            <i class="fas fa-user"></i>
+            <span>Mon Profil</span>
+          </button>
+
+          <button class="dropdown-item" (click)="goToSettings()">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+          </button>
+
+          <!-- Enterprise Switcher -->
+          <div class="enterprise-switcher">
+            <button class="dropdown-item" (click)="toggleEnterprisesDropdown()">
+              <i class="fas fa-building"></i>
+              <span>Changer d'Entreprise</span>
+              <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <div *ngIf="showEnterprisesDropdown" class="enterprises-submenu">
+              <div *ngFor="let enterprise of enterprises"
+                   class="enterprise-item"
+                   [ngClass]="{ 'active': enterprise.id === currentEnterprise.id }"
+                   (click)="switchEnterprise(enterprise.id)">
+                {{ enterprise.nom }}
+                <i *ngIf="enterprise.id === currentEnterprise.id" class="fas fa-check"></i>
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Logout -->
+          <button class="dropdown-item logout" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Déconnexion</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
