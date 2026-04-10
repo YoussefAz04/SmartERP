@@ -27,6 +27,7 @@ export class ListCategorieFournisseurComponent implements OnInit {
   }
 
   get mostUsedCategory(): string {
+    const truncateLength = 10;
     if (!this.categories.length) return '—';
     const sorted = [...this.categories].sort(
       (a, b) => (b.fournisseurs?.length || 0) - (a.fournisseurs?.length || 0)
@@ -34,7 +35,7 @@ export class ListCategorieFournisseurComponent implements OnInit {
     const top = sorted[0];
     if (!top.fournisseurs || top.fournisseurs.length === 0) return '—';
     const name = top.nom || '';
-    return name.length > 10 ? name.substring(0, 10) + '…' : name;
+    return name.length > truncateLength ? name.substring(0, truncateLength) + '…' : name;
   }
 
   constructor(
