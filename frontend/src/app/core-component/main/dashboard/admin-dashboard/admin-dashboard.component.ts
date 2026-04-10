@@ -61,9 +61,67 @@ export class AdminDashboardComponent implements OnInit {
   public stats: DashboardStatsDto | null = null;
   public statsLoading = true;
   public statsError = false;
-  public userName: string = 'User';
-  public enterpriseName: string = 'Enterprise';
+  public userName: string = 'Utilisateur';
+  public enterpriseName: string = 'Entreprise';
   public today: Date = new Date();
+
+  // French labels for ERP dashboard
+  public labels = {
+    tableauBord: 'Tableau de Bord',
+    bienvenue: 'Bienvenue de retour',
+    chargement: 'Chargement des données du tableau de bord...',
+    erreurChargement: 'Impossible de charger les statistiques en temps réel. Affichage des données en cache si disponibles.',
+    metriquesCles: 'Métriques Clés',
+    ventesTotales: 'Ventes Totales',
+    achatsTotaux: 'Achats Totaux',
+    beneficePerte: 'Bénéfice/Perte',
+    chiffreAffaires: "Chiffre d'Affaires",
+    revenuVentes: 'Revenu Ventes',
+    totalAchats: 'Total Achats',
+    benefice: 'Bénéfice',
+    perte: 'Perte',
+    revenuNet: 'Revenu Net',
+    apercuMetier: 'Aperçu Métier',
+    totalClients: 'Total Clients',
+    nouveau: 'Nouveau',
+    articlesSkus: 'Articles (SKUs)',
+    enStock: 'En Stock',
+    commandesVente: 'Commandes de Vente',
+    actif: 'Actif',
+    commandesAchat: "Commandes d'Achat",
+    enAttente: 'En Attente',
+    etatStock: 'État du Stock',
+    valeurStock: 'Valeur Stock',
+    valeurTotalStock: 'Valeur totale du stock',
+    stockFaible: 'Stock Faible',
+    articlesAttention: 'Articles nécessitant attention',
+    ruptureStock: 'Rupture Stock',
+    articlesIndisponibles: 'Articles indisponibles',
+    analytique: 'Analytique',
+    achatsVentes: 'Achats & Ventes',
+    ventes: 'Ventes',
+    achats: 'Achats',
+    meilleursArticles: 'Meilleurs Articles',
+    numero: 'N°',
+    article: 'Article',
+    quantiteVendue: 'Quantité Vendue',
+    revenu: 'Revenu',
+    aucuneDonneeArticle: 'Aucun article disponible',
+    meilleursClients: 'Meilleurs Clients',
+    client: 'Client',
+    commandes: 'Commandes',
+    totalDepense: 'Total Dépensé',
+    aucunDonneeClient: 'Aucun client disponible',
+    etatCommandes: 'État des Commandes',
+    commandesVenteTitre: 'Commandes de Vente',
+    commandesAchatTitre: "Commandes d'Achat",
+    aucunneDonnee: 'Aucune donnée',
+    articlesExpires: 'Articles Expirés',
+    sku: 'SKU',
+    dateFabrication: 'Date de Fabrication',
+    dateExpiration: "Date d'Expiration",
+    action: 'Action',
+  };
   @ViewChild('chart') chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
@@ -78,11 +136,11 @@ export class AdminDashboardComponent implements OnInit {
     this.chartOptions = {
       series: [
         {
-          name: 'Sales',
+          name: 'Ventes',
           data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
         {
-          name: 'Purchase',
+          name: 'Achats',
           data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
       ],
@@ -126,8 +184,8 @@ export class AdminDashboardComponent implements OnInit {
       },
       xaxis: {
         categories: [
-          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+          'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+          'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc',
         ],
       },
       legend: { show: false },
@@ -162,8 +220,8 @@ export class AdminDashboardComponent implements OnInit {
         const token = user.token;
         if (token && token.split('.').length === 3) {
           const payload = JSON.parse(atob(token.split('.')[1]));
-          this.userName = payload.firstName || payload.username || 'User';
-          this.enterpriseName = payload.enterpriseName || 'Enterprise';
+          this.userName = payload.firstName || payload.username || 'Utilisateur';
+          this.enterpriseName = payload.enterpriseName || 'Entreprise';
         }
       }
     } catch (e) {
@@ -181,7 +239,7 @@ export class AdminDashboardComponent implements OnInit {
         this.updateChart();
       },
       error: (err: any) => {
-        console.error('Error loading dashboard stats:', err);
+        console.error('Erreur lors du chargement des statistiques:', err);
         this.statsError = true;
         this.statsLoading = false;
       }
@@ -200,8 +258,8 @@ export class AdminDashboardComponent implements OnInit {
     this.chartOptions = {
       ...this.chartOptions,
       series: [
-        { name: 'Sales', data: salesData },
-        { name: 'Purchase', data: purchaseData },
+        { name: 'Ventes', data: salesData },
+        { name: 'Achats', data: purchaseData },
       ],
       yaxis: {
         min: Math.floor(minVal * 1.2),
