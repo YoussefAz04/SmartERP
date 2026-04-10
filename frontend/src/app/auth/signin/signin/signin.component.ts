@@ -67,31 +67,31 @@ export class SigninComponent implements OnInit {
 
     this.authService.login(credentials).subscribe({
       next: (response: any) => {
-
-        // ✅ SAVE TOKEN TO AUTH SERVICE (so interceptor can access it)
-        const token = response.token;
-        if (token) {
-          this.authService.setToken(token);
-        }
-
-        // ✅ SAVE TO LOCALSTORAGE
-        localStorage.removeItem("myLSkey");
-        localStorage.setItem('myLSkey', btoa(JSON.stringify({
-          token: response.token,
-          name: response.name,
-          username: response.username,
-          userId: response.id,
-          permission: response.permission,
-          roles: response.roles,
-          roleId: response.roleId,
-          entrepriseId: response.entrepriseId,
-          entrepriseName: response.entrepriseName,
-          // ✅ Provide entreprise object so components can access currentUser.entreprise.nom
-          entreprise: {
-            id: response.entrepriseId,
-            nom: response.entrepriseName
+        try {
+          // ✅ SAVE TOKEN TO AUTH SERVICE FIRST (so interceptor can use it)
+          const token = response.token;
+          if (token) {
+            this.authService.setToken(token);
           }
-        })));
+
+          // ✅ SAVE TO LOCALSTORAGE
+          localStorage.removeItem("myLSkey");
+          localStorage.setItem('myLSkey', btoa(JSON.stringify({
+            token: response.token,
+            name: response.name,
+            username: response.username,
+            userId: response.id,
+            permission: response.permission,
+            roles: response.roles,
+            roleId: response.roleId,
+            entrepriseId: response.entrepriseId,
+            entrepriseName: response.entrepriseName,
+            // ✅ Provide entreprise object so components can access currentUser.entreprise.nom
+            entreprise: {
+              id: response.entrepriseId,
+              nom: response.entrepriseName
+            }
+          })));
 
           // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
           const entrepriseId = response.entrepriseId;
@@ -100,13 +100,18 @@ export class SigninComponent implements OnInit {
             localStorage.setItem('enterpriseId', entrepriseId.toString());
           }
 
-        setTimeout(() => {
-          const fallback = () => this.router.navigate([routes.dashboard]);
-          this.router.navigate([routes.adminDashboard])
-            .then((success) => { if (!success) fallback(); })
-            .catch(fallback)
-            .finally(() => { this.loading = false; });
-        }, 300);
+          setTimeout(() => {
+            const fallback = () => this.router.navigate([routes.dashboard]);
+            this.router.navigate([routes.adminDashboard])
+              .then((success) => { if (!success) fallback(); })
+              .catch(fallback)
+              .finally(() => { this.loading = false; });
+          }, 300);
+        } catch (err) {
+          console.error('❌ Error saving session:', err);
+          this.loading = false;
+          this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+        }
       },
       error: (error: any) => {
         this.loading = false;
