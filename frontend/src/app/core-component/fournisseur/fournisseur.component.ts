@@ -2,7 +2,9 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FournisseurService } from '../../core/service/fournisseur/fournisseur.service';
 import { Router, RouterOutlet } from '@angular/router';
 import { Fournisseur } from '../../model/fournisseur.model';
+import { CategorieFournisseur } from '../../model/categorieFournisseur.model';
 import { NgForOf, NgIf, CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ResponseDto } from '../../model/reponseDto.model';
 import { PermissionDto } from '../../model/permissionDto.model';
 
@@ -13,14 +15,48 @@ import { PermissionDto } from '../../model/permissionDto.model';
     NgForOf,
     NgIf,
     CommonModule,
-    RouterOutlet
+    RouterOutlet,
+    FormsModule
   ],
   templateUrl: './fournisseur.component.html',
   styleUrl: './fournisseur.component.scss'
 })
 export class FournisseurComponent implements OnInit, AfterViewInit {
   fournisseurList: Fournisseur[] = [];
+  categories: CategorieFournisseur[] = [];
+  isLoading = false;
   isDeleting = false;
+  searchTerm: string = '';
+  filterCategorie: string = '';
+
+  get filteredFournisseurs(): Fournisseur[] {
+    let list = this.fournisseurList;
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      list = list.filter(f =>
+        (f.nom?.toLowerCase().includes(term)) ||
+        (f.email?.toLowerCase().includes(term)) ||
+        (f.telephone?.toLowerCase().includes(term)) ||
+        (f.adresse?.toLowerCase().includes(term))
+      );
+    }
+    if (this.filterCategorie) {
+      list = list.filter(f => f.categorieFournisseur?.nom === this.filterCategorie);
+    }
+    return list;
+  }
+
+  get totalCount(): number { return this.fournisseurList.length; }
+  get withEmail(): number { return this.fournisseurList.filter(f => f.email).length; }
+  get withPhone(): number { return this.fournisseurList.filter(f => f.telephone).length; }
+  get uniqueCategories(): number {
+    return new Set(this.fournisseurList.map(f => f.categorieFournisseur?.nom).filter(Boolean)).size;
+  }
+
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.filterCategorie = '';
+  }
 
   permissionFournisseur: PermissionDto = {
     create: false,
@@ -34,6 +70,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadFournisseurs();
+    this.loadCategories();
     this.getUserAuthData();
   }
 
@@ -43,15 +80,25 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
   }
 
   loadFournisseurs(): void {
+    this.isLoading = true;
     this.fournisseurService.getAllFournisseurs().subscribe({
       next: (data) => {
         this.fournisseurList = data;
+        this.isLoading = false;
         console.log('Fournisseurs loaded:', this.fournisseurList);
       },
       error: (err) => {
+        this.isLoading = false;
         console.error('Error loading fournisseurs:', err);
         alert('Erreur lors du chargement des fournisseurs');
       }
+    });
+  }
+
+  loadCategories(): void {
+    this.fournisseurService.getAllCategorieFournisseurs().subscribe({
+      next: (data) => { this.categories = data; },
+      error: (err) => { console.error('Error loading categories:', err); }
     });
   }
 

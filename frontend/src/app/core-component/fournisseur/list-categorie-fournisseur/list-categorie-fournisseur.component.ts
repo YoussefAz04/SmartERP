@@ -18,6 +18,25 @@ export class ListCategorieFournisseurComponent implements OnInit {
   protected readonly routes = routes;
   protected readonly router: Router;
 
+  get withDescription(): number {
+    return this.categories.filter(c => c.description && c.description.trim()).length;
+  }
+
+  get withFournisseurs(): number {
+    return this.categories.filter(c => c.fournisseurs && c.fournisseurs.length > 0).length;
+  }
+
+  get mostUsedCategory(): string {
+    if (!this.categories.length) return '—';
+    const sorted = [...this.categories].sort(
+      (a, b) => (b.fournisseurs?.length || 0) - (a.fournisseurs?.length || 0)
+    );
+    const top = sorted[0];
+    if (!top.fournisseurs || top.fournisseurs.length === 0) return '—';
+    const name = top.nom || '';
+    return name.length > 10 ? name.substring(0, 10) + '…' : name;
+  }
+
   constructor(
     private fournisseurService: FournisseurService,
     router: Router
