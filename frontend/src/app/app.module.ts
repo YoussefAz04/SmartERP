@@ -7,12 +7,11 @@ import { AppComponent } from './app.component';
 import { LoaderComponent } from './common-component/loader/loader.component';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ErpHeaderComponent } from './components/header/header.component';
 
 
 
 @NgModule({
-  declarations: [AppComponent, LoaderComponent, ErpHeaderComponent],
+  declarations: [AppComponent, LoaderComponent],
   imports: [BrowserModule, AppRoutingModule, SharedModule, BrowserAnimationsModule, FormsModule],
   bootstrap: [AppComponent],
 })
