@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class RoleController {
     private  UserService userService ;
 
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("create")
     public ResponseEntity<?> create(@RequestBody Role role) {
         try {
@@ -46,17 +48,20 @@ public class RoleController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("updateRole/{id}")
     public ResponseEntity<Role> update(@PathVariable Long id, @RequestBody Role role) {
         return ResponseEntity.ok(roleService.update(id, role));
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         roleService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("/assign-role/{idUser}/{idRole}")
     public ResponseEntity<?> assignRoleToUser(@PathVariable Long idUser,@PathVariable Long idRole) {
         try {
@@ -67,6 +72,7 @@ public class RoleController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/remove-role/{idUser}/{idRole}")
     public ResponseEntity<?> removeRoleFromUser(@PathVariable Long idUser, @PathVariable Long idRole) {
         try {

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class UserContoller {
     public ResponseEntity<?> testToken() {
         return ResponseEntity.ok("Token valide");
     }
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping(  "/register")
     public ResponseEntity<?> registerUser(
             @RequestBody UserRequest request,
@@ -46,6 +48,7 @@ public class UserContoller {
     }
 
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @GetMapping("/getAllUsers")
     public  ResponseEntity<?> getAllUsers(){
         try {
@@ -73,6 +76,7 @@ public class UserContoller {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @GetMapping("/getAllUsersDTo")
     public  ResponseEntity<?> getAllUsersDTO(){
         try {
@@ -99,6 +103,7 @@ public class UserContoller {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
         }
     }
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {

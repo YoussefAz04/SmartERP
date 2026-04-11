@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
@@ -17,6 +18,7 @@ public class PermissionController {
 
 
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("add/{idRole}/{idModule}")
     private ResponseEntity<?> createPermission(@RequestBody Permission permission, @PathVariable Long idRole , @PathVariable Long idModule){
         try {
