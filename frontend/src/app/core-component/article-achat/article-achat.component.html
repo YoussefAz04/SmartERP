@@ -14,7 +14,7 @@
       <button type="button" class="btn-hero btn-hero-outline" (click)="exportCSV()">
         <i class="feather icon-download"></i> Exporter CSV
       </button>
-      <button type="button" class="btn-hero btn-hero-primary" (click)="addArticle()">
+      <button *ngIf="canCreateArticle" type="button" class="btn-hero btn-hero-primary" (click)="addArticle()">
         <i class="feather icon-plus-circle"></i> Ajouter Article
       </button>
     </div>
@@ -155,7 +155,7 @@
       <span class="panel-badge">{{ filteredList.length }}</span>
     </h5>
     @if (selectedIds.size > 0) {
-      <button type="button" class="btn-bulk-delete" (click)="bulkDelete()">
+      <button *ngIf="canDeleteArticle" type="button" class="btn-bulk-delete" (click)="bulkDelete()">
         <i class="feather icon-trash-2"></i> Supprimer ({{ selectedIds.size }})
       </button>
     }
@@ -253,10 +253,10 @@
                 <td class="date-cell">{{ a.createdAt | date:'dd/MM/yy' }}</td>
                 <td>
                   <div class="action-btns">
-                    <button type="button" class="action-btn action-btn-edit" (click)="editArticle(a.id)" title="Modifier">
+                    <button *ngIf="canEditArticle" type="button" class="action-btn action-btn-edit" (click)="editArticle(a.id)" title="Modifier">
                       <i class="feather icon-edit"></i>
                     </button>
-                    <button type="button" class="action-btn action-btn-delete" (click)="deleteArticle(a.id)" title="Supprimer">
+                    <button *ngIf="canDeleteArticle" type="button" class="action-btn action-btn-delete" (click)="deleteArticle(a.id)" title="Supprimer">
                       <i class="feather icon-trash-2"></i>
                     </button>
                   </div>

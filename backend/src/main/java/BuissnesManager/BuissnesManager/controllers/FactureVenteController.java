@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,6 +62,7 @@ public class FactureVenteController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<FactureVente> createFactureVente(@RequestBody FactureVenteDto dto) {
         try {
@@ -95,6 +97,7 @@ public class FactureVenteController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<FactureVente> updateFactureVente(@PathVariable Long id, @RequestBody FactureVenteDto dto) {
         try {
@@ -117,6 +120,7 @@ public class FactureVenteController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFactureVente(@PathVariable Long id) {
         try {

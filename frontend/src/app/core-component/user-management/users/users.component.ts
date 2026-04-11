@@ -283,8 +283,10 @@ export class UsersComponent implements OnInit {
         if (currentUser?.entrepriseId) {
           this.currentEnterpriseId = Number(currentUser.entrepriseId);
         }
-        if ((currentUser as any)?.entrepriseName) {
-          this.currentEnterpriseName = (currentUser as any).entrepriseName;
+        if (currentUser?.entrepriseName) {
+          this.currentEnterpriseName = currentUser.entrepriseName;
+        } else if (currentUser?.entreprise?.nom) {
+          this.currentEnterpriseName = currentUser.entreprise.nom;
         }
 
         if (currentUser?.permission && Array.isArray(currentUser.permission) && currentUser.permission.length > 0) {
