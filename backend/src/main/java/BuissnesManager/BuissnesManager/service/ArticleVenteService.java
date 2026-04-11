@@ -8,6 +8,7 @@ import BuissnesManager.BuissnesManager.repository.ArticleRepository;
 import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +31,15 @@ public class ArticleVenteService {
     @Autowired
     private StockRepository stockRepository;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
     public List<ArticleVente> getAllArticlesVente() {
-        return articleVenteRepo.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return articleVenteRepo.findAll();
+        }
+        return articleVenteRepo.findByEntrepriseId(entrepriseId);
     }
 
     public Optional<ArticleVente> getArticleVenteById(Long id) {

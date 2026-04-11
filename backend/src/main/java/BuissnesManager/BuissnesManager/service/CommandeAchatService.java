@@ -4,6 +4,7 @@ import BuissnesManager.BuissnesManager.dto.CommandeAchatDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeAchatDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +52,15 @@ public class CommandeAchatService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
     public List<CommandeAchat> getAllCommandes() {
-        return commandeAchatRepository.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return commandeAchatRepository.findAll();
+        }
+        return commandeAchatRepository.findByEntrepriseId(entrepriseId);
     }
 
     public Optional<CommandeAchat> getCommandeById(Long id) {
@@ -61,10 +69,14 @@ public class CommandeAchatService {
 
     @Transactional
     public CommandeAchat createCommande(CommandeAchatDto dto) {
-        // ✅ VALIDATE REQUIRED INPUTS FIRST
+        // ✅ FALL BACK TO JWT ENTERPRISE IF NOT PROVIDED IN DTO
         if (dto.getEntrepriseId() == null) {
-            logger.error("❌ Enterprise ID is required");
-            throw new RuntimeException("L'entreprise est obligatoire. Veuillez vous reconnecter.");
+            Long jwtEntrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+            if (jwtEntrepriseId == null) {
+                logger.error("❌ Enterprise ID is required");
+                throw new RuntimeException("L'entreprise est obligatoire. Veuillez vous reconnecter.");
+            }
+            dto.setEntrepriseId(jwtEntrepriseId);
         }
 
         if (dto.getFournisseurId() == null) {

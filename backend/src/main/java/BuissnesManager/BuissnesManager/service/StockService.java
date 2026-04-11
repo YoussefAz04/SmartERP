@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.dto.StockDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,8 @@ public class StockService {
     private StockRepository stockRepository;
     @Autowired
     private ArticleRepository articleRepository;
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
     // ✅ Helper method to convert any number to BigDecimal
     private BigDecimal toBigDecimal(Object value) {
@@ -45,7 +48,11 @@ public class StockService {
     }
 
     public List<Stock> getAllStocks() {
-        return stockRepository.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return stockRepository.findAll();
+        }
+        return stockRepository.findByEntrepriseId(entrepriseId);
     }
 
     public List<Stock> getStocksByArticleAchat(Long articleAchatId) {

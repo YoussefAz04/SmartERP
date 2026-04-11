@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.dto.ArticleDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ public class ArticleService {
     private MesureRepository mesureRepository;
     @Autowired
     private EntrepriseRepo entrepriseRepo;
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
     public Article createArticle(ArticleDto dto) {
         Article article = new Article();
@@ -39,16 +42,23 @@ public class ArticleService {
                     .orElseThrow(() -> new RuntimeException("Mesure non trouvée: " + dto.getMesureId()));
             article.setMesure(mesure);
         }
-        if (dto.getEntrepriseId() != null) {
-            Entreprise entreprise = entrepriseRepo.findById(dto.getEntrepriseId())
-                    .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + dto.getEntrepriseId()));
+        final Long resolvedEntrepriseId = dto.getEntrepriseId() != null
+                ? dto.getEntrepriseId()
+                : enterpriseSecurityUtil.getContextEnterpriseId();
+        if (resolvedEntrepriseId != null) {
+            Entreprise entreprise = entrepriseRepo.findById(resolvedEntrepriseId)
+                    .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + resolvedEntrepriseId));
             article.setEntreprise(entreprise);
         }
         return articleRepository.save(article);
     }
 
     public List<Article> getAllArticles() {
-        return articleRepository.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return articleRepository.findAll();
+        }
+        return articleRepository.findByEntrepriseId(entrepriseId);
     }
 
     public List<Article> getArticlesByEntreprise(Long entrepriseId) {
