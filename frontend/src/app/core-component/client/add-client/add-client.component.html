@@ -2,9 +2,13 @@
 <div class="page-header">
   <div class="row">
     <div class="col">
-      <h3 class="page-title">Ajouter un Client</h3>
+      <h3 class="page-title">
+        <span class="title-icon"><i class="feather icon-users"></i></span>
+        Ajouter un Client
+      </h3>
       <ul class="breadcrumb">
-        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard"><i class="feather icon-home"></i> Dashboard</a></li>
+        <li class="breadcrumb-item"><a routerLink="/client/listClient">Clients</a></li>
         <li class="breadcrumb-item active">Ajouter Client</li>
       </ul>
     </div>
@@ -14,150 +18,221 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="card">
+    <div class="card form-card">
       <div class="card-header">
-        <h5 class="card-title">Ajouter un Client</h5>
+        <div class="header-content">
+          <div class="header-icon">
+            <i class="feather icon-user-plus"></i>
+          </div>
+          <div>
+            <h5 class="card-title">Informations du Client</h5>
+            <p class="card-subtitle">Remplissez tous les champs obligatoires marqués d'un <span class="text-danger-light">*</span></p>
+          </div>
+        </div>
       </div>
       <div class="card-body">
         <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" novalidate>
-          <div class="row">
 
-            <!-- Nom Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Nom <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  formControlName="nom" 
-                  placeholder="Entrez le nom"
-                  [class.is-invalid]="isFieldInvalid('nom')">
-                <span class="error-message" *ngIf="isFieldInvalid('nom')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="clientForm.get('nom')?.hasError('required')">Le nom est requis</span>
-                  <span *ngIf="clientForm.get('nom')?.hasError('minlength')">Min 2 caractères</span>
-                </span>
-              </div>
+          <!-- Section: Informations Personnelles -->
+          <div class="form-section">
+            <div class="section-header">
+              <i class="feather icon-user"></i>
+              <span>Informations Personnelles</span>
             </div>
+            <div class="row">
 
-            <!-- Prenom Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Prénom <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  formControlName="prenom" 
-                  placeholder="Entrez le prénom"
-                  [class.is-invalid]="isFieldInvalid('prenom')">
-                <span class="error-message" *ngIf="isFieldInvalid('prenom')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="clientForm.get('prenom')?.hasError('required')">Le prénom est requis</span>
-                  <span *ngIf="clientForm.get('prenom')?.hasError('minlength')">Min 2 caractères</span>
-                </span>
+              <!-- Nom Field -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label">Nom <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-user input-icon"></i>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="nom"
+                      placeholder="Entrez le nom"
+                      [class.is-invalid]="isFieldInvalid('nom')"
+                      aria-label="Nom du client">
+                  </div>
+                  <span class="error-message" *ngIf="isFieldInvalid('nom')">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="clientForm.get('nom')?.hasError('required')">Le nom est requis</span>
+                    <span *ngIf="clientForm.get('nom')?.hasError('minlength')">Min 2 caractères</span>
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <!-- Telephone Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Téléphone <span class="text-danger">*</span></label>
-                <input 
-                  type="tel" 
-                  class="form-control" 
-                  formControlName="telephone" 
-                  placeholder="Entrez le téléphone (8+ chiffres)"
-                  [class.is-invalid]="isFieldInvalid('telephone')">
-                <span class="error-message" *ngIf="isFieldInvalid('telephone')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="clientForm.get('telephone')?.hasError('required')">Le téléphone est requis</span>
-                  <span *ngIf="clientForm.get('telephone')?.hasError('pattern')">Min 8 chiffres</span>
-                </span>
+              <!-- Prenom Field -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-user input-icon"></i>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="prenom"
+                      placeholder="Entrez le prénom"
+                      [class.is-invalid]="isFieldInvalid('prenom')"
+                      aria-label="Prénom du client">
+                  </div>
+                  <span class="error-message" *ngIf="isFieldInvalid('prenom')">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="clientForm.get('prenom')?.hasError('required')">Le prénom est requis</span>
+                    <span *ngIf="clientForm.get('prenom')?.hasError('minlength')">Min 2 caractères</span>
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <!-- Email Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Email <span class="text-danger">*</span></label>
-                <input 
-                  type="email" 
-                  class="form-control" 
-                  formControlName="email" 
-                  placeholder="exemple@email.com"
-                  [class.is-invalid]="isFieldInvalid('email')">
-                <span class="error-message" *ngIf="isFieldInvalid('email')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="clientForm.get('email')?.hasError('required')">L'email est requis</span>
-                  <span *ngIf="clientForm.get('email')?.hasError('email')">Email invalide</span>
-                </span>
-              </div>
             </div>
-
-            <!-- Adresse Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Adresse <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  formControlName="adresse" 
-                  placeholder="Entrez l'adresse complète"
-                  [class.is-invalid]="isFieldInvalid('adresse')">
-                <span class="error-message" *ngIf="isFieldInvalid('adresse')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="clientForm.get('adresse')?.hasError('required')">L'adresse est requise</span>
-                  <span *ngIf="clientForm.get('adresse')?.hasError('minlength')">Min 5 caractères</span>
-                </span>
-              </div>
-            </div>
-
-            <!-- Secteur Activite Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Secteur d'Activité <span class="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  formControlName="secteurActivite" 
-                  placeholder="Ex: Technologie, Finance..."
-                  [class.is-invalid]="isFieldInvalid('secteurActivite')">
-                <span class="error-message" *ngIf="isFieldInvalid('secteurActivite')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="clientForm.get('secteurActivite')?.hasError('required')">Le secteur est requis</span>
-                  <span *ngIf="clientForm.get('secteurActivite')?.hasError('minlength')">Min 3 caractères</span>
-                </span>
-              </div>
-            </div>
-
-            <!-- Categorie Field -->
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Catégorie Client <span class="text-danger">*</span></label>
-                <select 
-                  class="form-select" 
-                  formControlName="categorieId"
-                  [class.is-invalid]="isFieldInvalid('categorieId')">
-                  <option value="">-- Sélectionnez une catégorie --</option>
-                  <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
-                </select>
-                <span class="error-message" *ngIf="isFieldInvalid('categorieId')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="clientForm.get('categorieId')?.hasError('required')">La catégorie est requise</span>
-                </span>
-              </div>
-            </div>
-
           </div>
 
-          <div class="d-flex justify-content-end mt-4 gap-2">
+          <!-- Section: Coordonnées -->
+          <div class="form-section">
+            <div class="section-header">
+              <i class="feather icon-phone"></i>
+              <span>Coordonnées</span>
+            </div>
+            <div class="row">
+
+              <!-- Telephone Field -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-phone input-icon"></i>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      formControlName="telephone"
+                      placeholder="Ex: 20000000"
+                      [class.is-invalid]="isFieldInvalid('telephone')"
+                      aria-label="Téléphone du client">
+                  </div>
+                  <span class="error-message" *ngIf="isFieldInvalid('telephone')">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="clientForm.get('telephone')?.hasError('required')">Le téléphone est requis</span>
+                    <span *ngIf="clientForm.get('telephone')?.hasError('pattern')">Min 8 chiffres</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label">Email <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-mail input-icon"></i>
+                    <input
+                      type="email"
+                      class="form-control"
+                      formControlName="email"
+                      placeholder="exemple@email.com"
+                      [class.is-invalid]="isFieldInvalid('email')"
+                      aria-label="Email du client">
+                  </div>
+                  <span class="error-message" *ngIf="isFieldInvalid('email')">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="clientForm.get('email')?.hasError('required')">L'email est requis</span>
+                    <span *ngIf="clientForm.get('email')?.hasError('email')">Email invalide</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Adresse Field -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-map-pin input-icon"></i>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="adresse"
+                      placeholder="Entrez l'adresse complète"
+                      [class.is-invalid]="isFieldInvalid('adresse')"
+                      aria-label="Adresse du client">
+                  </div>
+                  <span class="error-message" *ngIf="isFieldInvalid('adresse')">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="clientForm.get('adresse')?.hasError('required')">L'adresse est requise</span>
+                    <span *ngIf="clientForm.get('adresse')?.hasError('minlength')">Min 5 caractères</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Secteur Activite Field -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label">Secteur d'Activité <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-briefcase input-icon"></i>
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="secteurActivite"
+                      placeholder="Ex: Technologie, Finance..."
+                      [class.is-invalid]="isFieldInvalid('secteurActivite')"
+                      aria-label="Secteur d'activité">
+                  </div>
+                  <span class="error-message" *ngIf="isFieldInvalid('secteurActivite')">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="clientForm.get('secteurActivite')?.hasError('required')">Le secteur est requis</span>
+                    <span *ngIf="clientForm.get('secteurActivite')?.hasError('minlength')">Min 3 caractères</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Section: Catégorie -->
+          <div class="form-section">
+            <div class="section-header">
+              <i class="feather icon-tag"></i>
+              <span>Catégorisation</span>
+            </div>
+            <div class="row">
+
+              <!-- Categorie Field -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label">Catégorie Client <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-tag input-icon"></i>
+                    <select
+                      class="form-select"
+                      formControlName="categorieId"
+                      [class.is-invalid]="isFieldInvalid('categorieId')"
+                      aria-label="Catégorie du client">
+                      <option value="">-- Sélectionnez une catégorie --</option>
+                      <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+                    </select>
+                  </div>
+                  <span class="error-message" *ngIf="isFieldInvalid('categorieId')">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="clientForm.get('categorieId')?.hasError('required')">La catégorie est requise</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
             <button type="button" class="btn btn-cancel" [disabled]="isLoading" (click)="onCancel()">
-              <i class="feather icon-x me-2"></i>Annuler
+              <i class="feather icon-x"></i>
+              <span>Annuler</span>
             </button>
             <button type="submit" class="btn btn-submit" [disabled]="!clientForm.valid || isLoading">
-              <i class="feather icon-check me-2"></i>{{ isLoading ? 'En cours...' : 'Soumettre' }}
+              <span class="spinner" *ngIf="isLoading"></span>
+              <i class="feather icon-check" *ngIf="!isLoading"></i>
+              <span>{{ isLoading ? 'En cours...' : 'Enregistrer' }}</span>
             </button>
           </div>
+
         </form>
       </div>
     </div>

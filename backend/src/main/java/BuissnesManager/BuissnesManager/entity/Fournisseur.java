@@ -17,9 +17,19 @@ public class Fournisseur {
     private Long id;
 
     private String nom;
+    private String prenom;
     private String email;
     private String telephone;
     private String adresse;
+
+    @Column(name = "secteur_activite")
+    private String secteurActivite;
+
+    @Column(name = "taux_livraison")
+    private Double tauxLivraison;
+
+    private Double notation;
+
     private String ville;
     private String pays;
 

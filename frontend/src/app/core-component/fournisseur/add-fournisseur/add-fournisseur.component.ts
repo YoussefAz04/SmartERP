@@ -38,10 +38,13 @@ export class AddFournisseurComponent implements OnInit {
   initializeForm(): void {
     this.fournisseurForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
-
+      prenom: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
+      secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
+      tauxLivraison: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
+      notation: ['', [Validators.required, Validators.min(0), Validators.max(5)]],
       categorieId: ['', Validators.required],
     });
   }
@@ -65,9 +68,13 @@ export class AddFournisseurComponent implements OnInit {
 
         const fournisseurData: any = {
         nom: formValue.nom.trim(),
+        prenom: formValue.prenom.trim(),
         email: formValue.email.trim(),
         telephone: formValue.telephone.trim(),
         adresse: formValue.adresse.trim(),
+        secteurActivite: formValue.secteurActivite.trim(),
+        tauxLivraison: parseFloat(formValue.tauxLivraison),
+        notation: parseFloat(formValue.notation),
       };
 
       this.fournisseurService.addFournisseur(fournisseurData, idCategorie).subscribe({

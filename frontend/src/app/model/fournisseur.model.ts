@@ -4,9 +4,13 @@ import { Entreprise } from './entreprise.model';
 export interface Fournisseur {
   id?: number;
   nom: string;
+  prenom?: string;
   email: string;
   telephone: string;
   adresse: string;
+  secteurActivite?: string;
+  tauxLivraison?: number;
+  notation?: number;
   ville: string;
   pays: string;
   codePostal: string;

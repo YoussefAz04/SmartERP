@@ -1,99 +1,201 @@
 // ========================================
-// Add Client Component - Complete Styling
+// Add Client Component - Modern Styling
 // ========================================
 
 // Variables
 $primary-color: #ff9a44;
+$primary-dark: #ff8c2e;
+$primary-darker: #ff7d1a;
+$primary-light: rgba(255, 154, 68, 0.1);
+$secondary-color: #092C4C;
 $danger-color: #dc3545;
 $warning-color: #ffc107;
 $warning-bg: #fff3cd;
 $warning-text: #856404;
 $success-color: #28a745;
-$gray-light: #f9f9f9;
-$gray-border: #e0e0e0;
+$gray-light: #f8f9fa;
+$gray-border: #e8ecef;
 $gray-text: #6c757d;
-$text-dark: #333;
+$text-dark: #2d3748;
+$text-muted: #718096;
+$section-bg: #fafbfc;
 
 // ========================================
 // Page Header
 // ========================================
 .page-header {
-  margin-bottom: 30px;
-  
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $gray-border;
+
   .row {
     display: flex;
     align-items: center;
   }
-  
+
   .col {
     flex: 1;
   }
-  
+
   h3.page-title {
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 22px;
+    font-weight: 700;
     color: $text-dark;
-    margin: 0 0 10px 0;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .title-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, $primary-color, $primary-dark);
+      border-radius: 10px;
+      color: white;
+
+      i {
+        font-size: 18px;
+      }
+    }
   }
-  
+
   .breadcrumb {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 6px;
     font-size: 12px;
-    
+
     .breadcrumb-item {
-      color: #999;
-      
+      color: $text-muted;
+
       a {
         color: $primary-color;
         text-decoration: none;
-        
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 0.2s ease;
+
+        i {
+          font-size: 13px;
+        }
+
         &:hover {
+          color: $primary-dark;
           text-decoration: underline;
         }
       }
-      
+
       &.active {
-        color: #999;
+        color: $text-muted;
       }
-      
+
       &:not(:last-child)::after {
-        content: "/";
-        margin-left: 10px;
-        color: #ddd;
+        content: "›";
+        margin-left: 6px;
+        color: #cbd5e0;
+        font-size: 14px;
       }
     }
   }
 }
 
 // ========================================
-// Card Styling
+// Form Card
 // ========================================
-.card {
+.form-card {
   border: none;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   background: white;
-  
+  overflow: hidden;
+
   .card-header {
-    background-color: $gray-light;
-    border-bottom: 1px solid $gray-border;
-    padding: 20px;
-    border-radius: 6px 6px 0 0;
-    
+    background: linear-gradient(135deg, $secondary-color 0%, #154272 100%);
+    padding: 24px 28px;
+    border-bottom: none;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      background: rgba(255, 154, 68, 0.2);
+      border-radius: 12px;
+      border: 2px solid rgba(255, 154, 68, 0.4);
+      flex-shrink: 0;
+
+      i {
+        font-size: 24px;
+        color: $primary-color;
+      }
+    }
+
     .card-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: $text-dark;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin: 0 0 4px 0;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
       margin: 0;
     }
+
+    .text-danger-light {
+      color: #ff8a8a;
+    }
   }
-  
+
   .card-body {
-    padding: 30px;
+    padding: 28px;
+  }
+}
+
+// ========================================
+// Form Sections
+// ========================================
+.form-section {
+  margin-bottom: 28px;
+  padding: 20px;
+  background: $section-bg;
+  border-radius: 10px;
+  border: 1px solid $gray-border;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: $secondary-color;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid $primary-light;
+
+    i {
+      font-size: 16px;
+      color: $primary-color;
+    }
   }
 }
 
@@ -101,12 +203,12 @@ $text-dark: #333;
 // Form Labels
 // ========================================
 .form-label {
-  font-weight: 500;
+  font-weight: 600;
   color: $text-dark;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-size: 13px;
   display: block;
-  
+
   .text-danger {
     color: $danger-color;
     margin-left: 3px;
@@ -117,37 +219,65 @@ $text-dark: #333;
 // Input Blocks Container
 // ========================================
 .input-blocks {
-  margin-bottom: 20px;
-  
+  margin-bottom: 16px;
+
   &:last-child {
     margin-bottom: 0;
   }
 }
 
 // ========================================
-// Error Message - BEFORE INPUT
+// Input Wrapper with Icon
+// ========================================
+.input-wrapper {
+  position: relative;
+
+  .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-muted;
+    font-size: 15px;
+    pointer-events: none;
+    transition: color 0.2s ease;
+    z-index: 1;
+  }
+
+  .form-control,
+  .form-select {
+    padding-left: 38px;
+  }
+
+  &:focus-within .input-icon {
+    color: $primary-color;
+  }
+}
+
+// ========================================
+// Error Message
 // ========================================
 .error-message {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   background-color: $warning-bg;
   color: $warning-text;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  padding: 7px 11px;
+  border-radius: 6px;
+  margin-top: 6px;
   border-left: 3px solid $warning-color;
   font-size: 12px;
   line-height: 1.5;
   animation: slideDown 0.2s ease-out;
-  
+
   i {
-    font-size: 14px;
+    font-size: 13px;
     flex-shrink: 0;
     color: $warning-color;
     margin-top: 1px;
   }
-  
+
   span {
     flex: 1;
     word-break: break-word;
@@ -160,118 +290,192 @@ $text-dark: #333;
 .form-control,
 .form-select {
   width: 100%;
-  border: 1px solid $gray-border;
-  border-radius: 4px;
-  padding: 10px 12px;
+  border: 1.5px solid $gray-border;
+  border-radius: 8px;
+  padding: 10px 14px;
   font-size: 13px;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   background-color: white;
   color: $text-dark;
-  
+
   &::placeholder {
-    color: #aaa;
+    color: #b0bec5;
     opacity: 1;
   }
-  
+
   &:focus {
     border-color: $primary-color;
-    box-shadow: 0 0 0 3px rgba(255, 154, 68, 0.1);
+    box-shadow: 0 0 0 3px $primary-light;
     outline: none;
     background-color: white;
   }
-  
-  &:hover:not(:disabled) {
-    border-color: #d0d0d0;
+
+  &:hover:not(:disabled):not(:focus) {
+    border-color: #cbd5e0;
   }
-  
+
   &:disabled {
     background-color: $gray-light;
-    color: #999;
+    color: #a0aec0;
     cursor: not-allowed;
   }
-  
-  // Valid state with checkmark
+
+  // Valid state
   &.ng-valid.ng-touched:not(.is-invalid) {
     border-color: $success-color;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px 16px;
-    padding-right: 35px;
   }
-  
+
   // Invalid state
   &.is-invalid {
     border-color: $danger-color;
     background-color: #fff8f8;
-    
+
     &:focus {
       border-color: $danger-color;
       box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-    }
-    
-    &:hover {
-      border-color: $danger-color;
     }
   }
 }
 
 .form-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23718096' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px 16px;
-  padding-right: 35px;
+  background-position: right 12px center;
+  background-size: 14px 14px;
+  padding-right: 38px;
   cursor: pointer;
-  
+
   option {
     color: $text-dark;
     background-color: white;
-    padding: 5px;
   }
+}
+
+// ========================================
+// Form Actions
+// ========================================
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid $gray-border;
+}
+
+// ========================================
+// Buttons
+// ========================================
+.btn {
+  padding: 11px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  white-space: nowrap;
+  user-select: none;
+  letter-spacing: 0.3px;
+
+  i {
+    font-size: 15px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+.btn-cancel {
+  background-color: white;
+  color: $gray-text;
+  border: 1.5px solid $gray-border;
+
+  &:hover:not(:disabled) {
+    background-color: $gray-light;
+    border-color: #cbd5e0;
+    color: $text-dark;
+  }
+
+  &:focus:not(:disabled) {
+    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.15);
+  }
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  color: white;
+  min-width: 140px;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255, 154, 68, 0.35);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, $primary-dark 0%, $primary-darker 100%);
+    box-shadow: 0 6px 16px rgba(255, 154, 68, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 154, 68, 0.3);
+  }
+}
+
+// ========================================
+// Loading Spinner
+// ========================================
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
 }
 
 // ========================================
 // Utility Classes
 // ========================================
 .mb-3 {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
-.mt-4 {
-  margin-top: 30px;
-}
-
-.me-2 {
-  margin-right: 8px;
-}
-
-.d-flex {
-  display: flex;
-}
-
-.justify-content-end {
-  justify-content: flex-end;
-}
-
-.gap-2 {
-  gap: 10px;
+.text-danger {
+  color: $danger-color;
 }
 
 .row {
   display: flex;
   flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
+  margin-right: -12px;
+  margin-left: -12px;
 }
 
 .col-lg-6 {
   flex: 0 0 50%;
-  padding-right: 15px;
-  padding-left: 15px;
-  
+  padding-right: 12px;
+  padding-left: 12px;
+
   @media (max-width: 991px) {
     flex: 0 0 100%;
   }
@@ -279,83 +483,8 @@ $text-dark: #333;
 
 .col-md-12 {
   flex: 0 0 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-.text-danger {
-  color: $danger-color;
-}
-
-// ========================================
-// Buttons
-// ========================================
-.btn {
-  padding: 10px 24px;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: inherit;
-  white-space: nowrap;
-  user-select: none;
-  
-  i {
-    font-size: 14px;
-  }
-  
-  &:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-  
-  &:focus {
-    outline: none;
-  }
-  
-  &:active:not(:disabled) {
-    transform: translateY(1px);
-  }
-}
-
-.btn-cancel {
-  background-color: $gray-text;
-  color: white;
-  
-  &:hover:not(:disabled) {
-    background-color: #5a6268;
-    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
-  }
-  
-  &:focus:not(:disabled) {
-    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.25);
-  }
-}
-
-.btn-submit {
-  background-color: $primary-color;
-  color: white;
-  min-width: 120px;
-  justify-content: center;
-  
-  &:hover:not(:disabled) {
-    background-color: #ff8c2e;
-    box-shadow: 0 2px 8px rgba(255, 154, 68, 0.2);
-  }
-  
-  &:focus:not(:disabled) {
-    box-shadow: 0 0 0 3px rgba(255, 154, 68, 0.25);
-  }
-  
-  &:active:not(:disabled) {
-    background-color: #ff7d1a;
-  }
+  padding-right: 12px;
+  padding-left: 12px;
 }
 
 // ========================================
@@ -364,7 +493,7 @@ $text-dark: #333;
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
@@ -372,23 +501,27 @@ $text-dark: #333;
   }
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 // ========================================
 // Responsive Design
 // ========================================
 @media (max-width: 991px) {
-  .card {
-    .card-body {
-      padding: 20px;
-    }
+  .form-card .card-body {
+    padding: 20px;
   }
-  
+
   .col-lg-6 {
     flex: 0 0 100%;
   }
-  
-  .d-flex.justify-content-end {
+
+  .form-actions {
     flex-direction: column;
-    
+
     .btn {
       width: 100%;
       justify-content: center;
@@ -399,118 +532,91 @@ $text-dark: #333;
 @media (max-width: 768px) {
   .page-header {
     margin-bottom: 20px;
-    
+
     h3.page-title {
-      font-size: 20px;
+      font-size: 18px;
+
+      .title-icon {
+        width: 32px;
+        height: 32px;
+
+        i {
+          font-size: 15px;
+        }
+      }
     }
   }
-  
-  .card {
+
+  .form-card {
     .card-header {
-      padding: 15px;
+      padding: 18px 20px;
+
+      .header-icon {
+        width: 44px;
+        height: 44px;
+
+        i {
+          font-size: 20px;
+        }
+      }
+
+      .card-title {
+        font-size: 16px;
+      }
     }
-    
+
     .card-body {
-      padding: 15px;
+      padding: 16px;
     }
   }
-  
-  .input-blocks {
-    margin-bottom: 15px;
+
+  .form-section {
+    padding: 16px;
+    margin-bottom: 20px;
   }
-  
+
   .form-label {
     font-size: 12px;
-    margin-bottom: 8px;
   }
-  
+
   .form-control,
   .form-select {
-    padding: 8px 10px;
+    padding: 9px 12px;
     font-size: 12px;
   }
-  
+
+  .input-wrapper .form-control,
+  .input-wrapper .form-select {
+    padding-left: 36px;
+  }
+
   .error-message {
-    padding: 8px 10px;
     font-size: 11px;
-    
-    i {
-      font-size: 12px;
-    }
-  }
-  
-  .mt-4 {
-    margin-top: 20px;
-  }
-  
-  .gap-2 {
-    gap: 8px;
-  }
-  
-  .btn {
-    padding: 8px 16px;
-    font-size: 12px;
-    width: 100%;
-    
-    i {
-      font-size: 12px;
-    }
   }
 }
 
 @media (max-width: 576px) {
   .page-header {
     h3.page-title {
-      font-size: 18px;
+      font-size: 16px;
     }
-    
+
     .breadcrumb {
       font-size: 11px;
     }
   }
-  
-  .card {
-    .card-header {
-      padding: 12px;
-      
-      .card-title {
-        font-size: 14px;
-      }
-    }
-    
-    .card-body {
-      padding: 12px;
-    }
+
+  .form-card .card-header .header-content {
+    gap: 12px;
   }
-  
-  .form-label {
-    font-size: 11px;
-    margin-bottom: 6px;
+
+  .form-section .section-header {
+    font-size: 13px;
   }
-  
-  .form-control,
-  .form-select {
-    padding: 8px 10px;
-    font-size: 11px;
-  }
-  
-  .error-message {
-    padding: 6px 8px;
-    font-size: 10px;
-    margin-bottom: 6px;
-    
-    i {
-      font-size: 11px;
-    }
-  }
-  
+
   .btn {
-    padding: 8px 12px;
-    font-size: 11px;
-    
-    i {
-      font-size: 11px;
-    }
+    padding: 10px 18px;
+    font-size: 12px;
   }
 }
 
@@ -521,7 +627,8 @@ $text-dark: #333;
   .error-message,
   .form-control,
   .form-select,
-  .btn {
+  .btn,
+  .spinner {
     animation: none !important;
     transition: none !important;
   }
