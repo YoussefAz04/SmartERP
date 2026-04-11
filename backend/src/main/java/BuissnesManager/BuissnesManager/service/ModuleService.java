@@ -19,6 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class ModuleService {
 
+    /** Module-title keywords identifying sections accessible to ADMIN/SUPER_ADMIN only. */
+    private static final Set<String> ADMIN_ONLY_KEYWORDS = Set.of(
+            "user", "utilisateur", "permission", "role", "parametre", "paramètre", "setting"
+    );
+
     @Autowired
     private ModuleRepo moduleRepo;
     @Autowired
@@ -83,10 +88,8 @@ public class ModuleService {
                                 ? mt.getModuleTittle().toLowerCase()
                                 : "";
                         // Exclude admin-only module sections (user management, roles, permissions)
-                        boolean isAdminOnly = title.contains("user") || title.contains("utilisateur")
-                                || title.contains("permission") || title.contains("role")
-                                || title.contains("parametre") || title.contains("paramètre")
-                                || title.contains("setting");
+                        boolean isAdminOnly = ADMIN_ONLY_KEYWORDS.stream()
+                                .anyMatch(title::contains);
                         if (!isAdminOnly) {
                             idsAffectes.add(module.getId());
                         }
