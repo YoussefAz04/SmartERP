@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class ClientController {
     private JWTUtil jwtUtil;
 
     // ✅ ADD CLIENT
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("/addClient/{idCategorie}")
     public ResponseEntity<Client> addClient(@RequestBody Client client, @PathVariable Long idCategorie) {
         try {
@@ -73,6 +75,7 @@ public class ClientController {
     }
 
     // ✅ DELETE CLIENT
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/deleteClient/{id}")
     public ResponseEntity<Map<String, Object>> deleteClient(@PathVariable Long id) {
         try {
@@ -91,6 +94,7 @@ public class ClientController {
     }
 
     // ✅ UPDATE CLIENT
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("/updateClient/{id}")
     public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client client) {
         try {
@@ -103,6 +107,7 @@ public class ClientController {
     }
 
     // ✅ ADD CATEGORY CLIENT
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("/addCategorieClient")
     public ResponseEntity<CategorieClient> addCategorieClient(@RequestBody CategorieClient categorieClient) {
         try {
@@ -135,6 +140,7 @@ public class ClientController {
     }
 
     // ✅ UPDATE CATEGORY CLIENT
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("/updateCategorieClient/{id}")
     public ResponseEntity<CategorieClient> updateCategorieClient(
         @PathVariable Long id, 
@@ -148,6 +154,7 @@ public class ClientController {
             return ResponseEntity.status(500).build();
         }
     }
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/deleteCategorie/{id}")
     public ResponseEntity<Map<String, Object>> deleteCategorie(@PathVariable Long id) {
         try {

@@ -29,6 +29,10 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
   searchTerm: string = '';
   filterCategorie: string = '';
 
+  canCreateFournisseur = false;
+  canEditFournisseur = false;
+  canDeleteFournisseur = false;
+
   get filteredFournisseurs(): Fournisseur[] {
     let list = this.fournisseurList;
     if (this.searchTerm.trim()) {
@@ -165,6 +169,13 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
         console.log('User connecté:', currentUser?.name);
         console.log('Permissions:', currentUser?.permission);
+
+        const roles: string[] = Array.isArray(currentUser?.roles) ? (currentUser.roles as string[]) : [];
+        const isSuperAdmin = roles.includes('SUPER_ADMIN');
+        const isAdmin = roles.includes('ADMIN');
+        this.canCreateFournisseur = isSuperAdmin || isAdmin;
+        this.canEditFournisseur = isSuperAdmin || isAdmin;
+        this.canDeleteFournisseur = isSuperAdmin || isAdmin;
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {

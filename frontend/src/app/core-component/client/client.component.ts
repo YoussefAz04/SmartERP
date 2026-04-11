@@ -27,6 +27,10 @@ export class ClientComponent implements OnInit, AfterViewInit {
   isDeleting = false;
   searchTerm: string = '';
 
+  canCreateClient = false;
+  canEditClient = false;
+  canDeleteClient = false;
+
   get filteredClients(): Client[] {
     if (!this.searchTerm.trim()) return this.clientList;
     const term = this.searchTerm.toLowerCase();
@@ -141,6 +145,13 @@ export class ClientComponent implements OnInit, AfterViewInit {
         console.log('User connecté:', currentUser?.name);
         console.log('Token:', currentUser?.token);
         console.log('Permissions:', currentUser?.permission);
+
+        const roles: string[] = Array.isArray(currentUser?.roles) ? (currentUser.roles as string[]) : [];
+        const isSuperAdmin = roles.includes('SUPER_ADMIN');
+        const isAdmin = roles.includes('ADMIN');
+        this.canCreateClient = isSuperAdmin || isAdmin;
+        this.canEditClient = isSuperAdmin || isAdmin;
+        this.canDeleteClient = isSuperAdmin || isAdmin;
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {

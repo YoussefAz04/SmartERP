@@ -13,7 +13,7 @@
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadFournisseurs()">
         <i class="feather icon-rotate-ccw"></i> Actualiser
       </button>
-      <button type="button" class="btn-hero btn-hero-primary" (click)="addFournisseur()">
+      <button *ngIf="canCreateFournisseur" type="button" class="btn-hero btn-hero-primary" (click)="addFournisseur()">
         <i class="feather icon-plus-circle"></i> Ajouter Fournisseur
       </button>
     </div>
@@ -192,17 +192,17 @@
               </td>
               <td class="date-cell">{{ f.createdAt | date:'dd/MM/yyyy' }}</td>
               <td class="date-cell">{{ f.updatedAt | date:'dd/MM/yyyy' }}</td>
-              <td>
+                <td>
                 <div class="action-btns">
                   <button type="button" class="action-btn action-btn-view"
                     (click)="viewFournisseur(f.id)" title="Voir détails">
                     <i class="feather icon-eye"></i>
                   </button>
-                  <button type="button" class="action-btn action-btn-edit"
+                  <button *ngIf="canEditFournisseur" type="button" class="action-btn action-btn-edit"
                     (click)="editFournisseur(f.id)" title="Modifier">
                     <i class="feather icon-edit"></i>
                   </button>
-                  <button type="button" class="action-btn action-btn-delete"
+                  <button *ngIf="canDeleteFournisseur" type="button" class="action-btn action-btn-delete"
                     (click)="deleteFournisseur(f.id)" title="Supprimer" [disabled]="isDeleting">
                     <i class="feather icon-trash-2"></i>
                   </button>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { StockService } from '../../../core/service/stock/stock.service';
 import { Stock } from '../../../model/stock.model';
+import { ResponseDto } from '../../../model/reponseDto.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,6 +19,9 @@ export class ListStockComponent implements OnInit {
   stocks: Stock[] = [];
   filteredStocks: Stock[] = [];
   isLoading = false;
+
+  canAdjustStock = false;
+  canDeleteStock = false;
 
   searchTerm = '';
   filterLocation = '';
@@ -50,6 +54,23 @@ export class ListStockComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStocks();
+    this.loadRolePermissions();
+  }
+
+  loadRolePermissions(): void {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
+        const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
+        const isSuperAdmin = roles.includes('SUPER_ADMIN');
+        const isAdmin = roles.includes('ADMIN');
+        this.canAdjustStock = isSuperAdmin || isAdmin;
+        this.canDeleteStock = isSuperAdmin || isAdmin;
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
   }
 
   loadStocks(): void {

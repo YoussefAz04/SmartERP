@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,7 @@ public class FactureDeVenteController {
     @Autowired
     private FactureDeVenteService factureDeVenteService;
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("ajouterFacture")
     public ResponseEntity<FactureDeVente> ajouterFacture(@RequestBody FactureDeVente facture) {
         FactureDeVente savedFacture = factureDeVenteService.ajouterFactureDeVente(facture);
@@ -36,6 +38,7 @@ public class FactureDeVenteController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("updateFacture/{id}")
     public ResponseEntity<FactureDeVente> updateFacture(@PathVariable Long id,
                                                         @RequestBody FactureDeVente updatedFacture) {
@@ -47,6 +50,7 @@ public class FactureDeVenteController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("deleteFacture/{id}")
     public ResponseEntity<Void> deleteFacture(@PathVariable Long id) {
         try {
@@ -59,6 +63,7 @@ public class FactureDeVenteController {
 
 
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("affecterFactureClient/{idFacture}/{idClient}")
 
     public ResponseEntity<String> affecterFactureClient(

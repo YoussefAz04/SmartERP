@@ -7,6 +7,7 @@ import BuissnesManager.BuissnesManager.service.StockMouvementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,6 +66,7 @@ public class StockMouvementController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<StockMouvement> createMouvement(@RequestBody StockMouvementDto dto) {
         try {
@@ -75,6 +77,7 @@ public class StockMouvementController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMouvement(@PathVariable Long id) {
         try {
