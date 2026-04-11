@@ -29,9 +29,28 @@ export class AddArticleVenteComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.checkAdminAccess();
     this.initializeForm();
     this.loadArticlesAchat();
     this.setupPriceAutoCalc();
+  }
+
+  checkAdminAccess(): void {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
+        const roles = user?.roles || [];
+        const isAdmin = roles.includes('ADMIN') || roles.includes('SUPER_ADMIN');
+        if (!isAdmin) {
+          alert('❌ Accès refusé. Seuls les administrateurs peuvent ajouter des articles.');
+          this.router.navigate(['/article-vente/listArticleVente']);
+        }
+      } catch (error) {
+        console.error('Error checking access:', error);
+        this.router.navigate(['/article-vente/listArticleVente']);
+      }
+    }
   }
 
   initializeForm(): void {
