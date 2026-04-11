@@ -4,6 +4,8 @@ import {Role} from "../../../model/role.model";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 
+export type RoleType = 'SUPER_ADMIN' | 'ADMIN' | 'EMPLOYEE';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,4 +49,51 @@ export class RoleService {
   removeRoleFromUser(idUser: number, idRole: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/remove-role/${idUser}/${idRole}`);
   }
+
+  // ----------------------------------------------------------------
+  // Role-checking helpers (read from localStorage session)
+  // ----------------------------------------------------------------
+
+  /**
+   * Returns the role names stored in the current session.
+   */
+  getCurrentRoles(): string[] {
+    try {
+      const raw = localStorage.getItem('myLSkey');
+      if (!raw) return [];
+      const session = JSON.parse(atob(raw));
+      return Array.isArray(session.roles) ? session.roles : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** True if the authenticated user has the given role. */
+  hasRole(role: RoleType): boolean {
+    return this.getCurrentRoles().includes(role);
+  }
+
+  /** True if the user has any of the given roles. */
+  hasAnyRole(roles: RoleType[]): boolean {
+    const current = this.getCurrentRoles();
+    return roles.some(r => current.includes(r));
+  }
+
+  isSuperAdmin(): boolean {
+    return this.hasRole('SUPER_ADMIN');
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('ADMIN');
+  }
+
+  isEmployee(): boolean {
+    return this.hasRole('EMPLOYEE');
+  }
+
+  /** True for SUPER_ADMIN or ADMIN. */
+  isAdminOrAbove(): boolean {
+    return this.hasAnyRole(['SUPER_ADMIN', 'ADMIN']);
+  }
 }
+

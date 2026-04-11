@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CoreComponentComponent } from './core-component.component';
+import { RoleGuard } from '../core/guard/role/role.guard';
 
 const routes: Routes = [
   {
@@ -62,6 +63,8 @@ const routes: Routes = [
       },
       {
         path: 'settings',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./settings/settings.module').then((m) => m.SettingsModule),
       },
@@ -98,6 +101,8 @@ const routes: Routes = [
       },
       {
         path: 'module',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./module/module-routing.module').then(
             (m) => m.ModuleRoutingModule
@@ -132,6 +137,8 @@ const routes: Routes = [
 
       {
         path: 'user-management',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./user-management/user-management.module').then(
             (m) => m.UserManagementModule

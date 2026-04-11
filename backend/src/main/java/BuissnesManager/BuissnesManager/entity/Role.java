@@ -28,6 +28,10 @@ public class Role {
 
     private LocalDate createdOn ;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role_type")
+    private RoleType roleType;
+
     @OneToMany(mappedBy = "role" )
     private List<Permission> permission;
 
