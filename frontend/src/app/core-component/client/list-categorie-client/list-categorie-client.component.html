@@ -1,90 +1,139 @@
-<!-- Page Header -->
-<div class="page-header">
-  <div class="row">
-    <div class="col">
-      <h3 class="page-title">Liste Catégorie Client</h3>
-      <ul class="breadcrumb">
-        <li class="breadcrumb-item"><a [routerLink]="routes.adminDashboard">Dashboard</a></li>
-        <li class="breadcrumb-item active">Catégories Client</li>
-      </ul>
+<!-- Hero Header -->
+<div class="cat-hero-header">
+  <div class="hero-content">
+    <div>
+      <span class="hero-badge">
+        <i class="feather icon-layers"></i> Gestion des Catégories
+      </span>
+      <h1 class="hero-title">Catégories Client</h1>
+      <p class="hero-subtitle">{{ categories.length }} catégorie(s) enregistrée(s)</p>
+    </div>
+    <div class="hero-actions">
+      <button type="button" class="btn-hero btn-hero-outline" (click)="loadCategories()">
+        <i class="feather icon-rotate-ccw"></i> Actualiser
+      </button>
+      <button type="button" class="btn-hero btn-hero-primary"
+        (click)="router.navigate(['/client/addCategorieClient'])">
+        <i class="feather icon-plus-circle"></i> Ajouter Catégorie
+      </button>
     </div>
   </div>
 </div>
-<!-- /Page Header -->
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title d-flex justify-content-between align-items-center">
-          <h5>Liste Des Catégories Client</h5>
-          <button 
-            type="button"
-            class="btn btn-primary btn-sm" 
-            (click)="router.navigate(['/client/addCategorieClient'])"
-            style="border: none; cursor: pointer;">
-            <i class="feather icon-plus"></i> Ajouter Catégorie
-          </button>
+<!-- KPI Cards -->
+<div class="row mb-4">
+  <div class="col-xl-6 col-sm-6 mb-4">
+    <div class="kpi-card kpi-blue kpi-delay-1">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ categories.length }}</div>
+          <div class="kpi-label">Total Catégories</div>
+          <span class="kpi-trend"><i class="feather icon-list"></i> Registre</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-layers"></i>
         </div>
       </div>
-      <div class="card-body">
-        <!-- Loading State -->
-        <div class="text-center py-5" *ngIf="isLoading">
-          <div class="spinner-border" role="status">
-            <span class="visually-hidden">Chargement...</span>
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <div class="alert alert-info text-center" *ngIf="!isLoading && categories.length === 0">
-          <i class="feather icon-inbox"></i>
-          <p>Aucune catégorie client trouvée</p>
-        </div>
-
-        <!-- Table -->
-        <div class="table-responsive" *ngIf="!isLoading && categories.length > 0">
-          <table class="table table-striped table-hover">
-            <thead>
-              <tr>
-                <th>Nom</th>
-                <th>Description</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let categorie of categories">
-                <td class="fw-bold">{{ categorie.nom }}</td>
-                <td>{{ categorie.description || 'N/A' }}</td>
-                <td>
-                  <div class="d-flex gap-2">
-                    <!-- Edit Button -->
-                    <button 
-                      type="button"
-                      class="btn btn-sm btn-info" 
-                      (click)="editCategorie(categorie.id)"
-                      title="Modifier"
-                      [disabled]="isLoading"
-                      style="border: none; cursor: pointer; background-color: #17a2b8; color: white; padding: 5px 10px; border-radius: 4px;">
-                      <i class="feather icon-eye"></i>
-                    </button>
-
-                    <!-- Delete Button -->
-                    <button 
-                      type="button"
-                      class="btn btn-sm btn-danger" 
-                      (click)="deleteCategorie(categorie.id)"
-                      title="Supprimer"
-                      [disabled]="isLoading"
-                      style="border: none; cursor: pointer; background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 4px;">
-                      <i class="feather icon-trash-2"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="kpi-footer">
+        <i class="feather icon-list me-1"></i> Voir toutes les catégories
       </div>
     </div>
+  </div>
+  <div class="col-xl-6 col-sm-6 mb-4">
+    <div class="kpi-card kpi-amber kpi-delay-2">
+      <div class="kpi-body">
+        <div>
+          <div class="kpi-number">{{ mostUsedCategory }}</div>
+          <div class="kpi-label">Plus utilisée</div>
+          <span class="kpi-trend"><i class="feather icon-star"></i> Top</span>
+        </div>
+        <div class="kpi-icon-wrap">
+          <i class="feather icon-award"></i>
+        </div>
+      </div>
+      <div class="kpi-footer">
+        <i class="feather icon-bar-chart-2 me-1"></i> Catégorie la plus populaire
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Categories Table -->
+<div class="modern-panel">
+  <div class="panel-header panel-header-cat">
+    <h5 class="panel-title">
+      <i class="feather icon-layers"></i>
+      Liste des Catégories
+      <span class="panel-badge">{{ categories.length }}</span>
+    </h5>
+  </div>
+  <div class="panel-body">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="empty-state">
+      <div class="loading-spinner"></div>
+      <p>Chargement des catégories...</p>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive" *ngIf="!isLoading">
+      <table class="cat-table">
+        <thead>
+          <tr>
+            <th>Catégorie</th>
+            <th>Description</th>
+            <th>Clients</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let categorie of categories">
+            <td>
+              <div class="cat-name-cell">
+                <div class="cat-avatar">{{ (categorie.nom || '?').charAt(0).toUpperCase() }}</div>
+                <strong>{{ categorie.nom }}</strong>
+              </div>
+            </td>
+            <td>
+              <span class="description-text" *ngIf="categorie.description">{{ categorie.description }}</span>
+              <span class="text-muted" *ngIf="!categorie.description">—</span>
+            </td>
+            <td>
+              <span class="count-badge" *ngIf="categorie.clients && categorie.clients.length > 0">
+                <i class="feather icon-users"></i> {{ categorie.clients.length }}
+              </span>
+              <span class="text-muted" *ngIf="!categorie.clients || categorie.clients.length === 0">0</span>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button type="button" class="action-btn action-btn-edit"
+                  (click)="editCategorie(categorie.id)"
+                  title="Modifier" [disabled]="isLoading">
+                  <i class="feather icon-edit"></i>
+                </button>
+                <button type="button" class="action-btn action-btn-delete"
+                  (click)="deleteCategorie(categorie.id)"
+                  title="Supprimer" [disabled]="isLoading">
+                  <i class="feather icon-trash-2"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && categories.length === 0">
+            <td colspan="4">
+              <div class="empty-state">
+                <i class="feather icon-layers empty-icon"></i>
+                <p>Aucune catégorie client trouvée</p>
+                <button type="button" class="btn-retry"
+                  (click)="router.navigate(['/client/addCategorieClient'])">
+                  <i class="feather icon-plus"></i> Ajouter une catégorie
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>

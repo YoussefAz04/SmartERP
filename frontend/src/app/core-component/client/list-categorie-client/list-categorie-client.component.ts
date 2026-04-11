@@ -18,6 +18,26 @@ export class ListCategorieClientComponent implements OnInit {
   protected readonly routes = routes;
   protected readonly router: Router;
 
+  get mostUsedCategory(): string {
+    const truncateLength = 10;
+    const top = this.topCategory;
+    if (!top || !top.clients || top.clients.length === 0) return '—';
+    const name = top.nom || '';
+    return name.length > truncateLength ? name.substring(0, truncateLength) + '…' : name;
+  }
+
+  get mostUsedCount(): number {
+    const top = this.topCategory;
+    return top?.clients?.length || 0;
+  }
+
+  private get topCategory(): CategorieClient | null {
+    if (!this.categories.length) return null;
+    return [...this.categories].sort(
+      (a, b) => (b.clients?.length || 0) - (a.clients?.length || 0)
+    )[0];
+  }
+
   constructor(
     private clientService: ClientService,
     router: Router
