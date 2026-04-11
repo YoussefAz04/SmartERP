@@ -181,7 +181,8 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         let fournisseurPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {
-            if (per.moduleTitle?.toLowerCase().includes('gestion fournisseur')) {
+            if (per.moduleTitle?.toLowerCase().includes('gestion de fournisseur') ||
+                per.moduleTitle?.toLowerCase().includes('gestion fournisseur')) {
               this.permissionFournisseur = per;
               fournisseurPermissionFound = true;
               console.log('Permission Fournisseur:', this.permissionFournisseur);
