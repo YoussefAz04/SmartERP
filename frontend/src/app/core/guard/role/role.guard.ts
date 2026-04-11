@@ -34,6 +34,6 @@ export class RoleGuard {
       return true;
     }
 
-    return this.router.createUrlTree(['/error-pages/error-404']);
+    return this.router.createUrlTree(['/error-pages/error-403']);
   }
 }
