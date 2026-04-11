@@ -13,6 +13,6 @@ public interface ArticleVenteRepo extends JpaRepository<ArticleVente, Long> {
     List<ArticleVente> findByClientId(Long clientId);
     List<ArticleVente> findByArticleAchatId(Long articleAchatId);
 
-    @Query("SELECT av FROM ArticleVente av WHERE av.articleAchat.entreprise.id = :entrepriseId")
+    @Query("SELECT av FROM ArticleVente av WHERE av.articleAchat IS NOT NULL AND av.articleAchat.entreprise IS NOT NULL AND av.articleAchat.entreprise.id = :entrepriseId")
     List<ArticleVente> findByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }

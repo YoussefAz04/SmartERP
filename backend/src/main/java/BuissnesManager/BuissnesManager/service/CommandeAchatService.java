@@ -69,14 +69,17 @@ public class CommandeAchatService {
 
     @Transactional
     public CommandeAchat createCommande(CommandeAchatDto dto) {
-        // ✅ FALL BACK TO JWT ENTERPRISE IF NOT PROVIDED IN DTO
-        if (dto.getEntrepriseId() == null) {
+        // ✅ RESOLVE ENTERPRISE ID FROM DTO OR JWT (without mutating DTO)
+        final Long resolvedEntrepriseId;
+        if (dto.getEntrepriseId() != null) {
+            resolvedEntrepriseId = dto.getEntrepriseId();
+        } else {
             Long jwtEntrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
             if (jwtEntrepriseId == null) {
                 logger.error("❌ Enterprise ID is required");
                 throw new RuntimeException("L'entreprise est obligatoire. Veuillez vous reconnecter.");
             }
-            dto.setEntrepriseId(jwtEntrepriseId);
+            resolvedEntrepriseId = jwtEntrepriseId;
         }
 
         if (dto.getFournisseurId() == null) {
@@ -108,10 +111,10 @@ public class CommandeAchatService {
         logger.info("✅ Supplier set: {}", fournisseur.getId());
 
         // ✅ SET ENTERPRISE
-        Entreprise entreprise = entrepriseRepo.findById(dto.getEntrepriseId())
+        Entreprise entreprise = entrepriseRepo.findById(resolvedEntrepriseId)
                 .orElseThrow(() -> {
-                    logger.error("❌ Enterprise not found with ID: {}", dto.getEntrepriseId());
-                    return new RuntimeException("Entreprise non trouvée: " + dto.getEntrepriseId());
+                    logger.error("❌ Enterprise not found with ID: {}", resolvedEntrepriseId);
+                    return new RuntimeException("Entreprise non trouvée: " + resolvedEntrepriseId);
                 });
         commande.setEntreprise(entreprise);
         logger.info("✅ Enterprise set: {}", entreprise.getId());
