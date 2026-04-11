@@ -11,7 +11,7 @@
       <p class="hero-subtitle">{{ totalCount }} client(s) enregistré(s)</p>
     </div>
     <div class="hero-actions">
-      <button *ngIf="canCreateClient" type="button" class="btn-hero btn-hero-primary" (click)="addClient()">
+      <button *ngIf="permissionClient?.create" type="button" class="btn-hero btn-hero-primary" (click)="addClient()">
         <i class="feather icon-plus-circle"></i> Ajouter Client
       </button>
     </div>
@@ -154,7 +154,7 @@
                        title="Voir">
                       <i class="feather icon-eye"></i>
                     </button>
-                    <button *ngIf="canDeleteClient" type="button" class="action-btn action-btn-delete"
+                    <button *ngIf="permissionClient?.delete" type="button" class="action-btn action-btn-delete"
                        (click)="deleteClient(d.id)"
                        title="Supprimer">
                       <i class="feather icon-trash-2"></i>

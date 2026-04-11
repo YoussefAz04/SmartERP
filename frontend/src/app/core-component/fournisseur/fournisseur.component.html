@@ -13,7 +13,7 @@
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadFournisseurs()">
         <i class="feather icon-rotate-ccw"></i> Actualiser
       </button>
-      <button *ngIf="canCreateFournisseur" type="button" class="btn-hero btn-hero-primary" (click)="addFournisseur()">
+      <button *ngIf="permissionFournisseur?.create" type="button" class="btn-hero btn-hero-primary" (click)="addFournisseur()">
         <i class="feather icon-plus-circle"></i> Ajouter Fournisseur
       </button>
     </div>
