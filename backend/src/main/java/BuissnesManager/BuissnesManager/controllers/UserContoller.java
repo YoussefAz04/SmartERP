@@ -140,10 +140,7 @@ public class UserContoller {
         }
     }
 
-    /**
-     * Update a user.
-     * ADMIN can only update users in their own enterprise.
-     */
+  
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("/updateUser/{id}")
     public ResponseEntity<?> updateUser(
