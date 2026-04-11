@@ -52,9 +52,13 @@ export class HeaderService {
     );
   }
 
-  getNotifications(): Observable<Notification[]> {
-    return this.http.get<Notification[]>(`${this.apiUrl}/api/notifications`).pipe(
-      catchError(() => of([] as Notification[]))
+  // ✅ UPDATED: Accept entrepriseId as parameter
+  getNotifications(entrepriseId: number): Observable<Notification[]> {
+    return this.http.get<Notification[]>(`${this.apiUrl}/api/notifications/${entrepriseId}`).pipe(
+      catchError((error) => {
+        console.error('❌ Error fetching notifications:', error);
+        return of([] as Notification[]);
+      })
     );
   }
 

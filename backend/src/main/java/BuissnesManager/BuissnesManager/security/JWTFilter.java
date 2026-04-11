@@ -34,6 +34,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // ✅ Only truly public paths skip JWT validation
         boolean isPublic = path.startsWith("/test") ||
                 path.startsWith("/auth") ||
+                path.startsWith("/api/auth") ||  // ✅ ADDED
                 path.startsWith("/entreprise") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/swagger-resources") ||

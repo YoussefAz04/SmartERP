@@ -190,13 +190,28 @@ export class HeaderComponent implements OnInit {
     this.showSearchDropdown = false;
   }
 
+  // ✅ UPDATED: Pass entrepriseId to the service
   loadNotifications(): void {
     this.isLoadingNotifications = true;
-    this.headerService.getNotifications().subscribe(notifs => {
-      this.notifications = notifs;
-      this.unreadCount = notifs.filter(n => !n.lu).length;
+    
+    if (!this.entrepriseId) {
+      console.warn('⚠️ Enterprise ID not found, cannot load notifications');
       this.isLoadingNotifications = false;
-    });
+      return;
+    }
+
+    this.headerService.getNotifications(this.entrepriseId).subscribe(
+      notifs => {
+        this.notifications = notifs;
+        this.unreadCount = notifs.filter(n => !n.lu).length;
+        this.isLoadingNotifications = false;
+        console.log('✅ Notifications loaded:', notifs);
+      },
+      error => {
+        console.error('❌ Error loading notifications:', error);
+        this.isLoadingNotifications = false;
+      }
+    );
   }
 
   markAllRead(): void {
