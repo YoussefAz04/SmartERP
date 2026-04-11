@@ -174,9 +174,9 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
         const isEmployee = roles.includes('EMPLOYEE');
-        this.canCreateFournisseur = isSuperAdmin || isAdmin || isEmployee;
-        this.canEditFournisseur = isSuperAdmin || isAdmin || isEmployee;
-        this.canDeleteFournisseur = isSuperAdmin || isAdmin || isEmployee;
+        this.canCreateFournisseur = isSuperAdmin || isAdmin;
+        this.canEditFournisseur = isSuperAdmin || isAdmin;
+        this.canDeleteFournisseur = isSuperAdmin || isAdmin;
 
         let fournisseurPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
@@ -192,10 +192,10 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         // Fallback: if no DB permission record found, derive access from role
         if (!fournisseurPermissionFound) {
           this.permissionFournisseur = {
-            create: isSuperAdmin || isAdmin || isEmployee,
+            create: isSuperAdmin || isAdmin,
             view: isSuperAdmin || isAdmin || isEmployee,
-            update: isSuperAdmin || isAdmin || isEmployee,
-            delete: isSuperAdmin || isAdmin || isEmployee,
+            update: isSuperAdmin || isAdmin,
+            delete: isSuperAdmin || isAdmin,
             moduleTitle: 'gestion Fournisseur'
           } as PermissionDto;
         }

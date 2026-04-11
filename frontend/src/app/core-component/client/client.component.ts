@@ -150,9 +150,9 @@ export class ClientComponent implements OnInit, AfterViewInit {
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
         const isEmployee = roles.includes('EMPLOYEE');
-        this.canCreateClient = isSuperAdmin || isAdmin || isEmployee;
-        this.canEditClient = isSuperAdmin || isAdmin || isEmployee;
-        this.canDeleteClient = isSuperAdmin || isAdmin || isEmployee;
+        this.canCreateClient = isSuperAdmin || isAdmin;
+        this.canEditClient = isSuperAdmin || isAdmin;
+        this.canDeleteClient = isSuperAdmin || isAdmin;
 
         let clientPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
@@ -169,10 +169,10 @@ export class ClientComponent implements OnInit, AfterViewInit {
         // Fallback: if no DB permission record found, derive access from role
         if (!clientPermissionFound) {
           this.permissionClient = {
-            create: isSuperAdmin || isAdmin || isEmployee,
+            create: isSuperAdmin || isAdmin,
             view: isSuperAdmin || isAdmin || isEmployee,
-            update: isSuperAdmin || isAdmin || isEmployee,
-            delete: isSuperAdmin || isAdmin || isEmployee,
+            update: isSuperAdmin || isAdmin,
+            delete: isSuperAdmin || isAdmin,
             moduleTitle: 'gestion de Client'
           } as PermissionDto;
         }
