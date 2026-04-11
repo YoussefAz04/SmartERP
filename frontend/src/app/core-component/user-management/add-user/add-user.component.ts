@@ -16,7 +16,7 @@ export class AddUserComponent implements OnInit {
   isSubmitting = false;
 
   isSuperAdmin = false;
-  currentEnterpriseId: number = 1;
+  currentEnterpriseId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +33,7 @@ export class AddUserComponent implements OnInit {
     try {
       const raw = localStorage.getItem('myLSkey');
       if (!raw) return;
-      const session = JSON.parse(atob(raw));
+      const session = JSON.parse(decodeURIComponent(escape(atob(raw))));
       const roles: string[] = Array.isArray(session.roles) ? session.roles : [];
       this.isSuperAdmin = roles.includes('SUPER_ADMIN');
       if (session.entrepriseId) {
@@ -61,6 +61,11 @@ export class AddUserComponent implements OnInit {
   onSubmitAddUser(): void {
     if (!this.addUserForm.valid) {
       alert('Please fill all required fields');
+      return;
+    }
+
+    if (this.currentEnterpriseId === null) {
+      alert('❌ Enterprise context is missing. Please log out and log in again.');
       return;
     }
 

@@ -49,7 +49,11 @@ public class UserContoller {
         try {
             if (authorizationUtil.isAdmin() && !authorizationUtil.isSuperAdmin()) {
                 Long tokenEnterpriseId = extractEnterpriseId(authHeader);
-                if (tokenEnterpriseId == null || !tokenEnterpriseId.equals(idEntreprise)) {
+                if (tokenEnterpriseId == null) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body("Enterprise context not found in token");
+                }
+                if (!tokenEnterpriseId.equals(idEntreprise)) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN)
                             .body("ADMIN can only create users for their own enterprise");
                 }
