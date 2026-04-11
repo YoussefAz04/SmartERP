@@ -10,12 +10,12 @@
   </div>
 
   <div class="page-btn" *ngIf="permissionUsers?.create">
-    <a (click)="addUsers()" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units"><i
+    <a (click)="addUsers()" class="btn btn-added"><i
     class="feather icon-plus-circle me-2"></i>Add New User</a>
   </div>
 </div>
 
-<!-- /product list -->
+<!-- user list -->
 <div class="card table-list-card">
   <div class="card-body">
     <div class="table-top">
@@ -26,7 +26,7 @@
             <label>
               <input [(ngModel)]="searchDataValue" [ngModelOptions]="{standalone: true}"
                      (ngModelChange)="searchData(searchDataValue)"
-                     type="search" class="form-control" placeholder="Search..." />
+                     type="search" class="form-control" placeholder="Search users..." />
             </label>
           </div>
         </div>
@@ -51,7 +51,7 @@
     </div>
 
     <!-- Filter Inputs -->
-    <div class="card" id="filter_inputs" [ngClass]="{'d-block': filter, 'd-none': !filter}">
+    <div class="filter-card" id="filter_inputs" [ngClass]="{'d-block': filter, 'd-none': !filter}">
       <div class="card-body pb-0">
         <div class="row">
           <div class="col-lg-3 col-sm-6 col-12">
@@ -119,33 +119,53 @@
         <tbody>
           @for (data of tableData; track data) {
             <tr>
-              <td>{{ data.username }}</td>
-              <td>{{ data.email }}</td>
-              <td>{{ data.roles?.join(', ') || '-' }}</td>
+              <td class="user-name-cell">
+                <div class="user-name-wrapper">
+                  <span class="user-avatar">{{ data.username?.charAt(0)?.toUpperCase() || 'U' }}</span>
+                  <span class="user-name">{{ data.username }}</span>
+                </div>
+              </td>
+              <td class="email-cell">{{ data.email }}</td>
+              <td class="role-cell">
+                <div class="role-badges">
+                  @for (role of (data.roles || []); track role) {
+                    <span class="badge-role">{{ role }}</span>
+                  }
+                  @if (!data.roles || data.roles.length === 0) {
+                    <span class="text-muted">-</span>
+                  }
+                </div>
+              </td>
               <td *ngIf="isSuperAdmin">{{ data.entrepriseNom || '-' }}</td>
-              <td>
+              <td class="status-cell">
                 <span class="badge"
-                      [ngClass]="{'badge-linesuccess': data.enabled, 'badge-linedanger': !data.enabled}">
+                      [ngClass]="{'badge-success': data.enabled, 'badge-danger': !data.enabled}">
+                  <i class="feather" [ngClass]="data.enabled ? 'icon-check-circle' : 'icon-x-circle'"></i>
                   {{ data.enabled ? 'Active' : 'Inactive' }}
                 </span>
               </td>
-              <td class="action-table-data">
-                <div class="edit-delete-action">
-                  <a class="me-2 p-2" href="javascript:void(0);" (click)="userAssigner(data.id)">
-                    <i class="feather icon-shield shield"></i>
+              <td class="action-cell">
+                <div class="action-buttons">
+                  <a class="action-btn action-shield" href="javascript:void(0);"
+                     (click)="userAssigner(data.id)"
+                     matTooltip="Assign Role">
+                    <i class="feather icon-shield"></i>
                   </a>
-                  <a class="me-2 p-2 mb-0" href="javascript:void(0);" (click)="viewUsers(data.id)" *ngIf="permissionUsers?.view">
-                    <i class="feather icon-eye action-eye"></i>
+                  <a class="action-btn action-eye" href="javascript:void(0);"
+                     (click)="viewUsers(data.id)"
+                     *ngIf="permissionUsers?.view"
+                     matTooltip="View Details">
+                    <i class="feather icon-eye"></i>
                   </a>
-                  <a class="me-2 p-2 mb-0 action-delete"
+                  <a class="action-btn action-delete"
                      href="javascript:void(0);"
                      (click)="deleteUser(data.id)"
                      [class.disabled]="isDeleting && deletingUserId === data.id"
                      *ngIf="permissionUsers?.delete"
-                     title="Supprimer l'utilisateur">
+                     matTooltip="Delete User">
                     <i class="feather icon-trash-2"></i>
                     @if (isDeleting && deletingUserId === data.id) {
-                      <span class="spinner-small"></span>
+                      <span class="spinner-border spinner-border-sm" role="status"></span>
                     }
                   </a>
                 </div>
@@ -159,6 +179,6 @@
     <app-custom-pagination></app-custom-pagination>
   </div>
 </div>
-<!-- /product list -->
+<!-- /user list -->
 
 

@@ -1,0 +1,819 @@
+// ============================================
+// COLOR VARIABLES
+// ============================================
+$primary-color: #FF9800;
+$primary-dark: #fb8c00;
+$secondary-color: #2c3e50;
+$text-primary: #333;
+$text-secondary: #666;
+$text-muted: #999;
+$success-color: #4CAF50;
+$danger-color: #f44336;
+$warning-color: #FFC107;
+$info-color: #2196F3;
+$purple-color: #9C27B0;
+$teal-color: #009688;
+$light-bg: #f5f7fa;
+$border-color: #e0e0e0;
+$border-light: #f0f0f0;
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+// ============================================
+// PAGE HEADER
+// ============================================
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+
+  .add-item {
+    flex: 1;
+
+    .page-title {
+      h4 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $secondary-color;
+        margin: 0;
+        letter-spacing: -0.5px;
+      }
+
+      h6 {
+        font-size: 0.95rem;
+        color: $text-muted;
+        margin: 0.5rem 0 0 0;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .page-btn {
+    .btn-added {
+      background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 6px rgba($primary-color, 0.2);
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-medium;
+        background: linear-gradient(135deg, $primary-dark 0%, $primary-color 100%);
+        color: white;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      i {
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+// ============================================
+// TABLE CARD
+// ============================================
+.table-list-card {
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  box-shadow: $shadow-light;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: $shadow-medium;
+  }
+
+  .card-body {
+    padding: 0;
+  }
+}
+
+// ============================================
+// TABLE TOP (SEARCH & FILTER)
+// ============================================
+.table-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid $border-light;
+  flex-wrap: wrap;
+
+  .search-set {
+    flex: 1;
+    min-width: 250px;
+
+    .search-input {
+      position: relative;
+
+      .btn-searchset {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: $text-muted;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        padding: 0.5rem;
+
+        &:hover {
+          color: $primary-color;
+        }
+      }
+
+      input {
+        width: 100%;
+        border: 2px solid $border-color;
+        border-radius: 8px;
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background-color: white;
+
+        &:focus {
+          border-color: $primary-color;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        }
+
+        &::placeholder {
+          color: $text-muted;
+        }
+      }
+    }
+  }
+
+  .search-path {
+    .btn-filter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background-color: $light-bg;
+      border: 1px solid $border-color;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $primary-color;
+        border-color: $primary-color;
+        color: white;
+      }
+
+      &.setclose {
+        background-color: $primary-color;
+        border-color: $primary-color;
+        color: white;
+      }
+
+      i {
+        font-size: 1.1rem;
+      }
+
+      span {
+        display: flex;
+        align-items: center;
+
+        img {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  .form-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 220px;
+
+    i {
+      color: $text-muted;
+      font-size: 1.1rem;
+    }
+
+    mat-select {
+      width: 100%;
+      font-size: 0.95rem;
+
+      ::ng-deep {
+        .mat-mdc-select-trigger {
+          color: $secondary-color;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// FILTER SECTION
+// ============================================
+.filter-card {
+  margin: 0 1.5rem 1.5rem 1.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: $light-bg;
+  border: 1px solid $border-color;
+  transition: all 0.3s ease;
+
+  &.d-none {
+    display: none !important;
+  }
+
+  &.d-block {
+    display: block !important;
+  }
+
+  .card-body {
+    padding: 0;
+  }
+
+  .input-blocks {
+    position: relative;
+    margin-bottom: 1rem;
+
+    i {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-muted;
+      font-size: 1rem;
+    }
+
+    select,
+    mat-select {
+      padding-left: 2.75rem;
+      border-radius: 8px;
+      border: 2px solid $border-color;
+      transition: all 0.3s ease;
+      width: 100%;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
+    }
+  }
+
+  .btn-filters {
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-medium;
+      color: white;
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
+// ============================================
+// TABLE STYLING
+// ============================================
+.table-responsive {
+  overflow-x: auto;
+
+  table {
+    margin-bottom: 0;
+    border-collapse: collapse;
+    width: 100%;
+
+    thead {
+      background-color: $light-bg;
+      border-bottom: 2px solid $border-color;
+
+      th {
+        padding: 1.25rem;
+        font-weight: 700;
+        color: $secondary-color;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        border: none;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $border-light;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: rgba($primary-color, 0.03);
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        td {
+          padding: 1.25rem;
+          color: $text-primary;
+          font-size: 0.95rem;
+          vertical-align: middle;
+          border: none;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// ROLE NAME CELL
+// ============================================
+.role-name-cell {
+  .role-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .role-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba($primary-color, 0.15) 0%, rgba($primary-dark, 0.1) 100%);
+      color: $primary-color;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .role-name {
+      font-weight: 600;
+      color: $secondary-color;
+    }
+  }
+}
+
+// ============================================
+// ROLE TYPE BADGE
+// ============================================
+.role-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.type-super-admin {
+    background-color: #fce4ec;
+    color: #c62828;
+    border: 1px solid rgba(#c62828, 0.2);
+  }
+
+  &.type-admin {
+    background-color: #e3f2fd;
+    color: $info-color;
+    border: 1px solid rgba($info-color, 0.2);
+  }
+
+  &.type-employee {
+    background-color: #e8f5e9;
+    color: $success-color;
+    border: 1px solid rgba($success-color, 0.2);
+  }
+
+  &.type-default {
+    background-color: #f3e5f5;
+    color: $purple-color;
+    border: 1px solid rgba($purple-color, 0.2);
+  }
+}
+
+// ============================================
+// DATE CELL
+// ============================================
+.date-cell {
+  color: $text-secondary;
+  font-size: 0.9rem;
+
+  .date-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      color: $text-muted;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// ============================================
+// ACTION BUTTONS
+// ============================================
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &.action-edit {
+      color: $primary-color;
+      background-color: transparent;
+
+      &:hover {
+        background-color: rgba($primary-color, 0.1);
+        border-color: $primary-color;
+        transform: translateY(-1px);
+      }
+    }
+
+    &.action-shield {
+      color: $teal-color;
+      background-color: transparent;
+
+      &:hover {
+        background-color: rgba($teal-color, 0.1);
+        border-color: $teal-color;
+        transform: translateY(-1px);
+      }
+    }
+
+    &.action-users {
+      color: $info-color;
+      background-color: transparent;
+
+      &:hover {
+        background-color: rgba($info-color, 0.1);
+        border-color: $info-color;
+        transform: translateY(-1px);
+      }
+    }
+
+    &.action-delete {
+      color: $danger-color;
+      background-color: transparent;
+
+      &:hover {
+        background-color: rgba($danger-color, 0.1);
+        border-color: $danger-color;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+// ============================================
+// MODAL STYLING
+// ============================================
+.modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: $shadow-medium;
+
+  .custom-modal-header {
+    background: linear-gradient(135deg, rgba($primary-color, 0.08) 0%, rgba($primary-dark, 0.04) 100%);
+    border-bottom: 1px solid $border-color;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .page-title h4 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: $secondary-color;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      strong {
+        color: $primary-color;
+      }
+    }
+
+    .close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: $text-muted;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: $danger-color;
+        background-color: rgba($danger-color, 0.05);
+      }
+    }
+  }
+
+  .custom-modal-body {
+    padding: 1.75rem;
+
+    .form-label {
+      font-weight: 600;
+      color: $secondary-color;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      border: 2px solid $border-color;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        outline: none;
+      }
+    }
+
+    .text-danger {
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
+    }
+  }
+
+  .modal-footer-btn {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+
+    .btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+
+      &.btn-cancel {
+        background-color: $light-bg;
+        color: $secondary-color;
+        border: 1px solid $border-color;
+
+        &:hover {
+          background-color: #e8e8e8;
+        }
+      }
+
+      &.btn-submit {
+        background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba($primary-color, 0.2);
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: $shadow-medium;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// Manage Users table inside modal
+.manage-users-table {
+  .table {
+    th {
+      background-color: $light-bg;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: $secondary-color;
+      border-bottom: 2px solid $border-color;
+      padding: 0.85rem 1rem;
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      vertical-align: middle;
+      font-size: 0.9rem;
+      border-bottom: 1px solid $border-light;
+    }
+
+    tr:hover td {
+      background-color: rgba($primary-color, 0.03);
+    }
+
+    .form-check-input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      border: 2px solid $border-color;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &:checked {
+        background-color: $primary-color;
+        border-color: $primary-color;
+      }
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+      }
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+@media (max-width: 992px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table-top {
+    flex-direction: column;
+    align-items: stretch;
+
+    .search-set {
+      min-width: 100%;
+    }
+
+    .form-sort {
+      width: 100%;
+    }
+  }
+
+  .filter-card {
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    .page-btn {
+      width: 100%;
+
+      .btn-added {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .table-top {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .table-responsive {
+    font-size: 0.85rem;
+
+    table {
+      thead th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      tbody td {
+        padding: 0.75rem 0.5rem;
+      }
+    }
+  }
+
+  .action-buttons {
+    gap: 0.25rem;
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+
+      i {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .page-header {
+    .page-title {
+      h4 {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  .table-responsive {
+    font-size: 0.75rem;
+
+    table {
+      thead th {
+        padding: 0.5rem;
+        font-size: 0.65rem;
+      }
+
+      tbody td {
+        padding: 0.5rem;
+      }
+    }
+  }
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+.d-flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.ms-auto {
+  margin-left: auto;
+}
+
+.me-2 {
+  margin-right: 0.5rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: $text-muted !important;
+}
+
+.py-3 {
+  padding: 1rem 0;
+}
