@@ -52,9 +52,10 @@ export class ArticleAchatComponent implements OnInit {
         const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
-        this.canCreateArticle = isSuperAdmin || isAdmin;
-        this.canEditArticle = isSuperAdmin || isAdmin;
-        this.canDeleteArticle = isSuperAdmin || isAdmin;
+        const isEmployee = roles.includes('EMPLOYEE');
+        this.canCreateArticle = isSuperAdmin || isAdmin || isEmployee;
+        this.canEditArticle = isSuperAdmin || isAdmin || isEmployee;
+        this.canDeleteArticle = isSuperAdmin || isAdmin || isEmployee;
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
