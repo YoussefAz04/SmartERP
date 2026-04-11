@@ -1,41 +1,46 @@
 <!-- Header -->
-<div class="header">
+<div class="header header-modern">
 
   <!-- Logo -->
   <div class="header-left active" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')">
     <a [routerLink]="routes.adminDashboard" class="logo logo-normal">
-      <img src="assets/img/logo.png" alt="">
+      <img src="assets/img/logo.png" alt="Logo">
     </a>
     <a [routerLink]="routes.adminDashboard" class="logo logo-white">
-      <img src="assets/img/logo-white.png" alt="">
+      <img src="assets/img/logo-white.png" alt="Logo">
     </a>
     <a [routerLink]="routes.adminDashboard" class="logo-small">
-      <img src="assets/img/logo-small.png" alt="">
+      <img src="assets/img/logo-small.png" alt="Logo">
     </a>
-    <a id="toggle_btn" href="javascript:void(0);" (click)="toggleSidebar()" [ngClass]="{'d-none': page === 'pos'}">
-      <i class="feather icon-chevrons-left" class="feather icon-16"></i>
+    <a id="toggle_btn" href="javascript:void(0);" class="toggle-btn" (click)="toggleSidebar()" [ngClass]="{'d-none': page === 'pos'}" aria-label="Basculer la barre latérale">
+      <i class="feather icon-chevrons-left"></i>
     </a>
   </div>
   <!-- /Logo -->
 
-  <a id="mobile_btn" class="mobile_btn" (click)="togglesMobileSideBar()" [ngClass]="{'d-none': page === 'pos'}">
+  <!-- Mobile Hamburger -->
+  <a id="mobile_btn" class="mobile_btn" (click)="togglesMobileSideBar()" [ngClass]="{'d-none': page === 'pos'}" aria-label="Menu mobile">
     <span class="bar-icon">
       <span></span>
       <span></span>
       <span></span>
     </span>
   </a>
+  <!-- /Mobile Hamburger -->
 
   <!-- Header Menu -->
   <ul class="nav user-menu">
 
-    <!-- Recherche -->
+    <!-- Search -->
     <li class="nav-item nav-searchinputs">
       <div class="top-nav-search">
-        <a href="javascript:void(0);" class="responsive-search">
-          <i class="fa fa-search"></i>
+        <a href="javascript:void(0);" class="responsive-search" aria-label="Rechercher">
+          <i class="feather icon-search"></i>
         </a>
         <div class="searchinputs" [class.active]="showSearchDropdown">
+          <div class="search-icon-wrap">
+            <i class="feather icon-search search-prefix-icon"></i>
+          </div>
           <input
             type="text"
             placeholder="Rechercher clients, articles, commandes..."
@@ -43,163 +48,221 @@
             (input)="onSearchInput(searchQuery)"
             (blur)="onSearchBlur()"
             autocomplete="off"
+            aria-label="Recherche globale"
           />
           <div class="search-addon">
-            <span *ngIf="!isSearching" (click)="clearSearch()">
-              <i class="feather icon-x-circle feather-14"></i>
+            <span *ngIf="!isSearching && searchQuery" (click)="clearSearch()" aria-label="Effacer la recherche">
+              <i class="feather icon-x"></i>
             </span>
             <span *ngIf="isSearching">
-              <i class="feather icon-loader feather-14 spin-icon"></i>
+              <i class="feather icon-loader spin-icon"></i>
             </span>
           </div>
         </div>
-        <!-- Dropdown résultats -->
-        <div class="dropdown-menu search-dropdown show" *ngIf="showSearchDropdown">
-          <div class="search-info" *ngIf="searchResults.length === 0 && !isSearching">
-            <p class="text-muted p-2">Aucun résultat trouvé</p>
-          </div>
-          <div class="search-info" *ngIf="searchResults.length > 0">
-            <h6><i class="feather icon-search me-1"></i> Résultats de recherche</h6>
-            <ul class="search-tags">
-              <li *ngFor="let result of searchResults">
-                <a href="javascript:void(0);">
-                  <span class="badge me-1"
-                    [class.badge-primary]="result.type === 'Client'"
-                    [class.badge-success]="result.type === 'Article'"
-                    [class.badge-warning]="result.type === 'Commande'">
-                    {{ result.type }}
-                  </span>
-                  {{ result.nom }}
-                </a>
-              </li>
-            </ul>
+        <!-- Search Dropdown -->
+        <div class="search-dropdown-modern" *ngIf="showSearchDropdown">
+          <div class="search-dropdown-body">
+            <div *ngIf="searchResults.length === 0 && !isSearching" class="search-empty">
+              <i class="feather icon-search-x"></i>
+              <p>Aucun résultat pour <strong>"{{ searchQuery }}"</strong></p>
+            </div>
+            <div *ngIf="searchResults.length > 0">
+              <div class="search-section-label">
+                <i class="feather icon-search me-1"></i> Résultats
+                <span class="result-count">{{ searchResults.length }}</span>
+              </div>
+              <ul class="search-results-list">
+                <li *ngFor="let result of searchResults" class="search-result-item">
+                  <a href="javascript:void(0);" class="search-result-link">
+                    <span class="result-type-badge"
+                      [class.type-client]="result.type === 'Client'"
+                      [class.type-article]="result.type === 'Article'"
+                      [class.type-commande]="result.type === 'Commande'">
+                      {{ result.type }}
+                    </span>
+                    <span class="result-name">{{ result.nom }}</span>
+                    <i class="feather icon-chevron-right result-arrow"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
+        <!-- /Search Dropdown -->
       </div>
     </li>
-    <!-- /Recherche -->
+    <!-- /Search -->
 
-    <!-- Mode sombre / clair -->
-    <div class="theme-toggle-icon" *ngIf="lightMode" (click)="changeThemeMode('dark_mode')" title="Activer le mode sombre">
-      <i class="feather icon-moon"></i>
-    </div>
-    <div class="theme-toggle-icon" *ngIf="!lightMode" (click)="changeThemeMode('light_mode')" title="Activer le mode clair">
-      <i class="feather icon-sun"></i>
-    </div>
-    <!-- /Mode sombre / clair -->
+    <!-- Theme Toggle -->
+    <li class="nav-item header-action-item">
+      <button
+        class="header-action-btn theme-toggle-btn"
+        *ngIf="lightMode"
+        (click)="changeThemeMode('dark_mode')"
+        title="Activer le mode sombre"
+        aria-label="Activer le mode sombre">
+        <i class="feather icon-moon"></i>
+      </button>
+      <button
+        class="header-action-btn theme-toggle-btn theme-btn-dark"
+        *ngIf="!lightMode"
+        (click)="changeThemeMode('light_mode')"
+        title="Activer le mode clair"
+        aria-label="Activer le mode clair">
+        <i class="feather icon-sun"></i>
+      </button>
+    </li>
+    <!-- /Theme Toggle -->
 
-    <li class="nav-item nav-item-box">
-      <a href="javascript:void(0);" id="btnFullscreen" (click)="fullscreen()">
+    <!-- Fullscreen -->
+    <li class="nav-item header-action-item d-none d-lg-flex">
+      <button class="header-action-btn" id="btnFullscreen" (click)="fullscreen()" title="Plein écran" aria-label="Plein écran">
         <i class="feather icon-maximize"></i>
+      </button>
+    </li>
+    <!-- /Fullscreen -->
+
+    <!-- Settings -->
+    <li class="nav-item header-action-item d-none d-md-flex">
+      <a class="header-action-btn" [routerLink]="routes.generalSettings" title="Paramètres" aria-label="Paramètres">
+        <i class="feather icon-settings"></i>
       </a>
     </li>
-
-    <li class="nav-item nav-item-box">
-      <a [routerLink]="routes.generalSettings"><i class="feather icon-settings"></i></a>
-    </li>
+    <!-- /Settings -->
 
     <!-- Notifications -->
     <li class="nav-item dropdown nav-item-box">
-      <a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
+      <a href="javascript:void(0);" class="header-action-btn notification-btn dropdown-toggle" data-bs-toggle="dropdown" aria-label="Notifications">
         <i class="feather icon-bell"></i>
-        <span class="badge rounded-pill" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        <span class="notif-badge" *ngIf="unreadCount > 0">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
       </a>
-      <div class="dropdown-menu notifications">
-        <div class="topnav-dropdown-header">
-          <span class="notification-title">Notifications</span>
-          <a href="javascript:void(0);" class="clear-noti" (click)="markAllRead()">Tout marquer lu</a>
+      <div class="dropdown-menu notifications-dropdown">
+        <div class="notif-header">
+          <div class="notif-header-left">
+            <i class="feather icon-bell me-2"></i>
+            <span class="notification-title">Notifications</span>
+            <span class="unread-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+          </div>
+          <button class="clear-noti-btn" (click)="markAllRead()" *ngIf="unreadCount > 0">Tout lu</button>
         </div>
         <div class="noti-content">
-          <div *ngIf="isLoadingNotifications" class="text-center p-3">
-            <i class="feather icon-loader spin-icon"></i> Chargement...
+          <div *ngIf="isLoadingNotifications" class="notif-loading">
+            <i class="feather icon-loader spin-icon"></i>
+            <span>Chargement...</span>
           </div>
           <ul class="notification-list" *ngIf="!isLoadingNotifications">
-            <li class="notification-message" *ngFor="let notif of notifications"
+            <li class="notification-item" *ngFor="let notif of notifications"
                 [class.unread]="!notif.lu" (click)="markRead(notif.id)">
-              <a href="javascript:void(0);">
-                <div class="media d-flex">
-                  <span class="avatar flex-shrink-0">
-                    <i class="feather icon-bell" style="font-size:20px;padding:8px;"></i>
-                  </span>
-                  <div class="media-body flex-grow-1">
-                    <p class="noti-details">{{ notif.message }}</p>
-                    <p class="noti-time"><span class="notification-time">{{ notif.date | date:'dd/MM/yyyy HH:mm' }}</span></p>
-                  </div>
+              <a href="javascript:void(0);" class="notif-link">
+                <div class="notif-icon-wrap" [class.unread-icon]="!notif.lu">
+                  <i class="feather icon-bell"></i>
                 </div>
+                <div class="notif-body">
+                  <p class="noti-details">{{ notif.message }}</p>
+                  <p class="noti-time">
+                    <i class="feather icon-clock me-1"></i>
+                    {{ notif.date | date:'dd/MM/yyyy HH:mm' }}
+                  </p>
+                </div>
+                <span class="unread-dot" *ngIf="!notif.lu"></span>
               </a>
             </li>
-            <li *ngIf="notifications.length === 0" class="p-3 text-center text-muted">
-              Aucune notification
+            <li *ngIf="notifications.length === 0" class="notif-empty">
+              <i class="feather icon-bell-off"></i>
+              <p>Aucune notification</p>
             </li>
           </ul>
         </div>
-        <div class="topnav-dropdown-footer">
-          <a [routerLink]="routes.activities">Voir toutes les notifications</a>
+        <div class="notif-footer">
+          <a [routerLink]="routes.activities" class="notif-footer-link">
+            <i class="feather icon-list me-1"></i>Voir toutes les notifications
+          </a>
         </div>
       </div>
     </li>
     <!-- /Notifications -->
 
-    <!-- Profil utilisateur -->
+    <!-- User Profile -->
     <li class="nav-item dropdown has-arrow main-drop">
-      <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
+      <a href="javascript:void(0);" class="dropdown-toggle nav-link userset profile-toggle" data-bs-toggle="dropdown" aria-label="Profil utilisateur">
         <span class="user-info">
           <span class="user-letter">
             <span class="user-initials-avatar" *ngIf="userInitials">{{ userInitials }}</span>
-            <img src="assets/img/profiles/avator1.jpg" alt="" class="img-fluid" *ngIf="!userInitials">
+            <img src="assets/img/profiles/avator1.jpg" alt="Avatar" class="img-fluid" *ngIf="!userInitials">
           </span>
-          <span class="user-detail">
+          <span class="user-detail d-none d-md-flex">
             <span class="user-name">{{ userName }}</span>
             <span class="user-role">{{ roleName?.[0] || 'Utilisateur' }}</span>
           </span>
+          <i class="feather icon-chevron-down user-chevron d-none d-md-flex"></i>
         </span>
       </a>
-      <div class="dropdown-menu menu-drop-user">
-        <div class="profilename">
-          <div class="profileset">
-            <span class="user-img">
-              <span class="user-initials-avatar-lg" *ngIf="userInitials">{{ userInitials }}</span>
-              <span class="status online"></span>
-            </span>
-            <div class="profilesets">
-              <h5>{{ userName }}</h5>
-              <h6>{{ roleName?.[0] || 'Utilisateur' }}</h6>
-              <small class="text-muted" *ngIf="entrepriseName">
-                <i class="feather icon-briefcase me-1"></i>{{ entrepriseName }}
-              </small>
-            </div>
+      <div class="dropdown-menu menu-drop-user profile-dropdown">
+        <!-- Profile Header -->
+        <div class="profile-dropdown-header">
+          <div class="profile-avatar-wrap">
+            <span class="user-initials-avatar-lg" *ngIf="userInitials">{{ userInitials }}</span>
+            <img src="assets/img/profiles/avator1.jpg" alt="Avatar" class="profile-img" *ngIf="!userInitials">
+            <span class="status-indicator online"></span>
           </div>
-          <hr class="m-0">
-          <a class="dropdown-item" [routerLink]="routes.profile">
-            <i class="me-2 feather icon-user"></i> Mon Profil
+          <div class="profile-info">
+            <h5 class="profile-name">{{ userName }}</h5>
+            <span class="profile-role-badge">{{ roleName?.[0] || 'Utilisateur' }}</span>
+            <p class="profile-enterprise" *ngIf="entrepriseName">
+              <i class="feather icon-briefcase me-1"></i>{{ entrepriseName }}
+            </p>
+          </div>
+        </div>
+        <!-- Profile Actions -->
+        <div class="profile-dropdown-menu">
+          <a class="profile-menu-item" [routerLink]="routes.profile">
+            <span class="menu-icon-wrap">
+              <i class="feather icon-user"></i>
+            </span>
+            <span class="menu-label">Mon Profil</span>
+            <i class="feather icon-chevron-right menu-arrow"></i>
           </a>
-          <a class="dropdown-item" [routerLink]="routes.generalSettings">
-            <i class="me-2 feather icon-settings"></i> Paramètres
+          <a class="profile-menu-item" [routerLink]="routes.generalSettings">
+            <span class="menu-icon-wrap">
+              <i class="feather icon-settings"></i>
+            </span>
+            <span class="menu-label">Paramètres</span>
+            <i class="feather icon-chevron-right menu-arrow"></i>
           </a>
-          <hr class="m-0">
-          <a class="dropdown-item logout pb-0" (click)="logout()" style="cursor: pointer;">
-            <img src="assets/img/icons/log-out.svg" class="me-2" alt="img"> Déconnexion
+          <div class="profile-divider"></div>
+          <a class="profile-menu-item logout-item" (click)="logout()" style="cursor: pointer;">
+            <span class="menu-icon-wrap logout-icon">
+              <i class="feather icon-log-out"></i>
+            </span>
+            <span class="menu-label">Déconnexion</span>
           </a>
         </div>
       </div>
     </li>
-    <!-- /Profil utilisateur -->
+    <!-- /User Profile -->
 
   </ul>
   <!-- /Header Menu -->
 
-  <!-- Menu Mobile -->
+  <!-- Mobile User Menu -->
   <div class="dropdown mobile-user-menu">
-    <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="fa fa-ellipsis-v"></i>
+    <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu utilisateur mobile">
+      <i class="feather icon-more-vertical"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-right">
-      <a class="dropdown-item" [routerLink]="routes.profile">Mon Profil</a>
-      <a class="dropdown-item" [routerLink]="routes.generalSettings">Paramètres</a>
-      <a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Déconnexion</a>
+      <a class="dropdown-item" [routerLink]="routes.profile">
+        <i class="feather icon-user me-2"></i>Mon Profil
+      </a>
+      <a class="dropdown-item" [routerLink]="routes.generalSettings">
+        <i class="feather icon-settings me-2"></i>Paramètres
+      </a>
+      <div class="dropdown-divider"></div>
+      <a class="dropdown-item text-danger" (click)="logout()" style="cursor: pointer;">
+        <i class="feather icon-log-out me-2"></i>Déconnexion
+      </a>
     </div>
   </div>
-  <!-- /Menu Mobile -->
+  <!-- /Mobile User Menu -->
 
 </div>
 <!-- /Header -->
