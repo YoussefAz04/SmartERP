@@ -156,8 +156,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {
-            if (per.moduleTitle?.toLowerCase().includes("gestion de client") || 
-                per.moduleTitle?.toLowerCase().includes("gestion client")) {
+            if (per.moduleTitle?.toLowerCase().includes("gestion client")) {
               this.permissionClient = per;
               console.log("Permission Client:", this.permissionClient);
             }
