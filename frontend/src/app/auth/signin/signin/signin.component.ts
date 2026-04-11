@@ -76,7 +76,7 @@ export class SigninComponent implements OnInit {
 
           // ✅ SAVE TO LOCALSTORAGE
           localStorage.removeItem("myLSkey");
-          localStorage.setItem('myLSkey', btoa(JSON.stringify({
+          localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify({
             token: response.token,
             name: response.name,
             username: response.username,
@@ -91,7 +91,7 @@ export class SigninComponent implements OnInit {
               id: response.entrepriseId,
               nom: response.entrepriseName
             }
-          })));
+          })))));
 
           // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
           const entrepriseId = response.entrepriseId;

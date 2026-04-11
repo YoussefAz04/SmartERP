@@ -48,6 +48,7 @@ public class PermissionService {
         return permissionRepo.save(permission);
     }
 
+    @Transactional(readOnly = true)
     public List<PermissionDto> getPermissionsByRole(Long idRole) {
         List<Permission> permissions = permissionRepo.findAllByRoleId(idRole);
 

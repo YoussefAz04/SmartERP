@@ -431,7 +431,7 @@ export class PermissionsComponent implements OnInit {
           currentUser.permission.push(this.permissionDto);
         }
 
-        localStorage.setItem('myLSkey', btoa(JSON.stringify(currentUser)));
+        localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(currentUser)))));
       }
     });
   }
@@ -466,9 +466,7 @@ export class PermissionsComponent implements OnInit {
         next: (response) => {
           currentUser.permission = response;
 
-          localStorage.setItem('myLSkey', btoa(JSON.stringify(currentUser)));
-
-          console.log("les permissions", response);
+          localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(currentUser)))));
         },
         error: (err) => {
           console.error("Erreur lors de l'update des permissions:", err);
