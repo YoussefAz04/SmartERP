@@ -6,9 +6,12 @@
 $orange:         #FF6B35;
 $orange-light:   #FFF5F0;
 $blue:           #5B5FF8;
+$blue-dark:      #4A4ED6;
 $blue-light:     #F0F4FF;
+$purple:         #7C3AED;
 $success:        #22c55e;
 $warning:        #f59e0b;
+$warning-dark:   #d97706;
 $danger:         #ef4444;
 $text-dark:      #2C3E50;
 $text-secondary: #7F8C8D;
@@ -38,7 +41,6 @@ $bar-height:     2px;
 
   .header-left {
     border-right: 1px solid $border;
-    height: 70px;
   }
 
   .toggle-btn {
@@ -105,14 +107,14 @@ $bar-height:     2px;
 // THEME TOGGLE
 // ============================================================
 .theme-toggle-btn {
-  i { transition: transform 0.35s ease; }
+  i { transition: transform $transition; }
   &:hover i { transform: rotate(22deg); }
 
   &.theme-btn-dark {
     color: $warning;
     &:hover {
       background: rgba($warning, 0.1);
-      color: darken($warning, 10%);
+      color: $warning-dark;
     }
   }
 }
@@ -487,7 +489,7 @@ $bar-height:     2px;
       justify-content: center;
       gap: 4px;
       transition: color $transition;
-      &:hover { color: darken($blue, 10%); }
+      &:hover { color: $blue-dark; }
     }
   }
 }
@@ -502,7 +504,7 @@ $bar-height:     2px;
   width: 36px;
   height: 36px;
   border-radius: $radius-sm;
-  background: linear-gradient(135deg, $blue 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, $blue 0%, $purple 100%);
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -518,7 +520,7 @@ $bar-height:     2px;
   width: 52px;
   height: 52px;
   border-radius: $radius;
-  background: linear-gradient(135deg, $blue 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, $blue 0%, $purple 100%);
   color: #fff;
   font-size: 18px;
   font-weight: 700;
@@ -765,11 +767,11 @@ body.dark-select {
       &:focus {
         background: #252D45;
         border-color: rgba($blue, 0.7);
-        box-shadow: 0 0 0 3px rgba($blue, 0.15);
+        box-shadow: 0 0 0 3px rgba($blue, 0.12);
       }
     }
 
-    .search-addon { color: #4A5678; &:hover { color: #EF4444; } }
+    .search-addon { color: #4A5678; &:hover { color: $danger; } }
   }
 
   .search-dropdown-modern {
