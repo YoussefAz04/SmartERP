@@ -31,27 +31,8 @@ export class AddFournisseurComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.checkAdminAccess();
     this.loadCategories();
     this.initializeForm();
-  }
-
-  checkAdminAccess(): void {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        const roles = user?.roles || [];
-        const isAdmin = roles.includes('ADMIN') || roles.includes('SUPER_ADMIN');
-        if (!isAdmin) {
-          alert('❌ Accès refusé. Seuls les administrateurs peuvent ajouter des fournisseurs.');
-          this.router.navigate(['/fournisseur/listFournisseur']);
-        }
-      } catch (error) {
-        console.error('Error checking access:', error);
-        this.router.navigate(['/fournisseur/listFournisseur']);
-      }
-    }
   }
 
   initializeForm(): void {

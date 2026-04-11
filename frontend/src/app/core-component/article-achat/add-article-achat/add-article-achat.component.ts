@@ -32,30 +32,11 @@ export class AddArticleAchatComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.checkAdminAccess();
     this.initializeForm();
     this.loadEntreprises();
     this.loadFournisseurs();
     this.loadCategories();
     this.autoSetEntrepriseId();
-  }
-
-  checkAdminAccess(): void {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        const roles = user?.roles || [];
-        const isAdmin = roles.includes('ADMIN') || roles.includes('SUPER_ADMIN');
-        if (!isAdmin) {
-          alert('❌ Accès refusé. Seuls les administrateurs peuvent ajouter des articles.');
-          this.router.navigate(['/article-achat/listArticleAchat']);
-        }
-      } catch (error) {
-        console.error('Error checking access:', error);
-        this.router.navigate(['/article-achat/listArticleAchat']);
-      }
-    }
   }
 
   initializeForm(): void {
