@@ -149,9 +149,10 @@ export class ClientComponent implements OnInit, AfterViewInit {
         const roles: string[] = Array.isArray(currentUser?.roles) ? (currentUser.roles as string[]) : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
-        this.canCreateClient = isSuperAdmin || isAdmin;
-        this.canEditClient = isSuperAdmin || isAdmin;
-        this.canDeleteClient = isSuperAdmin || isAdmin;
+        const isEmployee = roles.includes('EMPLOYEE');
+        this.canCreateClient = isSuperAdmin || isAdmin || isEmployee;
+        this.canEditClient = isSuperAdmin || isAdmin || isEmployee;
+        this.canDeleteClient = isSuperAdmin || isAdmin || isEmployee;
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {
