@@ -51,9 +51,9 @@
             aria-label="Recherche globale"
           />
           <div class="search-addon">
-            <span *ngIf="!isSearching && searchQuery" (click)="clearSearch()" aria-label="Effacer la recherche">
+            <button *ngIf="!isSearching && searchQuery" (click)="clearSearch()" class="search-clear-btn" aria-label="Effacer la recherche">
               <i class="feather icon-x"></i>
-            </span>
+            </button>
             <span *ngIf="isSearching">
               <i class="feather icon-loader spin-icon"></i>
             </span>
