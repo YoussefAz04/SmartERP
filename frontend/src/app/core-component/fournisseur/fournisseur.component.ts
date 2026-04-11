@@ -170,7 +170,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         console.log('User connecté:', currentUser?.name);
         console.log('Permissions:', currentUser?.permission);
 
-        const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser!.roles : [];
+        const roles: string[] = Array.isArray(currentUser?.roles) ? (currentUser.roles as string[]) : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
         this.canCreateFournisseur = isSuperAdmin || isAdmin;

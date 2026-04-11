@@ -146,7 +146,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
         console.log('Token:', currentUser?.token);
         console.log('Permissions:', currentUser?.permission);
 
-        const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser!.roles : [];
+        const roles: string[] = Array.isArray(currentUser?.roles) ? (currentUser.roles as string[]) : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
         this.canCreateClient = isSuperAdmin || isAdmin;
