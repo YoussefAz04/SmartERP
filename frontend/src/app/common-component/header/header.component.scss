@@ -1,882 +1,1162 @@
-// ============================================================
-// HEADER PREMIUM REDESIGN -- White / Clean SaaS Style
-// ============================================================
+// ============================================
+// MODERN CLEAN HEADER DESIGN - COMPLETE SCSS
+// ============================================
 
-// --- Variables ---
-$orange:         #FF6B35;
-$orange-light:   #FFF5F0;
-$blue:           #5B5FF8;
-$blue-dark:      #4A4ED6;
-$blue-light:     #F0F4FF;
-$purple:         #7C3AED;
-$success:        #22c55e;
-$warning:        #f59e0b;
-$warning-dark:   #d97706;
-$danger:         #ef4444;
-$text-dark:      #2C3E50;
-$text-secondary: #7F8C8D;
-$text-muted:     #A0ADB8;
-$bg-white:       #FFFFFF;
-$bg-light:       #F8FAFB;
-$border:         #E8EAED;
-$radius-sm:      8px;
-$radius:         12px;
-$radius-lg:      16px;
-$shadow-sm:      0 2px 8px rgba(0, 0, 0, 0.08);
-$shadow-md:      0 8px 24px rgba(0, 0, 0, 0.12);
-$shadow-lg:      0 16px 48px rgba(0, 0, 0, 0.14);
-$transition:     200ms ease-out;
-$bar-height:     2px;
+// Color Variables
+$white: #ffffff;
+$bg-light: #f5f7fa;
+$border-light: #e5e9f2;
+$text-primary: #1a202c;
+$text-secondary: #6b7280;
+$text-light: #9ca3af;
+$accent-blue: #5b5ff8;
+$accent-orange: #ff6b35;
+$danger: #ef4444;
+$success: #10b981;
 
-// ============================================================
-// HEADER BAR
-// ============================================================
+// Transitions
+$trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ============================================
+// HEADER WRAPPER
+// ============================================
+.header-modern-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
 .header-modern {
-  background: $bg-white;
-  box-shadow: $shadow-sm;
-  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   height: 70px;
-  display: flex;
-  align-items: center;
-
-  .header-left {
-    border-right: 1px solid $border;
-  }
-
-  .toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: $radius-sm;
-    color: $text-secondary;
-    transition: background $transition, color $transition;
-    text-decoration: none;
-
-    i { font-size: 18px; }
-
-    &:hover {
-      background: $bg-light;
-      color: $blue;
-    }
-  }
+  background: $white;
+  border-bottom: 1px solid $border-light;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 0 24px;
+  gap: 24px;
+  width: 100%;
 }
 
-// ============================================================
-// MOBILE HAMBURGER
-// ============================================================
-.mobile_btn .bar-icon span {
-  background: $text-dark;
-  height: $bar-height;
-  transition: background $transition;
-}
-
-// ============================================================
-// SHARED ACTION BUTTON
-// ============================================================
-.header-action-item {
+// ============================================
+// HEADER SECTIONS
+// ============================================
+.header-section {
   display: flex;
   align-items: center;
 }
 
-.header-action-btn {
+.header-logo-section {
+  flex-shrink: 0;
+  min-width: fit-content;
+}
+
+.header-search-section {
+  flex: 1;
+  justify-content: center;
+  max-width: 600px;
+  min-width: 300px;
+}
+
+.header-action-section {
+  flex-shrink: 0;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+// ============================================
+// LOGO STYLING - IMPROVED
+// ============================================
+
+.logo-brand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: $radius;
-  border: none;
-  background: transparent;
-  color: $text-secondary;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background $transition, color $transition;
   text-decoration: none;
-
-  i { font-size: 20px; line-height: 1; }
-
+  outline: none;
+  transition: all $trans;
+  
   &:hover {
-    background: $bg-light;
-    color: $blue;
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
-// ============================================================
-// THEME TOGGLE
-// ============================================================
-.theme-toggle-btn {
-  i { transition: transform $transition; }
-  &:hover i { transform: rotate(22deg); }
-
-  &.theme-btn-dark {
-    color: $warning;
-    &:hover {
-      background: rgba($warning, 0.1);
-      color: $warning-dark;
-    }
-  }
-}
-
-// ============================================================
-// SEARCH BAR
-// ============================================================
-.top-nav-search {
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #f0f4ff 100%);
+  border: 1px solid rgba($accent-blue, 0.2);
+  box-shadow: 
+    0 2px 8px rgba($accent-blue, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: all $trans;
   position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba($accent-blue, 0.05) 100%);
+    pointer-events: none;
+  }
+
+  .logo-brand:hover & {
+    background: linear-gradient(135deg, rgba($accent-blue, 0.05) 0%, rgba($accent-blue, 0.1) 100%);
+    border-color: rgba($accent-blue, 0.3);
+    box-shadow: 
+      0 4px 12px rgba($accent-blue, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
 }
 
-.searchinputs {
+.logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+}
+
+.logo-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, $text-primary 0%, $accent-blue 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.logo-badge {
+  display: none;
+  font-size: 9px;
+  font-weight: 800;
+  color: $white;
+  background: linear-gradient(135deg, $accent-blue 0%, $accent-orange 100%);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 4px rgba($accent-blue, 0.3);
+
+  @media (min-width: 1024px) {
+    display: inline-block;
+  }
+}
+
+// ============================================
+// SEARCH BAR
+// ============================================
+.search-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  height: 44px;
+  background: $bg-light;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  padding: 0 12px;
+  gap: 8px;
+  transition: all $trans;
+  width: 100%;
 
-  .search-icon-wrap {
-    position: absolute;
-    left: 14px;
-    z-index: 2;
-    color: $text-muted;
-    pointer-events: none;
-    transition: color $transition;
-    i { font-size: 16px; }
+  &:focus-within {
+    border-color: $accent-blue;
+    background: $white;
+    box-shadow: 0 0 0 3px rgba($accent-blue, 0.1);
   }
 
-  input {
-    width: 280px;
-    padding: 10px 40px 10px 42px;
-    border: 1.5px solid $border;
-    border-radius: $radius;
-    font-size: 13.5px;
-    background: $bg-light;
-    color: $text-dark;
-    transition: width 0.3s ease, border-color $transition, box-shadow $transition;
-    outline: none;
-    font-family: inherit;
-
-    &::placeholder { color: $text-muted; }
-
-    &:focus {
-      width: 340px;
-      border-color: $blue;
-      background: $bg-white;
-      box-shadow: 0 0 0 3px rgba($blue, 0.12);
-
-      + .search-icon-wrap,
-      ~ .search-icon-wrap { color: $blue; }
-    }
-  }
-
-  &.active input {
-    border-color: $blue;
-    background: $bg-white;
-  }
-
-  .search-addon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: $text-muted;
-    display: flex;
-    align-items: center;
-    z-index: 2;
-    transition: color $transition;
-
-    i { font-size: 15px; }
-
-    &:hover { color: $danger; }
-
-    .search-clear-btn {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      color: inherit;
-      display: flex;
-      align-items: center;
-      line-height: 1;
-      &:focus { outline: 2px solid rgba($blue, 0.5); border-radius: 3px; }
-    }
+  i {
+    font-size: 18px;
+    color: $text-light;
+    flex-shrink: 0;
   }
 }
 
-// ============================================================
-// SEARCH DROPDOWN
-// ============================================================
-.search-dropdown-modern {
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: $text-primary;
+
+  &::placeholder {
+    color: $text-light;
+  }
+
+  &:focus {
+    color: $text-primary;
+  }
+}
+
+.search-clear,
+.search-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: $text-light;
+  cursor: pointer;
+  transition: color $trans;
+  padding: 0;
+
+  &:hover {
+    color: $text-primary;
+  }
+
+  i {
+    font-size: 16px;
+  }
+}
+
+.search-spinner i {
+  animation: spin 1s linear infinite;
+}
+
+// Search Dropdown
+.search-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  min-width: 360px;
-  background: $bg-white;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-lg;
-  border: 1px solid $border;
-  z-index: 9999;
-  overflow: hidden;
-  animation: dropFade 0.18s ease;
+  right: 0;
+  background: $white;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  max-height: 400px;
+  overflow-y: auto;
+}
 
-  .search-dropdown-body { padding: 8px 0; }
+.dropdown-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  color: $text-light;
 
-  .search-section-label {
-    display: flex;
-    align-items: center;
-    padding: 8px 16px 4px;
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: $text-muted;
-
-    .result-count {
-      margin-left: auto;
-      background: $blue;
-      color: #fff;
-      font-size: 10px;
-      padding: 1px 7px;
-      border-radius: 10px;
-    }
+  i {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.5;
   }
 
-  .search-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 28px 16px;
-    color: $text-muted;
-    i { font-size: 34px; margin-bottom: 10px; opacity: 0.4; }
-    p { font-size: 13px; margin: 0; }
+  p {
+    margin: 0;
+    font-size: 14px;
   }
 }
 
-.search-results-list {
+.dropdown-results {
+  padding: 8px 0;
+}
+
+.results-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.search-result-item {
-  .search-result-link {
+.result-item {
+  border-bottom: 1px solid $border-light;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  a {
     display: flex;
     align-items: center;
-    padding: 10px 16px;
-    text-decoration: none;
-    color: $text-dark;
-    transition: background $transition;
-    gap: 10px;
-
-    &:hover {
-      background: $bg-light;
-      .result-arrow { opacity: 1; transform: translateX(3px); }
-    }
-
-    .result-type-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 9px;
-      border-radius: 20px;
-      min-width: 62px;
-      text-align: center;
-
-      &.type-client   { background: rgba($blue, 0.1);    color: $blue; }
-      &.type-article  { background: rgba($success, 0.1); color: $success; }
-      &.type-commande { background: rgba($orange, 0.1);  color: $orange; }
-    }
-
-    .result-name { flex: 1; font-size: 13px; color: $text-dark; }
-
-    .result-arrow {
-      font-size: 13px;
-      color: $text-muted;
-      opacity: 0;
-      transition: opacity $transition, transform $transition;
-    }
-  }
-}
-
-// ============================================================
-// NOTIFICATIONS DROPDOWN
-// ============================================================
-.notification-btn {
-  position: relative;
-}
-
-.notif-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  min-width: 17px;
-  height: 17px;
-  padding: 0 4px;
-  background: $orange;
-  color: #fff;
-  font-size: 9.5px;
-  font-weight: 700;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid $bg-white;
-  animation: pulseBadge 2s ease infinite;
-}
-
-.notifications-dropdown {
-  width: 360px;
-  padding: 0;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-lg;
-  border: 1px solid $border;
-  overflow: hidden;
-  animation: dropFade 0.18s ease;
-
-  .notif-header {
-    display: flex;
-    align-items: center;
-    padding: 14px 16px;
-    background: $bg-white;
-    border-bottom: 1px solid $border;
-
-    .notif-header-left {
-      display: flex;
-      align-items: center;
-      flex: 1;
-      gap: 8px;
-
-      i { color: $blue; font-size: 16px; }
-
-      .notification-title {
-        font-weight: 700;
-        font-size: 14px;
-        color: $text-dark;
-      }
-      .unread-badge {
-        background: $orange;
-        color: #fff;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 1px 7px;
-        border-radius: 10px;
-      }
-    }
-
-    .clear-noti-btn {
-      background: $bg-light;
-      border: 1px solid $border;
-      color: $text-secondary;
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all $transition;
-      &:hover { background: $blue-light; color: $blue; border-color: rgba($blue, 0.3); }
-    }
-  }
-
-  .noti-content {
-    max-height: 300px;
-    overflow-y: auto;
-    background: $bg-white;
-
-    &::-webkit-scrollbar { width: 4px; }
-    &::-webkit-scrollbar-track { background: $bg-light; }
-    &::-webkit-scrollbar-thumb { background: $border; border-radius: 2px; }
-  }
-
-  .notif-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 24px;
-    color: $text-muted;
-    font-size: 13px;
-  }
-
-  .notification-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .notification-item {
-    border-bottom: 1px solid $border;
-    &:last-child { border: none; }
-    cursor: pointer;
-    transition: background $transition;
-
-    &.unread { background: rgba($blue, 0.03); }
-    &:hover  { background: $bg-light; }
-  }
-
-  .notif-link {
-    display: flex;
-    align-items: flex-start;
     gap: 12px;
     padding: 12px 16px;
     text-decoration: none;
-    position: relative;
+    color: $text-primary;
+    transition: background $trans;
 
-    .notif-icon-wrap {
-      width: 36px;
-      height: 36px;
-      border-radius: $radius-sm;
+    &:hover {
       background: $bg-light;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: $text-muted;
-      font-size: 15px;
-      transition: background $transition;
-
-      &.unread-icon {
-        background: $blue-light;
-        color: $blue;
-      }
-    }
-
-    .notif-body {
-      flex: 1;
-      .noti-details {
-        font-size: 13px;
-        color: $text-dark;
-        margin: 0 0 4px;
-        line-height: 1.45;
-      }
-      .noti-time {
-        font-size: 11px;
-        color: $text-muted;
-        margin: 0;
-        display: flex;
-        align-items: center;
-      }
-    }
-
-    .unread-dot {
-      width: 7px;
-      height: 7px;
-      background: $blue;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 5px;
-    }
-  }
-
-  .notif-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 16px;
-    color: $text-muted;
-    i { font-size: 36px; opacity: 0.3; margin-bottom: 8px; }
-    p { font-size: 13px; margin: 0; }
-  }
-
-  .notif-footer {
-    padding: 10px 16px;
-    background: $bg-light;
-    border-top: 1px solid $border;
-    text-align: center;
-
-    .notif-footer-link {
-      font-size: 12px;
-      font-weight: 600;
-      color: $blue;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: color $transition;
-      &:hover { color: $blue-dark; }
     }
   }
 }
 
-// ============================================================
-// USER AVATAR
-// ============================================================
-.user-initials-avatar {
+.result-badge {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &.badge-client {
+    background: rgba($accent-blue, 0.15);
+    color: $accent-blue;
+  }
+
+  &.badge-article {
+    background: rgba($success, 0.15);
+    color: $success;
+  }
+
+  &.badge-commande {
+    background: rgba($accent-orange, 0.15);
+    color: $accent-orange;
+  }
+}
+
+.result-text {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+// ============================================
+// ICON BUTTONS
+// ============================================
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all $trans;
+  text-decoration: none;
+  font-size: 0;
+  padding: 0;
+
+  i {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: $bg-light;
+    color: $accent-blue;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// ============================================
+// NOTIFICATION BUTTON & DROPDOWN
+// ============================================
+.notification-btn {
+  position: relative;
+
+  &.has-badge {
+    color: $accent-orange;
+  }
+}
+
+.badge-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  background: $accent-orange;
+  color: $white;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 2px solid $white;
+}
+
+// Notifications Dropdown
+.notifications-dropdown {
+  min-width: 380px;
+  max-width: 400px;
+}
+
+// ============================================
+// DROPDOWNS
+// ============================================
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: $white;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 320px;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid $border-light;
+  gap: 12px;
+}
+
+.dropdown-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-primary;
+  flex: 1;
+}
+
+.mark-read-btn {
+  background: none;
+  border: none;
+  color: $accent-blue;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color $trans;
+  padding: 0;
+  white-space: nowrap;
+
+  &:hover {
+    color: darken($accent-blue, 10%);
+  }
+}
+
+.dropdown-content {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: $text-light;
+
+  i {
+    animation: spin 1s linear infinite;
+  }
+}
+
+.dropdown-footer {
+  padding: 12px 16px;
+  border-top: 1px solid $border-light;
+  text-align: center;
+}
+
+.view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $accent-blue;
+  text-decoration: none;
+  transition: color $trans;
+
+  &:hover {
+    color: darken($accent-blue, 10%);
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
+// ============================================
+// NOTIFICATIONS LIST
+// ============================================
+.notifications-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid $border-light;
+  cursor: pointer;
+  transition: background $trans;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $bg-light;
+  }
+
+  &.unread {
+    background: rgba($accent-blue, 0.05);
+  }
+}
+
+.notif-icon {
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: $radius-sm;
-  background: linear-gradient(135deg, $blue 0%, $purple 100%);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  background: $bg-light;
+  border-radius: 8px;
+  color: $text-secondary;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba($blue, 0.35);
+  font-size: 16px;
 }
 
-.user-initials-avatar-lg {
-  display: inline-flex;
+.notif-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-message {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: $text-primary;
+  line-height: 1.4;
+}
+
+.notif-time {
+  display: block;
+  font-size: 11px;
+  color: $text-light;
+}
+
+.unread-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: $accent-blue;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.empty-state {
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: $radius;
-  background: linear-gradient(135deg, $blue 0%, $purple 100%);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba($blue, 0.35);
+  padding: 40px 24px;
+  color: $text-light;
+
+  p {
+    margin: 0;
+    font-size: 13px;
+  }
 }
 
-// ============================================================
-// PROFILE TOGGLE BUTTON
-// ============================================================
-.profile-toggle {
-  padding: 4px 8px;
-  border-radius: $radius;
-  transition: background $transition;
-  text-decoration: none;
+// ============================================
+// USER PROFILE
+// ============================================
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  background: $white;
+  cursor: pointer;
+  transition: all $trans;
+  font-size: 0;
 
-  &:hover { background: $bg-light; }
-
-  .user-detail {
-    display: flex;
-    flex-direction: column;
-    margin-left: 9px;
-
-    .user-name {
-      font-size: 13.5px;
-      font-weight: 600;
-      color: $text-dark;
-      line-height: 1.25;
-      white-space: nowrap;
-    }
-    .user-role {
-      font-size: 11px;
-      color: $text-secondary;
-      line-height: 1.25;
-      white-space: nowrap;
-    }
+  &:hover {
+    border-color: $accent-blue;
+    background: rgba($accent-blue, 0.05);
   }
 
-  .user-chevron {
-    margin-left: 6px;
-    color: $text-muted;
+  &:active {
+    transform: scale(0.98);
+  }
+
+  i {
     font-size: 14px;
-    transition: transform $transition;
+    color: $text-light;
+    transition: all $trans;
   }
 
-  &[aria-expanded="true"] {
-    background: $bg-light;
-    .user-chevron { transform: rotate(180deg); }
+  &:hover i {
+    color: $accent-blue;
   }
 }
 
-// ============================================================
-// PROFILE DROPDOWN
-// ============================================================
-.profile-dropdown {
-  width: 280px;
-  padding: 0;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-lg;
-  border: 1px solid $border;
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   overflow: hidden;
-  animation: dropFade 0.18s ease;
+  flex-shrink: 0;
+  font-size: 12px;
+}
 
-  .profile-dropdown-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 18px 16px;
+.avatar-init {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, $accent-blue 0%, #7c6ff1 100%);
+  color: $white;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: $text-primary;
+  white-space: nowrap;
+}
+
+.user-role {
+  font-size: 10px;
+  color: $text-light;
+  white-space: nowrap;
+}
+
+// Profile Dropdown
+.profile-dropdown {
+  min-width: 280px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid $border-light;
+}
+
+.profile-avatar-large {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-init-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, $accent-blue 0%, #7c6ff1 100%);
+  color: $white;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.profile-avatar-large img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.online-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: $success;
+  border-radius: 50%;
+  border: 2px solid $white;
+}
+
+.profile-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.profile-role {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: $text-light;
+}
+
+.profile-org {
+  margin: 0;
+  font-size: 12px;
+  color: $text-light;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  i {
+    font-size: 12px;
+  }
+}
+
+// Profile Menu
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: $text-primary;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all $trans;
+
+  &:hover {
     background: $bg-light;
-    border-bottom: 1px solid $border;
+    color: $accent-blue;
 
-    .profile-avatar-wrap {
-      position: relative;
-      flex-shrink: 0;
+    i {
+      color: $accent-blue;
+    }
+  }
 
-      .profile-img {
-        width: 52px;
-        height: 52px;
-        border-radius: $radius;
-        border: 2px solid $border;
-        object-fit: cover;
-      }
+  i {
+    font-size: 16px;
+    color: $text-light;
+    transition: color $trans;
+  }
 
-      .status-indicator {
-        position: absolute;
-        bottom: -1px;
-        right: -1px;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        border: 2px solid $bg-white;
+  &.logout {
+    color: $danger;
 
-        &.online  { background: $success; }
-        &.offline { background: $text-muted; }
+    &:hover {
+      background: rgba($danger, 0.1);
+      color: $danger;
+
+      i {
+        color: $danger;
       }
     }
+  }
+}
 
-    .profile-info {
-      .profile-name {
-        font-size: 15px;
-        font-weight: 700;
-        margin: 0 0 4px;
-        color: $text-dark;
-      }
-      .profile-role-badge {
-        display: inline-block;
-        background: $blue-light;
-        color: $blue;
-        font-size: 10px;
-        font-weight: 600;
-        padding: 2px 9px;
-        border-radius: 12px;
-        margin-bottom: 4px;
-      }
-      .profile-enterprise {
-        font-size: 11px;
-        color: $text-secondary;
-        margin: 4px 0 0;
-        display: flex;
-        align-items: center;
+.menu-divider {
+  height: 1px;
+  background: $border-light;
+  margin: 8px 0;
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ============================================
+// DARK MODE
+// ============================================
+body.dark-mode {
+  $dark-bg: #1a1d29;
+  $dark-border: #2f3349;
+  $dark-text: #e2e8f0;
+  $dark-text-light: #a0aec0;
+
+  .header-modern {
+    background: $dark-bg;
+    border-bottom-color: $dark-border;
+  }
+
+  .logo-wrapper {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(91, 95, 248, 0.1) 100%);
+    border-color: rgba($accent-blue, 0.3);
+    box-shadow: 
+      0 2px 8px rgba($accent-blue, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    .logo-brand:hover & {
+      background: linear-gradient(135deg, rgba($accent-blue, 0.1) 0%, rgba($accent-blue, 0.15) 100%);
+      border-color: rgba($accent-blue, 0.4);
+      box-shadow: 
+        0 4px 12px rgba($accent-blue, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .logo-text {
+    background: linear-gradient(135deg, #e2e8f0 0%, $accent-blue 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .search-wrapper {
+    background: rgba($white, 0.05);
+    border-color: $dark-border;
+
+    &:focus-within {
+      border-color: $accent-blue;
+      background: rgba($accent-blue, 0.05);
+    }
+  }
+
+  .search-input {
+    color: $dark-text;
+
+    &::placeholder {
+      color: $dark-text-light;
+    }
+  }
+
+  .icon-btn:hover {
+    background: rgba($white, 0.1);
+  }
+
+  .search-dropdown {
+    background: $dark-bg;
+    border-color: $dark-border;
+  }
+
+  .dropdown-panel {
+    background: $dark-bg;
+    border-color: $dark-border;
+
+    .dropdown-header,
+    .dropdown-footer {
+      border-bottom-color: $dark-border;
+      border-top-color: $dark-border;
+    }
+
+    .dropdown-title {
+      color: $dark-text;
+    }
+
+    .result-item a,
+    .notification-item {
+      border-bottom-color: $dark-border;
+      color: $dark-text;
+
+      &:hover {
+        background: rgba($white, 0.05);
       }
     }
   }
 
-  .profile-dropdown-menu {
-    padding: 6px 0;
-    background: $bg-white;
+  .user-profile-btn {
+    background: transparent;
+    border-color: $dark-border;
+    color: $dark-text;
+
+    &:hover {
+      background: rgba($accent-blue, 0.1);
+      border-color: $accent-blue;
+    }
+  }
+
+  .user-name {
+    color: $dark-text;
+  }
+
+  .user-role {
+    color: $dark-text-light;
+  }
+
+  .profile-name {
+    color: $dark-text;
+  }
+
+  .profile-role {
+    color: $dark-text-light;
   }
 
   .profile-menu-item {
-    display: flex;
-    align-items: center;
-    padding: 10px 16px;
-    text-decoration: none;
-    color: $text-dark;
-    gap: 12px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: background $transition, color $transition;
+    color: $dark-text;
 
     &:hover {
-      background: $bg-light;
-      color: $blue;
-      .menu-icon-wrap { background: $blue-light; color: $blue; }
-    }
-
-    .menu-icon-wrap {
-      width: 32px;
-      height: 32px;
-      border-radius: $radius-sm;
-      background: $bg-light;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: $text-secondary;
-      font-size: 15px;
-      flex-shrink: 0;
-      transition: background $transition, color $transition;
-    }
-
-    .menu-label { flex: 1; }
-
-    .menu-arrow {
-      font-size: 13px;
-      color: $text-muted;
-      opacity: 0;
-      transition: opacity $transition, transform $transition;
-    }
-
-    &:hover .menu-arrow { opacity: 1; transform: translateX(3px); }
-
-    &.logout-item {
-      color: $danger;
-      &:hover {
-        background: rgba($danger, 0.05);
-        color: $danger;
-        .logout-icon { background: rgba($danger, 0.1); color: $danger; }
-      }
+      background: rgba($white, 0.1);
     }
   }
-
-  .profile-divider {
-    height: 1px;
-    background: $border;
-    margin: 4px 0;
-  }
 }
 
-// ============================================================
-// ANIMATIONS
-// ============================================================
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.spin-icon { animation: spin 1s linear infinite; }
-
-@keyframes dropFade {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulseBadge {
-  0%, 100% { box-shadow: 0 0 0 0 rgba($orange, 0.4); }
-  50%       { box-shadow: 0 0 0 4px rgba($orange, 0); }
-}
-
-// ============================================================
-// BADGES
-// ============================================================
-.badge-primary { background-color: $blue;    color: #fff; }
-.badge-success { background-color: $success; color: #fff; }
-.badge-warning { background-color: $warning; color: #333; }
-
-// ============================================================
-// DARK MODE
-// ============================================================
-body.dark-select {
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+@media (max-width: 1200px) {
   .header-modern {
-    background: #161B2E;
-    border-bottom-color: #252D45;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-
-    .toggle-btn {
-      color: #8B9CBB;
-      &:hover { background: #1E2640; color: #A5B4FC; }
-    }
+    padding: 0 16px;
+    gap: 16px;
   }
 
-  .mobile_btn .bar-icon span { background: #C5D0E8; }
-
-  .header-action-btn {
-    color: #8B9CBB;
-    &:hover { background: #1E2640; color: #A5B4FC; }
+  .header-search-section {
+    max-width: 500px;
   }
 
-  .searchinputs {
-    .search-icon-wrap { color: #5C6B89; }
-
-    input {
-      background: #1E2640;
-      border-color: #2D3755;
-      color: #E2E8F0;
-      &::placeholder { color: #4A5678; }
-      &:focus {
-        background: #252D45;
-        border-color: rgba($blue, 0.7);
-        box-shadow: 0 0 0 3px rgba($blue, 0.12);
-      }
-    }
-
-    .search-addon { color: #4A5678; &:hover { color: $danger; } }
+  .logo-wrapper {
+    padding: 8px 10px;
+    gap: 6px;
   }
 
-  .search-dropdown-modern {
-    background: #1E2640;
-    border-color: #2D3755;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
-
-    .search-section-label { color: #5C6B89; }
-    .search-result-item .search-result-link {
-      color: #E2E8F0;
-      .result-name { color: #E2E8F0; }
-      &:hover { background: #252D45; }
-    }
-    .search-empty { color: #5C6B89; }
+  .logo-img {
+    width: 30px;
+    height: 30px;
   }
 
-  .notifications-dropdown {
-    background: #1E2640;
-    border-color: #2D3755;
-
-    .notif-header {
-      background: #161B2E;
-      border-bottom-color: #2D3755;
-      .notif-header-left .notification-title { color: #E2E8F0; }
-      .clear-noti-btn { background: #252D45; border-color: #2D3755; color: #8B9CBB; }
-    }
-
-    .noti-content { background: #1E2640; }
-    .notification-item {
-      border-color: #252D45;
-      &.unread { background: rgba($blue, 0.06); }
-      &:hover  { background: #252D45; }
-    }
-
-    .notif-link {
-      .notif-icon-wrap { background: #252D45; color: #8B9CBB; }
-      .notif-body .noti-details { color: #D1D9EC; }
-    }
-
-    .notif-footer {
-      background: #161B2E;
-      border-top-color: #2D3755;
-    }
+  .logo-text {
+    font-size: 12px;
   }
 
-  .profile-toggle {
-    &:hover { background: #1E2640; }
-    &[aria-expanded="true"] { background: #1E2640; }
-    .user-detail {
-      .user-name  { color: #E2E8F0; }
-      .user-role  { color: #8B9CBB; }
-    }
-    .user-chevron { color: #5C6B89; }
-  }
-
-  .profile-dropdown {
-    background: #1E2640;
-    border-color: #2D3755;
-
-    .profile-dropdown-header {
-      background: #161B2E;
-      border-bottom-color: #2D3755;
-      .profile-avatar-wrap .status-indicator { border-color: #161B2E; }
-      .profile-info {
-        .profile-name { color: #E2E8F0; }
-        .profile-enterprise { color: #8B9CBB; }
-        .profile-role-badge { background: rgba($blue, 0.2); color: #A5B4FC; }
-      }
-    }
-
-    .profile-dropdown-menu { background: #1E2640; }
-    .profile-menu-item {
-      color: #C5D0E8;
-      .menu-icon-wrap { background: #252D45; color: #8B9CBB; }
-      &:hover { background: #252D45; color: #A5B4FC; .menu-icon-wrap { background: rgba($blue, 0.15); color: #A5B4FC; } }
-    }
-    .profile-divider { background: #252D45; }
+  .logo-badge {
+    font-size: 8px;
+    padding: 1px 4px;
   }
 }
 
-// ============================================================
-// RESPONSIVE
-// ============================================================
-@media (max-width: 991px) {
-  .searchinputs input {
-    width: 220px;
-    &:focus { width: 260px; }
+@media (max-width: 992px) {
+  .header-modern {
+    gap: 12px;
   }
-  .search-dropdown-modern { min-width: 300px; }
+
+  .header-search-section {
+    max-width: 400px;
+  }
+
+  .user-info {
+    display: none;
+  }
+
+  .user-profile-btn {
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  .logo-wrapper {
+    padding: 6px 8px;
+    gap: 4px;
+    height: 44px;
+  }
+
+  .logo-img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  .logo-badge {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-modern {
+    height: 64px;
+    padding: 0 12px;
+    gap: 12px;
+  }
+
+  .header-search-section {
+    max-width: 300px;
+  }
+
+  .search-wrapper {
+    height: 40px;
+
+    i {
+      font-size: 16px;
+    }
+  }
+
+  .search-input {
+    font-size: 13px;
+  }
+
+  .search-clear,
+  .search-spinner {
+    width: 24px;
+    height: 24px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+
+    i {
+      font-size: 16px;
+    }
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .avatar-init {
+    font-size: 11px;
+  }
+
+  .notification-dropdown,
+  .profile-dropdown {
+    position: fixed;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    min-width: auto;
+  }
+
+  .logo-wrapper {
+    padding: 6px;
+    gap: 0;
+    border-radius: 10px;
+  }
+
+  .logo-img {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 @media (max-width: 576px) {
-  .header-modern { height: 60px; }
-
-  .searchinputs input {
-    width: 160px;
-    font-size: 12.5px;
-    padding: 8px 36px 8px 38px;
-    &:focus { width: 190px; }
+  .header-modern {
+    height: 60px;
+    padding: 0 8px;
+    gap: 8px;
   }
 
-  .search-dropdown-modern { min-width: 260px; left: auto; right: 0; }
-  .notifications-dropdown { width: 320px; right: 0; }
-  .profile-dropdown { width: 260px; }
+  .logo-wrapper {
+    height: 40px;
+    padding: 4px;
+    border-radius: 8px;
+  }
 
-  .header-action-btn { width: 36px; height: 36px; font-size: 18px; i { font-size: 18px; } }
+  .logo-img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .header-search-section {
+    flex: 1;
+    max-width: none;
+  }
+
+  .search-wrapper {
+    height: 38px;
+    padding: 0 8px;
+    gap: 4px;
+  }
+
+  .search-input {
+    font-size: 12px;
+  }
+
+  .notification-dropdown {
+    min-width: auto;
+  }
+
+  .profile-dropdown {
+    min-width: auto;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .avatar-init {
+    font-size: 9px;
+  }
+
+  .logo-brand:hover {
+    transform: scale(1.05);
+  }
 }
-

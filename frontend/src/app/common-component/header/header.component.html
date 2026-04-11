@@ -1,268 +1,177 @@
-<!-- Header -->
-<div class="header header-modern">
-
-  <!-- Logo -->
-  <div class="header-left active" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')">
-    <a [routerLink]="routes.adminDashboard" class="logo logo-normal">
-      <img src="assets/img/logo.png" alt="Logo">
-    </a>
-    <a [routerLink]="routes.adminDashboard" class="logo logo-white">
-      <img src="assets/img/logo-white.png" alt="Logo">
-    </a>
-    <a [routerLink]="routes.adminDashboard" class="logo-small">
-      <img src="assets/img/logo-small.png" alt="Logo">
-    </a>
-    <a id="toggle_btn" href="javascript:void(0);" class="toggle-btn" (click)="toggleSidebar()" [ngClass]="{'d-none': page === 'pos'}" aria-label="Basculer la barre latérale">
-      <i class="feather icon-chevrons-left"></i>
-    </a>
-  </div>
-  <!-- /Logo -->
-
-  <!-- Mobile Hamburger -->
-  <a id="mobile_btn" class="mobile_btn" (click)="togglesMobileSideBar()" [ngClass]="{'d-none': page === 'pos'}" aria-label="Menu mobile">
-    <span class="bar-icon">
-      <span></span>
-      <span></span>
-      <span></span>
-    </span>
+<!-- header.component.html -->
+<div class="header-modern-wrapper">
+  <header class="header-modern">
+    
+   <!-- LEFT: Logo Section -->
+<div class="header-section header-logo-section">
+  <a [routerLink]="routes.adminDashboard" class="logo-brand">
+    <div class="logo-wrapper">
+      <img src="assets/img/logo.png" alt="Dreams POS" class="logo-img">
+      <span class="logo-text">Dreams</span>
+      <span class="logo-badge">POS</span>
+    </div>
   </a>
-  <!-- /Mobile Hamburger -->
+</div>
 
-  <!-- Header Menu -->
-  <ul class="nav user-menu">
-
-    <!-- Search -->
-    <li class="nav-item nav-searchinputs">
-      <div class="top-nav-search">
-        <a href="javascript:void(0);" class="responsive-search" aria-label="Rechercher">
-          <i class="feather icon-search"></i>
-        </a>
-        <div class="searchinputs" [class.active]="showSearchDropdown">
-          <div class="search-icon-wrap">
-            <i class="feather icon-search search-prefix-icon"></i>
-          </div>
-          <input
-            type="text"
-            placeholder="Rechercher clients, articles, commandes..."
-            [(ngModel)]="searchQuery"
-            (input)="onSearchInput(searchQuery)"
-            (blur)="onSearchBlur()"
-            autocomplete="off"
-            aria-label="Recherche globale"
-          />
-          <div class="search-addon">
-            <button *ngIf="!isSearching && searchQuery" (click)="clearSearch()" class="search-clear-btn" aria-label="Effacer la recherche">
-              <i class="feather icon-x"></i>
-            </button>
-            <span *ngIf="isSearching">
-              <i class="feather icon-loader spin-icon"></i>
-            </span>
-          </div>
+    <!-- CENTER: Search Bar -->
+    <div class="header-section header-search-section">
+      <div class="search-wrapper">
+        <i class="feather icon-search"></i>
+        <input 
+          type="text" 
+          class="search-input"
+          placeholder="Search clients, articles, commands..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput(searchQuery)"
+          (blur)="onSearchBlur()"
+          autocomplete="off">
+        <button class="search-clear" *ngIf="searchQuery" (click)="clearSearch()" type="button">
+          <i class="feather icon-x-circle"></i>
+        </button>
+        <div class="search-spinner" *ngIf="isSearching">
+          <i class="feather icon-loader"></i>
         </div>
+
         <!-- Search Dropdown -->
-        <div class="search-dropdown-modern" *ngIf="showSearchDropdown">
-          <div class="search-dropdown-body">
-            <div *ngIf="searchResults.length === 0 && !isSearching" class="search-empty">
-              <i class="feather icon-search-x"></i>
-              <p>Aucun résultat pour <strong>"{{ searchQuery }}"</strong></p>
-            </div>
-            <div *ngIf="searchResults.length > 0">
-              <div class="search-section-label">
-                <i class="feather icon-search me-1"></i> Résultats
-                <span class="result-count">{{ searchResults.length }}</span>
-              </div>
-              <ul class="search-results-list">
-                <li *ngFor="let result of searchResults" class="search-result-item">
-                  <a href="javascript:void(0);" class="search-result-link">
-                    <span class="result-type-badge"
-                      [class.type-client]="result.type === 'Client'"
-                      [class.type-article]="result.type === 'Article'"
-                      [class.type-commande]="result.type === 'Commande'">
-                      {{ result.type }}
-                    </span>
-                    <span class="result-name">{{ result.nom }}</span>
-                    <i class="feather icon-chevron-right result-arrow"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
+        <div class="search-dropdown" *ngIf="showSearchDropdown">
+          <div class="dropdown-empty" *ngIf="searchResults.length === 0 && !isSearching">
+            <i class="feather icon-inbox"></i>
+            <p>No results found</p>
+          </div>
+          <div class="dropdown-results" *ngIf="searchResults.length > 0">
+            <ul class="results-list">
+              <li *ngFor="let result of searchResults" class="result-item">
+                <a href="javascript:void(0);">
+                  <span class="result-badge" [ngClass]="'badge-' + result.type.toLowerCase()">
+                    {{ result.type }}
+                  </span>
+                  <span class="result-text">{{ result.nom }}</span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-        <!-- /Search Dropdown -->
       </div>
-    </li>
-    <!-- /Search -->
+    </div>
 
-    <!-- Theme Toggle -->
-    <li class="nav-item header-action-item">
-      <button
-        class="header-action-btn theme-toggle-btn"
-        *ngIf="lightMode"
-        (click)="changeThemeMode('dark_mode')"
-        title="Activer le mode sombre"
-        aria-label="Activer le mode sombre">
-        <i class="feather icon-moon"></i>
+    <!-- RIGHT: Actions & Profile -->
+    <div class="header-section header-action-section">
+      
+      <!-- Theme Toggle -->
+      <button class="icon-btn" [title]="lightMode ? 'Dark mode' : 'Light mode'" type="button"
+        (click)="changeThemeMode(lightMode ? 'dark_mode' : 'light_mode')">
+        <i class="feather" [ngClass]="lightMode ? 'icon-moon' : 'icon-sun'"></i>
       </button>
-      <button
-        class="header-action-btn theme-toggle-btn theme-btn-dark"
-        *ngIf="!lightMode"
-        (click)="changeThemeMode('light_mode')"
-        title="Activer le mode clair"
-        aria-label="Activer le mode clair">
-        <i class="feather icon-sun"></i>
-      </button>
-    </li>
-    <!-- /Theme Toggle -->
 
-    <!-- Fullscreen -->
-    <li class="nav-item header-action-item d-none d-lg-flex">
-      <button class="header-action-btn" id="btnFullscreen" (click)="fullscreen()" title="Plein écran" aria-label="Plein écran">
-        <i class="feather icon-maximize"></i>
+      <!-- Fullscreen -->
+      <button class="icon-btn" title="Fullscreen" type="button" (click)="fullscreen()">
+        <i class="feather icon-maximize-2"></i>
       </button>
-    </li>
-    <!-- /Fullscreen -->
 
-    <!-- Settings -->
-    <li class="nav-item header-action-item d-none d-md-flex">
-      <a class="header-action-btn" [routerLink]="routes.generalSettings" title="Paramètres" aria-label="Paramètres">
+      <!-- Settings -->
+      <a [routerLink]="routes.generalSettings" class="icon-btn" title="Settings">
         <i class="feather icon-settings"></i>
       </a>
-    </li>
-    <!-- /Settings -->
 
-    <!-- Notifications -->
-    <li class="nav-item dropdown nav-item-box">
-      <a href="javascript:void(0);" class="header-action-btn notification-btn dropdown-toggle" data-bs-toggle="dropdown" aria-label="Notifications">
-        <i class="feather icon-bell"></i>
-        <span class="notif-badge" *ngIf="unreadCount > 0">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
-      </a>
-      <div class="dropdown-menu notifications-dropdown">
-        <div class="notif-header">
-          <div class="notif-header-left">
-            <i class="feather icon-bell me-2"></i>
-            <span class="notification-title">Notifications</span>
-            <span class="unread-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      <!-- Notifications -->
+      <div class="dropdown-wrapper notifications-wrapper">
+        <button class="icon-btn notification-btn" 
+          (click)="toggleNotifications()"
+          [class.has-badge]="unreadCount > 0"
+          type="button"
+          title="Notifications">
+          <i class="feather icon-bell"></i>
+          <span class="badge-count" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </button>
+
+        <!-- Notifications Dropdown -->
+        <div class="dropdown-panel notifications-dropdown" *ngIf="showNotifications">
+          <div class="dropdown-header">
+            <h6 class="dropdown-title">Notifications</h6>
+            <button class="mark-read-btn" (click)="markAllRead()" type="button">Mark all</button>
           </div>
-          <button class="clear-noti-btn" (click)="markAllRead()" *ngIf="unreadCount > 0">Tout lu</button>
-        </div>
-        <div class="noti-content">
-          <div *ngIf="isLoadingNotifications" class="notif-loading">
-            <i class="feather icon-loader spin-icon"></i>
-            <span>Chargement...</span>
-          </div>
-          <ul class="notification-list" *ngIf="!isLoadingNotifications">
-            <li class="notification-item" *ngFor="let notif of notifications"
-                [class.unread]="!notif.lu" (click)="markRead(notif.id)">
-              <a href="javascript:void(0);" class="notif-link">
-                <div class="notif-icon-wrap" [class.unread-icon]="!notif.lu">
+          
+          <div class="dropdown-content">
+            <div class="loading-state" *ngIf="isLoadingNotifications">
+              <i class="feather icon-loader"></i>
+            </div>
+            
+            <ul class="notifications-list" *ngIf="!isLoadingNotifications">
+              <li *ngFor="let notif of notifications" 
+                class="notification-item"
+                [class.unread]="!notif.lu"
+                (click)="markRead(notif.id)">
+                <div class="notif-icon">
                   <i class="feather icon-bell"></i>
                 </div>
-                <div class="notif-body">
-                  <p class="noti-details">{{ notif.message }}</p>
-                  <p class="noti-time">
-                    <i class="feather icon-clock me-1"></i>
-                    {{ notif.date | date:'dd/MM/yyyy HH:mm' }}
-                  </p>
+                <div class="notif-content">
+                  <p class="notif-message">{{ notif.message }}</p>
+                  <span class="notif-time">{{ notif.date | date:'dd/MM HH:mm' }}</span>
                 </div>
-                <span class="unread-dot" *ngIf="!notif.lu"></span>
-              </a>
-            </li>
-            <li *ngIf="notifications.length === 0" class="notif-empty">
-              <i class="feather icon-bell-off"></i>
-              <p>Aucune notification</p>
-            </li>
-          </ul>
-        </div>
-        <div class="notif-footer">
-          <a [routerLink]="routes.activities" class="notif-footer-link">
-            <i class="feather icon-list me-1"></i>Voir toutes les notifications
-          </a>
+                <span class="unread-indicator" *ngIf="!notif.lu"></span>
+              </li>
+              <li *ngIf="notifications.length === 0" class="empty-state">
+                <p>No notifications</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="dropdown-footer">
+            <a [routerLink]="routes.activities" class="view-all-link">
+              View all <i class="feather icon-arrow-right"></i>
+            </a>
+          </div>
         </div>
       </div>
-    </li>
-    <!-- /Notifications -->
 
-    <!-- User Profile -->
-    <li class="nav-item dropdown has-arrow main-drop">
-      <a href="javascript:void(0);" class="dropdown-toggle nav-link userset profile-toggle" data-bs-toggle="dropdown" aria-label="Profil utilisateur">
-        <span class="user-info">
-          <span class="user-letter">
-            <span class="user-initials-avatar" *ngIf="userInitials">{{ userInitials }}</span>
-            <img src="assets/img/profiles/avator1.jpg" alt="Avatar" class="img-fluid" *ngIf="!userInitials">
+      <!-- User Profile -->
+      <div class="dropdown-wrapper profile-wrapper">
+        <button class="user-profile-btn" (click)="toggleProfile()" type="button">
+          <span class="user-avatar">
+            <span class="avatar-init" *ngIf="userInitials">{{ userInitials }}</span>
+            <img src="assets/img/profiles/avator1.jpg" *ngIf="!userInitials" alt="Avatar">
           </span>
-          <span class="user-detail d-none d-md-flex">
+          <span class="user-info">
             <span class="user-name">{{ userName }}</span>
-            <span class="user-role">{{ roleName?.[0] || 'Utilisateur' }}</span>
+            <span class="user-role">{{ roleName?.[0] || 'User' }}</span>
           </span>
-          <i class="feather icon-chevron-down user-chevron d-none d-md-flex"></i>
-        </span>
-      </a>
-      <div class="dropdown-menu menu-drop-user profile-dropdown">
-        <!-- Profile Header -->
-        <div class="profile-dropdown-header">
-          <div class="profile-avatar-wrap">
-            <span class="user-initials-avatar-lg" *ngIf="userInitials">{{ userInitials }}</span>
-            <img src="assets/img/profiles/avator1.jpg" alt="Avatar" class="profile-img" *ngIf="!userInitials">
-            <span class="status-indicator online"></span>
+          <i class="feather icon-chevron-down"></i>
+        </button>
+
+        <!-- Profile Dropdown -->
+        <div class="dropdown-panel profile-dropdown" *ngIf="showProfile">
+          <div class="profile-header">
+            <div class="profile-avatar-large">
+              <span class="avatar-init-large" *ngIf="userInitials">{{ userInitials }}</span>
+              <img src="assets/img/profiles/avator1.jpg" *ngIf="!userInitials" alt="Avatar">
+              <span class="online-badge"></span>
+            </div>
+            <div class="profile-details">
+              <h6 class="profile-name">{{ userName }}</h6>
+              <p class="profile-role">{{ roleName?.[0] || 'User' }}</p>
+              <p class="profile-org" *ngIf="entrepriseName">
+                <i class="feather icon-briefcase"></i> {{ entrepriseName }}
+              </p>
+            </div>
           </div>
-          <div class="profile-info">
-            <h5 class="profile-name">{{ userName }}</h5>
-            <span class="profile-role-badge">{{ roleName?.[0] || 'Utilisateur' }}</span>
-            <p class="profile-enterprise" *ngIf="entrepriseName">
-              <i class="feather icon-briefcase me-1"></i>{{ entrepriseName }}
-            </p>
-          </div>
-        </div>
-        <!-- Profile Actions -->
-        <div class="profile-dropdown-menu">
-          <a class="profile-menu-item" [routerLink]="routes.profile">
-            <span class="menu-icon-wrap">
+
+          <div class="profile-menu">
+            <a [routerLink]="routes.profile" class="profile-menu-item">
               <i class="feather icon-user"></i>
-            </span>
-            <span class="menu-label">Mon Profil</span>
-            <i class="feather icon-chevron-right menu-arrow"></i>
-          </a>
-          <a class="profile-menu-item" [routerLink]="routes.generalSettings">
-            <span class="menu-icon-wrap">
+              <span>My Profile</span>
+            </a>
+            <a [routerLink]="routes.generalSettings" class="profile-menu-item">
               <i class="feather icon-settings"></i>
-            </span>
-            <span class="menu-label">Paramètres</span>
-            <i class="feather icon-chevron-right menu-arrow"></i>
-          </a>
-          <div class="profile-divider"></div>
-          <a class="profile-menu-item logout-item" (click)="logout()" style="cursor: pointer;">
-            <span class="menu-icon-wrap logout-icon">
+              <span>Settings</span>
+            </a>
+            <div class="menu-divider"></div>
+            <button class="profile-menu-item logout" (click)="logout()" type="button">
               <i class="feather icon-log-out"></i>
-            </span>
-            <span class="menu-label">Déconnexion</span>
-          </a>
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </div>
-    </li>
-    <!-- /User Profile -->
-
-  </ul>
-  <!-- /Header Menu -->
-
-  <!-- Mobile User Menu -->
-  <div class="dropdown mobile-user-menu">
-    <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu utilisateur mobile">
-      <i class="feather icon-more-vertical"></i>
-    </a>
-    <div class="dropdown-menu dropdown-menu-right">
-      <a class="dropdown-item" [routerLink]="routes.profile">
-        <i class="feather icon-user me-2"></i>Mon Profil
-      </a>
-      <a class="dropdown-item" [routerLink]="routes.generalSettings">
-        <i class="feather icon-settings me-2"></i>Paramètres
-      </a>
-      <div class="dropdown-divider"></div>
-      <a class="dropdown-item text-danger" (click)="logout()" style="cursor: pointer;">
-        <i class="feather icon-log-out me-2"></i>Déconnexion
-      </a>
     </div>
-  </div>
-  <!-- /Mobile User Menu -->
-
+  </header>
 </div>
-<!-- /Header -->
