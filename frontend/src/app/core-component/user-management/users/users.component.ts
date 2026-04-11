@@ -3,7 +3,7 @@ import {UserService} from "../../../auth/service/user/user.service";
 import {UserDTO} from "../../../model/userDTO.model";
 import {Router} from "@angular/router";
 import {RoleService} from "../../../core/service/role/role.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Role} from "../../../model/role.model";
 import {ResponseDto} from "../../../model/reponseDto.model";
 import {PermissionDto} from "../../../model/permissionDto.model";
@@ -13,7 +13,12 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { CustomPaginationComponent } from '../custom-pagination/custom-pagination.component';
+import { AssignRoleDialogComponent } from './assign-role-dialog/assign-role-dialog.component';
 
 @Component({
   selector: 'app-users',
@@ -25,6 +30,10 @@ import { CustomPaginationComponent } from '../custom-pagination/custom-paginatio
     MatSelectModule,
     MatTooltipModule,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
     CustomPaginationComponent
   ],
   templateUrl: './users.component.html',
@@ -69,6 +78,7 @@ export class UsersComponent implements OnInit {
     private router: Router,
     private roleService: RoleService,
     private fb: FormBuilder,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -76,7 +86,7 @@ export class UsersComponent implements OnInit {
     this.loadUsers();
     this.loadRoles();
     this.assignRoleForm = this.fb.group({
-      roleId: ['']
+      roleId: ['', Validators.required]
     });
   }
 
@@ -99,7 +109,15 @@ export class UsersComponent implements OnInit {
   loadRoles(): void {
     this.roleService.getAllRoles().subscribe({
       next: (roles) => {
-        this.roles = roles;
+        if (this.isSuperAdmin) {
+          this.roles = roles;
+        } else if (this.isAdmin) {
+          this.roles = roles.filter(r =>
+            r.roleType === 'EMPLOYEE' || r.roleType === 'ADMIN'
+          );
+        } else {
+          this.roles = roles;
+        }
         console.log('Roles loaded:', this.roles);
       },
       error: (err: any) => {
@@ -226,17 +244,40 @@ export class UsersComponent implements OnInit {
   }
 
   userAssigner(id: any): void {
-    this.idUserAssigner = id;
-    console.log("ID user sélectionné:", this.idUserAssigner);
+    console.log("Opening assign role dialog for user:", id);
 
-    this.roleService.getAllRoles().subscribe({
-      next: (data) => {
-        this.roles = data;
-        console.log("Rôles récupérés:", this.roles);
+    this.assignRoleForm.reset();
+
+    const dialogRef = this.dialog.open(AssignRoleDialogComponent, {
+      width: '400px',
+      data: {
+        userId: id,
+        roles: this.roles,
+        currentEnterpriseId: this.currentEnterpriseId,
+        isSuperAdmin: this.isSuperAdmin,
+        isAdmin: this.isAdmin
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.roleId) {
+        this.assignRoleToUser(id, result.roleId);
+      }
+    });
+  }
+
+  private assignRoleToUser(userId: number, roleId: number): void {
+    this.roleService.assignRoleToUser(userId, roleId).subscribe({
+      next: () => {
+        console.log('Role assigned successfully');
+        alert('✓ Rôle assigné avec succès');
+        this.assignRoleForm.reset();
+        this.loadUsers();
       },
       error: (err: any) => {
-        console.error('Error loading roles:', err);
-        alert('Erreur lors du chargement des rôles');
+        console.error('Error assigning role:', err);
+        const errorMsg = err.error?.message || 'Erreur inconnue';
+        alert('✗ Erreur lors de l\'assignation du rôle: ' + errorMsg);
       }
     });
   }
@@ -254,18 +295,7 @@ export class UsersComponent implements OnInit {
       return;
     }
 
-    this.roleService.assignRoleToUser(this.idUserAssigner, roleId).subscribe({
-      next: () => {
-        console.log('Role assigned successfully');
-        alert('✓ Rôle assigné avec succès');
-        this.assignRoleForm.reset();
-        this.loadUsers();
-      },
-      error: (err: any) => {
-        console.error('Error assigning role:', err);
-        alert('✗ Erreur lors de l\'assignation du rôle');
-      }
-    });
+    this.assignRoleToUser(this.idUserAssigner, roleId);
   }
 
   getUserAuthData(): void {
