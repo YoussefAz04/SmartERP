@@ -15,6 +15,15 @@ interface SubMenu {
   showSubRoute: boolean;
 }
 
+interface SidebarSection {
+  tittle: string;
+  menu: MenuItem[];
+  showAsTab: boolean;
+  separateRoute: boolean;
+  hasSubRoute: boolean;
+  showSubRoute: boolean;
+}
+
 
 @Component({
   selector: 'app-sidebar-one',
@@ -47,7 +56,8 @@ export class SidebarOneComponent implements OnInit {
       console.log('Sidebar data:', this.sidebar.sidebarData1);
     });
     this.sidebar.sidebarData$.subscribe(data => {
-      this.side_bar_data = data;
+      // Filter out sections with no active menu items to avoid orphaned section headers
+      this.side_bar_data = data.filter((section: SidebarSection) => section.menu && section.menu.length > 0);
     });  }
 
   private getRoutes(route: url): void {

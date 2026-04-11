@@ -7,6 +7,7 @@ import BuissnesManager.BuissnesManager.service.ArticleAchatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,6 +58,7 @@ public class ArticleAchatController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<Article> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
         try {
@@ -67,6 +69,7 @@ public class ArticleAchatController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Article> updateArticleAchat(@PathVariable Long id,
                                                       @RequestBody ArticleAchat articleAchat) {
@@ -80,6 +83,7 @@ public class ArticleAchatController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteArticleAchat(@PathVariable Long id) {
         try {

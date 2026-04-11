@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ArticleVenteService } from '../../core/service/article-vente/article-vente.service';
 import { ArticleVente } from '../../model/article-vente.model';
+import { ResponseDto } from '../../model/reponseDto.model';
 
 @Component({
   selector: 'app-article-vente',
@@ -16,6 +17,10 @@ export class ArticleVenteComponent implements OnInit {
   articleVenteList: ArticleVente[] = [];
   filteredList: ArticleVente[] = [];
   isLoading = false;
+
+  canCreateArticle = false;
+  canEditArticle = false;
+  canDeleteArticle = false;
 
   // Search & filter
   searchTerm = '';
@@ -37,6 +42,24 @@ export class ArticleVenteComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadArticles();
+    this.loadRolePermissions();
+  }
+
+  loadRolePermissions(): void {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
+        const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
+        const isSuperAdmin = roles.includes('SUPER_ADMIN');
+        const isAdmin = roles.includes('ADMIN');
+        this.canCreateArticle = isSuperAdmin || isAdmin;
+        this.canEditArticle = isSuperAdmin || isAdmin;
+        this.canDeleteArticle = isSuperAdmin || isAdmin;
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
   }
 
   loadArticles(): void {
