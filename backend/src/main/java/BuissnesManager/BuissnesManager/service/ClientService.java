@@ -2,8 +2,11 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.entity.CategorieClient;
 import BuissnesManager.BuissnesManager.entity.Client;
+import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.repository.CategorieClientRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
+import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +22,34 @@ public class ClientService {
     @Autowired
     private CategorieClientRepo categorieClientRepo;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
+    @Autowired
+    private EntrepriseRepo entrepriseRepo;
+
     // ✅ ADD CLIENT
     @Transactional
     public Client addClient(Client client, Long idCategorie) {
         CategorieClient categorie = categorieClientRepo.findById(idCategorie)
             .orElseThrow(() -> new RuntimeException("Categorie not found with id: " + idCategorie));
         client.setCategorieClient(categorie);
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId != null && client.getEntreprise() == null) {
+            Entreprise entreprise = entrepriseRepo.findById(entrepriseId)
+                .orElseThrow(() -> new RuntimeException("Entreprise not found with id: " + entrepriseId));
+            client.setEntreprise(entreprise);
+        }
         return clientRepo.save(client);
     }
 
-    // ✅ GET ALL CLIENTS
+    // ✅ GET ALL CLIENTS (enterprise-scoped)
     public List<Client> getAllClient() {
-        return clientRepo.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return clientRepo.findAll();
+        }
+        return clientRepo.findByEntrepriseId(entrepriseId);
     }
 
     // ✅ GET CLIENTS BY ENTERPRISE

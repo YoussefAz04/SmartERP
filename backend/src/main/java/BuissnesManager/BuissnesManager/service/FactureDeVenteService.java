@@ -7,6 +7,7 @@ import BuissnesManager.BuissnesManager.entity.FactureDeVente;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
 import BuissnesManager.BuissnesManager.repository.DetaisFactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.repository.FactureDeVenteRepo;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,9 @@ public class FactureDeVenteService {
     @Autowired
     private ClientRepo clientRepo ;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
 
 
     public FactureDeVente ajouterFactureDeVente(FactureDeVente factureDeVente){
@@ -35,7 +39,11 @@ public class FactureDeVenteService {
     }
 
     public List<FactureDeVente> getAllFactures() {
-        return factureDeVenteRepo.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return factureDeVenteRepo.findAll();
+        }
+        return factureDeVenteRepo.findByEntrepriseId(entrepriseId);
     }
 
     public Optional<FactureDeVente> getFactureById(Long id) {

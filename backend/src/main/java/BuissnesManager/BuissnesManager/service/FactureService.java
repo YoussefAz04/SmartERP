@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,9 @@ public class FactureService {
     private OcrPdfService ocrPdfService ;
     @Autowired
     private DocumentRepo documentRepo ;
+
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
 
 
@@ -85,7 +89,11 @@ public class FactureService {
     }
 
 public List<FactureAchat> getAllFactureAchat(){
-        return factureAchatRepo.findAll() ;
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return factureAchatRepo.findAll();
+        }
+        return factureAchatRepo.findByEntrepriseId(entrepriseId);
 }
 public FactureAchat getById(Long id){
    return  this.factureAchatRepo.findById(id).get();

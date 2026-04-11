@@ -1,9 +1,12 @@
 package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.entity.CategorieFournisseur;
+import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.entity.Fournisseur;
 import BuissnesManager.BuissnesManager.repository.CategorieFournisseurRepo;
+import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
 import BuissnesManager.BuissnesManager.repository.FournisseurRepo;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +22,34 @@ public class FournisseurService {
     @Autowired
     private CategorieFournisseurRepo categorieFournisseurRepo;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
+    @Autowired
+    private EntrepriseRepo entrepriseRepo;
+
     // ✅ ADD FOURNISSEUR
     @Transactional
     public Fournisseur addFournisseur(Fournisseur fournisseur, Long idCategorie) {
         CategorieFournisseur categorie = categorieFournisseurRepo.findById(idCategorie)
             .orElseThrow(() -> new RuntimeException("Categorie not found with id: " + idCategorie));
         fournisseur.setCategorieFournisseur(categorie);
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId != null && fournisseur.getEntreprise() == null) {
+            Entreprise entreprise = entrepriseRepo.findById(entrepriseId)
+                .orElseThrow(() -> new RuntimeException("Entreprise not found with id: " + entrepriseId));
+            fournisseur.setEntreprise(entreprise);
+        }
         return fournisseurRepo.save(fournisseur);
     }
 
-    // ✅ GET ALL FOURNISSEURS
+    // ✅ GET ALL FOURNISSEURS (enterprise-scoped)
     public List<Fournisseur> getAllFournisseurs() {
-        return fournisseurRepo.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return fournisseurRepo.findAll();
+        }
+        return fournisseurRepo.findByEntrepriseId(entrepriseId);
     }
 
     // ✅ GET FOURNISSEURS BY ENTERPRISE

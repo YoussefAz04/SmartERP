@@ -4,6 +4,7 @@ import BuissnesManager.BuissnesManager.dto.CommandeAchatDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeAchatDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +52,15 @@ public class CommandeAchatService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
     public List<CommandeAchat> getAllCommandes() {
-        return commandeAchatRepository.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return commandeAchatRepository.findAll();
+        }
+        return commandeAchatRepository.findByEntrepriseId(entrepriseId);
     }
 
     public Optional<CommandeAchat> getCommandeById(Long id) {
@@ -61,10 +69,17 @@ public class CommandeAchatService {
 
     @Transactional
     public CommandeAchat createCommande(CommandeAchatDto dto) {
-        // ✅ VALIDATE REQUIRED INPUTS FIRST
-        if (dto.getEntrepriseId() == null) {
-            logger.error("❌ Enterprise ID is required");
-            throw new RuntimeException("L'entreprise est obligatoire. Veuillez vous reconnecter.");
+        // ✅ RESOLVE ENTERPRISE ID FROM DTO OR JWT (without mutating DTO)
+        final Long resolvedEntrepriseId;
+        if (dto.getEntrepriseId() != null) {
+            resolvedEntrepriseId = dto.getEntrepriseId();
+        } else {
+            Long jwtEntrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+            if (jwtEntrepriseId == null) {
+                logger.error("❌ Enterprise ID is required");
+                throw new RuntimeException("L'entreprise est obligatoire. Veuillez vous reconnecter.");
+            }
+            resolvedEntrepriseId = jwtEntrepriseId;
         }
 
         if (dto.getFournisseurId() == null) {
@@ -96,10 +111,10 @@ public class CommandeAchatService {
         logger.info("✅ Supplier set: {}", fournisseur.getId());
 
         // ✅ SET ENTERPRISE
-        Entreprise entreprise = entrepriseRepo.findById(dto.getEntrepriseId())
+        Entreprise entreprise = entrepriseRepo.findById(resolvedEntrepriseId)
                 .orElseThrow(() -> {
-                    logger.error("❌ Enterprise not found with ID: {}", dto.getEntrepriseId());
-                    return new RuntimeException("Entreprise non trouvée: " + dto.getEntrepriseId());
+                    logger.error("❌ Enterprise not found with ID: {}", resolvedEntrepriseId);
+                    return new RuntimeException("Entreprise non trouvée: " + resolvedEntrepriseId);
                 });
         commande.setEntreprise(entreprise);
         logger.info("✅ Enterprise set: {}", entreprise.getId());

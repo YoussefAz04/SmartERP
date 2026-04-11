@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.dto.ArticleAchatResponseDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +30,17 @@ public class ArticleAchatService {
     @Autowired
     private FournisseurRepo fournisseurRepo;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
     public List<ArticleAchatResponseDto> getAllArticlesAchat() {
-        return articleRepository.findAllWithRelations().stream()
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return articleRepository.findAllWithRelations().stream()
+                    .map(this::toResponseDto)
+                    .collect(Collectors.toList());
+        }
+        return articleRepository.findAllWithRelationsByEntrepriseId(entrepriseId).stream()
                 .map(this::toResponseDto)
                 .collect(Collectors.toList());
     }
@@ -55,6 +65,14 @@ public class ArticleAchatService {
     @Transactional
     public Article addArticleAchat(ArticleAchat input) {
         Article article = mapToArticle(input, new Article());
+        if (article.getEntreprise() == null) {
+            Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+            if (entrepriseId != null) {
+                Entreprise entreprise = entrepriseRepo.findById(entrepriseId)
+                        .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + entrepriseId));
+                article.setEntreprise(entreprise);
+            }
+        }
         return articleRepository.save(article);
     }
 

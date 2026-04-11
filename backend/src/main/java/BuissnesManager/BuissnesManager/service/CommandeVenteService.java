@@ -4,6 +4,7 @@ import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeVenteDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class CommandeVenteService {
     @Autowired
     private FactureDeVenteRepo factureDeVenteRepository;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
     @Transactional
     public CommandeVente createCommande(CommandeVenteDto dto) {
         CommandeVente commande = new CommandeVente();
@@ -60,10 +64,13 @@ public class CommandeVenteService {
             commande.setClient(client);
         }
         
-        // ✅ Set Entreprise - either from DTO or use first available
-        if (dto.getEntrepriseId() != null) {
-            Entreprise entreprise = entrepriseRepo.findById(dto.getEntrepriseId())
-                    .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + dto.getEntrepriseId()));
+        // ✅ Set Entreprise - from JWT or DTO
+        final Long resolvedEntrepriseId = dto.getEntrepriseId() != null
+                ? dto.getEntrepriseId()
+                : enterpriseSecurityUtil.getContextEnterpriseId();
+        if (resolvedEntrepriseId != null) {
+            Entreprise entreprise = entrepriseRepo.findById(resolvedEntrepriseId)
+                    .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + resolvedEntrepriseId));
             commande.setEntreprise(entreprise);
         } else {
             var entreprises = entrepriseRepo.findAll();
@@ -96,7 +103,11 @@ public class CommandeVenteService {
     }
 
     public List<CommandeVente> getAllCommandes() {
-        return commandeVenteRepository.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return commandeVenteRepository.findAll();
+        }
+        return commandeVenteRepository.findByEntrepriseId(entrepriseId);
     }
 
     public List<CommandeVente> getCommandesByEntreprise(Long entrepriseId) {

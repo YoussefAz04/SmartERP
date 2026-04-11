@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.dto.FactureVenteDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,17 @@ public class FactureVenteController {
     private EntrepriseRepo entrepriseRepo;
     @Autowired
     private CommandeVenteRepository commandeVenteRepository;
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
     @GetMapping
     public ResponseEntity<List<FactureVente>> getAllFacturesVente() {
         try {
-            return ResponseEntity.ok(factureVenteRepository.findAll());
+            Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+            if (entrepriseId == null) {
+                return ResponseEntity.ok(factureVenteRepository.findAll());
+            }
+            return ResponseEntity.ok(factureVenteRepository.findByEntrepriseId(entrepriseId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -86,8 +93,11 @@ public class FactureVenteController {
                         .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée"));
                 facture.setCommandeVente(cv);
             }
-            if (dto.getEntrepriseId() != null) {
-                Entreprise entreprise = entrepriseRepo.findById(dto.getEntrepriseId())
+            Long entrepriseIdToUse = dto.getEntrepriseId() != null
+                    ? dto.getEntrepriseId()
+                    : enterpriseSecurityUtil.getContextEnterpriseId();
+            if (entrepriseIdToUse != null) {
+                Entreprise entreprise = entrepriseRepo.findById(entrepriseIdToUse)
                         .orElseThrow(() -> new RuntimeException("Entreprise non trouvée"));
                 facture.setEntreprise(entreprise);
             }

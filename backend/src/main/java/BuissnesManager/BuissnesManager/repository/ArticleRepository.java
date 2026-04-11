@@ -20,6 +20,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query("SELECT a FROM Article a LEFT JOIN FETCH a.categorieArticle LEFT JOIN FETCH a.fournisseur LEFT JOIN FETCH a.mesure")
     List<Article> findAllWithRelations();
 
+    @Query("SELECT a FROM Article a LEFT JOIN FETCH a.categorieArticle LEFT JOIN FETCH a.fournisseur LEFT JOIN FETCH a.mesure WHERE a.entreprise.id = :entrepriseId")
+    List<Article> findAllWithRelationsByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
     @Query("SELECT a FROM Article a LEFT JOIN FETCH a.categorieArticle LEFT JOIN FETCH a.fournisseur LEFT JOIN FETCH a.mesure WHERE a.id = :id")
     Optional<Article> findByIdWithRelations(@Param("id") Long id);
 
