@@ -178,13 +178,26 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         this.canEditFournisseur = isSuperAdmin || isAdmin || isEmployee;
         this.canDeleteFournisseur = isSuperAdmin || isAdmin || isEmployee;
 
+        let fournisseurPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {
             if (per.moduleTitle?.toLowerCase().includes('gestion fournisseur')) {
               this.permissionFournisseur = per;
+              fournisseurPermissionFound = true;
               console.log('Permission Fournisseur:', this.permissionFournisseur);
             }
           });
+        }
+
+        // Fallback: if no DB permission record found, derive access from role
+        if (!fournisseurPermissionFound) {
+          this.permissionFournisseur = {
+            create: isSuperAdmin || isAdmin || isEmployee,
+            view: isSuperAdmin || isAdmin || isEmployee,
+            update: isSuperAdmin || isAdmin || isEmployee,
+            delete: isSuperAdmin || isAdmin || isEmployee,
+            moduleTitle: 'gestion Fournisseur'
+          } as PermissionDto;
         }
 
         console.log('Entreprise:', currentUser?.entreprise?.nom);

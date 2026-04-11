@@ -154,13 +154,27 @@ export class ClientComponent implements OnInit, AfterViewInit {
         this.canEditClient = isSuperAdmin || isAdmin || isEmployee;
         this.canDeleteClient = isSuperAdmin || isAdmin || isEmployee;
 
+        let clientPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {
-            if (per.moduleTitle?.toLowerCase().includes("gestion client")) {
+            if (per.moduleTitle?.toLowerCase().includes("gestion de client") ||
+                per.moduleTitle?.toLowerCase().includes("gestion client")) {
               this.permissionClient = per;
+              clientPermissionFound = true;
               console.log("Permission Client:", this.permissionClient);
             }
           });
+        }
+
+        // Fallback: if no DB permission record found, derive access from role
+        if (!clientPermissionFound) {
+          this.permissionClient = {
+            create: isSuperAdmin || isAdmin || isEmployee,
+            view: isSuperAdmin || isAdmin || isEmployee,
+            update: isSuperAdmin || isAdmin || isEmployee,
+            delete: isSuperAdmin || isAdmin || isEmployee,
+            moduleTitle: 'gestion de Client'
+          } as PermissionDto;
         }
 
         console.log('Entreprise:', currentUser?.entreprise?.nom);
