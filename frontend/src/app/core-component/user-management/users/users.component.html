@@ -131,7 +131,7 @@
               </td>
               <td class="action-table-data">
                 <div class="edit-delete-action">
-                  <a class="me-2 p-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#edit-units" (click)="userAssigner(data.id)">
+                  <a class="me-2 p-2" href="javascript:void(0);" (click)="userAssigner(data.id)">
                     <i class="feather icon-shield shield"></i>
                   </a>
                   <a class="me-2 p-2 mb-0" href="javascript:void(0);" (click)="viewUsers(data.id)" *ngIf="permissionUsers?.view">
@@ -162,39 +162,3 @@
 <!-- /product list -->
 
 
-
-<!-- Assigner Role -->
-<div class="modal fade" id="edit-units">
-  <div class="modal-dialog modal-dialog-centered custom-modal-two">
-    <div class="modal-content">
-      <div class="page-wrapper-new p-0">
-        <div class="content">
-          <div class="modal-header border-0 custom-modal-header">
-            <div class="page-title">
-              <h4>Assigner Rôle</h4>
-            </div>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body custom-modal-body">
-            <form [formGroup]="assignRoleForm" (ngSubmit)="onSubmitAssignRole()">
-              <div class="mb-3">
-                <label for="roleSelect" class="form-label">Sélectionnez un rôle</label>
-                <select id="roleSelect" class="form-control" formControlName="roleId">
-                  <option *ngFor="let role of roles" [value]="role.id">{{ role.name }}</option>
-                </select>
-              </div>
-
-              <div class="modal-footer-btn mt-3">
-                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-submit">Assigner Rôle</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- /Assigner Role -->
