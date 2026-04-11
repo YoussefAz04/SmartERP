@@ -226,7 +226,7 @@
               <i class="feather icon-x"></i>
               <span>Annuler</span>
             </button>
-            <button type="submit" class="btn btn-submit" [disabled]="isLoading">
+            <button type="submit" class="btn btn-submit" [disabled]="!clientForm.valid || isLoading">
               <span class="spinner" *ngIf="isLoading"></span>
               <i class="feather icon-check" *ngIf="!isLoading"></i>
               <span>{{ isLoading ? 'En cours...' : 'Enregistrer' }}</span>
