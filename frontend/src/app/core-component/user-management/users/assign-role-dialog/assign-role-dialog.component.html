@@ -5,7 +5,7 @@
     <mat-label>Sélectionnez un rôle</mat-label>
     <mat-select [(ngModel)]="selectedRoleId" name="roleId">
       <mat-option *ngFor="let role of roles" [value]="role.id">
-        {{ role.name }} ({{ role.roleType }})
+        {{ role.name }}{{ role.roleType ? ' (' + role.roleType + ')' : '' }}
       </mat-option>
     </mat-select>
   </mat-form-field>

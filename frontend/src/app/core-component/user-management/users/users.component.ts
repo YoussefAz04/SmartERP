@@ -70,7 +70,6 @@ export class UsersComponent implements OnInit {
   } as PermissionDto;
 
   roles: Role[] = [];
-  idUserAssigner!: number;
   assignRoleForm!: FormGroup;
 
   constructor(
@@ -109,9 +108,7 @@ export class UsersComponent implements OnInit {
   loadRoles(): void {
     this.roleService.getAllRoles().subscribe({
       next: (roles) => {
-        if (this.isSuperAdmin) {
-          this.roles = roles;
-        } else if (this.isAdmin) {
+        if (this.isAdmin && !this.isSuperAdmin) {
           this.roles = roles.filter(r =>
             r.roleType === 'EMPLOYEE' || r.roleType === 'ADMIN'
           );
@@ -280,22 +277,6 @@ export class UsersComponent implements OnInit {
         alert('✗ Erreur lors de l\'assignation du rôle: ' + errorMsg);
       }
     });
-  }
-
-  onSubmitAssignRole(): void {
-    const roleId = this.assignRoleForm.value.roleId;
-
-    if (!this.idUserAssigner) {
-      alert('Veuillez sélectionner un utilisateur');
-      return;
-    }
-
-    if (!roleId) {
-      alert('Veuillez sélectionner un rôle');
-      return;
-    }
-
-    this.assignRoleToUser(this.idUserAssigner, roleId);
   }
 
   getUserAuthData(): void {
