@@ -3,10 +3,12 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.entity.Module;
 import BuissnesManager.BuissnesManager.entity.ModuleTittle;
 import BuissnesManager.BuissnesManager.entity.Role;
+import BuissnesManager.BuissnesManager.entity.RoleType;
 import BuissnesManager.BuissnesManager.entity.SousModule;
 import BuissnesManager.BuissnesManager.repository.ModuleRepo;
 import BuissnesManager.BuissnesManager.repository.ModuleTittleRepo;
 import BuissnesManager.BuissnesManager.repository.PermissionRepo;
+import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.SousModuleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class ModuleService {
 
     @Autowired
     private SousModuleRepo sousModuleRepo ;
+
+    @Autowired
+    private RoleRepo roleRepo ;
 
     public List<ModuleTittle> getAllModuleTitlle() {
         return moduleTittleRepo.findAll();
@@ -65,6 +70,33 @@ public class ModuleService {
         Set<Long> idsAffectes = modulesAffecteByRole.stream()
                 .map(Module::getId)
                 .collect(Collectors.toSet());
+
+        // For EMPLOYEE role type, activate all modules except admin-only ones
+        // so that article achat, article vente, stock, clients, fournisseurs, commandes
+        // and factures sections appear in the sidebar
+        roleRepo.findById(idRoleUser).ifPresent(role -> {
+            if (RoleType.EMPLOYEE.equals(role.getRoleType())) {
+                for (Module module : allModules) {
+                    ModuleTittle mt = module.getModuleTittle();
+                    if (mt != null) {
+                        String title = mt.getModuleTittle() != null
+                                ? mt.getModuleTittle().toLowerCase()
+                                : "";
+                        // Exclude admin-only module sections (user management, roles, permissions)
+                        boolean isAdminOnly = title.contains("user") || title.contains("utilisateur")
+                                || title.contains("permission") || title.contains("role")
+                                || title.contains("parametre") || title.contains("paramètre")
+                                || title.contains("setting");
+                        if (!isAdminOnly) {
+                            idsAffectes.add(module.getId());
+                        }
+                    } else {
+                        // No module title assigned — include it
+                        idsAffectes.add(module.getId());
+                    }
+                }
+            }
+        });
 
         for (Module module : allModules) {
             if (idsAffectes.contains(module.getId())) {
