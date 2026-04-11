@@ -46,7 +46,12 @@ export class UsersComponent implements OnInit {
   password: boolean[] = [];
   isDeleting = false;
   deletingUserId: number | null = null;
-  
+
+  isSuperAdmin = false;
+  isAdmin = false;
+  currentEnterpriseId: number | null = null;
+  currentEnterpriseName: string = '';
+
   permissionUsers: PermissionDto = {
     create: false,
     view: false,
@@ -54,7 +59,7 @@ export class UsersComponent implements OnInit {
     delete: false,
     moduleTitle: ''
   } as PermissionDto;
-  
+
   roles: Role[] = [];
   idUserAssigner!: number;
   assignRoleForm!: FormGroup;
@@ -67,15 +72,17 @@ export class UsersComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.getUserAuthData();
     this.loadUsers();
     this.loadRoles();
     this.assignRoleForm = this.fb.group({
       roleId: ['']
     });
-    this.getUserAuthData();
   }
 
   loadUsers(): void {
+    // Backend already filters by enterprise based on the JWT role,
+    // so getAllUsersDTO() returns the correct set for both SUPER_ADMIN and ADMIN.
     this.userService.getAllUsersDTO().subscribe({
       next: (users) => {
         this.allUsers = users;
@@ -125,7 +132,7 @@ export class UsersComponent implements OnInit {
   sortData(event: Sort): void {
     const field = event.active;
     const direction = event.direction;
-    
+
     if (!direction) {
       this.tableData = [...this.allUsers];
       return;
@@ -176,7 +183,7 @@ export class UsersComponent implements OnInit {
     }
 
     const confirmed = confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.');
-    
+
     if (confirmed) {
       this.isDeleting = true;
       this.deletingUserId = userId;
@@ -184,20 +191,20 @@ export class UsersComponent implements OnInit {
       this.userService.deleteUser(userId).subscribe({
         next: (response: any) => {
           console.log('User deleted successfully:', response);
-          
+
           this.allUsers = this.allUsers.filter(u => u.id !== userId);
           this.tableData = this.tableData.filter(u => u.id !== userId);
-          
+
           this.isDeleting = false;
           this.deletingUserId = null;
-          
+
           alert('✓ Utilisateur supprimé avec succès');
           this.loadUsers();
         },
         error: (err: any) => {
           this.isDeleting = false;
           this.deletingUserId = null;
-          
+
           const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
           console.error('Erreur suppression:', err);
           alert('✗ Erreur lors de la suppression: ' + errorMsg);
@@ -221,7 +228,7 @@ export class UsersComponent implements OnInit {
   userAssigner(id: any): void {
     this.idUserAssigner = id;
     console.log("ID user sélectionné:", this.idUserAssigner);
-    
+
     this.roleService.getAllRoles().subscribe({
       next: (data) => {
         this.roles = data;
@@ -236,7 +243,7 @@ export class UsersComponent implements OnInit {
 
   onSubmitAssignRole(): void {
     const roleId = this.assignRoleForm.value.roleId;
-    
+
     if (!this.idUserAssigner) {
       alert('Veuillez sélectionner un utilisateur');
       return;
@@ -261,26 +268,37 @@ export class UsersComponent implements OnInit {
     });
   }
 
- getUserAuthData(): void {
-  const item = localStorage.getItem('myLSkey');
-  
-  if (item) {
-    try {
-      const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
-      console.log('User connecté:', currentUser?.name);
-      console.log('Token:', currentUser?.token);
-      console.log('Permissions:', currentUser?.permission);
+  getUserAuthData(): void {
+    const item = localStorage.getItem('myLSkey');
 
-      if (currentUser?.permission && Array.isArray(currentUser.permission) && currentUser.permission.length > 0) {
-        // Use the first permission (all have the same create/delete/update/view values)
-        this.permissionUsers = currentUser.permission[0];
-        console.log("Permission Users:", this.permissionUsers);
+    if (item) {
+      try {
+        const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
+        console.log('User connecté:', currentUser?.name);
+
+        const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
+        this.isSuperAdmin = roles.includes('SUPER_ADMIN');
+        this.isAdmin = roles.includes('ADMIN');
+
+        if (currentUser?.entrepriseId) {
+          this.currentEnterpriseId = Number(currentUser.entrepriseId);
+        }
+        if ((currentUser as any)?.entrepriseName) {
+          this.currentEnterpriseName = (currentUser as any).entrepriseName;
+        }
+
+        if (currentUser?.permission && Array.isArray(currentUser.permission) && currentUser.permission.length > 0) {
+          const usersPerm = currentUser.permission.find(
+            (p: any) => p.moduleTitle?.toLowerCase().includes('user')
+          );
+          this.permissionUsers = usersPerm ?? currentUser.permission[0];
+          console.log("Permission Users:", this.permissionUsers);
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
       }
-    } catch (error) {
-      console.error('Error parsing user data:', error);
+    } else {
+      console.warn('No user found in localStorage');
     }
-  } else {
-    console.warn('No user found in localStorage');
   }
-}
 }

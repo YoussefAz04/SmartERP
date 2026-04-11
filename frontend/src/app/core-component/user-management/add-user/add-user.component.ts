@@ -15,6 +15,9 @@ export class AddUserComponent implements OnInit {
   addUserForm!: FormGroup;
   isSubmitting = false;
 
+  isSuperAdmin = false;
+  currentEnterpriseId: number = 1;
+
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
@@ -22,7 +25,23 @@ export class AddUserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadSessionData();
     this.initializeForm();
+  }
+
+  loadSessionData(): void {
+    try {
+      const raw = localStorage.getItem('myLSkey');
+      if (!raw) return;
+      const session = JSON.parse(atob(raw));
+      const roles: string[] = Array.isArray(session.roles) ? session.roles : [];
+      this.isSuperAdmin = roles.includes('SUPER_ADMIN');
+      if (session.entrepriseId) {
+        this.currentEnterpriseId = Number(session.entrepriseId);
+      }
+    } catch {
+      // defaults apply
+    }
   }
 
   initializeForm(): void {
@@ -47,8 +66,9 @@ export class AddUserComponent implements OnInit {
 
     this.isSubmitting = true;
     const userData = this.addUserForm.value;
+    const enterpriseId = this.currentEnterpriseId;
 
-    this.userService.registerUser(userData, 1, 1).subscribe({
+    this.userService.registerUser(userData, enterpriseId, 0).subscribe({
       next: (response: any) => {
         console.log('User added successfully:', response);
         alert('✓ User added successfully');

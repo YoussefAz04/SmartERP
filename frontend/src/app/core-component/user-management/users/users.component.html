@@ -2,10 +2,13 @@
   <div class="add-item d-flex">
     <div class="page-title">
       <h4>User List</h4>
-      <h6>Manage Your Users</h6>
+      <h6>
+        <ng-container *ngIf="isSuperAdmin">All Enterprises</ng-container>
+        <ng-container *ngIf="isAdmin && !isSuperAdmin">{{ currentEnterpriseName || 'Your Enterprise' }}</ng-container>
+      </h6>
     </div>
   </div>
-  
+
   <div class="page-btn" *ngIf="permissionUsers?.create">
     <a (click)="addUsers()" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#add-units"><i
     class="feather icon-plus-circle me-2"></i>Add New User</a>
@@ -76,9 +79,9 @@
           <div class="col-lg-3 col-sm-6 col-12">
             <div class="input-blocks">
               <i class="feather icon-zap info-img"></i>
-              <mat-select [(ngModel)]="selectedValue5" 
+              <mat-select [(ngModel)]="selectedValue5"
                           (change)="filterByRole(selectedValue5)"
-                          [ngModelOptions]="{standalone: true}" 
+                          [ngModelOptions]="{standalone: true}"
                           class="space-select select"
                           placeholder="Choose Role">
                 <mat-option value="">All Roles</mat-option>
@@ -106,9 +109,9 @@
         <thead>
         <tr>
           <th mat-sort-header="username">User Name</th>
-          
           <th mat-sort-header="email">Email</th>
           <th mat-sort-header="role">Role</th>
+          <th *ngIf="isSuperAdmin" mat-sort-header="entrepriseNom">Enterprise</th>
           <th mat-sort-header="status">Status</th>
           <th class="no-sort">Action</th>
         </tr>
@@ -117,9 +120,9 @@
           @for (data of tableData; track data) {
             <tr>
               <td>{{ data.username }}</td>
-              <td>{{ data.phone || '-' }}</td>
               <td>{{ data.email }}</td>
               <td>{{ data.roles?.join(', ') || '-' }}</td>
+              <td *ngIf="isSuperAdmin">{{ data.entrepriseNom || '-' }}</td>
               <td>
                 <span class="badge"
                       [ngClass]="{'badge-linesuccess': data.enabled, 'badge-linedanger': !data.enabled}">
@@ -134,17 +137,17 @@
                   <a class="me-2 p-2 mb-0" href="javascript:void(0);" (click)="viewUsers(data.id)" *ngIf="permissionUsers?.view">
                     <i class="feather icon-eye action-eye"></i>
                   </a>
-                  <a class="me-2 p-2 mb-0 action-delete" 
-   href="javascript:void(0);" 
-   (click)="deleteUser(data.id)" 
-   [class.disabled]="isDeleting && deletingUserId === data.id"
-   *ngIf="permissionUsers?.delete"
-   title="Supprimer l'utilisateur">
-  <i class="feather icon-trash-2"></i>
-  @if (isDeleting && deletingUserId === data.id) {
-    <span class="spinner-small"></span>
-  }
-</a>
+                  <a class="me-2 p-2 mb-0 action-delete"
+                     href="javascript:void(0);"
+                     (click)="deleteUser(data.id)"
+                     [class.disabled]="isDeleting && deletingUserId === data.id"
+                     *ngIf="permissionUsers?.delete"
+                     title="Supprimer l'utilisateur">
+                    <i class="feather icon-trash-2"></i>
+                    @if (isDeleting && deletingUserId === data.id) {
+                      <span class="spinner-small"></span>
+                    }
+                  </a>
                 </div>
               </td>
             </tr>
@@ -185,7 +188,7 @@
 
               <div class="modal-footer-btn mt-3">
                 <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-submit" >Assigner Rôle</button>
+                <button type="submit" class="btn btn-submit">Assigner Rôle</button>
               </div>
             </form>
           </div>

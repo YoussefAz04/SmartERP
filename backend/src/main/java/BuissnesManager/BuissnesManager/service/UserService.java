@@ -111,6 +111,15 @@ public class UserService {
 
     public List<UserDTO> getAllUsersDTO() {
         List<User> users = userRepository.findAll();
+        return toUserDTOList(users);
+    }
+
+    public List<UserDTO> getAllUsersDTOByEnterprise(Long enterpriseId) {
+        List<User> users = userRepository.findByEntrepriseId(enterpriseId);
+        return toUserDTOList(users);
+    }
+
+    private List<UserDTO> toUserDTOList(List<User> users) {
         return users.stream().map(user -> {
             UserDTO dto = new UserDTO();
             dto.setId(user.getId());
@@ -127,6 +136,7 @@ public class UserService {
 
             if (user.getEntreprise() != null) {
                 dto.setEntrepriseId(user.getEntreprise().getId());
+                dto.setEntrepriseNom(user.getEntreprise().getNom());
             }
 
             return dto;
