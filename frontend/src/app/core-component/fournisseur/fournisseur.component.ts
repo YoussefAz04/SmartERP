@@ -180,8 +180,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach((per: any) => {
-            if (per.moduleTitle?.toLowerCase().includes('gestion de fournisseur') ||
-                per.moduleTitle?.toLowerCase().includes('gestion fournisseur')) {
+            if (per.moduleTitle?.toLowerCase().includes('gestion fournisseur')) {
               this.permissionFournisseur = per;
               console.log('Permission Fournisseur:', this.permissionFournisseur);
             }
