@@ -49,7 +49,7 @@ public class JWTUtil {
             claims.put("entrepriseId", user.getEntreprise().getId());  // Also add French version
             claims.put("enterpriseName", user.getEntreprise().getNom());
             logger.info("   ✅ Enterprise added to JWT: {} (ID: {})", 
-                user.getEntreprise().getNom(), user.getEnterprise().getId());
+                user.getEntreprise().getNom(), user.getEntreprise().getId());
         } else {
             logger.warn("   ⚠️ WARNING: User has NO enterprise assigned!");
         }
@@ -142,6 +142,28 @@ public class JWTUtil {
             }
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * Extract username from token (alias for getUsernameFromToken)
+     */
+    public String extractUsername(String token) {
+        return getUsernameFromToken(token);
+    }
+
+    /**
+     * Validate token against a given username
+     */
+    public boolean validateToken(String token, String username) {
+        String tokenUsername = getUsernameFromToken(token);
+        return tokenUsername != null && tokenUsername.equals(username) && !isTokenExpired(token);
+    }
+
+    /**
+     * Get enterprise ID from token (French spelling alias)
+     */
+    public Long getEntrepriseIdFromToken(String token) {
+        return getEnterpriseIdFromToken(token);
     }
 
     /**
