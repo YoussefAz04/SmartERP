@@ -54,9 +54,29 @@ export class ArticleVenteComponent implements OnInit {
         const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
-        this.canCreateArticle = isSuperAdmin || isAdmin;
-        this.canEditArticle = isSuperAdmin || isAdmin;
-        this.canDeleteArticle = isSuperAdmin || isAdmin;
+        const canByRole = isSuperAdmin || isAdmin;
+
+        let ventePermissionFound = false;
+        if (currentUser?.permission && Array.isArray(currentUser.permission)) {
+          const ventePerm = currentUser.permission.find((p: any) =>
+            p.moduleTitle?.toLowerCase().includes('vente')
+          );
+          if (ventePerm) {
+            ventePermissionFound = true;
+            this.canCreateArticle = ventePerm.create === true;
+            this.canEditArticle = ventePerm.update === true;
+            this.canDeleteArticle = ventePerm.delete === true;
+          }
+        }
+
+        // Fallback: if no DB permission record found, derive access from role
+        if (!ventePermissionFound) {
+          this.canCreateArticle = canByRole;
+          this.canEditArticle = canByRole;
+          this.canDeleteArticle = canByRole;
+        }
+
+        console.log('canCreateArticle (vente):', this.canCreateArticle, 'canEditArticle:', this.canEditArticle, 'canDeleteArticle:', this.canDeleteArticle);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
