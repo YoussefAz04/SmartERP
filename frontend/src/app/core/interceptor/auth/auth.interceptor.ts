@@ -23,7 +23,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     if (item) {
       try {
-        const user = JSON.parse(atob(item));
+        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
         token = user.token || null;
       } catch {
         token = null;
@@ -38,7 +38,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 || error.status === 403) {
+        if (error.status === 401) {
           localStorage.removeItem('myLSkey');
           localStorage.removeItem('entrepriseId');
           localStorage.removeItem('enterpriseId');
