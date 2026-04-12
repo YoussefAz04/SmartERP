@@ -60,14 +60,14 @@ public class ArticleAchatController {
 
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<Article> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
+    public ResponseEntity<?> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
         try {
             Article created = articleAchatService.addArticleAchat(articleAchat);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur interne lors de la création de l'article");
         }
     }
 

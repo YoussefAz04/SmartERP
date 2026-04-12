@@ -72,7 +72,7 @@ public class ArticleAchatService {
                         .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + entrepriseId));
                 article.setEntreprise(entreprise);
             } else {
-                throw new RuntimeException("Enterprise context is required to create an article. Please ensure the authenticated user belongs to an enterprise.");
+                throw new RuntimeException("Enterprise context is required to create an article.");
             }
         }
         return articleRepository.save(article);
