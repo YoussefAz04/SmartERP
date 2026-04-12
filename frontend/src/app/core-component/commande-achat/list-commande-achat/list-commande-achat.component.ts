@@ -69,7 +69,7 @@ export class ListCommandeAchatComponent implements OnInit {
   }
 
   validerCommande(id: number): void {
-    if (!confirm('Valider cette commande ? Une facture achat sera automatiquement générée.')) {
+    if (!confirm('Valider cette commande ? Une facture achat sera automatiquement générée et le stock mis à jour.')) {
       return;
     }
 
@@ -82,7 +82,7 @@ export class ListCommandeAchatComponent implements OnInit {
         this.showFactureModal = true;
         this.loadCommandes();
         console.log('✅ Commande validée ! Facture achat générée:', facture);
-        alert('✅ Commande validée ! Facture achat générée : ' + facture.referance);
+        alert('✅ Commande validée ! Facture achat générée : ' + facture.referance + '. Le stock a été mis à jour.');
       },
       error: (err) => {
         this.isLoading = false;
