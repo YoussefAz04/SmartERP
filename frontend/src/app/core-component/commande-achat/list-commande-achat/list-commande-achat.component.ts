@@ -22,7 +22,7 @@ export class ListCommandeAchatComponent implements OnInit {
   showFactureModal = false;
   errorMessage = '';
 
-  statuts = ['EN_ATTENTE', 'CONFIRMEE', 'RECUE', 'ANNULEA'];
+  statuts = ['EN_ATTENTE', 'CONFIRMEE', 'RECUE', 'ANNULEE'];
 
   constructor(
     private commandeAchatService: CommandeAchatService,
@@ -159,7 +159,7 @@ export class ListCommandeAchatComponent implements OnInit {
     switch (statut) {
       case 'CONFIRMEE': return 'badge bg-success';
       case 'RECUE': return 'badge bg-info';
-      case 'ANNULEA': return 'badge bg-danger';
+      case 'ANNULEE': return 'badge bg-danger';
       case 'EN_ATTENTE': return 'badge bg-warning text-dark';
       default: return 'badge bg-secondary';
     }
