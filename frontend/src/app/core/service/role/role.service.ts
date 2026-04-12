@@ -61,7 +61,7 @@ export class RoleService {
     try {
       const raw = localStorage.getItem('myLSkey');
       if (!raw) return [];
-      const session = JSON.parse(atob(raw));
+      const session = JSON.parse(decodeURIComponent(escape(atob(raw))));
       return Array.isArray(session.roles) ? session.roles : [];
     } catch {
       return [];

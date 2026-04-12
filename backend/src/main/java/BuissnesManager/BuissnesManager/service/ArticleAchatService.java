@@ -71,6 +71,8 @@ public class ArticleAchatService {
                 Entreprise entreprise = entrepriseRepo.findById(entrepriseId)
                         .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + entrepriseId));
                 article.setEntreprise(entreprise);
+            } else {
+                throw new RuntimeException("Enterprise context is required to create an article. Please ensure the authenticated user belongs to an enterprise.");
             }
         }
         return articleRepository.save(article);

@@ -43,7 +43,7 @@ export class AddArticleVenteComponent implements OnInit {
       unite: [''],
       sku: [''],
       markup: [null, [Validators.min(0)]],
-      articleAchatId: [null],
+      articleAchatId: [null, Validators.required],
     });
   }
 
