@@ -3,11 +3,9 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.entity.Article;
 import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.entity.Client;
-import BuissnesManager.BuissnesManager.entity.Stock;
 import BuissnesManager.BuissnesManager.repository.ArticleRepository;
 import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
-import BuissnesManager.BuissnesManager.repository.StockRepository;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,7 +28,7 @@ public class ArticleVenteService {
     private ClientRepo clientRepo;
 
     @Autowired
-    private StockRepository stockRepository;
+    private StockAutomationService stockAutomationService;
 
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
@@ -64,8 +62,7 @@ public class ArticleVenteService {
                 .orElseThrow(() -> new RuntimeException("Article non trouvé avec id: " + articleAchatId + ". Veuillez sélectionner un article valide."));
         articleVente.setArticleAchat(articleAchat);
 
-        stockRepository.findFirstByArticleAchatId(articleAchatId)
-                .ifPresent(articleVente::setStock);
+        articleVente.setStock(stockAutomationService.findOrCreateStock(articleAchat));
 
         if (clientId != null) {
             Client client = clientRepo.findById(clientId)

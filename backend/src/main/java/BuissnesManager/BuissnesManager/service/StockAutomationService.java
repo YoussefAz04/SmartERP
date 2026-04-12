@@ -154,13 +154,7 @@ public class StockAutomationService {
             BigDecimal quantite = ligne.getQuantite() != null ? ligne.getQuantite() : BigDecimal.ZERO;
             if (quantite.compareTo(BigDecimal.ZERO) <= 0) continue;
 
-            List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
-            if (stocks.isEmpty()) {
-                throw new RuntimeException(
-                        "Stock non configuré pour l'article " + article.getNom() + ". Veuillez d'abord configurer le stock.");
-            }
-
-            Stock stock = stocks.get(0);
+            Stock stock = findOrCreateStock(article);
             BigDecimal disponible = stock.getQuantiteDisponible() != null
                     ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
             BigDecimal reserve = stock.getQuantiteReserve() != null
@@ -234,7 +228,7 @@ public class StockAutomationService {
         }
     }
 
-    private Stock findOrCreateStock(Article article) {
+    public Stock findOrCreateStock(Article article) {
         List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
         if (!stocks.isEmpty()) {
             return stocks.get(0);
