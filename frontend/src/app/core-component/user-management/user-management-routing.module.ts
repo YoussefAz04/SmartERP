@@ -7,11 +7,14 @@ import { UsersComponent } from './users/users.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { AddUserComponent } from "./add-user/add-user.component";
 import { DetaisUsersComponent } from "./detais-users/detais-users.component";
+import { RoleGuard } from '../../core/guard/role/role.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: UserManagementComponent,
+    canActivateChild: [RoleGuard],
+    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
     children: [
       {
         path: 'roles-permissions',
