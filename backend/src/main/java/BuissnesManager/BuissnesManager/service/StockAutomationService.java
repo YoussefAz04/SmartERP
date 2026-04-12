@@ -236,6 +236,7 @@ public class StockAutomationService {
 
         Stock newStock = new Stock();
         newStock.setArticleAchat(article);
+        newStock.setEntreprise(article.getEntreprise());
         newStock.setQuantiteDisponible(BigDecimal.ZERO);
         newStock.setQuantiteEntree(BigDecimal.ZERO);
         newStock.setQuantiteReserve(BigDecimal.ZERO);

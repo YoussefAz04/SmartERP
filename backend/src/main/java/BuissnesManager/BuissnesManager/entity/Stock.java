@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,6 +58,11 @@ public class Stock {
     @JoinColumn(name = "article_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lignesCommandeAchat", "categorieArticle", "mesure", "entreprise"})
     private Article articleAchat;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entreprise_id", nullable = false)
+    @JsonIgnore
+    private Entreprise entreprise;
 
     @OneToOne(mappedBy = "stock", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "stock", "articleAchat", "client"})
