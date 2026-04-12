@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div class="page-btn" *ngIf="permissionUsers?.create">
+  <div class="page-btn" *ngIf="isAdmin || isSuperAdmin">
     <a (click)="addUsers()" class="btn btn-added"><i
     class="feather icon-plus-circle me-2"></i>Add New User</a>
   </div>

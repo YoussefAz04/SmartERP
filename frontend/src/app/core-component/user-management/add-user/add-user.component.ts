@@ -2,12 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../auth/service/user/user.service';
+import { ModuleService } from '../../../core/service/Module/module.service';
+import { Module } from '../../../model/module.model';
+
+interface CreateEmployeeRequest {
+  username: string;
+  email: string;
+  password: string;
+  phone?: string;
+  enterpriseId?: number | null;
+  moduleIds: number[];
+}
 
 @Component({
   selector: 'app-add-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './add-user.component.html',
   styleUrl: './add-user.component.scss'
 })
@@ -18,15 +30,20 @@ export class AddUserComponent implements OnInit {
   isSuperAdmin = false;
   currentEnterpriseId: number | null = null;
 
+  modules: Module[] = [];
+  selectedModuleIds: Set<number> = new Set();
+
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
+    private moduleService: ModuleService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadSessionData();
     this.initializeForm();
+    this.loadModules();
   }
 
   loadSessionData(): void {
@@ -53,6 +70,29 @@ export class AddUserComponent implements OnInit {
     });
   }
 
+  loadModules(): void {
+    this.moduleService.getAllModules().subscribe({
+      next: (modules) => {
+        this.modules = modules;
+      },
+      error: (err: any) => {
+        console.error('Error loading modules:', err);
+      }
+    });
+  }
+
+  toggleModule(moduleId: number): void {
+    if (this.selectedModuleIds.has(moduleId)) {
+      this.selectedModuleIds.delete(moduleId);
+    } else {
+      this.selectedModuleIds.add(moduleId);
+    }
+  }
+
+  isModuleSelected(moduleId: number): boolean {
+    return this.selectedModuleIds.has(moduleId);
+  }
+
   isFieldInvalid(fieldName: string): boolean {
     const field = this.addUserForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
@@ -64,25 +104,33 @@ export class AddUserComponent implements OnInit {
       return;
     }
 
-    if (this.currentEnterpriseId === null) {
+    if (!this.isSuperAdmin && this.currentEnterpriseId === null) {
       alert('❌ Enterprise context is missing. Please log out and log in again.');
       return;
     }
 
     this.isSubmitting = true;
-    const userData = this.addUserForm.value;
-    const enterpriseId = this.currentEnterpriseId;
+    const formValue = this.addUserForm.value;
 
-    this.userService.registerUser(userData, enterpriseId, 0).subscribe({
+    const request: CreateEmployeeRequest = {
+      username: formValue.username,
+      email: formValue.email,
+      password: formValue.password,
+      phone: formValue.phone || undefined,
+      enterpriseId: this.currentEnterpriseId,
+      moduleIds: Array.from(this.selectedModuleIds)
+    };
+
+    this.userService.createEmployeeUser(request).subscribe({
       next: (response: any) => {
-        console.log('User added successfully:', response);
-        alert('✓ User added successfully');
+        console.log('Employee created successfully:', response);
+        alert('✓ Employee created successfully');
         this.router.navigate(['/user-management/users']);
         this.isSubmitting = false;
       },
       error: (err: any) => {
-        console.error('Error adding user:', err);
-        alert('✗ Error: ' + (err.error?.message || err.message));
+        console.error('Error creating employee:', err);
+        alert('✗ Error: ' + (err.error?.message || err.error || err.message));
         this.isSubmitting = false;
       }
     });

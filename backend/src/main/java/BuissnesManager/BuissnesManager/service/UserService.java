@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,6 +30,24 @@ public class UserService {
 
     @Autowired
     private RoleRepo roleRepo ;
+
+    public User createEmployee(String username, String email, String password, String phone, Long enterpriseId) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("Un utilisateur avec ce nom existe déjà.");
+        }
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEnabled(true);
+        user.setEntreprise(entrepriseRepo.findById(enterpriseId)
+                .orElseThrow(() -> new RuntimeException("Enterprise not found")));
+        Role employeeRole = roleRepo.findByName("EMPLOYEE")
+                .orElseThrow(() -> new RuntimeException("EMPLOYEE role not found"));
+        user.setRoles(new ArrayList<>(List.of(employeeRole)));
+        return userRepository.save(user);
+    }
 
     public User createUser(UserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {

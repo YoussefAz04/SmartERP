@@ -1,11 +1,15 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.dto.CreateEmployeeRequest;
 import BuissnesManager.BuissnesManager.dto.UserRequest;
+import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.entity.UserDTO;
+import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.ImageService;
+import BuissnesManager.BuissnesManager.service.PermissionService;
 import BuissnesManager.BuissnesManager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,10 +32,63 @@ public class UserContoller {
     private JWTUtil jwtUtil;
     @Autowired
     private AuthorizationUtil authorizationUtil;
+    @Autowired
+    private PermissionService permissionService;
+    @Autowired
+    private RoleRepo roleRepo;
 
     @GetMapping("/test")
     public ResponseEntity<?> testToken() {
         return ResponseEntity.ok("Token valide");
+    }
+
+    /**
+     * Create an employee user.
+     * SUPER_ADMIN: can create for any enterprise (enterpriseId required in request body).
+     * ADMIN: can only create employees for their own enterprise.
+     * Assigns EMPLOYEE role and configures module permissions for that role.
+     */
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PostMapping("/create-employee")
+    public ResponseEntity<?> createEmployee(
+            @RequestBody CreateEmployeeRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long enterpriseId;
+            if (authorizationUtil.isSuperAdmin()) {
+                if (request.getEnterpriseId() == null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("enterpriseId is required for SUPER_ADMIN");
+                }
+                enterpriseId = request.getEnterpriseId();
+            } else {
+                enterpriseId = extractEnterpriseId(authHeader);
+                if (enterpriseId == null) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body("Enterprise context not found in token");
+                }
+            }
+
+            User createdUser = userService.createEmployee(
+                    request.getUsername(), request.getEmail(),
+                    request.getPassword(), request.getPhone(), enterpriseId);
+
+            if (request.getModuleIds() != null && !request.getModuleIds().isEmpty()) {
+                Role employeeRole = roleRepo.findByName("EMPLOYEE").orElse(null);
+                if (employeeRole != null) {
+                    permissionService.assignModulePermissionsToRole(
+                            employeeRole.getId(), request.getModuleIds());
+                }
+            }
+
+            return ResponseEntity.ok(createdUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     /**
