@@ -183,10 +183,16 @@ const routes: Routes = [
           import('./budget/budget-routing.module').then((m) => m.BudgetRoutingModule),
       },{
         path: 'article-achat',
+        canActivate: [RoleGuard],
+        canActivateChild: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./article-achat/article-achat.module').then((m) => m.ArticleAchatModule),
       },{
         path: 'article-vente',
+        canActivate: [RoleGuard],
+        canActivateChild: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./article-vente/article-vente.module').then((m) => m.ArticleVenteModule),
       },{

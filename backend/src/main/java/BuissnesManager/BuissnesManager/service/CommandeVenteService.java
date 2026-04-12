@@ -99,6 +99,15 @@ public class CommandeVenteService {
                 ligneCommandeVenteRepository.save(ligne);
             }
         }
+
+        // Reserve stock for the created order
+        try {
+            stockAutomationService.reserverStockPourCommande(saved.getId(), saved.getReference());
+        } catch (RuntimeException e) {
+            // Roll back the entire transaction if stock is insufficient
+            throw e;
+        }
+
         return saved;
     }
 
@@ -203,8 +212,22 @@ public class CommandeVenteService {
     public CommandeVente annulerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
+        if ("ANNULEE".equals(commande.getStatut())) {
+            throw new RuntimeException("Cette commande est déjà annulée.");
+        }
+        String ancienStatut = commande.getStatut();
         commande.setStatut("ANNULEE");
-        return commandeVenteRepository.save(commande);
+        CommandeVente saved = commandeVenteRepository.save(commande);
+
+        // Release stock reservations if the order was not yet delivered
+        if (!"LIVREE".equals(ancienStatut)) {
+            try {
+                stockAutomationService.annulerReservationStock(id, commande.getReference());
+            } catch (RuntimeException e) {
+                logger.warn("⚠️ Could not fully release stock reservation for commande {}: {}", id, e.getMessage());
+            }
+        }
+        return saved;
     }
 
     @Transactional

@@ -29,13 +29,13 @@ public class FactureVente {
     @Column(name = "date_achat")
     private String dateVente;
 
-    @Column(name = "montantht", precision = 15, scale = 2)
+    @Column(name = "montant_ht", precision = 15, scale = 2)
     private BigDecimal montantHT;
 
-    @Column(name = "montanttva", precision = 15, scale = 2)
+    @Column(name = "montant_tva", precision = 15, scale = 2)
     private BigDecimal montantTVA;
 
-    @Column(name = "montantttc", precision = 15, scale = 2)
+    @Column(name = "montant_ttc", precision = 15, scale = 2)
     private BigDecimal montantTTC;
 
     @Column(precision = 15, scale = 2)
