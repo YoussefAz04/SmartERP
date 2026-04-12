@@ -274,7 +274,7 @@ public class CommandeAchatService {
         if ("CONFIRMEE".equals(commande.getStatut()) || "RECUE".equals(commande.getStatut())) {
             throw new RuntimeException("Cette commande a déjà été confirmée ou reçue.");
         }
-        if ("ANNULEA".equals(commande.getStatut())) {
+        if ("ANNULEE".equals(commande.getStatut())) {
             throw new RuntimeException("Impossible de confirmer une commande annulée.");
         }
 
@@ -359,11 +359,11 @@ public class CommandeAchatService {
         CommandeAchat commande = commandeAchatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        if ("ANNULEA".equals(commande.getStatut())) {
+        if ("ANNULEE".equals(commande.getStatut())) {
             throw new RuntimeException("Cette commande est déjà annulée.");
         }
 
-        commande.setStatut("ANNULEA");
+        commande.setStatut("ANNULEE");
         logger.info("✅ Order cancelled - ID: {}", id);
         return commandeAchatRepository.save(commande);
     }
@@ -373,7 +373,7 @@ public class CommandeAchatService {
         CommandeAchat commande = commandeAchatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        if ("ANNULEA".equals(commande.getStatut())) {
+        if ("ANNULEE".equals(commande.getStatut())) {
             throw new RuntimeException("Impossible de réceptionner une commande annulée.");
         }
         if ("RECUE".equals(commande.getStatut())) {
