@@ -176,7 +176,7 @@ public class AuthController {
             List<String> roleNames = new ArrayList<>();
             if (user.getRoles() != null && !user.getRoles().isEmpty()) {
                 for (Role role : user.getRoles()) {
-                    roleNames.add(role.getName());
+                    roleNames.add(role.getName().toUpperCase());  // ✅ FIX: Convert to uppercase
                 }
             }
             response.setRoles(roleNames);
