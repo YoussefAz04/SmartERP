@@ -150,33 +150,38 @@ export class ClientComponent implements OnInit, AfterViewInit {
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
         const isEmployee = roles.includes('EMPLOYEE');
-        this.canCreateClient = isSuperAdmin || isAdmin;
-        this.canEditClient = isSuperAdmin || isAdmin;
-        this.canDeleteClient = isSuperAdmin || isAdmin;
+        const canByRole = isSuperAdmin || isAdmin;
 
         let clientPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
-          currentUser.permission.forEach((per: any) => {
-            if (per.moduleTitle?.toLowerCase().includes("gestion de client") ||
-                per.moduleTitle?.toLowerCase().includes("gestion client")) {
-              this.permissionClient = per;
-              clientPermissionFound = true;
-              console.log("Permission Client:", this.permissionClient);
-            }
-          });
+          const clientPerm = currentUser.permission.find((p: any) =>
+            p.moduleTitle?.toLowerCase().includes('client')
+          );
+          if (clientPerm) {
+            clientPermissionFound = true;
+            this.permissionClient = clientPerm;
+            this.canCreateClient = clientPerm.create === true;
+            this.canEditClient = clientPerm.update === true;
+            this.canDeleteClient = clientPerm.delete === true;
+            console.log('Permission Client:', this.permissionClient);
+          }
         }
 
         // Fallback: if no DB permission record found, derive access from role
         if (!clientPermissionFound) {
+          this.canCreateClient = canByRole;
+          this.canEditClient = canByRole;
+          this.canDeleteClient = canByRole;
           this.permissionClient = {
-            create: isSuperAdmin || isAdmin,
-            view: isSuperAdmin || isAdmin || isEmployee,
-            update: isSuperAdmin || isAdmin,
-            delete: isSuperAdmin || isAdmin,
+            create: canByRole,
+            view: canByRole || isEmployee,
+            update: canByRole,
+            delete: canByRole,
             moduleTitle: 'gestion de Client'
           } as PermissionDto;
         }
 
+        console.log('canCreateClient:', this.canCreateClient, 'canEditClient:', this.canEditClient, 'canDeleteClient:', this.canDeleteClient);
         console.log('Entreprise:', currentUser?.entreprise?.nom);
       } catch (error) {
         console.error('Error parsing user data:', error);

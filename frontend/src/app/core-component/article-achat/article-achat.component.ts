@@ -53,9 +53,29 @@ export class ArticleAchatComponent implements OnInit {
         const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
-        this.canCreateArticle = isSuperAdmin || isAdmin;
-        this.canEditArticle = isSuperAdmin || isAdmin;
-        this.canDeleteArticle = isSuperAdmin || isAdmin;
+        const canByRole = isSuperAdmin || isAdmin;
+
+        let achatPermissionFound = false;
+        if (currentUser?.permission && Array.isArray(currentUser.permission)) {
+          const achatPerm = currentUser.permission.find((p: any) =>
+            p.moduleTitle?.toLowerCase().includes('achat')
+          );
+          if (achatPerm) {
+            achatPermissionFound = true;
+            this.canCreateArticle = achatPerm.create === true;
+            this.canEditArticle = achatPerm.update === true;
+            this.canDeleteArticle = achatPerm.delete === true;
+          }
+        }
+
+        // Fallback: if no DB permission record found, derive access from role
+        if (!achatPermissionFound) {
+          this.canCreateArticle = canByRole;
+          this.canEditArticle = canByRole;
+          this.canDeleteArticle = canByRole;
+        }
+
+        console.log('canCreateArticle (achat):', this.canCreateArticle, 'canEditArticle:', this.canEditArticle, 'canDeleteArticle:', this.canDeleteArticle);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }

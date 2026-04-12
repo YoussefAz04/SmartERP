@@ -174,33 +174,38 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
         const isEmployee = roles.includes('EMPLOYEE');
-        this.canCreateFournisseur = isSuperAdmin || isAdmin;
-        this.canEditFournisseur = isSuperAdmin || isAdmin;
-        this.canDeleteFournisseur = isSuperAdmin || isAdmin;
+        const canByRole = isSuperAdmin || isAdmin;
 
         let fournisseurPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
-          currentUser.permission.forEach((per: any) => {
-            if (per.moduleTitle?.toLowerCase().includes('gestion de fournisseur') ||
-                per.moduleTitle?.toLowerCase().includes('gestion fournisseur')) {
-              this.permissionFournisseur = per;
-              fournisseurPermissionFound = true;
-              console.log('Permission Fournisseur:', this.permissionFournisseur);
-            }
-          });
+          const fournisseurPerm = currentUser.permission.find((p: any) =>
+            p.moduleTitle?.toLowerCase().includes('fournisseur')
+          );
+          if (fournisseurPerm) {
+            fournisseurPermissionFound = true;
+            this.permissionFournisseur = fournisseurPerm;
+            this.canCreateFournisseur = fournisseurPerm.create === true;
+            this.canEditFournisseur = fournisseurPerm.update === true;
+            this.canDeleteFournisseur = fournisseurPerm.delete === true;
+            console.log('Permission Fournisseur:', this.permissionFournisseur);
+          }
         }
 
         // Fallback: if no DB permission record found, derive access from role
         if (!fournisseurPermissionFound) {
+          this.canCreateFournisseur = canByRole;
+          this.canEditFournisseur = canByRole;
+          this.canDeleteFournisseur = canByRole;
           this.permissionFournisseur = {
-            create: isSuperAdmin || isAdmin,
-            view: isSuperAdmin || isAdmin || isEmployee,
-            update: isSuperAdmin || isAdmin,
-            delete: isSuperAdmin || isAdmin,
+            create: canByRole,
+            view: canByRole || isEmployee,
+            update: canByRole,
+            delete: canByRole,
             moduleTitle: 'gestion Fournisseur'
           } as PermissionDto;
         }
 
+        console.log('canCreateFournisseur:', this.canCreateFournisseur, 'canEditFournisseur:', this.canEditFournisseur, 'canDeleteFournisseur:', this.canDeleteFournisseur);
         console.log('Entreprise:', currentUser?.entreprise?.nom);
       } catch (error) {
         console.error('Error parsing user data:', error);
