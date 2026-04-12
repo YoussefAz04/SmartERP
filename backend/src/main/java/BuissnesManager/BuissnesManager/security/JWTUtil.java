@@ -2,106 +2,169 @@ package BuissnesManager.BuissnesManager.security;
 
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
-import BuissnesManager.BuissnesManager.repository.UserRepo;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.JWTVerifier;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.List;
+import javax.crypto.SecretKey;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class JWTUtil {
 
-    @Autowired
-    private UserRepo userRepo;
+    private static final Logger logger = LoggerFactory.getLogger(JWTUtil.class);
 
-    private final String secret;
-    private final Algorithm algorithm;
-    private final long expirationTime;
-    private final String issuer;
+    @Value("${security.jwt.secret:mySecretKeyForJWTTokenGenerationAndValidationPurposesOnly1234567890}")
+    private String secret;
 
-    public JWTUtil(
-            @Value("${jwt_secret:sayariMohamed123123}") String secret,
-            @Value("${jwt.expiration-time:36000000}") long expirationTime,
-            @Value("${jwt.issuer:SymatiqueBusinessManager}") String issuer) {
+    @Value("${security.jwt.expiration:86400000}")  // 24 hours in milliseconds
+    private long expiration;
 
-        this.secret = secret;
-        this.algorithm = Algorithm.HMAC256(secret);
-        this.expirationTime = expirationTime;
-        this.issuer = issuer;
-        
-        System.out.println("✅ JWTUtil initialized with secret: " + (secret != null ? "***" : "NULL"));
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String username) {
-        User user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    /**
+     * ✅ FIXED: Generate JWT token with all required claims including enterpriseId
+     */
+    public String generateToken(User user) {
+        logger.info("🔐 Generating JWT token for user: {} (ID: {})", user.getUsername(), user.getId());
 
-        List<String> roleNames = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
+        Map<String, Object> claims = new HashMap<>();
 
-        Long entrepriseId = user.getEntreprise() != null ? user.getEntreprise().getId() : null;
+        // ✅ ADD USER CLAIMS
+        claims.put("id", user.getId());
+        claims.put("username", user.getUsername());
+        claims.put("email", user.getEmail());
 
-        return JWT.create()
-                .withSubject(username)
-                .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-                .withIssuer(issuer)
-                .withClaim("roles", roleNames)
-                .withClaim("userId", user.getId())
-                .withClaim("entrepriseId", entrepriseId)
-                .sign(algorithm);
+        // ✅ ADD ENTERPRISE CLAIM (CRITICAL!)
+        if (user.getEntreprise() != null) {
+            claims.put("enterpriseId", user.getEntreprise().getId());
+            claims.put("entrepriseId", user.getEntreprise().getId());  // Also add French version
+            claims.put("enterpriseName", user.getEntreprise().getNom());
+            logger.info("   ✅ Enterprise added to JWT: {} (ID: {})", 
+                user.getEntreprise().getNom(), user.getEnterprise().getId());
+        } else {
+            logger.warn("   ⚠️ WARNING: User has NO enterprise assigned!");
+        }
+
+        // ✅ ADD ROLES/AUTHORITIES
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            List<String> roleNames = user.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toList());
+            
+            claims.put("roles", roleNames);
+            logger.info("   ✅ Roles added to JWT: {}", roleNames);
+        }
+
+        // ✅ BUILD TOKEN
+        long now = System.currentTimeMillis();
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+
+        logger.info("✅ JWT token generated successfully (expires in {} ms)", expiration);
+        return token;
     }
 
-    public Long getEntrepriseIdFromToken(String token) {
+    /**
+     * Validates JWT token and extracts claims
+     */
+    public Claims extractClaims(String token) {
         try {
-            return getVerifier().verify(token).getClaim("entrepriseId").asLong();
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
         } catch (Exception e) {
+            logger.error("❌ Invalid JWT token: {}", e.getMessage());
             return null;
         }
     }
 
+    /**
+     * Get username from token
+     */
+    public String getUsernameFromToken(String token) {
+        Claims claims = extractClaims(token);
+        return claims != null ? claims.getSubject() : null;
+    }
+
+    /**
+     * Get user ID from token
+     */
     public Long getUserIdFromToken(String token) {
-        try {
-            return getVerifier().verify(token).getClaim("userId").asLong();
-        } catch (Exception e) {
-            return null;
+        Claims claims = extractClaims(token);
+        if (claims != null && claims.containsKey("id")) {
+            Object id = claims.get("id");
+            return id instanceof Long ? (Long) id : ((Integer) id).longValue();
         }
+        return null;
     }
 
-    public String extractUsername(String token) {
-        return getVerifier().verify(token).getSubject();
+    /**
+     * ✅ NEW: Get enterprise ID from token
+     */
+    public Long getEnterpriseIdFromToken(String token) {
+        Claims claims = extractClaims(token);
+        if (claims != null && claims.containsKey("enterpriseId")) {
+            Object id = claims.get("enterpriseId");
+            if (id instanceof Long) {
+                return (Long) id;
+            } else if (id instanceof Integer) {
+                return ((Integer) id).longValue();
+            }
+        }
+        return null;
     }
 
+    /**
+     * Extract roles from token
+     */
     public List<String> extractRoles(String token) {
-        return getVerifier().verify(token).getClaim("roles").asList(String.class);
+        Claims claims = extractClaims(token);
+        if (claims != null && claims.containsKey("roles")) {
+            Object rolesObj = claims.get("roles");
+            if (rolesObj instanceof List) {
+                return (List<String>) rolesObj;
+            }
+        }
+        return new ArrayList<>();
     }
 
-    public boolean validateToken(String token, String username) {
+    /**
+     * Check if token is valid
+     */
+    public boolean isTokenValid(String token) {
         try {
-            String tokenUsername = extractUsername(token);
-            return tokenUsername.equals(username) && !isTokenExpired(token);
-        } catch (JWTVerificationException e) {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            logger.warn("⚠️ Token validation failed: {}", e.getMessage());
             return false;
         }
     }
 
-    private boolean isTokenExpired(String token) {
-        Date expiration = getVerifier().verify(token).getExpiresAt();
-        return expiration.before(new Date());
-    }
-
-    private JWTVerifier getVerifier() {
-        return JWT.require(algorithm)
-                .withIssuer(issuer)
-                .build();
+    /**
+     * Check if token is expired
+     */
+    public boolean isTokenExpired(String token) {
+        Claims claims = extractClaims(token);
+        return claims != null && claims.getExpiration().before(new Date());
     }
 }

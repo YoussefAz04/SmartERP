@@ -55,12 +55,23 @@ public class CommandeAchatService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
+    // ✅ FIXED: Proper enterprise scoping with error handling
     public List<CommandeAchat> getAllCommandes() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        
+        logger.info("🔵 getAllCommandes() called");
+        logger.info("   Enterprise ID from JWT: {}", entrepriseId);
+        
         if (entrepriseId == null) {
-            return commandeAchatRepository.findAll();
+            logger.error("❌ CRITICAL: No enterprise ID found in JWT token!");
+            logger.error("   User is not properly authenticated with an enterprise.");
+            logger.error("   Returning empty list to prevent data leaks.");
+            return List.of();  // ← Return EMPTY instead of all orders
         }
-        return commandeAchatRepository.findByEntrepriseId(entrepriseId);
+        
+        List<CommandeAchat> commandes = commandeAchatRepository.findByEntrepriseId(entrepriseId);
+        logger.info("✅ Found {} purchase orders for enterprise {}", commandes.size(), entrepriseId);
+        return commandes;
     }
 
     public Optional<CommandeAchat> getCommandeById(Long id) {
@@ -88,7 +99,9 @@ public class CommandeAchatService {
         }
 
         logger.info("🔄 Creating commande");
-        logger.info("📥 Received DTO: {}", dto);
+        logger.info("   Reference: {}", dto.getReference());
+        logger.info("   Fournisseur ID: {}", dto.getFournisseurId());
+        logger.info("   Enterprise ID: {}", resolvedEntrepriseId);
 
         // ✅ CREATE COMMANDE ENTITY
         CommandeAchat commande = new CommandeAchat();
@@ -108,7 +121,7 @@ public class CommandeAchatService {
                     return new RuntimeException("Fournisseur non trouvé: " + dto.getFournisseurId());
                 });
         commande.setFournisseur(fournisseur);
-        logger.info("✅ Supplier set: {}", fournisseur.getId());
+        logger.info("✅ Supplier set: {} (ID: {})", fournisseur.getNom(), fournisseur.getId());
 
         // ✅ SET ENTERPRISE
         Entreprise entreprise = entrepriseRepo.findById(resolvedEntrepriseId)
@@ -117,7 +130,7 @@ public class CommandeAchatService {
                     return new RuntimeException("Entreprise non trouvée: " + resolvedEntrepriseId);
                 });
         commande.setEntreprise(entreprise);
-        logger.info("✅ Enterprise set: {}", entreprise.getId());
+        logger.info("✅ Enterprise set: {} (ID: {})", entreprise.getNom(), entreprise.getId());
 
         // ✅ SAVE COMMANDE FIRST
         CommandeAchat saved = commandeAchatRepository.save(commande);
@@ -125,7 +138,7 @@ public class CommandeAchatService {
 
         // ✅ CREATE LINES WITH ARTICLE VALIDATION
         if (dto.getLignes() != null && !dto.getLignes().isEmpty()) {
-            logger.info("📝 Processing {} lines", dto.getLignes().size());
+            logger.info("📝 Processing {} line items", dto.getLignes().size());
 
             int lineCount = 0;
             for (int idx = 0; idx < dto.getLignes().size(); idx++) {
@@ -134,20 +147,20 @@ public class CommandeAchatService {
 
                 try {
                     logger.info("=== PROCESSING LINE {} ===", lineNumber);
-                    logger.info("   articleId from DTO: {}", ligneDto.getArticleAchatId());
-                    logger.info("   quantite from DTO: {}", ligneDto.getQuantite());
-                    logger.info("   prixUnitaireHT from DTO: {}", ligneDto.getPrixUnitaireHT());
+                    logger.info("   Article ID: {}", ligneDto.getArticleAchatId());
+                    logger.info("   Quantity: {}", ligneDto.getQuantite());
+                    logger.info("   Unit Price HT: {}", ligneDto.getPrixUnitaireHT());
 
                     // ✅ VALIDATE ARTICLE ID
                     if (ligneDto.getArticleAchatId() == null) {
-                        logger.error("❌ Line {}: articleId is NULL!", lineNumber);
+                        logger.error("❌ Line {}: Article ID is NULL!", lineNumber);
                         throw new RuntimeException(
-                                String.format("Ligne %d: articleId is NULL. Sélectionnez un article!", lineNumber)
+                                String.format("Ligne %d: Sélectionnez un article!", lineNumber)
                         );
                     }
 
                     if (ligneDto.getArticleAchatId() <= 0) {
-                        logger.error("❌ Line {}: articleId is INVALID: {}", lineNumber, ligneDto.getArticleAchatId());
+                        logger.error("❌ Line {}: Article ID is invalid: {}", lineNumber, ligneDto.getArticleAchatId());
                         throw new RuntimeException(
                                 String.format("Ligne %d: Article ID invalide: %d", lineNumber, ligneDto.getArticleAchatId())
                         );
@@ -163,76 +176,58 @@ public class CommandeAchatService {
                                 );
                             });
 
-                    logger.info("✅ Line {}: Article found: ID={}, Nom={}", lineNumber, article.getId(), article.getNom());
+                    logger.info("✅ Line {}: Article found - {} (ID: {})", lineNumber, article.getNom(), article.getId());
 
-                    // ✅ VALIDATE prixUnitaireHT BEFORE INSERTION
+                    // ✅ VALIDATE PRICE
                     if (ligneDto.getPrixUnitaireHT() == null) {
-                        logger.error("❌ Line {}: prixUnitaireHT is NULL from frontend DTO!", lineNumber);
-                        logger.error("   Full DTO: {}", ligneDto);
+                        logger.error("❌ Line {}: Unit price HT is NULL!", lineNumber);
                         throw new RuntimeException(
-                                String.format("Ligne %d: Le prix unitaire HT est obligatoire. Veuillez saisir un prix.", lineNumber)
+                                String.format("Ligne %d: Le prix unitaire HT est obligatoire.", lineNumber)
                         );
                     }
 
-                    // ✅ VALIDATE prixUnitaireHT > 0
                     if (ligneDto.getPrixUnitaireHT().compareTo(BigDecimal.ZERO) <= 0) {
-                        logger.error("❌ Line {}: prixUnitaireHT is <= 0: {}", lineNumber, ligneDto.getPrixUnitaireHT());
+                        logger.error("❌ Line {}: Unit price HT is invalid: {}", lineNumber, ligneDto.getPrixUnitaireHT());
                         throw new RuntimeException(
                                 String.format("Ligne %d: Le prix unitaire HT doit être supérieur à 0.", lineNumber)
                         );
                     }
 
-                    logger.info("✅ Line {}: prixUnitaireHT validated: {}", lineNumber, ligneDto.getPrixUnitaireHT());
+                    logger.info("✅ Line {}: Price validated - {}", lineNumber, ligneDto.getPrixUnitaireHT());
 
-                    // ✅ CREATE LINE ITEM: SET SCALAR FIELDS FIRST
+                    // ✅ CREATE LINE ITEM
                     LigneCommandeAchat ligne = new LigneCommandeAchat();
-
                     ligne.setQuantite(ligneDto.getQuantite() != null ? ligneDto.getQuantite() : BigDecimal.ONE);
                     ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT());
                     ligne.setTva(ligneDto.getTva() != null ? ligneDto.getTva() : BigDecimal.ZERO);
                     ligne.setMontantHT(ligneDto.getMontantHT() != null ? ligneDto.getMontantHT() : BigDecimal.ZERO);
                     ligne.setMontantTTC(ligneDto.getMontantTTC() != null ? ligneDto.getMontantTTC() : BigDecimal.ZERO);
-
-                    // ✅ SET RELATIONSHIPS AFTER SCALAR FIELDS
                     ligne.setArticle(article);
                     ligne.setCommandeAchat(saved);
 
-                    logger.info("📝 Line {}: Before save - prixUnitaireHT={}, article={}",
-                            lineNumber, ligne.getPrixUnitaireHT(), ligne.getArticle().getId());
-
                     // ✅ SAVE LINE
                     LigneCommandeAchat savedLigne = ligneCommandeAchatRepository.saveAndFlush(ligne);
-
-                    logger.info("📝 Line {}: After save - prixUnitaireHT={}, ID={}",
-                            lineNumber, savedLigne.getPrixUnitaireHT(), savedLigne.getId());
-
                     lineCount++;
-                    logger.info("✅ Line {} saved successfully", lineNumber);
-                    logger.info("=== END LINE {} ===", lineNumber);
+                    logger.info("✅ Line {} saved successfully (ID: {})", lineNumber, savedLigne.getId());
 
                 } catch (RuntimeException e) {
                     logger.error("❌ Error processing line {}: {}", lineNumber, e.getMessage());
                     throw e;
-                } catch (Exception e) {
-                    logger.error("❌ Unexpected error saving line {}: {}", lineNumber, e.getMessage(), e);
-                    throw new RuntimeException(
-                            String.format("Erreur ligne %d: %s", lineNumber, e.getMessage())
-                    );
                 }
             }
 
             if (lineCount == 0) {
                 logger.error("❌ CRITICAL: No lines were saved!");
-                throw new RuntimeException("Aucune ligne n'a pu être sauvegardée. Vérifiez vos données.");
+                throw new RuntimeException("Aucune ligne n'a pu être sauvegardée.");
             }
 
             logger.info("✅ All {} lines saved successfully", lineCount);
         } else {
-            logger.error("❌ No lines provided in commande");
+            logger.error("❌ No lines provided in order");
             throw new RuntimeException("Au moins une ligne de commande est requise.");
         }
 
-        logger.info("✅ Commande creation complete with ID: {}", saved.getId());
+        logger.info("✅ Purchase order creation complete - ID: {}", saved.getId());
         return saved;
     }
 
@@ -243,7 +238,7 @@ public class CommandeAchatService {
     @Transactional
     public CommandeAchat updateCommande(Long id, CommandeAchatDto dto) {
         CommandeAchat commande = commandeAchatRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
         if (dto.getReference() != null) commande.setReference(dto.getReference());
         if (dto.getDateCommande() != null) commande.setDateCommande(dto.getDateCommande());
@@ -266,7 +261,7 @@ public class CommandeAchatService {
     @Transactional
     public CommandeAchat updateStatut(Long id, String statut) {
         CommandeAchat commande = commandeAchatRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
         commande.setStatut(statut);
         return commandeAchatRepository.save(commande);
     }
@@ -274,17 +269,15 @@ public class CommandeAchatService {
     @Transactional
     public FactureAchat validerCommande(Long id) {
         CommandeAchat commande = commandeAchatRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        // ✅ CHECK CONSTRAINT VALID VALUES: 'BROUILLON', 'EN_ATTENTE', 'CONFIRMEE', 'RECUE', 'ANNULEE'
         if ("CONFIRMEE".equals(commande.getStatut())) {
             throw new RuntimeException("Cette commande a déjà été confirmée.");
         }
-        if ("ANNULEE".equals(commande.getStatut())) {
+        if ("ANNULEA".equals(commande.getStatut())) {
             throw new RuntimeException("Impossible de confirmer une commande annulée.");
         }
 
-        // ✅ CHANGE TO CONFIRMEE (VALID CHECK CONSTRAINT VALUE)
         commande.setStatut("CONFIRMEE");
         commandeAchatRepository.save(commande);
 
@@ -306,13 +299,12 @@ public class CommandeAchatService {
 
         FactureAchat savedFacture = factureAchatRepository.save(facture);
 
-        // ✅ CREATE INVOICE LINES FROM ORDER LINES
+        // ✅ CREATE INVOICE LINES
         List<LigneFactureAchat> savedLignes = new java.util.ArrayList<>();
         if (commande.getLignes() != null && !commande.getLignes().isEmpty()) {
-            logger.info("📝 Creating {} invoice lines for facture {}", commande.getLignes().size(), savedFacture.getId());
+            logger.info("📝 Creating {} invoice lines", commande.getLignes().size());
             for (LigneCommandeAchat ligneCommande : commande.getLignes()) {
                 LigneFactureAchat ligneFacture = new LigneFactureAchat();
-
                 ligneFacture.setDesignation(ligneCommande.getArticle() != null
                         ? ligneCommande.getArticle().getNom() : "");
                 ligneFacture.setQuantite(ligneCommande.getQuantite());
@@ -327,13 +319,11 @@ public class CommandeAchatService {
             }
         }
 
-        if (savedLignes.isEmpty()) {
-            logger.warn("⚠️ No invoice lines created for facture {}", savedFacture.getId());
-        } else {
+        if (!savedLignes.isEmpty()) {
             recalculateInvoiceAmounts(savedFacture, savedLignes);
         }
 
-        logger.info("✅ Commande {} confirmed, facture {} created with {} lines", id, savedFacture.getId(), savedLignes.size());
+        logger.info("✅ Order validated and invoice created - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
         return savedFacture;
     }
 
@@ -356,29 +346,29 @@ public class CommandeAchatService {
         facture.setMontantTotal(totalTTC.doubleValue());
 
         factureAchatRepository.save(facture);
-        logger.info("✅ Invoice amounts recalculated: HT={}, TVA={}, TTC={}", totalHT, totalTVA, totalTTC);
+        logger.info("✅ Invoice totals recalculated: HT={}, TVA={}, TTC={}", totalHT, totalTVA, totalTTC);
     }
 
     @Transactional
     public CommandeAchat annulerCommande(Long id) {
         CommandeAchat commande = commandeAchatRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        if ("ANNULEE".equals(commande.getStatut())) {
+        if ("ANNULEA".equals(commande.getStatut())) {
             throw new RuntimeException("Cette commande est déjà annulée.");
         }
 
-        commande.setStatut("ANNULEE");
-        logger.info("✅ Commande {} cancelled", id);
+        commande.setStatut("ANNULEA");
+        logger.info("✅ Order cancelled - ID: {}", id);
         return commandeAchatRepository.save(commande);
     }
 
     @Transactional
     public BonReception recevoirCommande(Long id) {
         CommandeAchat commande = commandeAchatRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        if ("ANNULEE".equals(commande.getStatut())) {
+        if ("ANNULEA".equals(commande.getStatut())) {
             throw new RuntimeException("Impossible de réceptionner une commande annulée.");
         }
         if ("RECUE".equals(commande.getStatut())) {
@@ -398,24 +388,20 @@ public class CommandeAchatService {
 
         stockAutomationService.incrementStockFromReception(id, commande.getReference());
 
-        logger.info("✅ Commande {} received, bon réception {} created, stock updated", id, savedBon.getId());
+        logger.info("✅ Order received and stock updated - Order ID: {}, Reception ID: {}", id, savedBon.getId());
         return savedBon;
     }
 
     @Transactional
     public void deleteCommande(Long id) {
         CommandeAchat commande = commandeAchatRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commande non trouvée avec id: " + id));
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        // ✅ BEST APPROACH: Check if order is CONFIRMED (has associated invoice)
-        // Prevent deletion if it has invoices (business data integrity)
         if ("CONFIRMEE".equals(commande.getStatut())) {
-            throw new RuntimeException(
-                    "Impossible de supprimer une commande confirmée. Veuillez d'abord annuler la commande."
-            );
+            throw new RuntimeException("Impossible de supprimer une commande confirmée.");
         }
 
-        // ✅ STEP 1: Delete all associated invoice lines (if any exist)
+        // ✅ DELETE INVOICE LINES
         List<LigneFactureAchat> factureLines = commande.getLignes().stream()
                 .flatMap(ligne -> ligneFactureAchatRepository.findAll().stream()
                         .filter(facLigne -> facLigne.getFactureAchat().getCommandeAchat().getId().equals(id)))
@@ -423,27 +409,24 @@ public class CommandeAchatService {
 
         if (!factureLines.isEmpty()) {
             ligneFactureAchatRepository.deleteAll(factureLines);
-            logger.info("✅ All associated invoice lines deleted for commande {}", id);
         }
 
-        // ✅ STEP 2: Delete all associated invoices
+        // ✅ DELETE INVOICES
         List<FactureAchat> invoices = factureAchatRepository.findAll().stream()
                 .filter(facture -> facture.getCommandeAchat() != null && facture.getCommandeAchat().getId().equals(id))
                 .toList();
 
         if (!invoices.isEmpty()) {
             factureAchatRepository.deleteAll(invoices);
-            logger.info("✅ All associated invoices deleted for commande {}", id);
         }
 
-        // ✅ STEP 3: Delete all order lines
+        // ✅ DELETE ORDER LINES
         if (commande.getLignes() != null && !commande.getLignes().isEmpty()) {
             ligneCommandeAchatRepository.deleteAll(commande.getLignes());
-            logger.info("✅ All lines deleted for commande {}", id);
         }
 
-        // ✅ STEP 4: Delete the order itself
+        // ✅ DELETE ORDER
         commandeAchatRepository.deleteById(id);
-        logger.info("✅ Commande {} and all associated data deleted", id);
+        logger.info("✅ Order deleted - ID: {}", id);
     }
 }

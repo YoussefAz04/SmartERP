@@ -24,6 +24,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTFilter.class);
 
+    // ✅ ThreadLocal to store enterprise ID for current request
+    public static ThreadLocal<Long> enterpriseIdThreadLocal = new ThreadLocal<>();
+
     @Autowired(required = false)
     private JWTUtil jwtUtil;
 
@@ -34,7 +37,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // ✅ Only truly public paths skip JWT validation
         boolean isPublic = path.startsWith("/test") ||
                 path.startsWith("/auth") ||
-                path.startsWith("/api/auth") ||  // ✅ ADDED
+                path.startsWith("/api/auth") ||
                 path.startsWith("/entreprise") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/swagger-resources") ||
@@ -42,11 +45,11 @@ public class JWTFilter extends OncePerRequestFilter {
                 path.startsWith("/v3/api-docs");
 
         if (isPublic) {
-            logger.info("✅ [JWTFilter] SKIPPING JWT validation for PUBLIC path: " + path);
+            logger.debug("✅ [JWTFilter] SKIPPING JWT validation for PUBLIC path: {}", path);
             return true;  // Skip this filter
         }
 
-        logger.info("🔒 [JWTFilter] VALIDATING JWT for PROTECTED path: " + path);
+        logger.debug("🔒 [JWTFilter] VALIDATING JWT for PROTECTED path: {}", path);
         return false;  // Apply filter
     }
 
@@ -56,7 +59,7 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        logger.info("🔍 [JWTFilter] Processing protected endpoint: " + path);
+        logger.info("🔍 [JWTFilter] Processing protected endpoint: {}", path);
 
         String authorizationHeader = request.getHeader("Authorization");
 
@@ -67,34 +70,62 @@ public class JWTFilter extends OncePerRequestFilter {
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     if (jwtUtil.validateToken(token, username)) {
                         List<String> roles = jwtUtil.extractRoles(token);
+                        
+                        // ✅ EXTRACT ENTERPRISE ID FROM TOKEN
+                        Long enterpriseId = jwtUtil.getEnterpriseIdFromToken(token);
+                        logger.info("✅ [JWTFilter] Enterprise ID from token: {}", enterpriseId);
+                        
+                        // ✅ STORE IN THREADLOCAL FOR SERVICE LAYER
+                        if (enterpriseId != null) {
+                            enterpriseIdThreadLocal.set(enterpriseId);
+                            logger.info("✅ [JWTFilter] Set ThreadLocal enterprise ID: {}", enterpriseId);
+                        } else {
+                            logger.warn("⚠️ [JWTFilter] No enterprise ID found in token for user: {}", username);
+                        }
+                        
+                        // ✅ SET AS REQUEST ATTRIBUTE
+                        if (enterpriseId != null) {
+                            request.setAttribute("enterpriseId", enterpriseId);
+                        }
+                        
                         List<SimpleGrantedAuthority> authorities = roles.stream()
                                 .map(r -> {
                                     String upper = r.toUpperCase();
                                     return new SimpleGrantedAuthority(upper.startsWith("ROLE_") ? upper : "ROLE_" + upper);
                                 })
                                 .collect(Collectors.toList());
+                        
                         UsernamePasswordAuthenticationToken authToken =
                                 new UsernamePasswordAuthenticationToken(username, null, authorities);
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
-                        logger.info("✅ [JWTFilter] Authentication set for user: " + username);
+                        logger.info("✅ [JWTFilter] Authentication set for user: {} with roles: {}", username, roles);
                     } else {
-                        logger.warn("⚠️ [JWTFilter] Invalid token for path: " + path);
+                        logger.warn("⚠️ [JWTFilter] Invalid token for path: {}", path);
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                         return;
                     }
                 }
             } catch (JWTVerificationException e) {
-                logger.error("❌ [JWTFilter] JWT verification failed: " + e.getMessage());
+                logger.error("❌ [JWTFilter] JWT verification failed: {}", e.getMessage());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT verification failed");
+                return;
+            } catch (Exception e) {
+                logger.error("❌ [JWTFilter] Unexpected error: {}", e.getMessage(), e);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Authentication error");
                 return;
             }
         } else {
-            logger.warn("⚠️ [JWTFilter] No Bearer token found for protected path: " + path);
+            logger.warn("⚠️ [JWTFilter] No Bearer token found for protected path: {}", path);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
             return;
         }
 
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            // ✅ CLEANUP THREADLOCAL AFTER REQUEST
+            enterpriseIdThreadLocal.remove();
+        }
     }
 }
