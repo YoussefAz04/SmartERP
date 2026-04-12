@@ -1469,7 +1469,9 @@ GO
 -- Roles
 SET IDENTITY_INSERT [dbo].[roles] ON
 INSERT [dbo].[roles] ([id], [name], [created_on], [created_at], [updated_at])
-VALUES (1, N'Super_admin', CAST(N'2025-08-26' AS Date), GETDATE(), GETDATE())
+VALUES (1, N'SUPER_ADMIN', CAST(N'2025-08-26' AS Date), GETDATE(), GETDATE())
+INSERT [dbo].[roles] ([id], [name], [created_on], [created_at], [updated_at])
+VALUES (2, N'ADMIN', CAST(N'2025-08-26' AS Date), GETDATE(), GETDATE())
 SET IDENTITY_INSERT [dbo].[roles] OFF
 GO
 
@@ -1481,9 +1483,9 @@ GO
 INSERT [dbo].[module_tittle] ([id], [module_tittle])
 VALUES (1, N'Parametrage')
 INSERT [dbo].[module_tittle] ([id], [module_tittle])
-VALUES (100, N'gestion Client')
+VALUES (100, N'gestion de Client')
 INSERT [dbo].[module_tittle] ([id], [module_tittle])
-VALUES (200, N'gestion Fournisseur')
+VALUES (200, N'gestion de Fournisseur')
 INSERT [dbo].[module_tittle] ([id], [module_tittle])
 VALUES (300, N'gestion Article')
 INSERT [dbo].[module_tittle] ([id], [module_tittle])
@@ -1510,9 +1512,9 @@ VALUES (100, N'gestion de Client', 1, 100)
 INSERT [dbo].[module] ([id], [title], [status], [module_tittle_id])
 VALUES (101, N'gestion de Categorie Client', 1, 100)
 INSERT [dbo].[module] ([id], [title], [status], [module_tittle_id])
-VALUES (200, N'gestion Fournisseur', 1, 200)
+VALUES (200, N'gestion de Fournisseur', 1, 200)
 INSERT [dbo].[module] ([id], [title], [status], [module_tittle_id])
-VALUES (201, N'gestion Categorie Fournisseur', 1, 200)
+VALUES (201, N'gestion de Categorie Fournisseur', 1, 200)
 INSERT [dbo].[module] ([id], [title], [status], [module_tittle_id])
 VALUES (300, N'gestion Article Achat', 1, 300)
 INSERT [dbo].[module] ([id], [title], [status], [module_tittle_id])
@@ -1645,6 +1647,21 @@ INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_
 VALUES (801, 1, 1, 1, 1, 801, 1)
 INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_view], [module_id], [role_id])
 VALUES (802, 1, 1, 1, 1, 802, 1)
+GO
+
+-- Permissions for ADMIN (role_id = 2) - full CRUD access to client, fournisseur, article modules
+INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_view], [module_id], [role_id])
+VALUES (1100, 1, 1, 1, 1, 100, 2)
+INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_view], [module_id], [role_id])
+VALUES (1101, 1, 1, 1, 1, 101, 2)
+INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_view], [module_id], [role_id])
+VALUES (1200, 1, 1, 1, 1, 200, 2)
+INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_view], [module_id], [role_id])
+VALUES (1201, 1, 1, 1, 1, 201, 2)
+INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_view], [module_id], [role_id])
+VALUES (1300, 1, 1, 1, 1, 300, 2)
+INSERT [dbo].[permission] ([id], [can_create], [can_delete], [can_update], [can_view], [module_id], [role_id])
+VALUES (1301, 1, 1, 1, 1, 301, 2)
 GO
 
 -- Document categories

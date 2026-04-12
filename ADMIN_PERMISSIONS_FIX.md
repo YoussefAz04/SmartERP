@@ -3,31 +3,41 @@
 ## Problem Summary
 Admin users cannot see CRUD (Create, Edit, Delete) buttons for:
 - Clients
-- Fournisseurs  
+- Fournisseurs
 - Article Achat
 - Article Vente
 
-**Root Cause**: Database permission records were not properly set up, causing the permission lookup to fail.
+**Root Causes:**
+1. `ADMIN` role did not exist in the `roles` table
+2. Role name was stored as `Super_admin` instead of `SUPER_ADMIN` (case mismatch with frontend)
+3. Module titles in `module_tittle` table were missing the word "de" (e.g., `gestion Client` instead of `gestion de Client`)
+4. Module titles for Fournisseur were also missing "de" (`gestion Fournisseur` → `gestion de Fournisseur`)
+5. No permission records existed for the ADMIN role
 
-## Solution Steps
+## Solution
 
-### Step 1: Run the Fix Script
-Execute the `fixAdminPermissions.sql` script in SQL Server Management Studio:
+### Option A — Fresh Database (scriptYoussef.sql already fixed)
+The `scriptYoussef.sql` script has been updated to include all the correct data.
+Simply drop and recreate the database using the updated script.
+
+### Option B — Existing Database (run the migration script)
+Execute `database/fixAdminPermissions.sql` in SQL Server Management Studio:
 
 1. Open **SQL Server Management Studio**
 2. Connect to your **BusinessManager** database
-3. Open the `fixAdminPermissions.sql` file
+3. Open `database/fixAdminPermissions.sql`
 4. Click **Execute** (F5)
 
 **What this script does:**
-- ✅ Creates ADMIN and SUPER_ADMIN roles if they don't exist
-- ✅ Removes duplicate module_title entries
-- ✅ Inserts correct module titles
-- ✅ Removes duplicate module entries
-- ✅ Inserts correct modules
-- ✅ Creates CRUD permissions for ADMIN role
-- ✅ Creates CRUD permissions for SUPER_ADMIN role
-- ✅ Verifies all changes
+- ✅ Renames `Super_admin` role to `SUPER_ADMIN` if needed
+- ✅ Creates `ADMIN` role if it does not exist
+- ✅ Removes duplicate/incorrect module_tittle entries
+- ✅ Inserts correct module titles (`gestion de Client`, `gestion de Fournisseur`, `gestion Article`)
+- ✅ Re-inserts correct module records
+- ✅ Re-inserts sous_module navigation entries
+- ✅ Restores SUPER_ADMIN permissions for these modules
+- ✅ Creates full CRUD permissions for the ADMIN role
+- ✅ Runs verification queries
 
 ### Step 2: Clear Browser Cache
 Clear your browser's localStorage to force a fresh login:
@@ -38,9 +48,8 @@ localStorage.clear()
 ```
 
 ### Step 3: Login Again
-1. Clear your browser cache/cookies
-2. Log out from the application
-3. Log in again as **admin user**
+1. Log out from the application
+2. Log in again as an **admin user**
 
 ### Step 4: Verify Fix
 You should now see:
@@ -54,40 +63,29 @@ You should now see:
 Open **Developer Tools** (F12) → **Console** tab and verify:
 
 ```
-User connecté: admin
 Create permission: true  ← Should be TRUE now
-Permissions: Array(40)
 ```
 
 ## What Was Fixed
 
-### Before (Broken):
-```sql
--- Database had:
-- No ADMIN role
-- Duplicate module_title IDs (100, 200, 300)
-- No permission records for ADMIN role
-- Frontend searches failed silently
-- Result: Create permission = false
-```
+### scriptYoussef.sql Changes
 
-### After (Fixed):
-```sql
--- Database now has:
-✅ ADMIN role created
-✅ SUPER_ADMIN role created
-✅ Module titles: gestion de Client, gestion de Fournisseur, gestion Article
-✅ Modules: Client, Fournisseur, Article Achat, Article Vente
-✅ Complete CRUD permissions for both ADMIN and SUPER_ADMIN roles
-✅ Results: Create permission = true
-```
+| Change | Before | After |
+|--------|--------|-------|
+| Role name | `Super_admin` | `SUPER_ADMIN` |
+| ADMIN role | Missing | Added (id=2) |
+| module_tittle 100 | `gestion Client` | `gestion de Client` |
+| module_tittle 200 | `gestion Fournisseur` | `gestion de Fournisseur` |
+| module 200 title | `gestion Fournisseur` | `gestion de Fournisseur` |
+| module 201 title | `gestion Categorie Fournisseur` | `gestion de Categorie Fournisseur` |
+| ADMIN permissions | Missing | Added for modules 100, 101, 200, 201, 300, 301 |
 
-## Database Structure
+## Database Structure After Fix
 
 ### Roles Table
 ```
 ID | Name
----|----------
+---|------------
 1  | SUPER_ADMIN
 2  | ADMIN
 ```
@@ -95,7 +93,7 @@ ID | Name
 ### Module Titles Table
 ```
 ID  | Title
-----|----------------------------
+----|---------------------------
 100 | gestion de Client
 200 | gestion de Fournisseur
 300 | gestion Article
@@ -103,94 +101,70 @@ ID  | Title
 
 ### Modules Table
 ```
-ID  | Title                          | Module Title ID
-----|--------------------------------|----------------
-100 | gestion de Client              | 100
-101 | gestion de Categorie Client    | 100
-200 | gestion de Fournisseur         | 200
+ID  | Title                           | Module Title ID
+----|---------------------------------|----------------
+100 | gestion de Client               | 100
+101 | gestion de Categorie Client     | 100
+200 | gestion de Fournisseur          | 200
 201 | gestion de Categorie Fournisseur| 200
-300 | gestion Article Achat          | 300
-301 | gestion Article Vente          | 300
+300 | gestion Article Achat           | 300
+301 | gestion Article Vente           | 300
 ```
 
-### Permissions Table
+### Permissions Table (ADMIN role)
 ```
-Module ID | Role    | Create | View | Update | Delete
-----------|---------|--------|------|--------|--------
-100       | ADMIN   | 1      | 1    | 1      | 1
-101       | ADMIN   | 1      | 1    | 1      | 1
-200       | ADMIN   | 1      | 1    | 1      | 1
-201       | ADMIN   | 1      | 1    | 1      | 1
-300       | ADMIN   | 1      | 1    | 1      | 1
-301       | ADMIN   | 1      | 1    | 1      | 1
+Permission ID | Module ID | Role  | Create | View | Update | Delete
+--------------|-----------|-------|--------|------|--------|--------
+1100          | 100       | ADMIN | 1      | 1    | 1      | 1
+1101          | 101       | ADMIN | 1      | 1    | 1      | 1
+1200          | 200       | ADMIN | 1      | 1    | 1      | 1
+1201          | 201       | ADMIN | 1      | 1    | 1      | 1
+1300          | 300       | ADMIN | 1      | 1    | 1      | 1
+1301          | 301       | ADMIN | 1      | 1    | 1      | 1
 ```
 
-## Frontend Code (How Permissions Work)
+## How the Frontend Permission Check Works
 
-### Client Component Example
+### Button Visibility
+Buttons are shown when the user's JWT contains `ADMIN` or `SUPER_ADMIN` role:
 ```typescript
-// File: frontend/src/app/core-component/client/client.component.ts
-
-loadRolePermissions(): void {
-  const item = localStorage.getItem('myLSkey');
-  if (item) {
-    const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
-    const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
-    
-    // Role-based access
-    const isSuperAdmin = roles.includes('SUPER_ADMIN');
-    const isAdmin = roles.includes('ADMIN');
-    this.canCreateClient = isSuperAdmin || isAdmin;  // ← Now TRUE!
-    this.canEditClient = isSuperAdmin || isAdmin;
-    this.canDeleteClient = isSuperAdmin || isAdmin;
-  }
-}
+const isSuperAdmin = roles.includes('SUPER_ADMIN');
+const isAdmin = roles.includes('ADMIN');
+this.canCreateClient = isSuperAdmin || isAdmin;  // ← Now TRUE for ADMIN users
+this.canEditClient   = isSuperAdmin || isAdmin;
+this.canDeleteClient = isSuperAdmin || isAdmin;
 ```
 
-### Template (How Buttons Render)
+### Template Example
 ```html
-<!-- File: frontend/src/app/core-component/client/client.component.html -->
-
-<button *ngIf="canCreateClient" type="button" class="btn-hero btn-hero-primary" (click)="addClient()">
+<button *ngIf="canCreateClient" ...>
   <i class="feather icon-plus-circle"></i> Ajouter Client
 </button>
 ```
 
 ## Troubleshooting
 
-### Issue: Buttons still not showing after running script
+### Buttons still not showing after running the script
 
-**Solution:**
-1. ✅ Verify script ran without errors
-2. ✅ Check that 6 permission records were created for ADMIN
-3. ✅ Clear browser cache: `localStorage.clear()`
-4. ✅ Log out and log in again
-5. ✅ Check browser console for `Create permission: true`
+1. ✅ Verify the script ran without errors
+2. ✅ Check that 6 permission records exist for ADMIN role (the verification query at the end of the script shows this)
+3. ✅ Clear browser localStorage: open DevTools (F12) → Console → `localStorage.clear()`
+4. ✅ Log out and log back in
+5. ✅ Verify your user account has the `ADMIN` role assigned in `user_roles`
 
-### Issue: Getting database errors
-
-**Solution:**
-- The script is **idempotent** (safe to run multiple times)
-- If you still get duplicate key errors, run script again
-- Or manually delete old records:
+### Checking user role assignment
 ```sql
-DELETE FROM [dbo].[permission] WHERE [module_id] IN (100, 101, 200, 201, 300, 301)
-DELETE FROM [dbo].[module] WHERE [id] IN (100, 101, 200, 201, 300, 301)
-DELETE FROM [dbo].[module_tittle] WHERE [id] IN (100, 200, 300)
+SELECT u.username, r.name AS role
+FROM app_user u
+JOIN user_roles ur ON u.id = ur.user_id
+JOIN roles r ON ur.role_id = r.id
+WHERE u.username = 'your_admin_username'
 ```
 
-## After This Fix
-
-You'll have:
-1. ✅ Admin permissions properly configured in database
-2. ✅ CRUD buttons visible for all admin users
-3. ✅ Consistent permission system
-4. ✅ Foundation for future role-based access control
-
-## Questions?
-
-If permissions still don't work:
-1. Check browser console (F12) for the permission values
-2. Verify ADMIN role is assigned to your user
-3. Run the verification queries in the script to check data
-4. Contact the development team with the console output
+### Getting a "duplicate key" error when running the migration
+The script uses `IF NOT EXISTS` checks to be idempotent. If you still get errors:
+```sql
+-- Manual cleanup if needed
+DELETE FROM [dbo].[permission] WHERE [id] IN (1100, 1101, 1200, 1201, 1300, 1301)
+-- Then run the migration script again
+```
