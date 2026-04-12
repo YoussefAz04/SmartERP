@@ -10,6 +10,7 @@ import BuissnesManager.BuissnesManager.repository.ClientRepo;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,20 +57,26 @@ public class ArticleVenteService {
 
     @Transactional
     public ArticleVente addArticleVente(ArticleVente articleVente, Long articleAchatId, Long clientId) {
-        if (articleAchatId != null) {
-            Article articleAchat = articleRepository.findById(articleAchatId)
-                    .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + articleAchatId));
-            articleVente.setArticleAchat(articleAchat);
-
-            stockRepository.findFirstByArticleAchatId(articleAchatId)
-                    .ifPresent(articleVente::setStock);
+        if (articleAchatId == null) {
+            throw new IllegalArgumentException("articleAchatId est requis pour créer un ArticleVente");
         }
+        Article articleAchat = articleRepository.findById(articleAchatId)
+                .orElseThrow(() -> new RuntimeException("Article non trouvé avec id: " + articleAchatId + ". Veuillez sélectionner un article valide."));
+        articleVente.setArticleAchat(articleAchat);
+
+        stockRepository.findFirstByArticleAchatId(articleAchatId)
+                .ifPresent(articleVente::setStock);
+
         if (clientId != null) {
             Client client = clientRepo.findById(clientId)
                     .orElseThrow(() -> new RuntimeException("Client non trouvé avec id: " + clientId));
             articleVente.setClient(client);
         }
-        return articleVenteRepo.save(articleVente);
+        try {
+            return articleVenteRepo.save(articleVente);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Impossible de créer l'ArticleVente: contrainte d'intégrité violée. Vérifiez que l'article avec id=" + articleAchatId + " existe.", e);
+        }
     }
 
     @Transactional
