@@ -157,7 +157,7 @@ public class StockAutomationService {
             List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
             if (stocks.isEmpty()) {
                 throw new RuntimeException(
-                        "Aucun stock enregistré pour l'article: " + article.getNom());
+                        "Stock non configuré pour l'article " + article.getNom() + ". Veuillez d'abord configurer le stock.");
             }
 
             Stock stock = stocks.get(0);
