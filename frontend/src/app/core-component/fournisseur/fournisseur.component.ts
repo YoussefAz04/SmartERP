@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { FournisseurService } from '../../core/service/fournisseur/fournisseur.service';
 import { Router, RouterOutlet } from '@angular/router';
 import { Fournisseur } from '../../model/fournisseur.model';
@@ -70,12 +70,12 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
     moduleTitle: ''
   } as PermissionDto;
 
-  constructor(private fournisseurService: FournisseurService, private router: Router) {}
+  constructor(private fournisseurService: FournisseurService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
+    this.getUserAuthData();
     this.loadFournisseurs();
     this.loadCategories();
-    this.getUserAuthData();
   }
 
   ngAfterViewInit(): void {
@@ -208,5 +208,6 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
     } else {
       console.warn('No user found in localStorage');
     }
+    this.cdr.detectChanges();
   }
 }
