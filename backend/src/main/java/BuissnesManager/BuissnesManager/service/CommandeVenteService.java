@@ -104,6 +104,7 @@ public class CommandeVenteService {
         try {
             stockAutomationService.reserverStockPourCommande(saved.getId(), saved.getReference());
         } catch (RuntimeException e) {
+            logger.error("❌ Stock reservation failed for commande {} ({}): {}", saved.getId(), saved.getReference(), e.getMessage(), e);
             // Roll back the entire transaction if stock is insufficient
             throw e;
         }

@@ -202,6 +202,16 @@ export class AddCommandeVenteComponent implements OnInit {
     this.router.navigate(['/commande-vente/list']);
   }
 
+  private extractErrorMessage(err: any): string {
+    if (err.error?.message) {
+      return err.error.message;
+    }
+    if (typeof err.error === 'string') {
+      return err.error;
+    }
+    return err.message || 'Une erreur est survenue';
+  }
+
   onSubmit(): void {
     this.submitted = true;
     if (this.commandeForm.valid) {
@@ -240,7 +250,8 @@ export class AddCommandeVenteComponent implements OnInit {
         },
         error: (err: any) => {
           this.isLoading = false;
-          alert('❌ Erreur: ' + (err.error?.message || err.message || 'Une erreur est survenue'));
+          console.error('❌ Error creating commande vente:', err);
+          alert('❌ Erreur: ' + this.extractErrorMessage(err));
         }
       });
     } else {
