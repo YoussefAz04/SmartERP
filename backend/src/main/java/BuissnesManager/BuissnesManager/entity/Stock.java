@@ -61,4 +61,12 @@ public class Stock {
     @OneToOne(mappedBy = "stock", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "stock", "articleAchat", "client"})
     private ArticleVente articleVente;
+
+    /**
+     * Returns the effective available quantity: disponible (already excludes reserved).
+     * Use this for all business logic checks against stock sufficiency.
+     */
+    public BigDecimal getAvailableQuantity() {
+        return quantiteDisponible != null ? quantiteDisponible : BigDecimal.ZERO;
+    }
 }

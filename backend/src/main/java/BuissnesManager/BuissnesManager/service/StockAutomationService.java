@@ -99,18 +99,24 @@ public class StockAutomationService {
             Stock stock = stocks.get(0);
             BigDecimal disponible = stock.getQuantiteDisponible() != null
                     ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
+            BigDecimal reserve = stock.getQuantiteReserve() != null
+                    ? stock.getQuantiteReserve() : BigDecimal.ZERO;
             BigDecimal vendue = stock.getQuantiteVendue() != null
                     ? stock.getQuantiteVendue() : BigDecimal.ZERO;
 
-            BigDecimal newDisponible = disponible.subtract(quantite);
-            if (newDisponible.compareTo(BigDecimal.ZERO) < 0) {
-                logger.warn("⚠️ Stock insufficient for article {} (available: {}, requested: {}), setting to 0",
-                        article.getId(), disponible, quantite);
-                newDisponible = BigDecimal.ZERO;
+            // Prefer releasing from reservation if available, otherwise check disponible
+            if (reserve.compareTo(quantite) >= 0) {
+                stock.setQuantiteReserve(reserve.subtract(quantite));
+                stock.setQuantiteVendue(vendue.add(quantite));
+            } else if (disponible.compareTo(quantite) >= 0) {
+                // Backward-compatible path: no prior reservation, decrement disponible directly
+                stock.setQuantiteDisponible(disponible.subtract(quantite));
+                stock.setQuantiteVendue(vendue.add(quantite));
+            } else {
+                throw new RuntimeException(
+                        String.format("Stock insuffisant pour l'article '%s' (id: %d, disponible: %s, demandé: %s)",
+                                article.getNom(), article.getId(), disponible, quantite));
             }
-
-            stock.setQuantiteDisponible(newDisponible);
-            stock.setQuantiteVendue(vendue.add(quantite));
             stockRepository.save(stock);
 
             StockMouvement mouvement = new StockMouvement();
@@ -122,11 +128,109 @@ public class StockAutomationService {
             mouvement.setStock(stock);
             stockMouvementRepo.save(mouvement);
 
-            if (stock.getSeuilMinimum() != null && newDisponible.compareTo(stock.getSeuilMinimum()) < 0) {
-                notificationService.createLowStockNotification(stock, article, article.getEntreprise(), newDisponible);
+            if (stock.getSeuilMinimum() != null && stock.getQuantiteDisponible().compareTo(stock.getSeuilMinimum()) < 0) {
+                notificationService.createLowStockNotification(stock, article, article.getEntreprise(), stock.getQuantiteDisponible());
             }
 
             logger.info("✅ Stock decremented for article {} by {}", article.getId(), quantite);
+        }
+    }
+
+    /**
+     * Reserves stock for all articles in a sales order (CommandeVente).
+     * Called when a new order is created to prevent overselling.
+     */
+    @Transactional
+    public void reserverStockPourCommande(Long commandeVenteId, String referenceCommande) {
+        List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
+
+        for (LigneCommandeVente ligne : lignes) {
+            ArticleVente articleVente = ligne.getArticleVente();
+            if (articleVente == null) continue;
+
+            Article article = articleVente.getArticleAchat();
+            if (article == null) continue;
+
+            BigDecimal quantite = ligne.getQuantite() != null ? ligne.getQuantite() : BigDecimal.ZERO;
+            if (quantite.compareTo(BigDecimal.ZERO) <= 0) continue;
+
+            List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
+            if (stocks.isEmpty()) {
+                throw new RuntimeException(
+                        "Aucun stock enregistré pour l'article: " + article.getNom());
+            }
+
+            Stock stock = stocks.get(0);
+            BigDecimal disponible = stock.getQuantiteDisponible() != null
+                    ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
+            BigDecimal reserve = stock.getQuantiteReserve() != null
+                    ? stock.getQuantiteReserve() : BigDecimal.ZERO;
+
+            if (disponible.compareTo(quantite) < 0) {
+                throw new RuntimeException(
+                        String.format("Stock insuffisant pour l'article '%s' (id: %d, disponible: %s, demandé: %s)",
+                                article.getNom(), article.getId(), disponible, quantite));
+            }
+
+            stock.setQuantiteDisponible(disponible.subtract(quantite));
+            stock.setQuantiteReserve(reserve.add(quantite));
+            stockRepository.save(stock);
+
+            StockMouvement mouvement = new StockMouvement();
+            mouvement.setTypeMouvement(TypeMouvement.RESERVATION);
+            mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
+            mouvement.setReferenceCommande(referenceCommande);
+            mouvement.setMotif("Réservation commande vente " + referenceCommande);
+            mouvement.setDateMouvement(LocalDateTime.now());
+            mouvement.setStock(stock);
+            stockMouvementRepo.save(mouvement);
+
+            logger.info("✅ Stock reserved for article {} by {}", article.getId(), quantite);
+        }
+    }
+
+    /**
+     * Releases stock reservation for all articles in a cancelled sales order.
+     * Called when a CommandeVente is cancelled.
+     */
+    @Transactional
+    public void annulerReservationStock(Long commandeVenteId, String referenceCommande) {
+        List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
+
+        for (LigneCommandeVente ligne : lignes) {
+            ArticleVente articleVente = ligne.getArticleVente();
+            if (articleVente == null) continue;
+
+            Article article = articleVente.getArticleAchat();
+            if (article == null) continue;
+
+            BigDecimal quantite = ligne.getQuantite() != null ? ligne.getQuantite() : BigDecimal.ZERO;
+            if (quantite.compareTo(BigDecimal.ZERO) <= 0) continue;
+
+            List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
+            if (stocks.isEmpty()) continue;
+
+            Stock stock = stocks.get(0);
+            BigDecimal disponible = stock.getQuantiteDisponible() != null
+                    ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
+            BigDecimal reserve = stock.getQuantiteReserve() != null
+                    ? stock.getQuantiteReserve() : BigDecimal.ZERO;
+
+            BigDecimal toRelease = reserve.min(quantite);
+            stock.setQuantiteReserve(reserve.subtract(toRelease));
+            stock.setQuantiteDisponible(disponible.add(toRelease));
+            stockRepository.save(stock);
+
+            StockMouvement mouvement = new StockMouvement();
+            mouvement.setTypeMouvement(TypeMouvement.RESERVATION);
+            mouvement.setQuantite(-(int) Math.round(toRelease.doubleValue()));
+            mouvement.setReferenceCommande(referenceCommande);
+            mouvement.setMotif("Annulation réservation commande vente " + referenceCommande);
+            mouvement.setDateMouvement(LocalDateTime.now());
+            mouvement.setStock(stock);
+            stockMouvementRepo.save(mouvement);
+
+            logger.info("✅ Stock reservation released for article {} by {}", article.getId(), toRelease);
         }
     }
 
