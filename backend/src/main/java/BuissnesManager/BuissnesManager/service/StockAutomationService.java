@@ -184,6 +184,51 @@ public class StockAutomationService {
     }
 
     /**
+     * Reverses stock increments for all articles in a cancelled purchase order.
+     * Called when a CommandeAchat in RECUE status is cancelled.
+     */
+    @Transactional
+    public void annulerStockDepuisReception(Long commandeAchatId, String referenceCommande) {
+        List<LigneCommandeAchat> lignes = ligneCommandeAchatRepository.findByCommandeAchatId(commandeAchatId);
+
+        for (LigneCommandeAchat ligne : lignes) {
+            Article article = ligne.getArticle();
+            if (article == null) continue;
+
+            BigDecimal quantite = ligne.getQuantite() != null ? ligne.getQuantite() : BigDecimal.ZERO;
+            if (quantite.compareTo(BigDecimal.ZERO) <= 0) continue;
+
+            List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
+            if (stocks.isEmpty()) {
+                logger.warn("⚠️ No stock record found for article {}, skipping reversal", article.getId());
+                continue;
+            }
+
+            Stock stock = stocks.get(0);
+            BigDecimal disponible = stock.getQuantiteDisponible() != null
+                    ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
+            BigDecimal entree = stock.getQuantiteEntree() != null
+                    ? stock.getQuantiteEntree() : BigDecimal.ZERO;
+
+            BigDecimal toReverse = disponible.min(quantite);
+            stock.setQuantiteDisponible(disponible.subtract(toReverse));
+            stock.setQuantiteEntree(entree.subtract(entree.min(quantite)));
+            stockRepository.save(stock);
+
+            StockMouvement mouvement = new StockMouvement();
+            mouvement.setTypeMouvement(TypeMouvement.SORTIE);
+            mouvement.setQuantite(-(int) Math.round(toReverse.doubleValue()));
+            mouvement.setReferenceCommande(referenceCommande);
+            mouvement.setMotif("Annulation réception commande achat " + referenceCommande);
+            mouvement.setDateMouvement(LocalDateTime.now());
+            mouvement.setStock(stock);
+            stockMouvementRepo.save(mouvement);
+
+            logger.info("✅ Stock reversed for article {} by {} (cancellation of reception)", article.getId(), toReverse);
+        }
+    }
+
+    /**
      * Releases stock reservation for all articles in a cancelled sales order.
      * Called when a CommandeVente is cancelled.
      */

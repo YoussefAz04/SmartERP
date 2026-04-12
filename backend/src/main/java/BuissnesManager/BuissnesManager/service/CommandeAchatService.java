@@ -363,9 +363,21 @@ public class CommandeAchatService {
             throw new RuntimeException("Cette commande est déjà annulée.");
         }
 
+        String ancienStatut = commande.getStatut();
         commande.setStatut("ANNULEE");
-        logger.info("✅ Order cancelled - ID: {}", id);
-        return commandeAchatRepository.save(commande);
+        CommandeAchat saved = commandeAchatRepository.save(commande);
+
+        // Reverse stock if the order was already received (stock was previously incremented)
+        if ("RECUE".equals(ancienStatut)) {
+            try {
+                stockAutomationService.annulerStockDepuisReception(id, commande.getReference());
+            } catch (RuntimeException e) {
+                logger.warn("⚠️ Could not fully reverse stock for commande {}: {}", id, e.getMessage());
+            }
+        }
+
+        logger.info("✅ Order cancelled - ID: {}, previous status: {}", id, ancienStatut);
+        return saved;
     }
 
     @Transactional
