@@ -7,6 +7,7 @@ import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,8 @@ public class ArticleService {
     private MesureRepository mesureRepository;
     @Autowired
     private EntrepriseRepo entrepriseRepo;
+    @Autowired
+    private StockRepository stockRepository;
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
@@ -50,7 +53,20 @@ public class ArticleService {
                     .orElseThrow(() -> new RuntimeException("Entreprise non trouvée: " + resolvedEntrepriseId));
             article.setEntreprise(entreprise);
         }
-        return articleRepository.save(article);
+        Article saved = articleRepository.save(article);
+
+        // Auto-create a Stock record for the new article if one doesn't exist yet
+        if (stockRepository.findFirstByArticleAchatId(saved.getId()).isEmpty()) {
+            Stock stock = new Stock();
+            stock.setArticleAchat(saved);
+            stock.setQuantiteDisponible(BigDecimal.ZERO);
+            stock.setQuantiteEntree(BigDecimal.ZERO);
+            stock.setQuantiteReserve(BigDecimal.ZERO);
+            stock.setQuantiteVendue(BigDecimal.ZERO);
+            stockRepository.save(stock);
+        }
+
+        return saved;
     }
 
     public List<Article> getAllArticles() {

@@ -105,7 +105,13 @@ public class CommandeVenteService {
             stockAutomationService.reserverStockPourCommande(saved.getId(), saved.getReference());
         } catch (RuntimeException e) {
             logger.error("❌ Stock reservation failed for commande {} ({}): {}", saved.getId(), saved.getReference(), e.getMessage(), e);
-            // Roll back the entire transaction if stock is insufficient
+            String msg = e.getMessage();
+            if (msg != null && msg.startsWith("Stock non configuré pour l'article")) {
+                throw new RuntimeException(msg);
+            }
+            if (msg != null && msg.startsWith("Aucun stock")) {
+                throw new RuntimeException("Stock non configuré pour l'article. Veuillez d'abord configurer le stock.");
+            }
             throw e;
         }
 
