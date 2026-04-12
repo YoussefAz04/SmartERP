@@ -154,6 +154,11 @@
                        title="Voir">
                       <i class="feather icon-eye"></i>
                     </button>
+                    <button *ngIf="canEditClient" type="button" class="action-btn action-btn-edit"
+                       (click)="editClient(d.id)"
+                       title="Modifier">
+                      <i class="feather icon-edit"></i>
+                    </button>
                     <button *ngIf="canDeleteClient" type="button" class="action-btn action-btn-delete"
                        (click)="deleteClient(d.id)"
                        title="Supprimer">

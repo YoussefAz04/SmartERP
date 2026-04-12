@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -36,12 +36,13 @@ export class ArticleAchatComponent implements OnInit {
 
   constructor(
     private articleAchatService: ArticleAchatService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.loadArticles();
     this.loadRolePermissions();
+    this.loadArticles();
   }
 
   loadRolePermissions(): void {
@@ -59,6 +60,7 @@ export class ArticleAchatComponent implements OnInit {
         console.error('Error parsing user data:', error);
       }
     }
+    this.cdr.detectChanges();
   }
 
   loadArticles(): void {

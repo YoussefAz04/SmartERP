@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ClientService } from "../../core/service/client/client.service";
 import { Router, RouterOutlet } from "@angular/router";
 import { Client } from "../../model/client.model";
@@ -57,11 +57,11 @@ export class ClientComponent implements OnInit, AfterViewInit {
     moduleTitle: ''
   } as PermissionDto;
 
-  constructor(private Clientservise: ClientService, private router: Router) {}
+  constructor(private Clientservise: ClientService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.loadClients();
     this.getUserAuthData();
+    this.loadClients();
   }
 
   ngAfterViewInit(): void {
@@ -183,6 +183,15 @@ export class ClientComponent implements OnInit, AfterViewInit {
       }
     } else {
       console.warn("No user found in localStorage");
+    }
+    this.cdr.detectChanges();
+  }
+
+  editClient(id: number | undefined): void {
+    if (id) {
+      this.router.navigate(['/client/editClient', id]);
+    } else {
+      alert('ID client invalide');
     }
   }
 }

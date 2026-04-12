@@ -7,6 +7,7 @@ import {ClientComponent} from "./client.component";
 import {ListCategorieClientComponent} from "./list-categorie-client/list-categorie-client.component";
 import {AddClientComponent} from "./add-client/add-client.component";
 import {AddCategorieClientComponent} from "./add-categorie-client/add-categorie-client.component";
+import {EditClientComponent} from "./edit-client/edit-client.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'listClient', pathMatch: 'full' },
@@ -22,6 +23,9 @@ const routes: Routes = [
   },{
     path: 'addCategorieClient',
     component: AddCategorieClientComponent,
+  },{
+    path: 'editClient/:id',
+    component: EditClientComponent,
   },
   
 ];
