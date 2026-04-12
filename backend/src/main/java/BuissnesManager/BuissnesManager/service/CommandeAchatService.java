@@ -271,8 +271,8 @@ public class CommandeAchatService {
         CommandeAchat commande = commandeAchatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        if ("CONFIRMEE".equals(commande.getStatut())) {
-            throw new RuntimeException("Cette commande a déjà été confirmée.");
+        if ("CONFIRMEE".equals(commande.getStatut()) || "RECUE".equals(commande.getStatut())) {
+            throw new RuntimeException("Cette commande a déjà été confirmée ou reçue.");
         }
         if ("ANNULEA".equals(commande.getStatut())) {
             throw new RuntimeException("Impossible de confirmer une commande annulée.");
@@ -323,7 +323,12 @@ public class CommandeAchatService {
             recalculateInvoiceAmounts(savedFacture, savedLignes);
         }
 
-        logger.info("✅ Order validated and invoice created - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
+        // ✅ AUTO-INCREMENT STOCK AND MARK AS RECEIVED
+        stockAutomationService.incrementStockFromReception(id, commande.getReference());
+        commande.setStatut("RECUE");
+        commandeAchatRepository.save(commande);
+
+        logger.info("✅ Order validated, invoice created and stock updated - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
         return savedFacture;
     }
 
