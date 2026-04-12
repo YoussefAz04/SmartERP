@@ -152,10 +152,11 @@ public class AuthController {
             );
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String token = jwtUtil.generateToken(userDetails.getUsername());
 
             User user = userRepo.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found after authentication"));
+
+            String token = jwtUtil.generateToken(user);
             
             System.out.println("✅ User connected: " + user.getUsername());
 
