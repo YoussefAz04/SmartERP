@@ -43,9 +43,11 @@ export class AddCommandeAchatComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     
-    // ✅ LOAD ENTERPRISES FIRST, THEN EVERYTHING ELSE
+    // ✅ READ USER'S ENTERPRISE FROM SESSION FIRST (synchronous)
+    this.getEntrepriseId();
+    
+    // ✅ THEN LOAD ENTERPRISES AND OTHER DATA
     this.loadEntreprises(() => {
-      this.getEntrepriseId();
       this.loadFournisseurs();
       this.loadArticles();
       this.checkEditMode();
@@ -75,9 +77,12 @@ export class AddCommandeAchatComponent implements OnInit {
         this.entreprises = data;
         console.log('✅ Enterprises loaded:', this.entreprises);
         
-        // Auto-select first enterprise if none selected
+        // Auto-select first enterprise only if user has no enterprise assigned
         if (this.entreprises.length > 0 && !this.currentEntrepriseId) {
           this.changeEnterprise(this.entreprises[0].id);
+        } else if (this.currentEntrepriseId) {
+          // Update name now that enterprises are loaded
+          this.updateSelectedEnterpriseName();
         }
         
         // Call callback after loading
@@ -93,14 +98,21 @@ export class AddCommandeAchatComponent implements OnInit {
   }
 
   getEntrepriseId(): void {
+    // Check English key first (set by signin for compatibility)
     let enterpriseId = localStorage.getItem('enterpriseId');
+    
+    // Fallback to French key (also set by signin)
+    if (!enterpriseId) {
+      enterpriseId = localStorage.getItem('entrepriseId');
+    }
     
     if (!enterpriseId) {
       const myLSkey = localStorage.getItem('myLSkey');
       if (myLSkey) {
         try {
           const decoded = JSON.parse(decodeURIComponent(escape(atob(myLSkey))));
-          enterpriseId = decoded.enterpriseId?.toString();
+          // myLSkey stores the French key 'entrepriseId'
+          enterpriseId = decoded.entrepriseId?.toString();
           console.log('📦 Decoded token:', decoded);
         } catch (e) {
           console.error('❌ Failed to decode myLSkey:', e);
