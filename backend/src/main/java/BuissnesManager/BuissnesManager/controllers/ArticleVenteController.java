@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.service.ArticleVenteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -55,14 +56,16 @@ public class ArticleVenteController {
             @RequestParam(required = false) Long clientId) {
         try {
             if (articleAchatId == null) {
-                return ResponseEntity.badRequest().body("articleAchatId is required");
+                return ResponseEntity.badRequest().body("articleAchatId est requis. Veuillez sélectionner un article achat valide.");
             }
             ArticleVente created = articleVenteService.addArticleVente(articleVente, articleAchatId, clientId);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("Contrainte d'intégrité violée: l'article avec id=" + articleAchatId + " n'existe pas ou la référence est invalide.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating article vente");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la création de l'article vente");
         }
     }
 
