@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -45,9 +47,20 @@ public class CommandeVenteController {
 
             CommandeVente created = commandeVenteService.createCommande(dto);
             return ResponseEntity.ok(created);
+        } catch (RuntimeException e) {
+            logger.error("❌ Error creating commande vente: {}", e.getMessage(), e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("details", e.getCause() != null ? e.getCause().getMessage() : null);
+            errorResponse.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
-            logger.error("Error creating commande: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            logger.error("❌ Unexpected error creating commande vente: {}", e.getMessage(), e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Une erreur système est survenue");
+            errorResponse.put("details", e.getMessage());
+            errorResponse.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
