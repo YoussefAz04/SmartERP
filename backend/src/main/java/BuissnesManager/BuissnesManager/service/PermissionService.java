@@ -72,7 +72,34 @@ public class PermissionService {
             return dto;
         }).collect(Collectors.toList());
     }
+    @Transactional
+    public void assignModulePermissionsToRole(Long roleId, List<Long> moduleIds) {
+        Role role = roleRepo.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
+        for (Long moduleId : moduleIds) {
+            Module module = moduleRepo.findById(moduleId)
+                    .orElseThrow(() -> new RuntimeException("Module not found: " + moduleId));
+
+            Permission existingPermission = permissionRepo.findByModuleIdAndRoleId(moduleId, roleId);
+            if (existingPermission != null) {
+                existingPermission.setCreate(true);
+                existingPermission.setUpdate(true);
+                existingPermission.setDelete(true);
+                existingPermission.setView(true);
+                permissionRepo.save(existingPermission);
+            } else {
+                Permission permission = new Permission();
+                permission.setCreate(true);
+                permission.setUpdate(true);
+                permission.setDelete(true);
+                permission.setView(true);
+                permission.setModule(module);
+                permission.setRole(role);
+                permissionRepo.save(permission);
+            }
+        }
+    }
 
 
 

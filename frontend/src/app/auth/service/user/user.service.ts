@@ -21,6 +21,17 @@ export class UserService {
     return this.http.post<UserRequest>(`${this.apiUrl}/register`, request, { params });
   }
 
+  createEmployeeUser(request: {
+    username: string;
+    email: string;
+    password: string;
+    phone?: string;
+    enterpriseId?: number | null;
+    moduleIds: number[];
+  }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/create-employee`, request);
+  }
+
   getAllUsers(): Observable<UserRequest[]> {
     return this.http.get<UserRequest[]>(`${this.apiUrl}/getAllUsers`);
   }

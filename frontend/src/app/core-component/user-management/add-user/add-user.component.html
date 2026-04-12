@@ -1,10 +1,10 @@
 <div class="page-header">
   <div class="row">
     <div class="col">
-      <h3 class="page-title">Add New User</h3>
+      <h3 class="page-title">Add New Employee</h3>
       <ul class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
-        <li class="breadcrumb-item active">Add User</li>
+        <li class="breadcrumb-item active">Add Employee</li>
       </ul>
     </div>
   </div>
@@ -15,7 +15,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title">
-          <h5>Add New User</h5>
+          <h5>Add New Employee</h5>
         </div>
       </div>
       <div class="card-body">
@@ -29,8 +29,8 @@
               id="username"
               formControlName="username"
               placeholder="Enter username">
-            <div class="invalid-feedback" *ngIf="isFieldInvalid('username')">
-              Username is required
+            <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('username')">
+              Username is required (min 3 characters)
             </div>
           </div>
 
@@ -43,7 +43,7 @@
               id="email"
               formControlName="email"
               placeholder="Enter email">
-            <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+            <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('email')">
               Valid email is required
             </div>
           </div>
@@ -57,8 +57,8 @@
               id="password"
               formControlName="password"
               placeholder="Enter password">
-            <div class="invalid-feedback" *ngIf="isFieldInvalid('password')">
-              Password is required
+            <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('password')">
+              Password is required (min 6 characters)
             </div>
           </div>
 
@@ -73,13 +73,38 @@
               placeholder="Enter phone number">
           </div>
 
+          <!-- Module Permissions -->
+          <div class="form-group mb-4" *ngIf="modules.length > 0">
+            <label class="form-label fw-semibold">Module Permissions</label>
+            <p class="text-muted small mb-2">Select the modules this employee can access (full CRUD access).</p>
+            <div class="row g-2">
+              <div class="col-sm-6 col-md-4" *ngFor="let module of modules">
+                <div class="form-check border rounded p-2" 
+                     [class.border-primary]="isModuleSelected(module.id)"
+                     [class.bg-light]="isModuleSelected(module.id)">
+                  <input 
+                    class="form-check-input"
+                    type="checkbox"
+                    [id]="'module-' + module.id"
+                    [checked]="isModuleSelected(module.id)"
+                    (change)="toggleModule(module.id)">
+                  <label class="form-check-label" [for]="'module-' + module.id">
+                    {{ module.title }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Buttons -->
           <div class="form-group d-flex gap-2">
             <button 
               type="submit" 
               class="btn btn-primary"
               [disabled]="isSubmitting || addUserForm.invalid">
-              <i class="feather icon-save"></i> Save
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              <i *ngIf="!isSubmitting" class="feather icon-save me-1"></i>
+              {{ isSubmitting ? 'Creating...' : 'Create Employee' }}
             </button>
             <button 
               type="button" 
