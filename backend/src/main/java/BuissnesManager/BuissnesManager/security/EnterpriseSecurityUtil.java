@@ -1,7 +1,5 @@
 package BuissnesManager.BuissnesManager.security;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,43 +10,35 @@ public class EnterpriseSecurityUtil {
     private static final Logger logger = LoggerFactory.getLogger(EnterpriseSecurityUtil.class);
 
     /**
-     * Extracts the enterprise ID from the current authenticated user's context.
-     * 
-     * @return Enterprise ID if user is authenticated and has enterprise, null otherwise
+     * Extracts the enterprise ID from the current request context.
+     * Reads from the ThreadLocal populated by {@link JWTFilter} during JWT validation.
+     * The ThreadLocal is cleared by JWTFilter after each request, so there is no
+     * risk of enterprise ID leaking between requests.
+     *
+     * @return Enterprise ID if present in the JWT token, null otherwise
      */
     public Long getContextEnterpriseId() {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            
-            if (authentication == null || !authentication.isAuthenticated()) {
-                logger.warn("⚠️ User is not authenticated");
-                return null;
+            Long enterpriseId = JWTFilter.getCurrentEnterpriseId();
+            if (enterpriseId != null) {
+                logger.debug("✅ Enterprise ID from request context: {}", enterpriseId);
+                return enterpriseId;
             }
 
-            // ✅ Get the username from authentication principal
-            String username = authentication.getPrincipal().toString();
-            
-            logger.debug("👤 Authenticated user: {}", username);
-            return null;  // Will be set by JWTUtil in the filter
-            
+            logger.warn("⚠️ No enterprise ID found in request context");
+            return null;
+
         } catch (Exception e) {
-            logger.error("❌ Error extracting enterprise ID from authentication context", e);
+            logger.error("❌ Error extracting enterprise ID from request context", e);
             return null;
         }
     }
 
     /**
-     * Gets enterprise ID from request context (set by JWTFilter)
-     * This is a workaround since we're using Auth0 JWT library
+     * Gets enterprise ID from request context (set by JWTFilter).
+     * Alias for {@link #getContextEnterpriseId()}.
      */
     public Long getEnterpriseIdFromRequest() {
-        try {
-            // This would need to be set as a request attribute by JWTFilter
-            // For now, return from ThreadLocal or request context
-            return null;
-        } catch (Exception e) {
-            logger.error("❌ Error getting enterprise ID from request", e);
-            return null;
-        }
+        return getContextEnterpriseId();
     }
 }

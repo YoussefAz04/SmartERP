@@ -24,8 +24,17 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTFilter.class);
 
-    // ✅ ThreadLocal to store enterprise ID for current request
-    public static ThreadLocal<Long> enterpriseIdThreadLocal = new ThreadLocal<>();
+    // ThreadLocal to store enterprise ID for the duration of the current request
+    private static final ThreadLocal<Long> enterpriseIdThreadLocal = new ThreadLocal<>();
+
+    /**
+     * Returns the enterprise ID associated with the current request, as extracted
+     * from the JWT token during filter processing. Returns {@code null} if the
+     * current request has no enterprise context (e.g. public endpoints).
+     */
+    public static Long getCurrentEnterpriseId() {
+        return enterpriseIdThreadLocal.get();
+    }
 
     @Autowired(required = false)
     private JWTUtil jwtUtil;
