@@ -748,6 +748,12 @@ export class routes {
   public static get qrCode(): string {
     return this.inventory + '/qrcode';
   }
+  public static get stockList(): string {
+    return this.stock + '/list';
+  }
+  public static get stockAdjust(): string {
+    return this.stock + '/adjust';
+  }
   public static get manageStocks(): string {
     return this.stock + '/manage-stocks';
   }
@@ -963,6 +969,18 @@ public static get registerbyStepper(): string {
   }
   public static get addCommandeVente(): string {
     return this.commandeVente + '/add';
+  }
+  public static get articleVente(): string {
+    return this.core + '/article-vente';
+  }
+  public static get articleVenteList(): string {
+    return this.articleVente + '/listArticleVente';
+  }
+  public static get articleAchat(): string {
+    return this.core + '/article-achat';
+  }
+  public static get articleAchatList(): string {
+    return this.articleAchat + '/listArticleAchat';
   }
   // core pages child routes *ends*
 }
