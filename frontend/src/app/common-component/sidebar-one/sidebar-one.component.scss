@@ -136,7 +136,7 @@ $transition:       all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
               width: 36px;
               height: 36px;
               border-radius: 8px;
-              background: rgba(108, 117, 125, 0.08);
+              background: rgba($icon-default, 0.08);
               flex-shrink: 0;
               transition: $transition;
 
