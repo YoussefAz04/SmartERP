@@ -161,7 +161,7 @@ public class DashboardService {
         // --- Top Products ---
         List<Object[]> topProductsRaw = commandeVenteRepository.getTopProducts(entrepriseId);
         List<TopProductDto> topProducts = new ArrayList<>();
-        int productLimit = Math.min(5, topProductsRaw.size());
+        int productLimit = Math.min(10, topProductsRaw.size());
         for (int i = 0; i < productLimit; i++) {
             Object[] row = topProductsRaw.get(i);
             String productName = row[0] != null ? row[0].toString() : "Unknown";
