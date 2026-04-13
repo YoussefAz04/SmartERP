@@ -86,12 +86,75 @@ export interface KpiSummary {
   avgOrderValue: number;
 }
 
+export interface PeriodComparison {
+  current: number;
+  previous: number;
+  change: number;
+  changePercent: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
+export interface ComparisonMetrics {
+  mtdVsLtd: PeriodComparison;
+  ytdVsLastYear: PeriodComparison;
+}
+
+export interface NameValue {
+  name: string;
+  value: number;
+}
+
+export interface StatusCount {
+  status: string;
+  count: number;
+  amount?: number;
+}
+
+export interface RevenueDetails {
+  topProducts: NameValue[];
+  topCustomers: NameValue[];
+  paymentMethods: StatusCount[];
+}
+
+export interface OrdersDetails {
+  byStatus: StatusCount[];
+  totalOrders: number;
+  avgOrderValue: number;
+  totalRevenue: number;
+}
+
+export interface ProductsDetails {
+  totalSKUs: number;
+  lowStockCount: number;
+  outOfStockCount: number;
+  totalStockValue: number;
+  topProducts: NameValue[];
+  slowMovers: NameValue[];
+}
+
+export interface ForecastDetails {
+  accuracy: number;
+  predictedNextMonth: number;
+  predictedNext3Months: number;
+  predictedNext6Months: number;
+  methodology: string;
+}
+
+export interface KpiDetails {
+  revenue: RevenueDetails;
+  orders: OrdersDetails;
+  products: ProductsDetails;
+  forecast: ForecastDetails;
+}
+
 export interface AiDashboard {
   salesAnalysis: SalesAnalysis;
   forecast: Forecast;
   productIntelligence: ProductIntelligence;
   recommendations: Recommendation[];
   kpiSummary: KpiSummary;
+  comparison?: ComparisonMetrics;
+  kpiDetails?: KpiDetails;
 }
 
 @Injectable({

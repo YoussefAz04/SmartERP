@@ -19,6 +19,7 @@ import {
   Recommendation,
 } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
 import { routes } from 'src/app/core/helpers/routes';
+import { KpiModalType } from './kpi-detail-modal/kpi-detail-modal.component';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;
@@ -53,6 +54,8 @@ export class AiDashboardComponent implements OnInit {
   public error = false;
   public isRefreshing = false;
   public today = new Date();
+
+  public activeModal: KpiModalType = null;
 
   public salesChartOptions: Partial<ChartOptions> = {};
   public forecastChartOptions: Partial<ChartOptions> = {};
@@ -211,6 +214,14 @@ export class AiDashboardComponent implements OnInit {
     if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + 'M';
     if (value >= 1_000) return (value / 1_000).toFixed(1) + 'k';
     return value.toFixed(2);
+  }
+
+  openModal(type: KpiModalType): void {
+    this.activeModal = type;
+  }
+
+  closeModal(): void {
+    this.activeModal = null;
   }
 
   navigateFromRecommendation(rec: Recommendation): void {

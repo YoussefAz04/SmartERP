@@ -1,0 +1,240 @@
+<div class="modal-backdrop" *ngIf="modalType" (click)="onBackdropClick($event)">
+  <div class="modal-container" role="dialog" [attr.aria-label]="modalTitle">
+
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title-row">
+        <div class="modal-icon">
+          <i [class]="modalIcon"></i>
+        </div>
+        <h3 class="modal-title">{{ modalTitle }}</h3>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-export" (click)="exportCsv()" title="Exporter CSV">
+          <i class="fas fa-download me-1"></i> Exporter
+        </button>
+        <button class="btn-close-modal" (click)="close()" title="Fermer">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="modal-tabs" *ngIf="tabs.length > 1">
+      <button class="tab-btn"
+              *ngFor="let tab of tabs; let i = index"
+              [class.active]="activeTab === i"
+              (click)="setTab(i)">
+        {{ tab }}
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+
+      <!-- ===== REVENUE MODAL ===== -->
+      <ng-container *ngIf="modalType === 'revenue' && kpiDetails?.revenue">
+
+        <!-- Tab 0: Top Products -->
+        <div *ngIf="activeTab === 0">
+          <p class="modal-subtitle"><i class="fas fa-trophy me-2 text-warning"></i>Top Produits par Revenu</p>
+          <div *ngIf="kpiDetails.revenue.topProducts?.length; else noData">
+            <table class="modal-table">
+              <thead>
+                <tr><th>#</th><th>Produit</th><th>Revenu</th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of kpiDetails.revenue.topProducts; let i = index">
+                  <td><span class="rank-badge-sm">{{ i + 1 }}</span></td>
+                  <td>{{ p.name }}</td>
+                  <td class="value-cell">{{ formatCurrency(p.value) }} DA</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 1: Top Customers -->
+        <div *ngIf="activeTab === 1">
+          <p class="modal-subtitle"><i class="fas fa-users me-2 text-info"></i>Top Clients par Revenu</p>
+          <div *ngIf="kpiDetails.revenue.topCustomers?.length; else noData">
+            <table class="modal-table">
+              <thead>
+                <tr><th>#</th><th>Client</th><th>Revenu</th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let c of kpiDetails.revenue.topCustomers; let i = index">
+                  <td><span class="rank-badge-sm">{{ i + 1 }}</span></td>
+                  <td>{{ c.name }}</td>
+                  <td class="value-cell">{{ formatCurrency(c.value) }} DA</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- ===== ORDERS MODAL ===== -->
+      <ng-container *ngIf="modalType === 'orders' && kpiDetails?.orders">
+
+        <!-- Tab 0: Status Breakdown -->
+        <div *ngIf="activeTab === 0">
+          <p class="modal-subtitle"><i class="fas fa-tasks me-2 text-primary"></i>Répartition par Statut</p>
+          <div *ngIf="kpiDetails.orders.byStatus?.length; else noData">
+            <div class="status-grid">
+              <div class="status-card" *ngFor="let s of kpiDetails.orders.byStatus">
+                <span class="status-name">{{ s.status }}</span>
+                <span class="status-count">{{ s.count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 1: Overview -->
+        <div *ngIf="activeTab === 1">
+          <p class="modal-subtitle"><i class="fas fa-chart-pie me-2 text-success"></i>Vue d'ensemble</p>
+          <div class="overview-grid">
+            <div class="overview-card">
+              <span class="ov-label">Total Commandes</span>
+              <span class="ov-value">{{ kpiDetails.orders.totalOrders | number }}</span>
+            </div>
+            <div class="overview-card">
+              <span class="ov-label">Valeur Moy. Commande</span>
+              <span class="ov-value">{{ formatCurrency(kpiDetails.orders.avgOrderValue) }} DA</span>
+            </div>
+            <div class="overview-card">
+              <span class="ov-label">Revenu Total</span>
+              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.orders.totalRevenue) }} DA</span>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- ===== PRODUCTS MODAL ===== -->
+      <ng-container *ngIf="modalType === 'products' && kpiDetails?.products">
+
+        <!-- Tab 0: Stock Levels -->
+        <div *ngIf="activeTab === 0">
+          <p class="modal-subtitle"><i class="fas fa-boxes me-2 text-success"></i>Niveaux de Stock</p>
+          <div class="overview-grid">
+            <div class="overview-card">
+              <span class="ov-label">Total Articles (SKUs)</span>
+              <span class="ov-value">{{ kpiDetails.products.totalSKUs | number }}</span>
+            </div>
+            <div class="overview-card">
+              <span class="ov-label">Alertes Stock Faible</span>
+              <span class="ov-value text-warning">{{ kpiDetails.products.lowStockCount | number }}</span>
+            </div>
+            <div class="overview-card">
+              <span class="ov-label">Ruptures de Stock</span>
+              <span class="ov-value text-danger">{{ kpiDetails.products.outOfStockCount | number }}</span>
+            </div>
+            <div class="overview-card">
+              <span class="ov-label">Valeur Total Stock</span>
+              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.products.totalStockValue) }} DA</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 1: Fast/Slow movers -->
+        <div *ngIf="activeTab === 1">
+          <p class="modal-subtitle"><i class="fas fa-rocket me-2 text-primary"></i>Top Produits Vendus</p>
+          <div *ngIf="kpiDetails.products.topProducts?.length; else noData">
+            <table class="modal-table">
+              <thead>
+                <tr><th>#</th><th>Produit</th><th>Qté Vendue</th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of kpiDetails.products.topProducts; let i = index">
+                  <td><span class="rank-badge-sm">{{ i + 1 }}</span></td>
+                  <td>{{ p.name }}</td>
+                  <td class="value-cell">{{ p.value | number }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="modal-subtitle mt-3" *ngIf="kpiDetails.products.slowMovers?.length">
+            <i class="fas fa-snooze me-2 text-warning"></i>Produits à Rotation Lente
+          </p>
+          <div *ngIf="kpiDetails.products.slowMovers?.length">
+            <table class="modal-table">
+              <thead>
+                <tr><th>#</th><th>Produit</th><th>Qté Vendue</th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of kpiDetails.products.slowMovers; let i = index">
+                  <td><span class="rank-badge-sm rank-slow">{{ i + 1 }}</span></td>
+                  <td>{{ p.name }}</td>
+                  <td class="value-cell text-warning">{{ p.value | number }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- ===== FORECAST MODAL ===== -->
+      <ng-container *ngIf="modalType === 'forecast' && kpiDetails?.forecast">
+
+        <!-- Tab 0: Forecast Values -->
+        <div *ngIf="activeTab === 0">
+          <p class="modal-subtitle"><i class="fas fa-magic me-2 text-primary"></i>Prévisions de Ventes</p>
+          <div class="overview-grid">
+            <div class="overview-card">
+              <span class="ov-label">Mois prochain</span>
+              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.forecast.predictedNextMonth) }} DA</span>
+            </div>
+            <div class="overview-card">
+              <span class="ov-label">3 prochains mois</span>
+              <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext3Months) }} DA</span>
+            </div>
+            <div class="overview-card">
+              <span class="ov-label">6 prochains mois</span>
+              <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext6Months) }} DA</span>
+            </div>
+          </div>
+          <div class="methodology-info" *ngIf="kpiDetails.forecast.methodology">
+            <i class="fas fa-info-circle me-2"></i>
+            Méthode: <strong>{{ kpiDetails.forecast.methodology }}</strong>
+          </div>
+        </div>
+
+        <!-- Tab 1: Accuracy -->
+        <div *ngIf="activeTab === 1">
+          <p class="modal-subtitle"><i class="fas fa-bullseye me-2 text-success"></i>Précision du Modèle</p>
+          <div class="accuracy-display">
+            <div class="accuracy-ring">
+              <span class="accuracy-value">{{ kpiDetails.forecast.accuracy | number:'1.0-0' }}%</span>
+              <span class="accuracy-label">Score de fiabilité</span>
+            </div>
+            <div class="accuracy-description">
+              <p *ngIf="kpiDetails.forecast.accuracy >= 75" class="text-success">
+                <i class="fas fa-check-circle me-1"></i> Haute fiabilité – Prévisions très fiables
+              </p>
+              <p *ngIf="kpiDetails.forecast.accuracy >= 50 && kpiDetails.forecast.accuracy < 75" class="text-warning">
+                <i class="fas fa-exclamation-triangle me-1"></i> Fiabilité modérée – Utiliser avec prudence
+              </p>
+              <p *ngIf="kpiDetails.forecast.accuracy < 50" class="text-danger">
+                <i class="fas fa-times-circle me-1"></i> Fiabilité faible – Données insuffisantes
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+    </div><!-- /modal-body -->
+
+  </div><!-- /modal-container -->
+</div>
+
+<!-- No data template -->
+<ng-template #noData>
+  <div class="no-data-modal">
+    <i class="fas fa-info-circle"></i>
+    <p>Aucune donnée disponible</p>
+  </div>
+</ng-template>

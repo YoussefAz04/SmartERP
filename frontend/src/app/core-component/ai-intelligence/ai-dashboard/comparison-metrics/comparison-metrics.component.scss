@@ -1,0 +1,159 @@
+.comparison-section {
+  margin-bottom: 24px;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.comparison-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.comparison-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a2e;
+
+  i {
+    color: #4361ee;
+    font-size: 1rem;
+  }
+}
+
+.period-badge {
+  background: #eef2ff;
+  color: #4361ee;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.comparison-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.period-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.period-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.period-label {
+  font-size: 0.78rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.period-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  &.current {
+    color: #4361ee;
+  }
+
+  &.previous {
+    color: #aaa;
+  }
+}
+
+.progress-track {
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+
+  &.current-bar {
+    background: linear-gradient(90deg, #4361ee, #7209b7);
+  }
+
+  &.previous-bar {
+    background: #dee2e6;
+  }
+}
+
+.comparison-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 14px;
+}
+
+.change-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  &.change-up {
+    background: #e8f9ef;
+    color: #06d6a0;
+  }
+
+  &.change-down {
+    background: #fff5f5;
+    color: #ef476f;
+  }
+
+  &.change-stable {
+    background: #f8f9fc;
+    color: #888;
+  }
+}
+
+.change-amount {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.text-success { color: #06d6a0; }
+.text-danger { color: #ef476f; }
