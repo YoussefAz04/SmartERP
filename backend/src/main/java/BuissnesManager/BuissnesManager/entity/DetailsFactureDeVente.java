@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+// Table name preserved as-is for backward compatibility with existing DB; rename requires a DB migration
 @Table(name = "DetaisFactureDeVente")
 @AllArgsConstructor
 @NoArgsConstructor
