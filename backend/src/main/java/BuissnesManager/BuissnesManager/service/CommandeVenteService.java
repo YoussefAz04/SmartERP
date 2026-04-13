@@ -108,6 +108,25 @@ public class CommandeVenteService {
             throw e;
         }
 
+        // ✅ AUTO-CREATE preliminary FactureDeVente (EN_ATTENTE) so it appears in the factures list immediately
+        FactureDeVente factureDeVente = new FactureDeVente();
+        factureDeVente.setDateAchat(saved.getDateCommande() != null ? saved.getDateCommande().toString() : LocalDate.now().toString());
+        factureDeVente.setMontantHT(dto.getMontantHT() != null ? dto.getMontantHT().doubleValue() : 0.0);
+        factureDeVente.setMontantTVA(dto.getMontantTVA() != null ? dto.getMontantTVA().doubleValue() : 0.0);
+        factureDeVente.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
+        factureDeVente.setMontantTotal(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
+        factureDeVente.setStatut("EN_ATTENTE");
+        factureDeVente.setModePaiement("A_DEFINIR");
+        factureDeVente.setDescription("Facture générée depuis la commande " + saved.getReference());
+        factureDeVente.setClient(saved.getClient());
+        factureDeVente.setEntreprise(saved.getEntreprise());
+        factureDeVente.setCommandeVente(saved);
+        FactureDeVente savedFacture = factureDeVenteRepository.save(factureDeVente);
+        String referance = "FV-" + String.format("%04d", savedFacture.getId());
+        savedFacture.setReferance(referance);
+        factureDeVenteRepository.save(savedFacture);
+        logger.info("✅ Preliminary FactureDeVente created for commande {} (enterprise: {})", saved.getId(), saved.getEntreprise() != null ? saved.getEntreprise().getId() : null);
+
         return saved;
     }
 
@@ -153,6 +172,11 @@ public class CommandeVenteService {
         if (!commandeVenteRepository.existsById(id)) {
             throw new RuntimeException("CommandeVente non trouvée avec id: " + id);
         }
+        // Nullify commandeVente reference on associated FactureDeVente before deleting commande
+        factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
+            facture.setCommandeVente(null);
+            factureDeVenteRepository.save(facture);
+        });
         ligneCommandeVenteRepository.deleteByCommandeVenteId(id);
         commandeVenteRepository.deleteById(id);
     }
@@ -183,27 +207,31 @@ public class CommandeVenteService {
             totalTTC += ttc.doubleValue();
         }
 
-        // ✅ Use OLD FactureDeVente entity (NOT FactureVente)
-        FactureDeVente facture = new FactureDeVente();
+        // ✅ Update existing FactureDeVente if created at commande creation, otherwise create new
+        FactureDeVente facture = factureDeVenteRepository.findByCommandeVenteId(id)
+                .orElse(new FactureDeVente());
         facture.setDateAchat(LocalDate.now().toString());
         facture.setMontantHT(totalHT);
         facture.setMontantTVA(totalTVA);
         facture.setMontantTTC(totalTTC);
         facture.setMontantTotal(totalTTC);
-        facture.setStatut("EN_ATTENTE");
+        facture.setStatut("CONFIRMEE");
         facture.setDescription("Facture générée automatiquement depuis la commande " + commande.getReference());
         facture.setClient(commande.getClient());
         facture.setModePaiement("A_DEFINIR");
-        facture.setEntreprise(commande.getEntreprise());  // ✅ ADD THIS LINE
+        facture.setEntreprise(commande.getEntreprise());
+        facture.setCommandeVente(commande);
         
         FactureDeVente savedFacture = factureDeVenteRepository.save(facture);
         
-        // ✅ Generate reference
-        String referance = "FV-" + String.format("%04d", savedFacture.getId());
-        savedFacture.setReferance(referance);
-        savedFacture = factureDeVenteRepository.save(savedFacture);
+        // ✅ Generate reference if not already set
+        if (savedFacture.getReferance() == null || savedFacture.getReferance().isEmpty()) {
+            String referance = "FV-" + String.format("%04d", savedFacture.getId());
+            savedFacture.setReferance(referance);
+            savedFacture = factureDeVenteRepository.save(savedFacture);
+        }
 
-        logger.info("✅ Commande {} confirmed, facture {} created with amounts: HT={}, TVA={}, TTC={}", 
+        logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={}", 
             id, savedFacture.getId(), totalHT, totalTVA, totalTTC);
         
         return savedFacture;

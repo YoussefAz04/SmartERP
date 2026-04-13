@@ -227,6 +227,22 @@ public class CommandeAchatService {
             throw new RuntimeException("Au moins une ligne de commande est requise.");
         }
 
+        // ✅ AUTO-CREATE preliminary FactureAchat (EN_ATTENTE) so it appears in the factures list immediately
+        FactureAchat factureAchat = new FactureAchat();
+        factureAchat.setReferance("FAC-" + saved.getReference());
+        factureAchat.setDateAchat(saved.getDateCommande() != null ? saved.getDateCommande().toString() : LocalDate.now().toString());
+        factureAchat.setMontantHT(dto.getMontantHT() != null ? dto.getMontantHT().doubleValue() : 0.0);
+        factureAchat.setMontantTVA(dto.getMontantTVA() != null ? dto.getMontantTVA().doubleValue() : 0.0);
+        factureAchat.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
+        factureAchat.setMontantTotal(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
+        factureAchat.setStatut("EN_ATTENTE");
+        factureAchat.setModePaiement("A_DEFINIR");
+        factureAchat.setFournisseur(saved.getFournisseur());
+        factureAchat.setEntreprise(saved.getEntreprise());
+        factureAchat.setCommandeAchat(saved);
+        factureAchatRepository.save(factureAchat);
+        logger.info("✅ Preliminary FactureAchat created for commande {} (enterprise: {})", saved.getId(), saved.getEntreprise() != null ? saved.getEntreprise().getId() : null);
+
         logger.info("✅ Purchase order creation complete - ID: {}", saved.getId());
         return saved;
     }
@@ -281,8 +297,9 @@ public class CommandeAchatService {
         commande.setStatut("CONFIRMEE");
         commandeAchatRepository.save(commande);
 
-        // ✅ CREATE INVOICE
-        FactureAchat facture = new FactureAchat();
+        // ✅ UPDATE existing FactureAchat if already created at commande creation, otherwise create new
+        FactureAchat facture = factureAchatRepository.findByCommandeAchatId(id)
+                .orElse(new FactureAchat());
         facture.setReferance("FAC-" + commande.getReference());
         facture.setDateAchat(commande.getDateCommande() != null
                 ? commande.getDateCommande().toString()
@@ -291,7 +308,7 @@ public class CommandeAchatService {
         facture.setMontantTVA(commande.getMontantTVA() != null ? commande.getMontantTVA().doubleValue() : 0.0);
         facture.setMontantTTC(commande.getMontantTTC() != null ? commande.getMontantTTC().doubleValue() : 0.0);
         facture.setMontantTotal(commande.getMontantTTC() != null ? commande.getMontantTTC().doubleValue() : 0.0);
-        facture.setStatut("EN_ATTENTE");
+        facture.setStatut("CONFIRMEE");
         facture.setModePaiement("A_DEFINIR");
         facture.setFournisseur(commande.getFournisseur());
         facture.setEntreprise(commande.getEntreprise());
@@ -299,9 +316,10 @@ public class CommandeAchatService {
 
         FactureAchat savedFacture = factureAchatRepository.save(facture);
 
-        // ✅ CREATE INVOICE LINES
+        // ✅ CREATE INVOICE LINES (only for new factures, skip if lines already exist)
         List<LigneFactureAchat> savedLignes = new java.util.ArrayList<>();
-        if (commande.getLignes() != null && !commande.getLignes().isEmpty()) {
+        if ((savedFacture.getLignes() == null || savedFacture.getLignes().isEmpty())
+                && commande.getLignes() != null && !commande.getLignes().isEmpty()) {
             logger.info("📝 Creating {} invoice lines", commande.getLignes().size());
             for (LigneCommandeAchat ligneCommande : commande.getLignes()) {
                 LigneFactureAchat ligneFacture = new LigneFactureAchat();
@@ -328,7 +346,7 @@ public class CommandeAchatService {
         commande.setStatut("RECUE");
         commandeAchatRepository.save(commande);
 
-        logger.info("✅ Order validated, invoice created and stock updated - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
+        logger.info("✅ Order validated, invoice updated/created and stock updated - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
         return savedFacture;
     }
 

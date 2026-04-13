@@ -56,8 +56,13 @@ public class FactureDeVente {
 
     // ✅ ADD: Enterprise relationship
     @ManyToOne
-    @JoinColumn(name = "entreprise_id", nullable = false)
+    @JoinColumn(name = "entreprise_id")
     private Entreprise entreprise;
+
+    @ManyToOne
+    @JoinColumn(name = "commande_vente_id")
+    @JsonIgnoreProperties({"lignes", "client", "entreprise"})
+    private CommandeVente commandeVente;
 
     @OneToOne(mappedBy = "factureDeVente", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = "factureDeVente")
