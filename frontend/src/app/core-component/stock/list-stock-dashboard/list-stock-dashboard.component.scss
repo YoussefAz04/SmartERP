@@ -205,7 +205,7 @@
     }
   }
 
-  &.kpi-purple {
+  &.kpi-dark-blue {
     background: linear-gradient(135deg, #1A3A52 0%, #2C5282 100%);
     box-shadow: 0 4px 12px rgba(26, 58, 82, 0.3);
   }
@@ -215,12 +215,12 @@
     box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
   }
 
-  &.kpi-red {
+  &.kpi-teal {
     background: linear-gradient(135deg, #0084D6 0%, #00A8E8 100%);
     box-shadow: 0 4px 12px rgba(0, 132, 214, 0.3);
   }
 
-  &.kpi-blue {
+  &.kpi-slate {
     background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
     box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
   }
