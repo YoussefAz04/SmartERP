@@ -21,7 +21,7 @@ export class ListCommandeVenteComponent implements OnInit {
   lastGeneratedFacture: any = null;
   showFactureModal = false;
 
-  statuts = ['EN_ATTENTE', 'VALIDEE', 'ANNULEE'];
+  statuts = ['BROUILLON', 'EN_ATTENTE', 'CONFIRMEE', 'LIVREE', 'ANNULEE'];
 
   constructor(
     private commandeVenteService: CommandeVenteService,
@@ -126,9 +126,11 @@ export class ListCommandeVenteComponent implements OnInit {
 
   getStatutBadgeClass(statut?: string): string {
     switch (statut) {
-      case 'VALIDEE': return 'badge bg-success';
+      case 'CONFIRMEE': return 'badge bg-success';
+      case 'LIVREE': return 'badge bg-primary';
       case 'ANNULEE': return 'badge bg-danger';
       case 'EN_ATTENTE': return 'badge bg-warning text-dark';
+      case 'BROUILLON': return 'badge bg-secondary';
       default: return 'badge bg-secondary';
     }
   }

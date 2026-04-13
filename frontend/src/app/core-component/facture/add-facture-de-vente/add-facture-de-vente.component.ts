@@ -30,7 +30,7 @@ export class AddFactureDeVenteComponent {
       referance: ['', Validators.required],
       remise: [0, [Validators.min(0), Validators.max(100)]],
       modePaiement: [''],
-      statut: [''],
+      statut: ['EN_ATTENTE'],
       description: [''],
       montantHT: [{ value: 0, disabled: true }],
       montantTVA: [{ value: 0, disabled: true }],
