@@ -196,7 +196,7 @@ export class AdminDashboardComponent implements OnInit {
         min: 0,
         tickAmount: 5,
         labels: {
-          formatter: (val: number) => val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val.toString(),
+          formatter: (val: number) => this.formatYAxisLabel(val),
         },
       },
       xaxis: {
@@ -308,7 +308,7 @@ export class AdminDashboardComponent implements OnInit {
         max: Math.ceil(maxVal * 1.2),
         tickAmount: 5,
         labels: {
-          formatter: (val: number) => val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val.toString(),
+          formatter: (val: number) => this.formatYAxisLabel(val),
         },
       },
     };
@@ -355,6 +355,17 @@ export class AdminDashboardComponent implements OnInit {
     const total = this.stats.topProducts.reduce((sum, p) => sum + (p.revenue || 0), 0);
     if (total === 0) return 0;
     return Math.round((revenue / total) * 100);
+  }
+
+  getRankClass(index: number): string {
+    if (index === 0) return 'rank-1';
+    if (index === 1) return 'rank-2';
+    if (index === 2) return 'rank-3';
+    return 'rank-other';
+  }
+
+  private formatYAxisLabel(val: number): string {
+    return val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val.toString();
   }
 
   getOrderStatusEntries(): { key: string, value: number }[] {

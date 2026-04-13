@@ -181,8 +181,8 @@
       <div class="kpi-icon-wrap kpi-green"><i class="feather icon-percent"></i></div>
       <div class="kpi-body">
         <div class="kpi-value">{{ conversionRate }}%</div>
-        <div class="kpi-label">Taux de conversion</div>
-        <div class="kpi-detail">Ventes / Achats</div>
+        <div class="kpi-label">Ratio Ventes/Achats</div>
+        <div class="kpi-detail">Revenu ventes / coût achats</div>
       </div>
     </div>
 
@@ -262,7 +262,8 @@
             <span class="dot dot-red"></span>
             <span>Dépenses: {{ currency }}{{ stats.totalExpenses | number:'1.0-0' }}</span>
           </div>
-          <div class="donut-profit" [class.profit-positive]="(stats.profitLoss || 0) >= 0" [class.profit-negative]="(stats.profitLoss || 0) < 0">
+          <div class="donut-profit" [class.profit-positive]="(stats.profitLoss || 0) >= 0" [class.profit-negative]="(stats.profitLoss || 0) < 0"
+            [attr.aria-label]="((stats.profitLoss || 0) >= 0 ? 'Bénéfice positif' : 'Déficit') + ': ' + (stats.profitLoss | number:'1.0-0')">
             {{ (stats.profitLoss || 0) >= 0 ? '▲' : '▼' }} Bénéfice net: {{ currency }}{{ stats.profitLoss | number:'1.0-0' }}
           </div>
         </div>
@@ -291,15 +292,17 @@
           <tbody>
             @for (product of stats.topProducts; track product; let i = $index) {
               <tr>
-                <td><span class="rank-badge rank-{{ i + 1 <= 3 ? (i + 1) : 'other' }}">{{ i + 1 }}</span></td>
+                <td><span class="rank-badge" [ngClass]="getRankClass(i)">{{ i + 1 }}</span></td>
                 <td class="product-name">{{ product.productName }}</td>
                 <td class="col-right"><span class="qty-badge">{{ product.quantitySold }}</span></td>
                 <td class="col-right col-bold">{{ currency }}{{ product.revenue | number:'1.0-0' }}</td>
                 <td class="col-right col-wide">
-                  <div class="progress-bar-wrap">
-                    <div class="progress-bar-fill" [style.width.%]="getProductShare(product.revenue)"></div>
-                    <span class="progress-label">{{ getProductShare(product.revenue) | number:'1.0-0' }}%</span>
-                  </div>
+                  <ng-container *ngIf="getProductShare(product.revenue) as share">
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" [style.width.%]="share"></div>
+                      <span class="progress-label">{{ share }}%</span>
+                    </div>
+                  </ng-container>
                 </td>
               </tr>
             }
