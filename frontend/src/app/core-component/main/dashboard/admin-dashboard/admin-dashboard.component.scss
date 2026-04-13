@@ -1,21 +1,36 @@
 // ============================================
-// VARIABLES
+// VARIABLES – Enterprise ERP Palette
 // ============================================
-$primary: #ff9f43;
-$primary-dark: #ff8c1a;
-$secondary: #1a202c;
-$light-bg: #f8fafc;
-$white: #ffffff;
-$border: #e2e8f0;
-$text-primary: #2d3748;
-$text-secondary: #718096;
-$text-light: #a0aec0;
+$primary:        #0084D6;   // Ocean Blue
+$primary-dark:   #00A8E8;   // Bright Teal
+$slate:          #2C3E50;   // Dark Slate
+$slate-mid:      #34495E;   // Medium Slate
+$slate-light:    #4A5568;   // Light Slate
+$sage:           #27AE60;   // Sage Green
+$sage-bright:    #2ECC71;   // Bright Green
+$warning:        #E67E22;   // Amber Orange
+$warning-bright: #F39C12;   // Bright Amber
+$danger:         #C0392B;   // Dark Red
+$danger-bright:  #E74C3C;   // Bright Red
+$hero-dark:      #1A3A52;   // Hero header dark blue
+$secondary:      #2C3E50;   // Headers
+$light-bg:       #F5F7FA;   // Page background
+$lighter-bg:     #ECF0F5;   // Card backgrounds
+$white:          #ffffff;
+$border:         #DDE3EC;
+$text-primary:   #2C3E50;
+$text-secondary: #4A5568;
+$text-light:     #8898AA;
 
 // ============================================
-// DASHBOARD HEADER
+// DASHBOARD HEADER – Hero style with dark blue
 // ============================================
 .dashboard-header {
   margin-bottom: 28px;
+  background: linear-gradient(135deg, $hero-dark 0%, #2C3E50 60%, #34495E 100%);
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 16px rgba(26, 58, 82, 0.18);
 
   .header-content {
     display: flex;
@@ -27,39 +42,47 @@ $text-light: #a0aec0;
 
   .page-title {
     margin: 0;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
-    color: $secondary;
+    color: $white;
+    letter-spacing: -0.3px;
   }
 
   .page-subtitle {
     margin: 6px 0 0 0;
-    font-size: 15px;
-    color: $text-secondary;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.72);
+    font-weight: 400;
   }
 
   .header-meta {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
   }
 
   .enterprise-badge,
   .date-badge {
-    padding: 8px 16px;
+    padding: 7px 16px;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 600;
-    background: $white;
-    border: 1px solid $border;
-    color: #4a5568;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(4px);
+    transition: background 0.22s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
   }
 
   .enterprise-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+    border-color: rgba(255, 255, 255, 0.15);
     color: $white;
-    border-color: transparent;
   }
 }
 
@@ -72,11 +95,14 @@ $text-light: #a0aec0;
 
 .section-title {
   margin: 0 0 18px 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: $secondary;
+  color: $slate;
   padding-bottom: 10px;
-  border-bottom: 2px solid $border;
+  border-bottom: 2px solid $primary;
+  display: inline-block;
+  padding-right: 24px;
+  letter-spacing: -0.2px;
 }
 
 // ============================================
@@ -99,22 +125,22 @@ $text-light: #a0aec0;
 
 .overview-card {
   background: $white;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 24px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid $border;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.12);
+    transform: translateY(-2px);
   }
 
   .overview-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 54px;
+    height: 54px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -123,19 +149,19 @@ $text-light: #a0aec0;
     color: $white;
 
     &.blue {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0084D6 0%, #00A8E8 100%);
     }
 
     &.orange {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
     }
 
     &.cyan {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
     }
 
     &.green {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      background: linear-gradient(135deg, #34495E 0%, #4A5568 100%);
     }
   }
 
@@ -157,8 +183,8 @@ $text-light: #a0aec0;
     display: inline-block;
     padding: 4px 12px;
     border-radius: 20px;
-    background: #e6f3ff;
-    color: #0066cc;
+    background: #E8F4FF;
+    color: $primary;
     font-size: 12px;
     font-weight: 600;
   }
@@ -174,27 +200,27 @@ $text-light: #a0aec0;
 }
 
 .inventory-card {
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 24px;
   color: $white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
   }
 
   &.inv-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0084D6 0%, #00A8E8 100%);
   }
 
   &.inv-warning {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, $warning 0%, $warning-bright 100%);
   }
 
   &.inv-danger {
-    background: linear-gradient(135deg, #fa7e1e 0%, #d32f2f 100%);
+    background: linear-gradient(135deg, $danger 0%, $danger-bright 100%);
   }
 
   .inventory-header {
@@ -239,30 +265,30 @@ $text-light: #a0aec0;
 
 .chart-card {
   background: $white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid $border;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   margin-bottom: 0;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.10);
   }
 
   .chart-card-header {
-    padding: 20px 24px;
+    padding: 18px 24px;
     border-bottom: 1px solid $border;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+    background: linear-gradient(135deg, $light-bg 0%, $lighter-bg 100%);
 
     h3 {
       margin: 0;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
-      color: $secondary;
+      color: $slate;
     }
 
     .chart-legend {
@@ -286,7 +312,7 @@ $text-light: #a0aec0;
         }
 
         &.legend-sales::before {
-          background: #28C76F;
+          background: $sage;
         }
 
         &.legend-purchase::before {
@@ -320,7 +346,7 @@ $text-light: #a0aec0;
       padding: 12px 16px;
       text-align: left;
       font-weight: 600;
-      color: #4a5568;
+      color: $slate-mid;
       border-bottom: 2px solid $border;
       white-space: nowrap;
     }
@@ -337,7 +363,7 @@ $text-light: #a0aec0;
 
       td {
         padding: 12px 16px;
-        color: #2d3748;
+        color: $text-primary;
       }
     }
   }
@@ -367,13 +393,13 @@ $text-light: #a0aec0;
   font-weight: 600;
 
   &.badge-primary {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: #E0EEF9;
+    color: $primary;
   }
 
   &.badge-secondary {
-    background: #f3f4f6;
-    color: #374151;
+    background: $lighter-bg;
+    color: $slate-mid;
   }
 }
 
@@ -405,21 +431,21 @@ $text-light: #a0aec0;
 // ============================================
 .dash-widget {
   background: $white;
-  border-radius: 14px;
+  border-radius: 10px;
   padding: 24px;
   display: flex;
   align-items: center;
   gap: 20px;
   border: 1px solid $border;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.28s ease;
   height: 100%;
   min-height: 140px;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.12);
     border-color: $primary;
-    transform: translateY(-4px);
+    transform: translateY(-2px);
   }
 
   .dash-widgetimg {
@@ -431,16 +457,16 @@ $text-light: #a0aec0;
     span {
       width: 80px;
       height: 80px;
-      border-radius: 16px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, rgba(255, 159, 67, 0.1), rgba(255, 192, 105, 0.05));
+      background: linear-gradient(135deg, rgba(0, 132, 214, 0.10), rgba(0, 168, 232, 0.05));
 
       img {
         width: 40px;
         height: 40px;
-        filter: drop-shadow(0 2px 4px rgba(255, 159, 67, 0.2));
+        filter: drop-shadow(0 2px 4px rgba(0, 132, 214, 0.15));
       }
     }
   }
@@ -456,7 +482,7 @@ $text-light: #a0aec0;
       line-height: 1.2;
 
       .counters {
-        background: linear-gradient(135deg, $primary, #ffc069);
+        background: linear-gradient(135deg, $primary, $primary-dark);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -473,15 +499,15 @@ $text-light: #a0aec0;
   }
 
   &.dash1 .dash-widgetimg span {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(74, 222, 128, 0.05));
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.10), rgba(46, 204, 113, 0.05));
   }
 
   &.dash2 .dash-widgetimg span {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.05));
+    background: linear-gradient(135deg, rgba(0, 132, 214, 0.10), rgba(0, 168, 232, 0.05));
   }
 
   &.dash3 .dash-widgetimg span {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.05));
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.10), rgba(74, 85, 104, 0.05));
   }
 }
 
@@ -489,22 +515,22 @@ $text-light: #a0aec0;
 // COUNT CARDS (legacy)
 // ============================================
 .dash-count {
-  background: linear-gradient(135deg, $primary 0%, #ffc069 100%);
-  border-radius: 14px;
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  border-radius: 10px;
   padding: 28px;
   color: $white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 8px 20px rgba(255, 159, 67, 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 132, 214, 0.18);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
   min-height: 140px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(255, 159, 67, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 132, 214, 0.28);
   }
 
   .dash-counts {
@@ -530,7 +556,7 @@ $text-light: #a0aec0;
   .dash-imgs {
     font-size: 48px;
     opacity: 0.8;
-    transition: all 0.3s ease;
+    transition: opacity 0.28s ease, transform 0.28s ease;
 
     i {
       font-size: 48px;
@@ -547,23 +573,27 @@ $text-light: #a0aec0;
 
   &:hover .dash-imgs {
     opacity: 1;
-    transform: scale(1.1) rotate(5deg);
+    transform: scale(1.08) rotate(4deg);
   }
 
   &.das1 {
-    background: linear-gradient(135deg, #ff9f43 0%, #ffc069 100%);
+    background: linear-gradient(135deg, #0084D6 0%, #00A8E8 100%);
+    box-shadow: 0 4px 12px rgba(0, 132, 214, 0.18);
   }
 
   &.das2 {
-    background: linear-gradient(135deg, #00bcd4 0%, #4dd0e1 100%);
+    background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.18);
   }
 
   &.das3 {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.18);
   }
 
   &.das4 {
-    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    background: linear-gradient(135deg, #34495E 0%, #4A5568 100%);
+    box-shadow: 0 4px 12px rgba(52, 73, 94, 0.18);
   }
 }
 
@@ -573,20 +603,20 @@ $text-light: #a0aec0;
 .card {
   background: $white;
   border: 1px solid $border;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.28s ease;
   margin-bottom: 24px;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.10);
     border-color: $primary;
   }
 
   .card-header {
-    background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
-    padding: 24px;
+    background: linear-gradient(135deg, $light-bg 0%, $lighter-bg 100%);
+    padding: 20px 24px;
     border-bottom: 1px solid $border;
     display: flex;
     justify-content: space-between;
@@ -595,9 +625,9 @@ $text-light: #a0aec0;
     gap: 15px;
 
     .card-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
-      color: $secondary;
+      color: $slate;
       margin: 0;
     }
 
@@ -635,7 +665,7 @@ $text-light: #a0aec0;
           }
 
           &:nth-child(1) span:before {
-            background: #10b981;
+            background: $sage;
           }
 
           &:nth-child(2) span:before {

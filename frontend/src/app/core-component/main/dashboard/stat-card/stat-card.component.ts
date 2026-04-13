@@ -22,18 +22,18 @@ import { Component, Input } from '@angular/core';
   styles: [`
     .stat-card {
       background: white;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 24px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.06);
       height: 100%;
     }
 
     .stat-card:hover {
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(44, 62, 80, 0.12);
+      transform: translateY(-2px);
     }
 
     .stat-card-content {
@@ -54,22 +54,22 @@ import { Component, Input } from '@angular/core';
     }
 
     .icon-blue {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0084D6 0%, #00A8E8 100%);
       color: white;
     }
 
     .icon-green {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
       color: white;
     }
 
     .icon-orange {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
       color: white;
     }
 
     .icon-cyan {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: linear-gradient(135deg, #34495E 0%, #4A5568 100%);
       color: white;
     }
 
