@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
-import { EntrepriseService } from '../../../core/service/entreprise/entreprise.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { Fournisseur } from '../../../model/fournisseur.model';
 
@@ -16,32 +15,55 @@ import { Fournisseur } from '../../../model/fournisseur.model';
 })
 export class AddArticleAchatComponent implements OnInit {
   articleForm!: FormGroup;
-  entreprises: any[] = [];
   fournisseurs: Fournisseur[] = [];
   categories: any[] = [];
   units: string[] = ['Pièce', 'kg', 'Mètre', 'Ream', 'Set', 'g', 'Litre', 'Unité'];
   isLoading = false;
   submitted = false;
+  errorMessage = '';
+  successMessage = '';
+
+  private entrepriseId: number | null = null;
 
   constructor(
     private articleAchatService: ArticleAchatService,
-    private entrepriseService: EntrepriseService,
     private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.readEntrepriseId();
     this.initializeForm();
-    this.loadEntreprises();
     this.loadFournisseurs();
     this.loadCategories();
-    this.autoSetEntrepriseId();
+  }
+
+  private static readonly REDIRECT_DELAY_MS = 1200;
+
+  private readEntrepriseId(): void {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const decoded = new TextDecoder().decode(
+          Uint8Array.from(atob(item), (c) => c.charCodeAt(0))
+        );
+        const user = JSON.parse(decoded);
+        this.entrepriseId = user.entrepriseId ?? null;
+      } catch (e) {
+        console.error('❌ Failed to read entrepriseId from localStorage:', e);
+      }
+    }
+    if (!this.entrepriseId) {
+      const fallback = localStorage.getItem('entrepriseId') || localStorage.getItem('enterpriseId');
+      if (fallback) {
+        this.entrepriseId = Number(fallback);
+      }
+    }
   }
 
   initializeForm(): void {
     this.articleForm = this.fb.group({
-      entrepriseId: [null, [Validators.required]],
       reference: ['', [Validators.required, Validators.minLength(2)]],
       nom: ['', [Validators.required, Validators.minLength(2)]],
       description: [''],
@@ -54,31 +76,9 @@ export class AddArticleAchatComponent implements OnInit {
     });
   }
 
-  autoSetEntrepriseId(): void {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        const entrepriseId = user.entrepriseId;
-        if (entrepriseId) {
-          this.articleForm.patchValue({ entrepriseId });
-        }
-      } catch (e) {
-        console.error('❌ Failed to read entrepriseId from localStorage:', e);
-      }
-    }
-  }
-
   isFieldInvalid(fieldName: string): boolean {
     const field = this.articleForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
-  }
-
-  loadEntreprises(): void {
-    this.entrepriseService.getAllEntreprises().subscribe({
-      next: (data) => { this.entreprises = data; },
-      error: (err) => { console.error('Erreur chargement entreprises:', err); }
-    });
   }
 
   loadFournisseurs(): void {
@@ -99,8 +99,20 @@ export class AddArticleAchatComponent implements OnInit {
     this.router.navigate(['/article-achat/listArticleAchat']);
   }
 
+  clearMessages(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
   onSubmit(): void {
     this.submitted = true;
+    this.clearMessages();
+
+    if (!this.entrepriseId) {
+      this.errorMessage = 'Impossible de déterminer l\'entreprise. Veuillez vous reconnecter.';
+      return;
+    }
+
     if (this.articleForm.valid) {
       this.isLoading = true;
       const formValue = this.articleForm.value;
@@ -114,7 +126,7 @@ export class AddArticleAchatComponent implements OnInit {
         sku: formValue.sku?.trim() || '',
         fournisseurId: formValue.fournisseurId ? Number(formValue.fournisseurId) : null,
         categorieArticleId: formValue.categorieArticleId ? Number(formValue.categorieArticleId) : null,
-        entrepriseId: Number(formValue.entrepriseId),
+        entrepriseId: this.entrepriseId,
         actif: true,
       };
 
@@ -122,18 +134,20 @@ export class AddArticleAchatComponent implements OnInit {
         next: () => {
           this.isLoading = false;
           this.submitted = false;
-          this.articleForm.reset();
-          alert('✓ Article achat ajouté avec succès!');
-          this.router.navigate(['/article-achat/listArticleAchat']);
+          this.successMessage = 'Article achat ajouté avec succès !';
+          this.articleForm.reset({ unite: 'Pièce' });
+          setTimeout(
+            () => this.router.navigate(['/article-achat/listArticleAchat']),
+            AddArticleAchatComponent.REDIRECT_DELAY_MS
+          );
         },
         error: (err: any) => {
           this.isLoading = false;
-          const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter l\'article';
-          alert('✗ Erreur: ' + errorMsg);
+          this.errorMessage = err.error?.message || err.message || 'Impossible d\'ajouter l\'article';
         }
       });
     } else {
-      alert('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      this.errorMessage = 'Veuillez remplir correctement tous les champs obligatoires.';
     }
   }
 }
