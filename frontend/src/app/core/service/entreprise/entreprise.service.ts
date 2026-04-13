@@ -78,4 +78,23 @@ export class EntrepriseService {
       { headers: this.getHeaders() }
     );
   }
+
+  // ✅ GET CURRENT USER'S ENTERPRISE - Reads enterpriseId from localStorage
+  getEntrepriseByCurrentUser(): Observable<any> {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
+        const entrepriseId = user?.entreprise?.id ?? user?.entrepriseId;
+        if (entrepriseId) {
+          return this.getEntrepriseById(entrepriseId);
+        }
+      } catch (error) {
+        console.error('Error parsing user data for entreprise lookup:', error);
+      }
+    }
+    return new Observable(observer =>
+      observer.error('No enterprise ID found for current user')
+    );
+  }
 }
