@@ -1,11 +1,16 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.CreateEmployeeRequest;
 import BuissnesManager.BuissnesManager.dto.UserRequest;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
+import BuissnesManager.BuissnesManager.entity.Module;
+import BuissnesManager.BuissnesManager.entity.Permission;
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.entity.UserDTO;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
+import BuissnesManager.BuissnesManager.repository.ModuleRepo;
+import BuissnesManager.BuissnesManager.repository.PermissionRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +34,71 @@ public class UserService {
     private EntrepriseRepo entrepriseRepo ;
 
     @Autowired
-    private RoleRepo roleRepo ;
+    private RoleRepo roleRepo;
+
+    @Autowired
+    private PermissionRepo permissionRepo;
+
+    @Autowired
+    private ModuleRepo moduleRepo;
+
+    public UserDTO createEmployeeWithModules(CreateEmployeeRequest request) {
+        if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom d'utilisateur est requis");
+        }
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("L'email est requis");
+        }
+        if (request.getPassword() == null || request.getPassword().length() < 6) {
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins 6 caractères");
+        }
+        if (request.getEnterpriseId() == null) {
+            throw new IllegalArgumentException("L'identifiant de l'entreprise est requis");
+        }
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Un utilisateur avec ce nom existe déjà.");
+        }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Un utilisateur avec cet email existe déjà.");
+        }
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEnabled(true);
+
+        Entreprise entreprise = entrepriseRepo.findById(request.getEnterpriseId())
+                .orElseThrow(() -> new IllegalArgumentException("Entreprise non trouvée avec l'ID: " + request.getEnterpriseId()));
+        user.setEntreprise(entreprise);
+
+        Role employeeRole = roleRepo.findByName("EMPLOYEE")
+                .orElseThrow(() -> new RuntimeException("Le rôle EMPLOYEE n'existe pas"));
+        user.setRoles(new ArrayList<>(List.of(employeeRole)));
+
+        User savedUser = userRepository.save(user);
+
+        if (request.getModuleIds() != null && !request.getModuleIds().isEmpty()) {
+            for (Long moduleId : request.getModuleIds()) {
+                Module module = moduleRepo.findById(moduleId)
+                        .orElseThrow(() -> new RuntimeException("Module non trouvé: " + moduleId));
+                if (permissionRepo.findByModuleIdAndRoleId(moduleId, employeeRole.getId()) == null) {
+                    Permission permission = new Permission();
+                    permission.setCreate(true);
+                    permission.setUpdate(true);
+                    permission.setDelete(true);
+                    permission.setView(true);
+                    permission.setModule(module);
+                    permission.setRole(employeeRole);
+                    permissionRepo.save(permission);
+                }
+            }
+        }
+
+        return toUserDTO(savedUser);
+    }
 
     public User createEmployee(String username, String email, String password, String phone, Long enterpriseId) {
         if (userRepository.findByUsername(username).isPresent()) {
@@ -144,27 +213,29 @@ public class UserService {
     }
 
     private List<UserDTO> toUserDTOList(List<User> users) {
-        return users.stream().map(user -> {
-            UserDTO dto = new UserDTO();
-            dto.setId(user.getId());
-            dto.setUsername(user.getUsername());
-            dto.setEmail(user.getEmail());
-            dto.setEnabled(user.isEnabled());
-            dto.setPhone(user.getPhone());
+        return users.stream().map(this::toUserDTO).collect(Collectors.toList());
+    }
 
-            if (user.getRoles() != null) {
-                dto.setRoles(user.getRoles().stream()
-                        .map(role -> role.getName())
-                        .collect(Collectors.toList()));
-            }
+    private UserDTO toUserDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setEnabled(user.isEnabled());
+        dto.setPhone(user.getPhone());
 
-            if (user.getEntreprise() != null) {
-                dto.setEntrepriseId(user.getEntreprise().getId());
-                dto.setEntrepriseNom(user.getEntreprise().getNom());
-            }
+        if (user.getRoles() != null) {
+            dto.setRoles(user.getRoles().stream()
+                    .map(role -> role.getName())
+                    .collect(Collectors.toList()));
+        }
 
-            return dto;
-        }).collect(Collectors.toList());
+        if (user.getEntreprise() != null) {
+            dto.setEntrepriseId(user.getEntreprise().getId());
+            dto.setEntrepriseNom(user.getEntreprise().getNom());
+        }
+
+        return dto;
     }
 
 
