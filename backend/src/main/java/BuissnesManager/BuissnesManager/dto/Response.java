@@ -14,6 +14,7 @@ public class Response {
     private List<?> permission;
     private Long entrepriseId;  // ✅ ADD THIS
     private String entrepriseName;  // ✅ ADD THIS
+    private Integer roleId;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -45,4 +46,7 @@ public class Response {
 
     public String getEntrepriseName() { return entrepriseName; }  // ✅ ADD THIS
     public void setEntrepriseName(String entrepriseName) { this.entrepriseName = entrepriseName; }  // ✅ ADD THIS
+
+    public Integer getRoleId() { return roleId; }
+    public void setRoleId(Integer roleId) { this.roleId = roleId; }
 }
