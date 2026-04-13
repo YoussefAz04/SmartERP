@@ -39,11 +39,16 @@ export class AddArticleAchatComponent implements OnInit {
     this.loadCategories();
   }
 
+  private static readonly REDIRECT_DELAY_MS = 1200;
+
   private readEntrepriseId(): void {
     const item = localStorage.getItem('myLSkey');
     if (item) {
       try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
+        const decoded = new TextDecoder().decode(
+          Uint8Array.from(atob(item), (c) => c.charCodeAt(0))
+        );
+        const user = JSON.parse(decoded);
         this.entrepriseId = user.entrepriseId ?? null;
       } catch (e) {
         console.error('❌ Failed to read entrepriseId from localStorage:', e);
@@ -103,6 +108,11 @@ export class AddArticleAchatComponent implements OnInit {
     this.submitted = true;
     this.clearMessages();
 
+    if (!this.entrepriseId) {
+      this.errorMessage = 'Impossible de déterminer l\'entreprise. Veuillez vous reconnecter.';
+      return;
+    }
+
     if (this.articleForm.valid) {
       this.isLoading = true;
       const formValue = this.articleForm.value;
@@ -126,7 +136,10 @@ export class AddArticleAchatComponent implements OnInit {
           this.submitted = false;
           this.successMessage = 'Article achat ajouté avec succès !';
           this.articleForm.reset({ unite: 'Pièce' });
-          setTimeout(() => this.router.navigate(['/article-achat/listArticleAchat']), 1200);
+          setTimeout(
+            () => this.router.navigate(['/article-achat/listArticleAchat']),
+            AddArticleAchatComponent.REDIRECT_DELAY_MS
+          );
         },
         error: (err: any) => {
           this.isLoading = false;
