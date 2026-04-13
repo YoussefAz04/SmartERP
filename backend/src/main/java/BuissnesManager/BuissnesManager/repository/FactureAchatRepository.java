@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface FactureAchatRepository extends JpaRepository<FactureAchat, Long> {
-    List<FactureAchat> findByStatut(String statut);
-    Optional<FactureAchat> findByCommandeAchatId(Long commandeAchatId);
+	List<FactureAchat> findAll();
 }
