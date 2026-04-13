@@ -1,33 +1,3 @@
-<!-- Page Header -->
-<div class="page-header">
-  <div class="add-item d-flex">
-    <div class="page-title">
-      <h4>List Facture de L'Achat</h4>
-      <h6>Departement Gestion de Facture</h6>
-    </div>
-  </div>
-  <ul class="table-top-head">
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Pdf" matTooltipPosition="above"><img
-        src="assets/img/icons/pdf.svg" alt="img"></a>
-    </li>
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Excel" matTooltipPosition="above"><img
-        src="assets/img/icons/excel.svg" alt="img"></a>
-    </li>
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Print" matTooltipPosition="above"><i
-        class="feather icon-printer feather-rotate-ccw"></i></a>
-    </li>
-    <li>
-      <a data-bs-toggle="tooltip" data-bs-placement="top" matTooltip="Refresh" matTooltipPosition="above"><i
-        class="feather icon-rotate-ccw feather-rotate-ccw"></i></a>
-    </li>
-
-  </ul>
-
-</div>
-<!-- /Page Header -->
 <!-- Table responsive -->
 <div class="card">
   <div class="card-header">
@@ -44,13 +14,9 @@
           <th>Montant HT</th>
           <th>Montant TVA</th>
           <th>Montant TTC</th>
-          <th>Remise</th>
           <th>Mode Paiement</th>
           <th>Statut</th>
-          <th>Description</th>
-          <th>Chemin Fichier</th>
-          <!-- Détails Facture -->
-
+          <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -61,30 +27,25 @@
           <td>{{ facture.montantHT | number:'1.2-2' }} €</td>
           <td>{{ facture.montantTVA | number:'1.2-2' }} €</td>
           <td>{{ facture.montantTTC | number:'1.2-2' }} €</td>
-          <td>{{ facture.remise | number:'1.2-2' }} €</td>
           <td>{{ facture.modePaiement }}</td>
           <td>{{ facture.statut }}</td>
-          <td>{{ facture.description }}</td>
           <td>
-            <a *ngIf="facture.cheminFichier"
-               [href]="facture.cheminFichier"
-               target="_blank"
-               rel="noopener noreferrer">
-              Ouvrir
-            </a>
-            <span *ngIf="!facture.cheminFichier">-</span>
-          </td>
-          <td>
-            <button class="btn btn-sm btn-info me-1" (click)="viewFacture(facture.id)"   *ngIf="permissionAchat.view" title="Voir">
+            <button class="btn btn-sm btn-info me-1" 
+                    (click)="viewFacture(facture.id)" 
+                    *ngIf="permissionAchat.view" 
+                    title="Voir">
               <i class="feather icon-eye"></i>
             </button>
-            <button class="btn btn-sm btn-danger" (click)="deleteFacture(facture.id)" *ngIf="permissionAchat.delete"  title="Supprimer">
+            <button class="btn btn-sm btn-danger" 
+                    (click)="deleteFacture(facture.id)" 
+                    *ngIf="permissionAchat.delete" 
+                    title="Supprimer">
               <i class="feather icon-trash-2"></i>
             </button>
           </td>
         </tr>
         <tr *ngIf="factureAchatList.length === 0">
-          <td colspan="18" class="text-center py-3">Aucune facture trouvée.</td>
+          <td colspan="9" class="text-center py-3">Aucune facture trouvée.</td>
         </tr>
         </tbody>
       </table>

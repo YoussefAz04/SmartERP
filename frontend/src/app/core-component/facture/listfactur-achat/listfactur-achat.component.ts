@@ -21,23 +21,38 @@ import {PermissionDto} from "../../../model/permissionDto.model";
 })
 export class ListfacturAchatComponent implements OnInit{
   factureAchatList : FactureAchat[] = [] ;
-  permissionAchat!: PermissionDto;
+  
+  permissionAchat: PermissionDto = {
+  id: 0,              // ⬅️ Add this
+  moduleId: 0,        // ⬅️ Add this
+  roleId: 0,          // ⬅️ Add this
+  view: false,
+  create: false,
+  update: false,
+  delete: false,
+  moduleTitle: ''
+};
 
   constructor(private factureService : FactureService,
               private router : Router) {
   }
+  
   ngOnInit() {
-   this.getAllFactureAchat();
-   this.getUserAuthData();
+    this.getAllFactureAchat();
+    this.getUserAuthData();
   }
+  
   getAllFactureAchat(){
-    this.factureService.getAllFactureAchat().subscribe(data =>{
-      this.factureAchatList =data ;
+    this.factureService.getAllFactureAchat().subscribe(data => {
+      console.log('✅ Total invoices:', data.length);
+      this.factureAchatList = data;
+    }, error => {
+      console.error('❌ Error:', error);
     })
   }
 
   viewFacture(id: number | undefined) {
-    this.router.navigate(['facture/detaisFactureAchat',id])
+    this.router.navigate(['facture/detaisFactureAchat', id])
   }
 
   deleteFacture(id: number | undefined) {
@@ -60,9 +75,9 @@ export class ListfacturAchatComponent implements OnInit{
     if (item) {
       currentUser = JSON.parse(atob(item));
 
-      currentUser?.permission.map(per =>{
+      currentUser?.permission.map(per => {
         if (per.moduleTitle == "Achat"){
-          this.permissionAchat = per ;
+          this.permissionAchat = per;
         }
       })
     }
