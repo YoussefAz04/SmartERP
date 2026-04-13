@@ -118,8 +118,19 @@ generateSidebarData(modules: ModuleTittle[]) {
     // Sous-module links to exclude from the sidebar
     const excludedSousModuleLinks = ['achat/listBonReception'];
 
-    // Sous-module titles to exclude from the sidebar
-    const excludedSousModuleTitles = ['Bon Reception', 'Bon de reception', 'Module titre', 'Module', 'Sous Module', 'Bon Livraison', 'Categorie Depense', 'Select Zone'];
+    // Shared list of titles to exclude at both the Module and SousModule levels
+    // 'Departemen' is kept intentionally as a DB misspelling variant of 'Departement'
+    const excludedItemTitles = [
+      'Bon Reception', 'Bon de reception',
+      'Bon Livraison', 'Bon livraison',
+      'Categorie Depense',
+      'Select Zone',
+      'Departement', 'Departemen',
+      'Module titre', 'Module', 'Sous Module',
+    ];
+
+    const excludedSousModuleTitles = excludedItemTitles;
+    const excludedModuleItemTitles = excludedItemTitles;
 
     const filteredModules = modules.filter((moduleTitle: ModuleTittle) =>
       !excludedModuleTitles.some(excluded =>
@@ -128,7 +139,12 @@ generateSidebarData(modules: ModuleTittle[]) {
     );
 
     const data = filteredModules.map((moduleTitle: ModuleTittle) => {
-      const activeModules = moduleTitle.modules.filter((mod: Module) => mod.status === true);
+      const activeModules = moduleTitle.modules.filter((mod: Module) =>
+        mod.status === true &&
+        !excludedModuleItemTitles.some(excluded =>
+          mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
+        )
+      );
 
       return {
         tittle: titleMap[moduleTitle.moduleTittle] || moduleTitle.moduleTittle,
