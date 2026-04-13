@@ -216,23 +216,23 @@ export class AiDashboardComponent implements OnInit {
   navigateFromRecommendation(rec: Recommendation): void {
     switch (rec.type) {
       case 'STOCK_CRITIQUE':
-        this.router.navigate([routes.manageStocks]);
+        this.router.navigate([routes.stockList]);
         break;
       case 'STOCK_FAIBLE':
-        this.router.navigate([routes.stockAdjustment]);
+        this.router.navigate([routes.stockAdjust]);
         break;
       case 'VENTES_FAIBLES':
-        this.router.navigate([routes.salesList]);
+        this.router.navigate([routes.commandeVenteList]);
         break;
       case 'PRODUIT_STAR':
-        this.router.navigate([routes.productList]);
+        this.router.navigate([routes.articleVenteList]);
         break;
       case 'MARGE_FAIBLE':
       case 'BONNE_PERFORMANCE':
-        this.router.navigate([routes.purchaseList]);
+        this.router.navigate([routes.articleAchatList]);
         break;
       case 'SAISONNALITE':
-        this.router.navigate([routes.manageStocks]);
+        this.router.navigate([routes.stockList]);
         break;
       case 'DONNEES_INSUFFISANTES':
         this.router.navigate([routes.addCommandeAchat]);
