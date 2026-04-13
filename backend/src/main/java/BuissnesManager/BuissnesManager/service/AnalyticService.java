@@ -141,7 +141,8 @@ public class AnalyticService {
     private List<ProductIntelligenceDto.CategoryPerformanceDto> computeCategoryPerformance(Long entrepriseId) {
         // Query category performance from ligne_commande_vente via article category
         List<Object[]> rawData = commandeVenteRepository.getTopProducts(entrepriseId);
-        // Group by first word as category proxy (since no direct category query yet)
+        // TODO: Replace first-character grouping with a dedicated JPQL query joining article.categorieArticle
+        // once a direct category-revenue aggregation query is available in CommandeVenteRepository.
         Map<String, Double[]> catMap = new HashMap<>();
         for (Object[] row : rawData) {
             String name = row[0] != null ? row[0].toString() : "Autre";

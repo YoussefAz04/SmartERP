@@ -50,7 +50,9 @@ public class ForecastService {
         // Historical points (current year only, up to current month)
         for (int m = 1; m <= Math.min(currentMonth, 12); m++) {
             double actual = currentValues[m - 1];
-            double smoothedVal = smoothed.get(11 + m); // offset by prev year (12 months)
+            // Smoothed index with prev-year offset; fall back gracefully if data is sparse
+            int smoothedIdx = 11 + m;
+            double smoothedVal = smoothedIdx < smoothed.size() ? smoothed.get(smoothedIdx) : actual;
             forecastPoints.add(new ForecastDto.ForecastPointDto(
                 MONTH_NAMES_FR[m - 1], actual, smoothedVal,
                 smoothedVal * 1.15, smoothedVal * 0.85
@@ -58,7 +60,7 @@ public class ForecastService {
         }
 
         // Future forecast (next 6 months)
-        double lastSmoothed = smoothed.get(smoothed.size() - 1);
+        double lastSmoothed = smoothed.isEmpty() ? 0.0 : smoothed.get(smoothed.size() - 1);
         double stdDev = computeStdDev(historicalSeries);
         for (int i = 1; i <= 6; i++) {
             int futureMonth = (currentMonth + i - 1) % 12;
