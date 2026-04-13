@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface FactureAchatRepository extends JpaRepository<FactureAchat, Long> {
-    List<FactureAchat> findByStatut(String statut);
+	List<FactureAchat> findAll();
 }

@@ -14,8 +14,8 @@ export class FactureService {
   constructor(private http: HttpClient) { }
 
   getAllFactureAchat(): Observable<FactureAchat[]> {
-    return this.http.get<FactureAchat[]>(`${this.apiUrl}/getAllFactureAchat`);
-  }
+  return this.http.get<FactureAchat[]>(`${this.apiUrl}/getAllFactures`);
+}
 
   getFactureAchatById(id: number): Observable<FactureAchat> {
     const url = `${this.apiUrl}/getFactureAchatById/${id}`;

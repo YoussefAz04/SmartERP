@@ -47,8 +47,9 @@ export class CommandeVenteService {
   }
 
   createCommande(commande: CommandeVente): Observable<CommandeVente> {
-    return this.http.post<CommandeVente>(this.baseUrl, commande, { headers: this.getHeaders() });
-  }
+  return this.http.post<CommandeVente>(`${this.baseUrl}/add`, commande, { headers: this.getHeaders() });
+  // ✅ Now: POST /api/commandes-vente/add (matches backend)
+}
 
   updateCommande(id: number, commande: CommandeVente): Observable<CommandeVente> {
     return this.http.put<CommandeVente>(`${this.baseUrl}/${id}`, commande, { headers: this.getHeaders() });
