@@ -34,7 +34,7 @@
     <div class="metrics-grid">
       <app-stat-card
         [label]="labels.ventesTotales"
-        [value]="currency + (stats.totalSalesRevenue | number:'1.2-2')"
+        [value]=" (stats.totalSalesRevenue | number:'1.2-2') + currency"
         [icon]="'feather icon-bar-chart-2'"
         [color]="'blue'"
         [trend]="'up'"
@@ -43,7 +43,7 @@
 
       <app-stat-card
         [label]="labels.achatsTotaux"
-        [value]="currency + (stats.totalPurchases | number:'1.2-2')"
+        [value]=" (stats.totalPurchases | number:'1.2-2') + currency"
         [icon]="'feather icon-shopping-bag'"
         [color]="'orange'"
         [trend]="'up'"
@@ -52,7 +52,7 @@
 
       <app-stat-card
         [label]="labels.beneficePerte"
-        [value]="currency + (stats.profitLoss | number:'1.2-2')"
+        [value]=" (stats.profitLoss | number:'1.2-2') + currency"
         [icon]="'feather icon-trending-up'"
         [color]="'green'"
         [trend]="stats.profitLoss >= 0 ? 'up' : 'down'"
@@ -61,7 +61,7 @@
 
       <app-stat-card
         [label]="labels.chiffreAffaires"
-        [value]="currency + (stats.totalRevenue | number:'1.2-2')"
+        [value]=" (stats.totalRevenue | number:'1.2-2') + currency"
         [icon]="'feather icon-dollar-sign'"
         [color]="'cyan'"
         [trend]="'up'"
@@ -162,18 +162,18 @@
     <div class="kpi-card">
       <div class="kpi-icon-wrap kpi-blue"><i class="feather icon-calendar"></i></div>
       <div class="kpi-body">
-        <div class="kpi-value">{{ currency }}{{ stats.salesThisMonth | number:'1.0-0' }}</div>
+        <div class="kpi-value">{{ stats.salesThisMonth | number:'1.0-0' }}{{ currency }}</div>
         <div class="kpi-label">Ventes ce mois</div>
-        <div class="kpi-detail">{{ currency }}{{ stats.salesThisYear | number:'1.0-0' }} cette année</div>
+        <div class="kpi-detail">{{ stats.salesThisYear | number:'1.0-0' }}{{ currency }} cette année</div>
       </div>
     </div>
 
     <div class="kpi-card">
       <div class="kpi-icon-wrap kpi-orange"><i class="feather icon-shopping-cart"></i></div>
       <div class="kpi-body">
-        <div class="kpi-value">{{ currency }}{{ stats.purchasesThisMonth | number:'1.0-0' }}</div>
+        <div class="kpi-value">{{ stats.purchasesThisMonth | number:'1.0-0' }}{{ currency }}</div>
         <div class="kpi-label">Achats ce mois</div>
-        <div class="kpi-detail">{{ currency }}{{ stats.totalPurchases | number:'1.0-0' }} total</div>
+        <div class="kpi-detail">{{ stats.totalPurchases | number:'1.0-0' }}{{ currency }} total</div>
       </div>
     </div>
 
@@ -189,7 +189,7 @@
     <div class="kpi-card">
       <div class="kpi-icon-wrap kpi-purple"><i class="feather icon-activity"></i></div>
       <div class="kpi-body">
-        <div class="kpi-value">{{ currency }}{{ avgSaleValue | number:'1.0-0' }}</div>
+        <div class="kpi-value">{{ avgSaleValue | number:'1.0-0' }}{{ currency }}</div>
         <div class="kpi-label">Valeur moy. vente</div>
         <div class="kpi-detail">{{ stats.totalOrders }} commandes</div>
       </div>
@@ -207,7 +207,7 @@
     <div class="kpi-card">
       <div class="kpi-icon-wrap kpi-teal"><i class="feather icon-credit-card"></i></div>
       <div class="kpi-body">
-        <div class="kpi-value">{{ currency }}{{ stats.accountsReceivable | number:'1.0-0' }}</div>
+        <div class="kpi-value">{{ stats.accountsReceivable | number:'1.0-0' }}{{ currency }}</div>
         <div class="kpi-label">Créances clients</div>
         <div class="kpi-detail">Factures en attente</div>
       </div>
@@ -256,15 +256,15 @@
         <div class="donut-summary" *ngIf="stats">
           <div class="donut-stat">
             <span class="dot dot-green"></span>
-            <span>Revenu: {{ currency }}{{ stats.totalRevenue | number:'1.0-0' }}</span>
+            <span>Revenu: {{ stats.totalRevenue | number:'1.0-0' }}{{ currency }}</span>
           </div>
           <div class="donut-stat">
             <span class="dot dot-red"></span>
-            <span>Dépenses: {{ currency }}{{ stats.totalExpenses | number:'1.0-0' }}</span>
+            <span>Dépenses: {{ stats.totalExpenses | number:'1.0-0' }}{{ currency }}</span>
           </div>
           <div class="donut-profit" [class.profit-positive]="(stats.profitLoss || 0) >= 0" [class.profit-negative]="(stats.profitLoss || 0) < 0"
             [attr.aria-label]="((stats.profitLoss || 0) >= 0 ? 'Bénéfice positif' : 'Déficit') + ': ' + (stats.profitLoss | number:'1.0-0')">
-            {{ (stats.profitLoss || 0) >= 0 ? '▲' : '▼' }} Bénéfice net: {{ currency }}{{ stats.profitLoss | number:'1.0-0' }}
+            {{ (stats.profitLoss || 0) >= 0 ? '▲' : '▼' }} Bénéfice net: {{ stats.profitLoss | number:'1.0-0' }}{{ currency }}
           </div>
         </div>
       </div>
