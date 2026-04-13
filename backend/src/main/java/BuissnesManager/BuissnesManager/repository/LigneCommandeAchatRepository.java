@@ -11,6 +11,8 @@ import java.util.List;
 public interface LigneCommandeAchatRepository extends JpaRepository<LigneCommandeAchat, Long> {
     List<LigneCommandeAchat> findByCommandeAchatId(Long commandeAchatId);
 
+    long countByArticleId(Long articleId);
+
     @Transactional
     void deleteByCommandeAchatId(Long commandeAchatId);
 }

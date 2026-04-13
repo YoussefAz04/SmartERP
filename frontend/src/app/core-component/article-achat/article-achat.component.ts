@@ -231,6 +231,10 @@ export class ArticleAchatComponent implements OnInit {
         },
         error: (err) => {
           console.error('Erreur lors de la suppression:', err);
+          const message = err?.error && typeof err.error === 'string'
+            ? err.error
+            : 'Erreur lors de la suppression de l\'article ' + id;
+          alert('✗ ' + message);
           completed++;
           if (completed === ids.length) {
             this.applyFilters();
@@ -266,7 +270,10 @@ export class ArticleAchatComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors de la suppression:', err);
-        alert('✗ Erreur lors de la suppression');
+        const message = err?.error && typeof err.error === 'string'
+          ? err.error
+          : 'Erreur lors de la suppression de l\'article';
+        alert('✗ ' + message);
         this.isLoading = false;
       }
     });

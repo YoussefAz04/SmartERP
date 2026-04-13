@@ -87,12 +87,14 @@ public class ArticleAchatController {
 
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteArticleAchat(@PathVariable Long id) {
+    public ResponseEntity<String> deleteArticleAchat(@PathVariable Long id) {
         try {
             articleAchatService.deleteArticleAchat(id);
             return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().<String>build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
