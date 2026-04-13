@@ -40,7 +40,7 @@ public class FactureService {
                 .orElseThrow(() -> new FileNotFoundException("Document not found with ID: " + idDocument));
 
         FactureAchat factureAchat = new FactureAchat();
-        DetaisFactureAchat detaisFactureAchat = new DetaisFactureAchat() ;
+        DetailsFactureAchat detaisFactureAchat = new DetailsFactureAchat() ;
 
         if (document.getType().equalsIgnoreCase("FACTURE D'ACHAT")) {
             List<ZoneSelectionneeDeDocument> zones = documentService.getZonesDeDocument(document.getId());

@@ -3,7 +3,7 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.dto.CreateEmployeeRequest;
 import BuissnesManager.BuissnesManager.dto.UserRequest;
 import BuissnesManager.BuissnesManager.entity.User;
-import BuissnesManager.BuissnesManager.entity.UserDTO;
+import BuissnesManager.BuissnesManager.dto.UserDTO;
 import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.ImageService;
@@ -21,9 +21,9 @@ import java.util.Map;
 
 @RequestMapping("/api/users")
 @RestController
-public class UserContoller {
+public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserContoller.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;

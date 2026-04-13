@@ -7,7 +7,7 @@ import BuissnesManager.BuissnesManager.entity.Module;
 import BuissnesManager.BuissnesManager.entity.Permission;
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
-import BuissnesManager.BuissnesManager.entity.UserDTO;
+import BuissnesManager.BuissnesManager.dto.UserDTO;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
 import BuissnesManager.BuissnesManager.repository.ModuleRepo;
 import BuissnesManager.BuissnesManager.repository.PermissionRepo;
