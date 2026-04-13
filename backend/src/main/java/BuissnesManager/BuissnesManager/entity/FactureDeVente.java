@@ -66,7 +66,7 @@ public class FactureDeVente {
 
     @OneToOne(mappedBy = "factureDeVente", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = "factureDeVente")
-    private DetaisFactureDeVente detaisFactureDeVente;
+    private DetailsFactureDeVente detaisFactureDeVente;
 
     @ManyToOne
     @JsonIgnoreProperties(value = "factureDeVentes")

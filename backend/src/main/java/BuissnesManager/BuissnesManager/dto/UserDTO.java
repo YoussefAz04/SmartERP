@@ -1,4 +1,4 @@
-package BuissnesManager.BuissnesManager.entity;
+package BuissnesManager.BuissnesManager.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

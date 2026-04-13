@@ -31,7 +31,7 @@ const routes: Routes = [
       {
         path: 'application',
         loadChildren: () =>
-          import('././main/application/application.module').then(
+          import('./main/application/application.module').then(
             (m) => m.ApplicationModule
           ),
       },
@@ -94,9 +94,11 @@ const routes: Routes = [
           ),
       },{
         path: 'facture',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
-          import('./facture/facture-routing.module').then(
-            (m) => m.FactureRoutingModule
+          import('./facture/facture.module').then(
+            (m) => m.FactureModule
           ),
       },
       {
@@ -104,34 +106,36 @@ const routes: Routes = [
         canActivate: [RoleGuard],
         data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
-          import('./module/module-routing.module').then(
-            (m) => m.ModuleRoutingModule
+          import('./module/module.module').then(
+            (m) => m.ModuleModule
           ),
       },{
         path: 'projet',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
         loadChildren: () =>
-          import('./projet/projet-routing.module').then(
-            (m) => m.ProjetRoutingModule
+          import('./projet/projet.module').then(
+            (m) => m.ProjetModule
           ),
       },{
         path: 'client',
         loadChildren: () =>
-          import('./client/client-routing.module').then(
-            (m) => m.ClientRoutingModule
+          import('./client/client.module').then(
+            (m) => m.ClientModule
           ),
       },
       {
         path: 'fournisseur',
         loadChildren: () =>
-          import('./fournisseur/fournisseur-routing.module').then(
-            (m) => m.FournisseurRoutingModule
+          import('./fournisseur/fournisseur.module').then(
+            (m) => m.FournisseurModule
           ),
       },
       {
         path: 'equipe',
         loadChildren: () =>
-          import('./equipe/equipe-routing.module').then(
-            (m) => m.EquipeRoutingModule
+          import('./equipe/equipe.module').then(
+            (m) => m.EquipeModule
           ),
       },
 
@@ -146,21 +150,29 @@ const routes: Routes = [
       },
       {
         path: 'sales',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./sales/sales.module').then((m) => m.SalesModule),
       },
       {
         path: 'stock',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./stock/stock.module').then((m) => m.StockModule),
       },
       {
         path: 'purchase',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./purchase/purchase.module').then((m) => m.PurchaseModule),
       },
       {
         path: 'expense',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
           import('./expense/expense.module').then((m) => m.ExpenseModule),
       },
@@ -176,11 +188,13 @@ const routes: Routes = [
       },{
         path: 'documentation',
         loadChildren: () =>
-          import('./documentation/documentation-routing.module').then((m) => m.DocumentationRoutingModule),
+          import('./documentation/documentation.module').then((m) => m.DocumentationModule),
       },{
         path: 'budget',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
         loadChildren: () =>
-          import('./budget/budget-routing.module').then((m) => m.BudgetRoutingModule),
+          import('./budget/budget.module').then((m) => m.BudgetModule),
       },{
         path: 'article-achat',
         canActivate: [RoleGuard],

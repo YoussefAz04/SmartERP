@@ -9,11 +9,12 @@ import lombok.Setter;
 
 
 @Entity
+@Table(name = "DetaisFactureAchat")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class DetaisFactureAchat {
+public class DetailsFactureAchat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

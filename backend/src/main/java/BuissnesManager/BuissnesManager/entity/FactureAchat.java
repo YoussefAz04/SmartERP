@@ -39,7 +39,7 @@ public class FactureAchat {
 
     @OneToOne(mappedBy = "factureAchat")
     @JsonIgnoreProperties(value = "factureAchat")
-    private DetaisFactureAchat detaisFactureAchat;
+    private DetailsFactureAchat detaisFactureAchat;
 
     @ManyToOne
     @JoinColumn(name = "fournisseur_id")

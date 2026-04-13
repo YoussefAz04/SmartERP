@@ -1,7 +1,7 @@
 package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.entity.Client;
-import BuissnesManager.BuissnesManager.entity.DetaisFactureDeVente;
+import BuissnesManager.BuissnesManager.entity.DetailsFactureDeVente;
 import BuissnesManager.BuissnesManager.entity.FactureAchat;
 import BuissnesManager.BuissnesManager.entity.FactureDeVente;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
@@ -32,7 +32,7 @@ public class FactureDeVenteService {
 
 
     public FactureDeVente ajouterFactureDeVente(FactureDeVente factureDeVente){
-       DetaisFactureDeVente detail = factureDeVente.getDetaisFactureDeVente() ;
+       DetailsFactureDeVente detail = factureDeVente.getDetaisFactureDeVente() ;
        detail.setFactureDeVente(factureDeVente);
 
        return factureDeVenteRepo.save(factureDeVente);
