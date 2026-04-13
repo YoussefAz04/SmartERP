@@ -7,6 +7,8 @@ import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.ImageService;
 import BuissnesManager.BuissnesManager.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import java.util.Map;
 @RequestMapping("/api/users")
 @RestController
 public class UserContoller {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserContoller.class);
 
     @Autowired
     private UserService userService;
@@ -60,10 +64,16 @@ public class UserContoller {
             }
             User createdUser = userService.createUserWithEntrepriseAndEquipe(request, idEntreprise, idEquipe);
             return ResponseEntity.ok(createdUser);
+        } catch (IllegalArgumentException e) {
+            logger.error("Validation error creating user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (AccessDeniedException e) {
+            logger.error("Access denied creating user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            logger.error("Unexpected error creating user: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur: " + e.getMessage());
         }
     }
 
