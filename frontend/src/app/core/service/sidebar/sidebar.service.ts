@@ -177,7 +177,26 @@ generateSidebarData(modules: ModuleTittle[]) {
       };
     }).filter((section: any) => section.menu && section.menu.length > 0);
 
-    this.sidebarDataSubject.next(data);
+    // Append static AI Intelligence section
+    const aiSection = {
+      tittle: 'Intelligence Artificielle',
+      showAsTab: false,
+      separateRoute: false,
+      hasSubRoute: false,
+      showSubRoute: true,
+      menu: [
+        {
+          menuValue: 'Tableau de Bord IA',
+          hasSubRoute: false,
+          showSubRoute: false,
+          icon: 'cpu',
+          base1: 'ai-intelligence',
+          route: 'ai-intelligence',
+          subMenus: []
+        }
+      ]
+    };
+    this.sidebarDataSubject.next([...data, aiSection]);
   }
 
   // public sidebarData1 = [
