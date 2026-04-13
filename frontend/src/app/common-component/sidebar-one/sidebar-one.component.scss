@@ -31,6 +31,8 @@ $transition:       all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   background: linear-gradient(180deg, $sidebar-bg 0%, $sidebar-bg-end 100%);
   border-right: 1px solid $section-divider;
   box-shadow: 2px 0 16px rgba(0, 0, 0, 0.06);
+  // Smooth width transition for compact ↔ expanded state (overrides global 0.5s ease)
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #sidebar {
@@ -351,6 +353,106 @@ $transition:       all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// ============================================
+// COMPACT SIDEBAR STATE (mini-sidebar — default)
+// ============================================
+// The global _sidebar.scss hides ALL <span> elements inside nav links when
+// .mini-sidebar is active. sidebar-one uses custom spans (.nav-icon-wrap,
+// .nav-label, .hdr-text) so we must restore icon visibility and adapt layout.
+
+:host-context(.mini-sidebar:not(.expand-menu)) {
+  // --- Restore icon-wrap visibility (global hides every span) ---
+  #sidebar-menu ul li a .nav-icon-wrap {
+    display: flex !important;
+    margin: 0 auto;
+    flex-shrink: 0;
+  }
+
+  // --- Hide text labels & arrows ---
+  #sidebar-menu ul li a .nav-label {
+    display: none !important;
+  }
+  #sidebar-menu ul li a .menu-arrow {
+    display: none !important;
+  }
+
+  // --- Center icon in compact link ---
+  #sidebar-menu ul li a.nav-link {
+    justify-content: center !important;
+    padding: 10px 6px !important;
+    gap: 0 !important;
+  }
+
+  // --- Section header: hide text, keep minimal top spacing ---
+  .submenu-hdr {
+    padding: 10px 0 4px !important;
+    justify-content: center;
+    .hdr-text {
+      display: none !important;
+    }
+    // Show a subtle divider line instead of the text label
+    &::after {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: rgba($accent, 0.25);
+      border-radius: 1px;
+      margin: 0 auto;
+    }
+  }
+
+  // --- Compact list padding ---
+  #sidebar-menu > ul > li.submenu-open > ul {
+    padding: 4px 6px !important;
+  }
+
+  // --- Keep section separators subtle ---
+  li.submenu-open + li.submenu-open {
+    border-top: 1px solid rgba($section-divider, 0.6) !important;
+    margin-top: 2px !important;
+    padding-top: 2px !important;
+  }
+}
+
+// ============================================
+// EXPANDED STATE (hover triggers expand-menu)
+// ============================================
+:host-context(.mini-sidebar.expand-menu) {
+  // --- Restore label display ---
+  #sidebar-menu ul li a .nav-label {
+    display: block !important;
+    opacity: 1;
+  }
+
+  // --- Restore nav-link layout ---
+  #sidebar-menu ul li a.nav-link {
+    justify-content: flex-start !important;
+    padding: 10px 12px !important;
+    gap: 12px !important;
+  }
+
+  // --- Restore icon-wrap position ---
+  #sidebar-menu ul li a .nav-icon-wrap {
+    display: flex !important;
+    margin: 0;
+  }
+
+  // --- Restore section headers ---
+  .submenu-hdr {
+    padding: 14px 20px 6px !important;
+    &::after { display: none; }
+    .hdr-text {
+      display: block !important;
+    }
+  }
+
+  // --- Restore list padding ---
+  #sidebar-menu > ul > li.submenu-open > ul {
+    padding: 4px 10px !important;
   }
 }
 
