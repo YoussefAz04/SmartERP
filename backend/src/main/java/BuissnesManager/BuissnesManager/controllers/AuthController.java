@@ -7,6 +7,7 @@ import BuissnesManager.BuissnesManager.dto.RegisterResponse;
 import BuissnesManager.BuissnesManager.dto.Response;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.entity.Role;
+import BuissnesManager.BuissnesManager.entity.RoleType;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
@@ -182,6 +183,25 @@ public class AuthController {
             }
             response.setRoles(roleNames);
             response.setPermission(permissionDtoList);
+
+            // ✅ COMPUTE NUMERIC roleId: SUPER_ADMIN=0, ADMIN=1, EMPLOYEE=2
+            // These values must match the frontend constants in entreprise.component.ts
+            final int ROLE_SUPER_ADMIN = 0;
+            final int ROLE_ADMIN = 1;
+            final int ROLE_EMPLOYEE = 2;
+            int computedRoleId = ROLE_EMPLOYEE; // default to least-privileged role
+            if (user.getRoles() != null) {
+                for (Role role : user.getRoles()) {
+                    if (role.getRoleType() == RoleType.SUPER_ADMIN) {
+                        computedRoleId = ROLE_SUPER_ADMIN;
+                        break; // highest privilege, no need to check further
+                    } else if (role.getRoleType() == RoleType.ADMIN && computedRoleId > ROLE_ADMIN) {
+                        // only elevate to ADMIN if not already at a higher-privilege level
+                        computedRoleId = ROLE_ADMIN;
+                    }
+                }
+            }
+            response.setRoleId(computedRoleId);
 
             // ✅ SET ENTERPRISE ID - Get from user's assigned enterprise
             Long entrepriseId = null;
