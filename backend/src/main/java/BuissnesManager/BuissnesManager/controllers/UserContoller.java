@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.dto.CreateEmployeeRequest;
 import BuissnesManager.BuissnesManager.dto.UserRequest;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.entity.UserDTO;
@@ -74,6 +75,37 @@ public class UserContoller {
             logger.error("Unexpected error creating user: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Create an employee user.
+     * ADMIN: can only create employees for their own enterprise (enterpriseId from token overrides request).
+     * SUPER_ADMIN: can create employees for any enterprise (uses enterpriseId from request body).
+     */
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PostMapping("/create-employee")
+    public ResponseEntity<?> createEmployeeUser(
+            @RequestBody CreateEmployeeRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            if (authorizationUtil.isAdmin() && !authorizationUtil.isSuperAdmin()) {
+                Long tokenEnterpriseId = extractEnterpriseId(authHeader);
+                if (tokenEnterpriseId == null) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body("Enterprise context not found in token");
+                }
+                request.setEnterpriseId(tokenEnterpriseId);
+            }
+            UserDTO createdUser = userService.createEmployeeWithModules(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        } catch (IllegalArgumentException e) {
+            logger.error("Validation error creating employee: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unexpected error creating employee: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur inattendue s'est produite lors de la création de l'employé");
         }
     }
 
