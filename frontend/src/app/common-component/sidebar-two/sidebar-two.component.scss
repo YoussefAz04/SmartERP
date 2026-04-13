@@ -107,7 +107,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
             // ICON
             i {
               font-size: 18px;
-              color: #cbd5e0;
+              color: #718096;
               margin-right: 12px;
               transition: color 0.28s ease, transform 0.28s ease;
               min-width: 20px;
@@ -122,7 +122,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
               &.menu-arrow {
                 margin-left: auto;
                 font-size: 16px;
-                color: #cbd5e0;
+                color: #718096;
                 transition: transform 0.3s ease, color 0.28s ease;
                 margin-right: 4px;
               }
@@ -223,7 +223,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
                   padding: 9px 18px 9px 46px;
                   margin-right: 10px;
                   font-size: 13px;
-                  color: $text-light;
+                  color: $text-secondary;
                   border-radius: 0 8px 8px 0;
                   border-left: 3px solid transparent;
                   font-weight: 500;
