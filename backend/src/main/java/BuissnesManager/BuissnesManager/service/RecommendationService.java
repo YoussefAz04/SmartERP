@@ -1,0 +1,144 @@
+package BuissnesManager.BuissnesManager.service;
+
+import BuissnesManager.BuissnesManager.dto.RecommendationDto;
+import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
+import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
+import BuissnesManager.BuissnesManager.repository.StockRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class RecommendationService {
+
+    @Autowired
+    private StockRepository stockRepository;
+
+    @Autowired
+    private CommandeVenteRepository commandeVenteRepository;
+
+    @Autowired
+    private CommandeAchatRepository commandeAchatRepository;
+
+    public List<RecommendationDto> generateRecommendations(Long entrepriseId) {
+        List<RecommendationDto> recommendations = new ArrayList<>();
+
+        // 1. Stock alerts
+        Long lowStockCount = stockRepository.getLowStockItemsCount(entrepriseId);
+        Long outOfStockCount = stockRepository.getOutOfStockItemsCount(entrepriseId);
+
+        if (outOfStockCount != null && outOfStockCount > 0) {
+            recommendations.add(new RecommendationDto(
+                "STOCK_CRITIQUE",
+                "Rupture de Stock Détectée",
+                outOfStockCount + " article(s) en rupture de stock. Passez des commandes d'achat immédiatement pour éviter des pertes de ventes.",
+                "CRITIQUE",
+                "fa-exclamation-triangle",
+                "Voir Stock"
+            ));
+        }
+
+        if (lowStockCount != null && lowStockCount > 0) {
+            recommendations.add(new RecommendationDto(
+                "STOCK_FAIBLE",
+                "Stock Faible - Action Requise",
+                lowStockCount + " article(s) ont atteint le seuil d'alerte. Anticipez vos approvisionnements pour maintenir la continuité.",
+                "HAUTE",
+                "fa-boxes",
+                "Gérer Stock"
+            ));
+        }
+
+        // 2. Sales performance recommendations
+        LocalDate now = LocalDate.now();
+        LocalDate startOfMonth = now.withDayOfMonth(1);
+        LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+
+        Double salesThisMonth = commandeVenteRepository.getSalesInPeriod(entrepriseId, startOfMonth, endOfMonth);
+        Double totalSales = commandeVenteRepository.getTotalSalesRevenue(entrepriseId);
+
+        if (salesThisMonth != null && totalSales != null && totalSales > 0) {
+            double monthShare = (salesThisMonth / totalSales) * 100;
+            if (monthShare < 5.0) {
+                recommendations.add(new RecommendationDto(
+                    "VENTES_FAIBLES",
+                    "Performance des Ventes ce Mois",
+                    "Les ventes de ce mois représentent seulement " + Math.round(monthShare * 10) / 10.0 + "% du total. Envisagez des actions promotionnelles.",
+                    "MOYENNE",
+                    "fa-chart-line",
+                    "Analyser Ventes"
+                ));
+            }
+        }
+
+        // 3. Top products recommendation
+        List<Object[]> topProducts = commandeVenteRepository.getTopProducts(entrepriseId);
+        if (topProducts != null && !topProducts.isEmpty()) {
+            String topProduct = topProducts.get(0)[0] != null ? topProducts.get(0)[0].toString() : "N/A";
+            recommendations.add(new RecommendationDto(
+                "PRODUIT_STAR",
+                "Optimisation Produit Vedette",
+                "\"" + topProduct + "\" est votre produit le plus vendu. Assurez un stock suffisant et envisagez des offres groupées pour maximiser les revenus.",
+                "BASSE",
+                "fa-star",
+                "Voir Produits"
+            ));
+        }
+
+        // 4. Purchase optimization
+        Double totalPurchases = commandeAchatRepository.getTotalPurchases(entrepriseId);
+        if (totalSales != null && totalPurchases != null && totalSales > 0 && totalPurchases > 0) {
+            double margin = ((totalSales - totalPurchases) / totalSales) * 100;
+            if (margin < 20.0) {
+                recommendations.add(new RecommendationDto(
+                    "MARGE_FAIBLE",
+                    "Amélioration de la Marge Commerciale",
+                    "Votre marge commerciale est de " + Math.round(margin * 10) / 10.0 + "%. Négociez de meilleures conditions avec vos fournisseurs ou réévaluez vos prix de vente.",
+                    "HAUTE",
+                    "fa-percentage",
+                    "Analyser Achats"
+                ));
+            } else {
+                recommendations.add(new RecommendationDto(
+                    "BONNE_PERFORMANCE",
+                    "Excellente Marge Commerciale",
+                    "Votre marge commerciale de " + Math.round(margin * 10) / 10.0 + "% est saine. Continuez à surveiller les coûts d'approvisionnement.",
+                    "INFO",
+                    "fa-thumbs-up",
+                    "Voir Détails"
+                ));
+            }
+        }
+
+        // 5. Seasonal recommendations
+        int currentMonth = now.getMonthValue();
+        if (currentMonth >= 10 || currentMonth <= 1) {
+            recommendations.add(new RecommendationDto(
+                "SAISONNALITE",
+                "Période de Forte Demande à Venir",
+                "La période de fin d'année approche. Anticipez vos stocks et préparez des offres promotionnelles pour maximiser vos ventes.",
+                "MOYENNE",
+                "fa-calendar-alt",
+                "Planifier"
+            ));
+        }
+
+        // 6. Always add a data quality recommendation if little data
+        Long totalOrders = commandeVenteRepository.getTotalSalesOrders(entrepriseId);
+        if (totalOrders != null && totalOrders < 10) {
+            recommendations.add(new RecommendationDto(
+                "DONNEES_INSUFFISANTES",
+                "Enrichissez Vos Données",
+                "Vous avez seulement " + totalOrders + " commande(s) enregistrée(s). Plus vous enregistrez de transactions, plus les analyses IA seront précises.",
+                "INFO",
+                "fa-database",
+                "Ajouter Commandes"
+            ));
+        }
+
+        return recommendations;
+    }
+}

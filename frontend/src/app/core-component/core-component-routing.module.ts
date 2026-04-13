@@ -218,6 +218,13 @@ const routes: Routes = [
         loadChildren: () =>
           import('./commande-vente/commande-vente.module').then((m) => m.CommandeVenteModule),
       },
+      {
+        path: 'ai-intelligence',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+        loadChildren: () =>
+          import('./ai-intelligence/ai-intelligence.module').then((m) => m.AiIntelligenceModule),
+      },
 
 
     ],
