@@ -31,9 +31,19 @@ public class FactureDeVenteService {
 
 
 
+    private static final java.util.Set<String> VALID_STATUTS = java.util.Set.of(
+            "EN_ATTENTE", "PAYEE", "PARTIELLEMENT_PAYEE", "ANNULEE");
+
     public FactureDeVente ajouterFactureDeVente(FactureDeVente factureDeVente){
-       DetailsFactureDeVente detail = factureDeVente.getDetaisFactureDeVente() ;
-       detail.setFactureDeVente(factureDeVente);
+       if (factureDeVente.getStatut() == null || factureDeVente.getStatut().isEmpty()
+               || !VALID_STATUTS.contains(factureDeVente.getStatut())) {
+           factureDeVente.setStatut("EN_ATTENTE");
+       }
+
+       DetailsFactureDeVente detail = factureDeVente.getDetaisFactureDeVente();
+       if (detail != null) {
+           detail.setFactureDeVente(factureDeVente);
+       }
 
        return factureDeVenteRepo.save(factureDeVente);
     }
@@ -62,7 +72,11 @@ public class FactureDeVenteService {
                     existingFacture.setMontantTTC(updatedFacture.getMontantTTC());
                     existingFacture.setRemise(updatedFacture.getRemise());
                     existingFacture.setModePaiement(updatedFacture.getModePaiement());
-                    existingFacture.setStatut(updatedFacture.getStatut());
+                    if (updatedFacture.getStatut() != null
+                            && !updatedFacture.getStatut().isEmpty()
+                            && VALID_STATUTS.contains(updatedFacture.getStatut())) {
+                        existingFacture.setStatut(updatedFacture.getStatut());
+                    }
                     existingFacture.setDescription(updatedFacture.getDescription());
                     existingFacture.setCheminFichier(updatedFacture.getCheminFichier());
                     //

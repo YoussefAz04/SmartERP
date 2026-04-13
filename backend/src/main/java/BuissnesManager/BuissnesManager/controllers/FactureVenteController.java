@@ -11,10 +11,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/factures-vente")
 public class FactureVenteController {
+
+    private static final Set<String> VALID_STATUTS = Set.of(
+            "EN_ATTENTE", "PAYEE", "PARTIELLEMENT_PAYEE", "ANNULEE");
 
     @Autowired
     private FactureVenteRepository factureVenteRepository;
@@ -81,7 +85,9 @@ public class FactureVenteController {
             facture.setMontantTTC(dto.getMontantTTC());
             facture.setRemise(dto.getRemise());
             facture.setModePaiement(dto.getModePaiement());
-            facture.setStatut(dto.getStatut());
+            String statut = dto.getStatut();
+            facture.setStatut((statut != null && !statut.isEmpty() && VALID_STATUTS.contains(statut))
+                    ? statut : "EN_ATTENTE");
             facture.setDescription(dto.getDescription());
             if (dto.getClientId() != null) {
                 Client client = clientRepo.findById(dto.getClientId())
@@ -120,7 +126,8 @@ public class FactureVenteController {
             if (dto.getMontantTTC() != null) facture.setMontantTTC(dto.getMontantTTC());
             if (dto.getRemise() != null) facture.setRemise(dto.getRemise());
             if (dto.getModePaiement() != null) facture.setModePaiement(dto.getModePaiement());
-            if (dto.getStatut() != null) facture.setStatut(dto.getStatut());
+            if (dto.getStatut() != null && !dto.getStatut().isEmpty()
+                    && VALID_STATUTS.contains(dto.getStatut())) facture.setStatut(dto.getStatut());
             if (dto.getDescription() != null) facture.setDescription(dto.getDescription());
             return ResponseEntity.ok(factureVenteRepository.save(facture));
         } catch (RuntimeException e) {
