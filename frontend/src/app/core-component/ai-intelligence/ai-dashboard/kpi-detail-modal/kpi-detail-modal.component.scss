@@ -1,0 +1,343 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-container {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.25s ease;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4361ee, #7209b7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef2ff;
+  color: #4361ee;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #dce4ff;
+  }
+}
+
+.btn-close-modal {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #f8f9fc;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    background: #ffeef0;
+    color: #ef476f;
+  }
+}
+
+.modal-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 24px 0;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px 8px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+
+  &:hover {
+    color: #4361ee;
+    background: #f8f9fc;
+  }
+
+  &.active {
+    color: #4361ee;
+    border-bottom-color: #4361ee;
+    background: #f8f9fc;
+  }
+}
+
+.modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-subtitle {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #555;
+  margin: 0 0 14px;
+}
+
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    background: #f8f9fc;
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    color: #333;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8f9fc; }
+}
+
+.rank-badge-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4361ee;
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+.rank-slow {
+  background: #fff4e6;
+  color: #f4a261;
+}
+
+.value-cell {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.status-card {
+  background: #f8f9fc;
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.status-name {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.status-count {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4361ee;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.overview-card {
+  background: #f8f9fc;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.ov-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 8px;
+}
+
+.ov-value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+
+  &.highlight {
+    color: #4361ee;
+  }
+}
+
+.methodology-info {
+  margin-top: 16px;
+  background: #f0f4ff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.accuracy-display {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.accuracy-ring {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4361ee, #7209b7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.accuracy-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.accuracy-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.85;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.accuracy-description {
+  font-size: 0.88rem;
+
+  p { margin: 0; }
+}
+
+.no-data-modal {
+  text-align: center;
+  padding: 40px 20px;
+  color: #aaa;
+  font-size: 0.9rem;
+
+  i { display: block; font-size: 2rem; margin-bottom: 10px; }
+}
+
+.mt-3 { margin-top: 20px; }
+
+.text-success { color: #06d6a0 !important; }
+.text-danger { color: #ef476f !important; }
+.text-warning { color: #f4a261 !important; }
+.text-info { color: #4361ee !important; }
+.text-primary { color: #4361ee !important; }

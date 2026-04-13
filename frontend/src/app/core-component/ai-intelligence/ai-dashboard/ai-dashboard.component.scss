@@ -142,6 +142,28 @@
   &:hover { transform: translateY(-2px); }
 }
 
+.kpi-clickable {
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(67, 97, 238, 0.15);
+
+    .kpi-details-hint { opacity: 1; }
+  }
+}
+
+.kpi-details-hint {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
 .kpi-icon {
   width: 54px;
   height: 54px;

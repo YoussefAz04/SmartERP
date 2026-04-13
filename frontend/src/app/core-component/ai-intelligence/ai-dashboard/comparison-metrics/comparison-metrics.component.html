@@ -1,0 +1,114 @@
+<div class="comparison-section">
+  <h2 class="section-title">
+    <i class="fas fa-chart-bar me-2"></i>Comparaison des Périodes
+  </h2>
+  <div class="comparison-grid" *ngIf="comparison">
+
+    <!-- MTD vs LTD -->
+    <div class="comparison-card">
+      <div class="comparison-header">
+        <div class="comparison-title">
+          <i class="fas fa-calendar-day"></i>
+          <span>Mois en cours vs Mois précédent</span>
+        </div>
+        <span class="period-badge">MTD vs LTD</span>
+      </div>
+
+      <div class="comparison-body">
+        <div class="period-row">
+          <div class="period-info">
+            <span class="period-label">Ce mois (MTD)</span>
+            <span class="period-value current">{{ formatCurrency(comparison.mtdVsLtd.current) }} DA</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar current-bar"
+                 [style.width.%]="getProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)">
+            </div>
+          </div>
+        </div>
+
+        <div class="period-row">
+          <div class="period-info">
+            <span class="period-label">Mois précédent (LTD)</span>
+            <span class="period-value previous">{{ formatCurrency(comparison.mtdVsLtd.previous) }} DA</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar previous-bar"
+                 [style.width.%]="getPreviousProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison-footer">
+        <div class="change-indicator"
+             [ngClass]="comparison.mtdVsLtd.trend === 'up' ? 'change-up' : comparison.mtdVsLtd.trend === 'down' ? 'change-down' : 'change-stable'">
+          <i class="fas"
+             [ngClass]="comparison.mtdVsLtd.trend === 'up' ? 'fa-arrow-trend-up' : comparison.mtdVsLtd.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'">
+          </i>
+          <span>
+            {{ comparison.mtdVsLtd.changePercent >= 0 ? '+' : '' }}{{ comparison.mtdVsLtd.changePercent | number:'1.1-1' }}%
+          </span>
+        </div>
+        <span class="change-amount"
+              [ngClass]="comparison.mtdVsLtd.change >= 0 ? 'text-success' : 'text-danger'">
+          {{ comparison.mtdVsLtd.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.mtdVsLtd.change) }} DA
+        </span>
+      </div>
+    </div>
+
+    <!-- YTD vs Last Year -->
+    <div class="comparison-card">
+      <div class="comparison-header">
+        <div class="comparison-title">
+          <i class="fas fa-calendar-check"></i>
+          <span>Cumul annuel vs Année précédente</span>
+        </div>
+        <span class="period-badge">YTD vs Année-1</span>
+      </div>
+
+      <div class="comparison-body">
+        <div class="period-row">
+          <div class="period-info">
+            <span class="period-label">Cette année (YTD)</span>
+            <span class="period-value current">{{ formatCurrency(comparison.ytdVsLastYear.current) }} DA</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar current-bar"
+                 [style.width.%]="getProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)">
+            </div>
+          </div>
+        </div>
+
+        <div class="period-row">
+          <div class="period-info">
+            <span class="period-label">Année précédente</span>
+            <span class="period-value previous">{{ formatCurrency(comparison.ytdVsLastYear.previous) }} DA</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar previous-bar"
+                 [style.width.%]="getPreviousProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison-footer">
+        <div class="change-indicator"
+             [ngClass]="comparison.ytdVsLastYear.trend === 'up' ? 'change-up' : comparison.ytdVsLastYear.trend === 'down' ? 'change-down' : 'change-stable'">
+          <i class="fas"
+             [ngClass]="comparison.ytdVsLastYear.trend === 'up' ? 'fa-arrow-trend-up' : comparison.ytdVsLastYear.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'">
+          </i>
+          <span>
+            {{ comparison.ytdVsLastYear.changePercent >= 0 ? '+' : '' }}{{ comparison.ytdVsLastYear.changePercent | number:'1.1-1' }}%
+          </span>
+        </div>
+        <span class="change-amount"
+              [ngClass]="comparison.ytdVsLastYear.change >= 0 ? 'text-success' : 'text-danger'">
+          {{ comparison.ytdVsLastYear.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear.change) }} DA
+        </span>
+      </div>
+    </div>
+
+  </div>
+</div>

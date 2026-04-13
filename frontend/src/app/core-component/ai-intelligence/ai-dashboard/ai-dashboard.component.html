@@ -39,7 +39,7 @@
 
     <!-- KPI Cards -->
     <div class="kpi-grid">
-      <div class="kpi-card kpi-revenue">
+      <div class="kpi-card kpi-revenue kpi-clickable" (click)="openModal('revenue')" title="Voir les détails">
         <div class="kpi-icon"><i class="fas fa-coins"></i></div>
         <div class="kpi-body">
           <div class="kpi-label">Revenu Total</div>
@@ -48,18 +48,20 @@
             {{ growthArrow }} {{ dashboard.salesAnalysis.growthRate | number:'1.1-1' }}% vs S1
           </div>
         </div>
+        <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
 
-      <div class="kpi-card kpi-orders">
+      <div class="kpi-card kpi-orders kpi-clickable" (click)="openModal('orders')" title="Voir les détails">
         <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
         <div class="kpi-body">
           <div class="kpi-label">Commandes Totales</div>
           <div class="kpi-value">{{ dashboard.kpiSummary.totalOrders | number }}</div>
           <div class="kpi-trend text-muted">Valeur moy. {{ formatCurrency(dashboard.kpiSummary.avgOrderValue) }} DA</div>
         </div>
+        <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
 
-      <div class="kpi-card kpi-products">
+      <div class="kpi-card kpi-products kpi-clickable" (click)="openModal('products')" title="Voir les détails">
         <div class="kpi-icon"><i class="fas fa-boxes"></i></div>
         <div class="kpi-body">
           <div class="kpi-label">Articles en Stock</div>
@@ -71,9 +73,10 @@
             <i class="fas fa-check-circle"></i> Stock optimal
           </div>
         </div>
+        <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
 
-      <div class="kpi-card kpi-forecast">
+      <div class="kpi-card kpi-forecast kpi-clickable" (click)="openModal('forecast')" title="Voir les détails">
         <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
         <div class="kpi-body">
           <div class="kpi-label">Prévision Mois Prochain</div>
@@ -82,8 +85,15 @@
             Fiabilité: {{ dashboard.forecast.confidenceScore | number:'1.0-0' }}%
           </div>
         </div>
+        <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
     </div>
+
+    <!-- Comparison Metrics Section -->
+    <app-comparison-metrics
+      *ngIf="dashboard.comparison"
+      [comparison]="dashboard.comparison">
+    </app-comparison-metrics>
 
     <!-- Charts Row -->
     <div class="charts-row">
@@ -264,4 +274,13 @@
     </div>
 
   </div><!-- /dashboard content -->
+
+  <!-- KPI Detail Modal -->
+  <app-kpi-detail-modal
+    *ngIf="activeModal && dashboard?.kpiDetails"
+    [modalType]="activeModal"
+    [kpiDetails]="dashboard!.kpiDetails!"
+    (closed)="closeModal()">
+  </app-kpi-detail-modal>
+
 </div>
