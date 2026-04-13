@@ -1,36 +1,36 @@
 // ============================================
-// VARIABLES — Dark Professional ERP Theme
+// VARIABLES — Light Modern ERP Theme
 // ============================================
-$sidebar-bg:       #1a2236;
-$sidebar-bg-end:   #1e2a42;
-$section-divider:  rgba(255, 255, 255, 0.07);
+$sidebar-bg:       #ffffff;
+$sidebar-bg-end:   #f8f9fb;
+$section-divider:  #e2e8f0;
 
-$accent:           #4f8ef7;
-$accent-dark:      #2563eb;
-$accent-light:     rgba(79, 142, 247, 0.18);
-$accent-glow:      rgba(79, 142, 247, 0.30);
+$accent:           #5b6ace;
+$accent-dark:      #4454b2;
+$accent-light:     rgba(91, 106, 206, 0.10);
+$accent-glow:      rgba(91, 106, 206, 0.20);
 
-$text-primary:     #e8edf5;
-$text-secondary:   #9bacc8;
-$text-muted:       #5e738a;
+$text-primary:     #2d3748;
+$text-secondary:   #4a5568;
+$text-muted:       #6c757d;
 
-$icon-default:     #7b92b4;
-$icon-active:      #ffffff;
+$icon-default:     #6c757d;
+$icon-active:      #5b6ace;
 
-$hover-bg:         rgba(79, 142, 247, 0.10);
-$active-bg:        rgba(79, 142, 247, 0.20);
-$active-border:    #4f8ef7;
+$hover-bg:         rgba(91, 106, 206, 0.07);
+$active-bg:        rgba(91, 106, 206, 0.12);
+$active-border:    #5b6ace;
 
 $transition:       all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 
 // ============================================
-// SIDEBAR BASE — dark panel
+// SIDEBAR BASE — light panel
 // ============================================
 .sidebar#sidebar,
 .sidebar {
   background: linear-gradient(180deg, $sidebar-bg 0%, $sidebar-bg-end 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 3px 0 24px rgba(0, 0, 0, 0.30);
+  border-right: 1px solid $section-divider;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.06);
 }
 
 #sidebar {
@@ -136,7 +136,7 @@ $transition:       all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
               width: 36px;
               height: 36px;
               border-radius: 8px;
-              background: rgba(255, 255, 255, 0.06);
+              background: rgba($icon-default, 0.08);
               flex-shrink: 0;
               transition: $transition;
 
