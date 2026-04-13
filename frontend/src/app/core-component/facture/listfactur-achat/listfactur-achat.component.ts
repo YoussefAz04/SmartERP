@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {FactureAchat} from "../../../model/FactureAchat.model";
 import {FactureService} from "../../../core/service/facture/facture.service";
 import {MatTooltip} from "@angular/material/tooltip";
-import {DecimalPipe, NgForOf, NgIf} from "@angular/common";
-import {FormsModule} from "@angular/forms";
+import {DecimalPipe, NgForOf, NgIf, CommonModule} from "@angular/common";
 import {Router} from "@angular/router";
 import {ResponseDto} from "../../../model/reponseDto.model";
 import {PermissionDto} from "../../../model/permissionDto.model";
+import {FormsModule} from "@angular/forms";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -18,32 +18,25 @@ import autoTable from 'jspdf-autotable';
     DecimalPipe,
     NgForOf,
     NgIf,
+    CommonModule,
     FormsModule
   ],
   templateUrl: './listfactur-achat.component.html',
   styleUrl: './listfactur-achat.component.scss'
 })
-export class ListfacturAchatComponent implements OnInit {
-  factureAchatList: FactureAchat[] = [];
-  filteredList: FactureAchat[] = [];
-  permissionAchat: PermissionDto = {
-    id: 0,
-    moduleId: 0,
-    roleId: 0,
-    view: false,
-    create: false,
-    update: false,
-    delete: false,
-    moduleTitle: ''
-  };
+export class ListfacturAchatComponent implements OnInit{
+  factureAchatList : FactureAchat[] = [];
+  filteredList : FactureAchat[] = [];
+  permissionAchat!: PermissionDto;
   searchTerm: string = '';
   sortBy: string = 'dateAchat';
   sortOrder: 'asc' | 'desc' = 'desc';
   isLoading: boolean = false;
   selectedFactures: Set<number> = new Set();
+  selectAll: boolean = false;
 
-  constructor(private factureService: FactureService,
-              private router: Router) {
+  constructor(private factureService : FactureService,
+              private router : Router) {
   }
 
   ngOnInit() {
@@ -51,7 +44,7 @@ export class ListfacturAchatComponent implements OnInit {
     this.getUserAuthData();
   }
 
-  getAllFactureAchat() {
+  getAllFactureAchat(){
     this.isLoading = true;
     this.factureService.getAllFactureAchat().subscribe({
       next: (data) => {
@@ -67,28 +60,27 @@ export class ListfacturAchatComponent implements OnInit {
   }
 
   applyFiltersAndSort() {
-    const term = this.searchTerm.toLowerCase();
-    this.filteredList = this.factureAchatList.filter(f =>
-      (f.referance?.toLowerCase().includes(term) ?? false) ||
-      (f.modePaiement?.toLowerCase().includes(term) ?? false) ||
-      (f.statut?.toLowerCase().includes(term) ?? false)
+    this.filteredList = this.factureAchatList.filter(f => 
+      f.referance?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      f.modePaiement?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      f.statut?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
 
     this.filteredList.sort((a, b) => {
-      let firstValue: any = a[this.sortBy as keyof FactureAchat];
-      let secondValue: any = b[this.sortBy as keyof FactureAchat];
+      let aValue: any = a[this.sortBy as keyof FactureAchat];
+      let bValue: any = b[this.sortBy as keyof FactureAchat];
 
-      if (typeof firstValue === 'string') {
-        firstValue = firstValue.toLowerCase();
-        secondValue = (secondValue as string)?.toLowerCase() ?? '';
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
       }
 
-      if (firstValue == null) return 1;
-      if (secondValue == null) return -1;
-      if (firstValue < secondValue) return this.sortOrder === 'asc' ? -1 : 1;
-      if (firstValue > secondValue) return this.sortOrder === 'asc' ? 1 : -1;
+      if (aValue < bValue) return this.sortOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return this.sortOrder === 'asc' ? 1 : -1;
       return 0;
     });
+
+    this.selectAll = false;
   }
 
   onSearch(term: string) {
@@ -104,6 +96,40 @@ export class ListfacturAchatComponent implements OnInit {
       this.sortOrder = 'asc';
     }
     this.applyFiltersAndSort();
+  }
+
+  // ✅ NEW METHOD - Safe status class generation
+  getStatusClass(statut: string | undefined): string {
+    if (!statut) {
+      return 'status-default';
+    }
+    return 'status-' + statut.toLowerCase().replace(' ', '-');
+  }
+
+  toggleSelectAll(checked: boolean) {
+    this.selectAll = checked;
+    if (checked) {
+      this.filteredList.forEach(f => f.id && this.selectedFactures.add(f.id));
+    } else {
+      this.selectedFactures.clear();
+    }
+  }
+
+  toggleSelectFacture(id: number | undefined) {
+    if (id === undefined) return;
+    if (this.selectedFactures.has(id)) {
+      this.selectedFactures.delete(id);
+      this.selectAll = false;
+    } else {
+      this.selectedFactures.add(id);
+      if (this.selectedFactures.size === this.filteredList.length) {
+        this.selectAll = true;
+      }
+    }
+  }
+
+  isFactureSelected(id: number | undefined): boolean {
+    return id !== undefined && this.selectedFactures.has(id);
   }
 
   viewFacture(id: number | undefined) {
@@ -126,8 +152,61 @@ export class ListfacturAchatComponent implements OnInit {
 
   exportToPdf(facture: FactureAchat) {
     const doc = new jsPDF();
-    this.renderFacturePage(doc, facture, true);
-    doc.save(`Facture_${facture.referance ?? 'achat'}.pdf`);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 10;
+
+    doc.setFontSize(16);
+    doc.text('FACTURE D\'ACHAT', pageWidth / 2, 15, { align: 'center' });
+
+    doc.setFontSize(10);
+    let yPosition = 30;
+    
+    doc.text(`Référence: ${facture.referance}`, margin, yPosition);
+    yPosition += 7;
+    doc.text(`Date d'Achat: ${facture.dateAchat}`, margin, yPosition);
+    yPosition += 7;
+    doc.text(`Mode de Paiement: ${facture.modePaiement}`, margin, yPosition);
+    yPosition += 7;
+    doc.text(`Statut: ${facture.statut}`, margin, yPosition);
+    yPosition += 12;
+
+    const summaryData = [
+      ['Montant HT', `${(facture.montantHT || 0).toFixed(2)} €`],
+      ['Montant TVA', `${(facture.montantTVA || 0).toFixed(2)} €`],
+      ['Remise', `${(facture.remise || 0).toFixed(2)} €`],
+      ['Montant Total', `${(facture.montantTotal || 0).toFixed(2)} €`],
+      ['Montant TTC', `${(facture.montantTTC || 0).toFixed(2)} €`]
+    ];
+
+    autoTable(doc, {
+      startY: yPosition,
+      head: [['Détail', 'Montant']],
+      body: summaryData,
+      margin: margin,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      }
+    });
+
+    if (facture.description) {
+      yPosition = (doc as any).lastAutoTable.finalY + 10;
+      doc.setFontSize(10);
+      doc.text('Description:', margin, yPosition);
+      doc.setFontSize(9);
+      doc.text(facture.description, margin, yPosition + 5, { maxWidth: pageWidth - 2 * margin });
+    }
+
+    doc.setFontSize(8);
+    doc.text(`Généré le: ${new Date().toLocaleString('fr-FR')}`, margin, pageHeight - 10);
+
+    doc.save(`Facture_${facture.referance}.pdf`);
   }
 
   exportMultipleToPdf() {
@@ -139,125 +218,67 @@ export class ListfacturAchatComponent implements OnInit {
     const doc = new jsPDF();
     const selectedItems = Array.from(this.selectedFactures)
       .map(id => this.factureAchatList.find(f => f.id === id))
-      .filter((f): f is FactureAchat => f !== undefined);
+      .filter(f => f !== undefined) as FactureAchat[];
 
     selectedItems.forEach((facture, index) => {
-      if (index > 0) doc.addPage();
-      this.renderFacturePage(doc, facture, false);
+      if (index > 0) {
+        doc.addPage();
+      }
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 10;
+
+      doc.setFontSize(16);
+      doc.text('FACTURE D\'ACHAT', pageWidth / 2, 15, { align: 'center' });
+
+      doc.setFontSize(10);
+      let yPosition = 30;
+
+      doc.text(`Référence: ${facture.referance}`, margin, yPosition);
+      yPosition += 7;
+      doc.text(`Date d'Achat: ${facture.dateAchat}`, margin, yPosition);
+      yPosition += 7;
+      doc.text(`Mode de Paiement: ${facture.modePaiement}`, margin, yPosition);
+      yPosition += 12;
+
+      const summaryData = [
+        ['Montant HT', `${(facture.montantHT || 0).toFixed(2)} €`],
+        ['Montant TVA', `${(facture.montantTVA || 0).toFixed(2)} €`],
+        ['Remise', `${(facture.remise || 0).toFixed(2)} €`],
+        ['Montant Total', `${(facture.montantTotal || 0).toFixed(2)} €`],
+        ['Montant TTC', `${(facture.montantTTC || 0).toFixed(2)} €`]
+      ];
+
+      autoTable(doc, {
+        startY: yPosition,
+        head: [['Détail', 'Montant']],
+        body: summaryData,
+        margin: margin,
+        theme: 'grid',
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold'
+        }
+      });
     });
 
     doc.save('Factures_Achat.pdf');
     this.selectedFactures.clear();
+    this.selectAll = false;
   }
 
-  private renderFacturePage(doc: jsPDF, facture: FactureAchat, includeDescription: boolean) {
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 14;
-
-    doc.setFillColor(41, 128, 185);
-    doc.rect(0, 0, pageWidth, 30, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text("FACTURE D'ACHAT", pageWidth / 2, 19, {align: 'center'});
-
-    doc.setTextColor(50, 50, 50);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    let y = 40;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Référence:', margin, y);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`${facture.referance ?? '-'}`, margin + 30, y);
-    y += 7;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text("Date d'achat:", margin, y);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`${facture.dateAchat ?? '-'}`, margin + 30, y);
-    y += 7;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Mode de paiement:', margin, y);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`${facture.modePaiement ?? '-'}`, margin + 45, y);
-    y += 7;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Statut:', margin, y);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`${facture.statut ?? '-'}`, margin + 20, y);
-    y += 12;
-
-    autoTable(doc, {
-      startY: y,
-      head: [['Détail', 'Montant']],
-      body: [
-        ['Montant HT', `${(facture.montantHT ?? 0).toFixed(2)} €`],
-        ['Montant TVA', `${(facture.montantTVA ?? 0).toFixed(2)} €`],
-        ['Remise', `${(facture.remise ?? 0).toFixed(2)} €`],
-        ['Montant Total', `${(facture.montantTotal ?? 0).toFixed(2)} €`],
-        ['Montant TTC', `${(facture.montantTTC ?? 0).toFixed(2)} €`]
-      ],
-      margin: {left: margin, right: margin},
-      theme: 'grid',
-      headStyles: {fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold'},
-      alternateRowStyles: {fillColor: [245, 248, 252]}
-    });
-
-    if (includeDescription && facture.description) {
-      const finalY = (doc as any).lastAutoTable?.finalY ?? y + 40;
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Description:', margin, finalY + 10);
-      doc.setFont('helvetica', 'normal');
-      doc.text(facture.description, margin, finalY + 17, {maxWidth: pageWidth - 2 * margin});
-    }
-
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    doc.text(`Généré le : ${new Date().toLocaleString('fr-FR')}`, margin, pageHeight - 10);
-  }
-
-  toggleSelectFacture(id: number | undefined) {
-    if (id === undefined) return;
-    if (this.selectedFactures.has(id)) {
-      this.selectedFactures.delete(id);
-    } else {
-      this.selectedFactures.add(id);
-    }
-  }
-
-  isFactureSelected(id: number | undefined): boolean {
-    return id !== undefined && this.selectedFactures.has(id);
-  }
-
-  get allSelected(): boolean {
-    return this.filteredList.length > 0 &&
-      this.filteredList.every(f => f.id !== undefined && this.selectedFactures.has(f.id));
-  }
-
-  toggleSelectAll(checked: boolean) {
-    if (checked) {
-      this.filteredList.forEach(f => { if (f.id !== undefined) this.selectedFactures.add(f.id); });
-    } else {
-      this.filteredList.forEach(f => { if (f.id !== undefined) this.selectedFactures.delete(f.id); });
-    }
-  }
-
-  getUserAuthData() {
+  getUserAuthData(){
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
 
     if (item) {
       currentUser = JSON.parse(atob(item));
-      currentUser?.permission.map(per => {
-        if (per.moduleTitle == "Achat") {
+      currentUser?.permission.map(per =>{
+        if (per.moduleTitle == "Achat"){
           this.permissionAchat = per;
         }
-      });
+      })
     }
   }
 }

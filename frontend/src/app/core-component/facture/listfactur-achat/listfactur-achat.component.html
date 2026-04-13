@@ -6,7 +6,7 @@
       <p class="subtitle">Gestion complète de vos factures d'achat</p>
     </div>
     <div class="header-actions">
-      <button class="btn-refresh" (click)="getAllFactureAchat()" [disabled]="isLoading">
+      <button class="btn btn-primary btn-lg" (click)="getAllFactureAchat()" [disabled]="isLoading">
         <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
         Actualiser
       </button>
@@ -18,27 +18,30 @@
 <div class="search-filter-section">
   <div class="search-box">
     <i class="feather icon-search"></i>
-    <input type="text"
-           placeholder="Rechercher par référence, mode de paiement ou statut..."
-           [(ngModel)]="searchTerm"
-           (ngModelChange)="onSearch($event)"
+    <input type="text" 
+           placeholder="Rechercher par référence, mode de paiement ou statut..." 
+           [(ngModel)]="searchTerm" 
+           (input)="onSearch(searchTerm)"
            class="search-input">
   </div>
-
-  <div class="batch-actions" *ngIf="selectedFactures.size > 0">
-    <button class="btn-batch-export" (click)="exportMultipleToPdf()" title="Exporter les factures sélectionnées">
+  
+  <div class="action-buttons">
+    <button class="btn btn-success" 
+            (click)="exportMultipleToPdf()" 
+            *ngIf="selectedFactures.size > 0"
+            title="Exporter les factures sélectionnées">
       <i class="feather icon-download"></i>
       Exporter ({{ selectedFactures.size }})
     </button>
   </div>
 </div>
 
-<!-- Factures Table Card -->
+<!-- Factures Table -->
 <div class="modern-card">
   <div class="card-header-modern">
-    <h5 class="card-title">Liste des factures</h5>
-    <span class="count-badge" [class.badge-info]="filteredList.length > 0" [class.badge-warning]="filteredList.length === 0">
-      {{ filteredList.length }} résultat(s)
+    <h5 class="card-title">{{ filteredList.length }} Facture(s)</h5>
+    <span class="badge" [ngClass]="{'badge-info': filteredList.length > 0, 'badge-warning': filteredList.length === 0}">
+      {{ filteredList.length }}
     </span>
   </div>
 
@@ -54,44 +57,50 @@
       <thead>
         <tr>
           <th class="checkbox-col">
-            <input type="checkbox"
-                   [checked]="allSelected"
-                   (change)="toggleSelectAll(($event.target as HTMLInputElement).checked)">
+            <input type="checkbox" 
+                   [checked]="selectAll"
+                   (change)="toggleSelectAll($any($event.target).checked)">
           </th>
-          <th (click)="onSort('dateAchat')" class="sortable">
+          <th (click)="onSort('dateAchat')" class="sortable" title="Cliquer pour trier">
             Date Achat
-            <i class="feather"
-               [class.icon-chevron-up]="sortBy === 'dateAchat' && sortOrder === 'asc'"
-               [class.icon-chevron-down]="sortBy === 'dateAchat' && sortOrder === 'desc'"
-               [class.icon-minus]="sortBy !== 'dateAchat'"></i>
+            <i class="feather icon-chevron-up" 
+               [hidden]="!(sortBy === 'dateAchat' && sortOrder === 'asc')"></i>
+            <i class="feather icon-chevron-down" 
+               [hidden]="!(sortBy === 'dateAchat' && sortOrder === 'desc')"></i>
+            <i class="feather icon-minus" 
+               [hidden]="sortBy === 'dateAchat'"></i>
           </th>
-          <th (click)="onSort('referance')" class="sortable">
+          <th (click)="onSort('referance')" class="sortable" title="Cliquer pour trier">
             Référence
-            <i class="feather"
-               [class.icon-chevron-up]="sortBy === 'referance' && sortOrder === 'asc'"
-               [class.icon-chevron-down]="sortBy === 'referance' && sortOrder === 'desc'"
-               [class.icon-minus]="sortBy !== 'referance'"></i>
+            <i class="feather icon-chevron-up" 
+               [hidden]="!(sortBy === 'referance' && sortOrder === 'asc')"></i>
+            <i class="feather icon-chevron-down" 
+               [hidden]="!(sortBy === 'referance' && sortOrder === 'desc')"></i>
+            <i class="feather icon-minus" 
+               [hidden]="sortBy === 'referance'"></i>
+          </th>
+          <th (click)="onSort('montantTTC')" class="sortable" title="Cliquer pour trier">
+            Montant TTC
+            <i class="feather icon-chevron-up" 
+               [hidden]="!(sortBy === 'montantTTC' && sortOrder === 'asc')"></i>
+            <i class="feather icon-chevron-down" 
+               [hidden]="!(sortBy === 'montantTTC' && sortOrder === 'desc')"></i>
+            <i class="feather icon-minus" 
+               [hidden]="sortBy === 'montantTTC'"></i>
           </th>
           <th>Montant HT</th>
           <th>Montant TVA</th>
-          <th (click)="onSort('montantTTC')" class="sortable">
-            Montant TTC
-            <i class="feather"
-               [class.icon-chevron-up]="sortBy === 'montantTTC' && sortOrder === 'asc'"
-               [class.icon-chevron-down]="sortBy === 'montantTTC' && sortOrder === 'desc'"
-               [class.icon-minus]="sortBy !== 'montantTTC'"></i>
-          </th>
           <th>Mode Paiement</th>
           <th class="status-col">Statut</th>
           <th class="actions-col">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let facture of filteredList"
-            class="table-row"
+        <tr *ngFor="let facture of filteredList" 
+            class="table-row" 
             [class.selected]="isFactureSelected(facture.id)">
           <td class="checkbox-col">
-            <input type="checkbox"
+            <input type="checkbox" 
                    [checked]="isFactureSelected(facture.id)"
                    (change)="toggleSelectFacture(facture.id)">
           </td>
@@ -99,33 +108,36 @@
           <td class="reference-cell">
             <span class="badge-ref">{{ facture.referance }}</span>
           </td>
-          <td class="amount-cell">{{ facture.montantHT | number:'1.2-2' }} €</td>
-          <td class="amount-cell">{{ facture.montantTVA | number:'1.2-2' }} €</td>
-          <td class="amount-cell highlight">
+          <td class="amount-cell">
             <strong>{{ facture.montantTTC | number:'1.2-2' }} €</strong>
           </td>
+          <td class="amount-cell">{{ facture.montantHT | number:'1.2-2' }} €</td>
+          <td class="amount-cell">{{ facture.montantTVA | number:'1.2-2' }} €</td>
           <td class="payment-cell">{{ facture.modePaiement }}</td>
           <td class="status-cell">
-            <span class="status-badge" [ngClass]="'status-' + (facture.statut?.toLowerCase().replace(' ', '-') || 'default')">
-              {{ facture.statut }}
-            </span>
+            <span class="status-badge" [ngClass]="getStatusClass(facture.statut)">
+  {{ facture.statut }}
+</span>
           </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
-              <button class="btn-action view"
-                      (click)="viewFacture(facture.id)"
-                      *ngIf="permissionAchat?.view"
-                      matTooltip="Voir les détails">
+              <button class="btn-action view" 
+                      (click)="viewFacture(facture.id)" 
+                      *ngIf="permissionAchat?.view" 
+                      title="Voir les détails"
+                      matTooltip="Voir">
                 <i class="feather icon-eye"></i>
               </button>
-              <button class="btn-action download"
-                      (click)="exportToPdf(facture)"
+              <button class="btn-action download" 
+                      (click)="exportToPdf(facture)" 
+                      title="Télécharger en PDF"
                       matTooltip="Télécharger PDF">
                 <i class="feather icon-download"></i>
               </button>
-              <button class="btn-action delete"
-                      (click)="deleteFacture(facture.id)"
-                      *ngIf="permissionAchat?.delete"
+              <button class="btn-action delete" 
+                      (click)="deleteFacture(facture.id)" 
+                      *ngIf="permissionAchat?.delete" 
+                      title="Supprimer"
                       matTooltip="Supprimer">
                 <i class="feather icon-trash-2"></i>
               </button>
@@ -133,7 +145,7 @@
           </td>
         </tr>
         <tr *ngIf="filteredList.length === 0" class="empty-row">
-          <td colspan="9">
+          <td [attr.colspan]="9">
             <div class="empty-message">
               <i class="feather icon-inbox"></i>
               <p>Aucune facture trouvée</p>
