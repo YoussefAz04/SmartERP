@@ -1,129 +1,297 @@
+<!-- Toast Notifications -->
+<div class="toast-container" aria-live="polite" aria-atomic="true">
+  <div *ngIf="toast.visible" class="toast-notification" [ngClass]="'toast-' + toast.type" role="alert">
+    <i class="feather" [ngClass]="toast.type === 'success' ? 'icon-check-circle' : (toast.type === 'error' ? 'icon-x-circle' : 'icon-alert-circle')"></i>
+    <span>{{ toast.message }}</span>
+    <button class="toast-close" (click)="dismissToast()" aria-label="Fermer">
+      <i class="feather icon-x"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Page Header -->
 <div class="page-header">
   <div class="row">
     <div class="col">
-      <h3 class="page-title">Ajouter un Article Vente</h3>
+      <h3 class="page-title">
+        <span class="title-icon"><i class="feather icon-tag"></i></span>
+        Ajouter un Article Vente
+      </h3>
       <ul class="breadcrumb">
-        <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
-        <li class="breadcrumb-item"><a routerLink="/article-vente/listArticleVente">Articles Vente</a></li>
+        <li class="breadcrumb-item">
+          <a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/article-vente/listArticleVente">Articles Vente</a>
+        </li>
         <li class="breadcrumb-item active">Ajouter</li>
       </ul>
     </div>
   </div>
 </div>
 
+<!-- Form Card -->
 <div class="row">
   <div class="col-md-12">
-    <div class="card">
+    <div class="card form-card">
+
+      <!-- Card Header -->
       <div class="card-header">
-        <h5 class="card-title">Ajouter un Article Vente</h5>
+        <div class="header-content">
+          <div class="header-icon">
+            <i class="feather icon-tag"></i>
+          </div>
+          <div>
+            <h5 class="card-title">Ajouter un Article Vente</h5>
+            <p class="card-subtitle">Remplissez les informations de votre nouvel article</p>
+          </div>
+        </div>
       </div>
+
       <div class="card-body">
-        <form [formGroup]="articleForm" (ngSubmit)="onSubmit()" novalidate>
-          <div class="row">
+        <form [formGroup]="articleForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
 
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Nom <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" formControlName="nom"
-                  placeholder="Nom de l'article" [class.is-invalid]="isFieldInvalid('nom')">
-                <div class="invalid-feedback" *ngIf="isFieldInvalid('nom')">
-                  <span *ngIf="articleForm.get('nom')?.hasError('required')">Le nom est requis</span>
-                  <span *ngIf="articleForm.get('nom')?.hasError('minlength')">Min 2 caractères</span>
+          <!-- Section: Informations Générales -->
+          <div class="form-section">
+            <div class="section-header">
+              <i class="feather icon-info"></i>
+              Informations Générales
+            </div>
+            <div class="row">
+
+              <!-- Nom -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="nom">Nom de l'article <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-package input-icon"></i>
+                    <input
+                      id="nom"
+                      type="text"
+                      class="form-control"
+                      formControlName="nom"
+                      placeholder="Ex: Chaise Bureau Ergonomique"
+                      [class.is-invalid]="isFieldInvalid('nom')"
+                      aria-required="true"
+                      [attr.aria-describedby]="isFieldInvalid('nom') ? 'nom-error' : null"
+                    >
+                  </div>
+                  <div id="nom-error" class="error-message" *ngIf="isFieldInvalid('nom')" role="alert">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="articleForm.get('nom')?.hasError('required')">Le nom est requis</span>
+                    <span *ngIf="articleForm.get('nom')?.hasError('minlength')">Le nom doit comporter au moins 2 caractères</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Article Achat (optionnel)</label>
-                <select class="form-select" formControlName="articleAchatId">
-                  <option value="">-- Lier à un article achat --</option>
-                  <option *ngFor="let a of articlesAchat" [value]="a.id">
-                    {{ a.nom }} ({{ a.prixUnitaire | number:'1.2-2' }})
-                  </option>
-                </select>
-                <small *ngIf="selectedArticleAchatPrice != null" class="text-info">
-                  <i class="feather icon-info me-1"></i>Prix achat: {{ selectedArticleAchatPrice | number:'1.2-2' }}
-                </small>
-              </div>
-            </div>
-
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Markup (%)</label>
-                <input type="number" class="form-control" formControlName="markup"
-                  placeholder="Pourcentage de marge" [class.is-invalid]="isFieldInvalid('markup')">
-                <div class="invalid-feedback" *ngIf="isFieldInvalid('markup')">
-                  <span *ngIf="articleForm.get('markup')?.hasError('min')">Le markup doit être positif</span>
-                </div>
-                <small *ngIf="selectedArticleAchatPrice != null" class="text-muted">
-                  Saisissez un markup pour calculer automatiquement le prix de vente
-                </small>
-              </div>
-            </div>
-
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">
-                  Prix Unitaire <span class="text-danger">*</span>
-                  <span *ngIf="autoCalculated" class="badge bg-success ms-2">
-                    <i class="feather icon-zap me-1"></i>Calculé automatiquement
-                  </span>
-                </label>
-                <input type="number" class="form-control" formControlName="prixUnitaire"
-                  placeholder="Prix de vente" [class.is-invalid]="isFieldInvalid('prixUnitaire')"
-                  [class.border-success]="autoCalculated">
-                <div class="invalid-feedback" *ngIf="isFieldInvalid('prixUnitaire')">
-                  <span *ngIf="articleForm.get('prixUnitaire')?.hasError('required')">Le prix est requis</span>
-                  <span *ngIf="articleForm.get('prixUnitaire')?.hasError('min')">Le prix doit être positif</span>
+              <!-- SKU / Référence -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="sku">SKU / Référence</label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-hash input-icon"></i>
+                    <input
+                      id="sku"
+                      type="text"
+                      class="form-control"
+                      formControlName="sku"
+                      placeholder="Ex: ART-2024-001"
+                    >
+                  </div>
+                  <small class="form-hint">Identifiant unique de l'article (optionnel)</small>
                 </div>
               </div>
-            </div>
 
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Quantité <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" formControlName="quantite"
-                  placeholder="Quantité" [class.is-invalid]="isFieldInvalid('quantite')">
-                <div class="invalid-feedback" *ngIf="isFieldInvalid('quantite')">
-                  <span *ngIf="articleForm.get('quantite')?.hasError('required')">La quantité est requise</span>
-                  <span *ngIf="articleForm.get('quantite')?.hasError('min')">La quantité doit être positive</span>
+              <!-- Description -->
+              <div class="col-lg-12">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="description">Description</label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-align-left input-icon textarea-icon"></i>
+                    <textarea
+                      id="description"
+                      class="form-control"
+                      formControlName="description"
+                      rows="3"
+                      placeholder="Description détaillée de l'article..."
+                    ></textarea>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Unité</label>
-                <input type="text" class="form-control" formControlName="unite" placeholder="ex: pcs, kg, L">
-              </div>
             </div>
-
-            <div class="col-lg-6">
-              <div class="input-blocks mb-3">
-                <label class="form-label">SKU / Référence</label>
-                <input type="text" class="form-control" formControlName="sku" placeholder="Code SKU ou référence">
-              </div>
-            </div>
-
-            <div class="col-lg-12">
-              <div class="input-blocks mb-3">
-                <label class="form-label">Description</label>
-                <textarea class="form-control" formControlName="description" rows="3"
-                  placeholder="Description de l'article"></textarea>
-              </div>
-            </div>
-
           </div>
 
-          <div class="d-flex justify-content-end mt-4 gap-2">
-            <button type="button" class="btn btn-cancel" [disabled]="isLoading" (click)="onCancel()">
-              <i class="feather icon-x me-2"></i>Annuler
+          <!-- Section: Lien Article Achat & Prix -->
+          <div class="form-section">
+            <div class="section-header">
+              <i class="feather icon-dollar-sign"></i>
+              Prix &amp; Lien Article Achat
+            </div>
+            <div class="row">
+
+              <!-- Article Achat -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="articleAchatId">Article Achat lié</label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-link input-icon"></i>
+                    <select id="articleAchatId" class="form-select" formControlName="articleAchatId">
+                      <option value="">-- Aucun (lier optionnel) --</option>
+                      <option *ngFor="let a of articlesAchat" [value]="a.id">
+                        {{ a.nom }} — {{ a.prixUnitaire | number:'1.2-2' }} DT
+                      </option>
+                    </select>
+                  </div>
+                  <div *ngIf="selectedArticleAchatPrice != null" class="info-badge">
+                    <i class="feather icon-info"></i>
+                    Prix d'achat de référence : <strong>{{ selectedArticleAchatPrice | number:'1.2-2' }} DT</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Markup -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="markup">Markup (%)</label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-percent input-icon"></i>
+                    <input
+                      id="markup"
+                      type="number"
+                      class="form-control"
+                      formControlName="markup"
+                      placeholder="Ex: 20"
+                      [class.is-invalid]="isFieldInvalid('markup')"
+                      min="0"
+                    >
+                    <span class="input-suffix">%</span>
+                  </div>
+                  <div id="markup-error" class="error-message" *ngIf="isFieldInvalid('markup')" role="alert">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="articleForm.get('markup')?.hasError('min')">Le markup doit être positif ou nul</span>
+                  </div>
+                  <small class="form-hint" *ngIf="selectedArticleAchatPrice != null">
+                    Entrez un markup pour calculer automatiquement le prix de vente
+                  </small>
+                </div>
+              </div>
+
+              <!-- Prix Unitaire -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="prixUnitaire">
+                    Prix Unitaire <span class="text-danger">*</span>
+                    <span *ngIf="autoCalculated" class="auto-badge">
+                      <i class="feather icon-zap"></i> Calculé auto
+                    </span>
+                  </label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-dollar-sign input-icon"></i>
+                    <input
+                      id="prixUnitaire"
+                      type="number"
+                      class="form-control"
+                      formControlName="prixUnitaire"
+                      placeholder="0.00"
+                      [class.is-invalid]="isFieldInvalid('prixUnitaire')"
+                      [class.is-auto]="autoCalculated"
+                      aria-required="true"
+                      [attr.aria-describedby]="isFieldInvalid('prixUnitaire') ? 'prix-error' : null"
+                      min="0"
+                      step="0.01"
+                    >
+                    <span class="input-suffix">DT</span>
+                  </div>
+                  <div id="prix-error" class="error-message" *ngIf="isFieldInvalid('prixUnitaire')" role="alert">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="articleForm.get('prixUnitaire')?.hasError('required')">Le prix unitaire est requis</span>
+                    <span *ngIf="articleForm.get('prixUnitaire')?.hasError('min')">Le prix doit être positif ou nul</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Section: Stock & Unité -->
+          <div class="form-section">
+            <div class="section-header">
+              <i class="feather icon-archive"></i>
+              Stock &amp; Conditionnement
+            </div>
+            <div class="row">
+
+              <!-- Quantité -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="quantite">Quantité <span class="text-danger">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-layers input-icon"></i>
+                    <input
+                      id="quantite"
+                      type="number"
+                      class="form-control"
+                      formControlName="quantite"
+                      placeholder="0"
+                      [class.is-invalid]="isFieldInvalid('quantite')"
+                      aria-required="true"
+                      min="0"
+                    >
+                  </div>
+                  <div id="quantite-error" class="error-message" *ngIf="isFieldInvalid('quantite')" role="alert">
+                    <i class="feather icon-alert-circle"></i>
+                    <span *ngIf="articleForm.get('quantite')?.hasError('required')">La quantité est requise</span>
+                    <span *ngIf="articleForm.get('quantite')?.hasError('min')">La quantité doit être positive ou nulle</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Unité -->
+              <div class="col-lg-6">
+                <div class="input-blocks mb-3">
+                  <label class="form-label" for="unite">Unité de mesure</label>
+                  <div class="input-wrapper">
+                    <i class="feather icon-box input-icon"></i>
+                    <input
+                      id="unite"
+                      type="text"
+                      class="form-control"
+                      formControlName="unite"
+                      placeholder="Ex: pcs, kg, L, m²"
+                    >
+                  </div>
+                  <small class="form-hint">Unité de conditionnement de l'article</small>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-cancel"
+              [disabled]="isLoading"
+              (click)="onCancel()"
+              aria-label="Annuler et retourner à la liste"
+            >
+              <i class="feather icon-x"></i>
+              Annuler
             </button>
-            <button type="submit" class="btn btn-submit" [disabled]="isLoading">
-              <i class="feather icon-check me-2"></i>{{ isLoading ? 'En cours...' : 'Soumettre' }}
+            <button
+              type="submit"
+              class="btn btn-submit"
+              [disabled]="isLoading"
+              aria-label="Enregistrer l'article"
+            >
+              <span *ngIf="isLoading" class="spinner" aria-hidden="true"></span>
+              <i *ngIf="!isLoading" class="feather icon-check"></i>
+              {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}
             </button>
           </div>
+
         </form>
       </div>
     </div>
