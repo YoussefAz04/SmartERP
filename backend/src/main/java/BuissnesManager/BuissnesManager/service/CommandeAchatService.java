@@ -414,8 +414,8 @@ public class CommandeAchatService {
         CommandeAchat commande = commandeAchatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
 
-        if ("CONFIRMEE".equals(commande.getStatut())) {
-            throw new RuntimeException("Impossible de supprimer une commande confirmée.");
+        if ("RECUE".equals(commande.getStatut())) {
+            throw new RuntimeException("Impossible de supprimer une commande déjà réceptionnée. Veuillez d'abord l'annuler.");
         }
 
         // ✅ DELETE INVOICE LINES
