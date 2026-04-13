@@ -83,7 +83,7 @@ $text-light: #a0aec0;
             // ICON
             i {
               font-size: 18px;
-              color: #cbd5e0;
+              color: #718096;
               margin-right: 12px;
               transition: all 0.3s ease;
               min-width: 20px;
@@ -98,7 +98,7 @@ $text-light: #a0aec0;
               &.menu-arrow {
                 margin-left: auto;
                 font-size: 16px;
-                color: #cbd5e0;
+                color: #718096;
                 transition: transform 0.3s ease, color 0.3s ease;
                 margin-right: 4px;
               }
@@ -185,7 +185,7 @@ $text-light: #a0aec0;
                   padding: 10px 18px 10px 46px;
                   margin: 0;
                   font-size: 13px;
-                  color: $text-light;
+                  color: $text-secondary;
                   border-radius: 0;
                   border-left: 3px solid transparent;
                   font-weight: 500;

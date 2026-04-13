@@ -130,13 +130,13 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
               width: 34px;
               height: 34px;
               border-radius: 9px;
-              background: rgba($text-light, 0.10);
+              background: rgba($text-secondary, 0.10);
               transition: $transition-smooth;
               flex-shrink: 0;
 
               i {
                 font-size: 16px;
-                color: $text-light;
+                color: $text-secondary;
                 transition: color 0.28s ease, transform 0.28s ease;
                 display: block;
               }
@@ -162,7 +162,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
 
               .arrow-icon {
                 font-size: 14px;
-                color: $text-light;
+                color: $text-secondary;
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.28s ease;
               }
             }
@@ -279,7 +279,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
                   padding: 8px 14px 8px 18px;
                   font-size: 13px;
                   font-weight: 400;
-                  color: $text-light;
+                  color: $text-secondary;
                   border-radius: 8px;
                   transition: $transition-smooth;
                   text-decoration: none;
@@ -290,7 +290,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
                     width: 5px;
                     height: 5px;
                     border-radius: 50%;
-                    background: $text-light;
+                    background: $text-secondary;
                     flex-shrink: 0;
                     transition: background 0.25s ease, transform 0.25s ease;
                   }

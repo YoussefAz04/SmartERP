@@ -46,7 +46,7 @@
                     width:  18px;
                     height:  18px;
                     margin-right: 12px;
-                    color: #a0aec0;
+                    color: #718096;
                     @include transition(all 0.3s ease);
                 }
                 > a{
@@ -60,13 +60,13 @@
                     border-left: 3px solid transparent;
                     @include transition(all 0.3s cubic-bezier(0.4, 0, 0.2, 1));
                     svg{
-                        color: #a0aec0;
+                        color: #718096;
                         @include transition(all 0.3s ease);
                     }
                     img{
                         width: 18px;
                         margin-right: 12px;
-                        opacity: 0.6;
+                        opacity: 0.85;
                         @include transition(all 0.3s ease);
                     }
                     &:hover{
