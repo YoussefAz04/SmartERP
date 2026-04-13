@@ -149,9 +149,74 @@
 
 <!-- Section: Analytique -->
 <div class="dashboard-section">
-  <h2 class="section-title">{{ labels.analytique }}</h2>
+  <div class="section-header-row">
+    <h2 class="section-title">{{ labels.analytique }}</h2>
+    <button class="btn-refresh" (click)="refreshDashboard()" [disabled]="statsLoading || isRefreshing">
+      <i class="feather icon-refresh-cw" [class.spin]="isRefreshing"></i>
+      Actualiser
+    </button>
+  </div>
+
+  <!-- Analytics KPI Cards -->
+  <div class="analytics-kpi-grid" *ngIf="stats">
+    <div class="kpi-card">
+      <div class="kpi-icon-wrap kpi-blue"><i class="feather icon-calendar"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{ currency }}{{ stats.salesThisMonth | number:'1.0-0' }}</div>
+        <div class="kpi-label">Ventes ce mois</div>
+        <div class="kpi-detail">{{ currency }}{{ stats.salesThisYear | number:'1.0-0' }} cette année</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon-wrap kpi-orange"><i class="feather icon-shopping-cart"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{ currency }}{{ stats.purchasesThisMonth | number:'1.0-0' }}</div>
+        <div class="kpi-label">Achats ce mois</div>
+        <div class="kpi-detail">{{ currency }}{{ stats.totalPurchases | number:'1.0-0' }} total</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon-wrap kpi-green"><i class="feather icon-percent"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{ conversionRate }}%</div>
+        <div class="kpi-label">Ratio Ventes/Achats</div>
+        <div class="kpi-detail">Revenu ventes / coût achats</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon-wrap kpi-purple"><i class="feather icon-activity"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{ currency }}{{ avgSaleValue | number:'1.0-0' }}</div>
+        <div class="kpi-label">Valeur moy. vente</div>
+        <div class="kpi-detail">{{ stats.totalOrders }} commandes</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon-wrap kpi-cyan"><i class="feather icon-repeat"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{ inventoryTurnover }}x</div>
+        <div class="kpi-label">Rotation des stocks</div>
+        <div class="kpi-detail">CA / Valeur stock</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon-wrap kpi-teal"><i class="feather icon-credit-card"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{ currency }}{{ stats.accountsReceivable | number:'1.0-0' }}</div>
+        <div class="kpi-label">Créances clients</div>
+        <div class="kpi-detail">Factures en attente</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
   <div class="charts-grid">
-    <div class="chart-card">
+    <div class="chart-card chart-wide">
       <div class="chart-card-header">
         <h3>{{ labels.achatsVentes }}</h3>
         <div class="chart-legend">
@@ -168,40 +233,84 @@
           [yaxis]="chartOptions.yaxis"
           [xaxis]="chartOptions.xaxis"
           [colors]="chartOptions.colors"
+          [legend]="chartOptions.legend"
         ></apx-chart>
       </div>
     </div>
 
     <div class="chart-card">
       <div class="chart-card-header">
-        <h3>{{ labels.meilleursArticles }}</h3>
+        <h3>Revenu vs Dépenses</h3>
       </div>
       <div class="chart-card-body">
-        <div class="table-responsive" *ngIf="stats && stats.topProducts && stats.topProducts.length > 0">
-          <table class="modern-table">
-            <thead>
+        <apx-chart
+          [series]="donutChartOptions.series"
+          [chart]="donutChartOptions.chart"
+          [labels]="donutChartOptions.labels"
+          [colors]="donutChartOptions.colors"
+          [legend]="donutChartOptions.legend"
+          [dataLabels]="donutChartOptions.dataLabels"
+          [plotOptions]="donutChartOptions.plotOptions"
+          [stroke]="donutChartOptions.stroke"
+        ></apx-chart>
+        <div class="donut-summary" *ngIf="stats">
+          <div class="donut-stat">
+            <span class="dot dot-green"></span>
+            <span>Revenu: {{ currency }}{{ stats.totalRevenue | number:'1.0-0' }}</span>
+          </div>
+          <div class="donut-stat">
+            <span class="dot dot-red"></span>
+            <span>Dépenses: {{ currency }}{{ stats.totalExpenses | number:'1.0-0' }}</span>
+          </div>
+          <div class="donut-profit" [class.profit-positive]="(stats.profitLoss || 0) >= 0" [class.profit-negative]="(stats.profitLoss || 0) < 0"
+            [attr.aria-label]="((stats.profitLoss || 0) >= 0 ? 'Bénéfice positif' : 'Déficit') + ': ' + (stats.profitLoss | number:'1.0-0')">
+            {{ (stats.profitLoss || 0) >= 0 ? '▲' : '▼' }} Bénéfice net: {{ currency }}{{ stats.profitLoss | number:'1.0-0' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Products Enhanced Table -->
+  <div class="chart-card" *ngIf="stats">
+    <div class="chart-card-header">
+      <h3>{{ labels.meilleursArticles }}</h3>
+      <span class="badge-count" *ngIf="stats.topProducts?.length">Top {{ stats.topProducts.length }}</span>
+    </div>
+    <div class="chart-card-body chart-card-body-flush">
+      <div class="table-responsive" *ngIf="stats.topProducts && stats.topProducts.length > 0">
+        <table class="modern-table top-products-table">
+          <thead>
+            <tr>
+              <th style="width:52px">{{ labels.numero }}</th>
+              <th>{{ labels.article }}</th>
+              <th class="col-right">{{ labels.quantiteVendue }}</th>
+              <th class="col-right">{{ labels.revenu }}</th>
+              <th class="col-right col-wide">Part du total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of stats.topProducts; track product; let i = $index) {
               <tr>
-                <th>{{ labels.numero }}</th>
-                <th>{{ labels.article }}</th>
-                <th>{{ labels.quantiteVendue }}</th>
-                <th>{{ labels.revenu }}</th>
+                <td><span class="rank-badge" [ngClass]="getRankClass(i)">{{ i + 1 }}</span></td>
+                <td class="product-name">{{ product.productName }}</td>
+                <td class="col-right"><span class="qty-badge">{{ product.quantitySold }}</span></td>
+                <td class="col-right col-bold">{{ currency }}{{ product.revenue | number:'1.0-0' }}</td>
+                <td class="col-right col-wide">
+                  <ng-container *ngIf="getProductShare(product.revenue) as share">
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill" [style.width.%]="share"></div>
+                      <span class="progress-label">{{ share }}%</span>
+                    </div>
+                  </ng-container>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @for (product of stats.topProducts; track product; let i = $index) {
-                <tr>
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ product.productName }}</td>
-                  <td>{{ product.quantitySold }}</td>
-                  <td>{{ currency }}{{ product.revenue | number:'1.2-2' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <div *ngIf="!stats || !stats.topProducts || stats.topProducts.length === 0" class="empty-state">
-          {{ labels.aucuneDonneeArticle }}
-        </div>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="!stats.topProducts || stats.topProducts.length === 0" class="empty-state">
+        {{ labels.aucuneDonneeArticle }}
       </div>
     </div>
   </div>

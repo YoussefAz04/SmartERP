@@ -13,6 +13,8 @@ import {
   ApexResponsive,
   ApexLegend,
   ApexFill,
+  ApexNonAxisChartSeries,
+  ApexStroke,
 } from 'ng-apexcharts';
 import { apiResultFormat } from 'src/app/core/core.index';
 import { routes } from 'src/app/core/helpers/routes';
@@ -49,6 +51,17 @@ export type ChartOptions = {
   fill: ApexFill | any;
 };
 
+export type DonutChartOptions = {
+  series: ApexNonAxisChartSeries | any;
+  chart: ApexChart | any;
+  labels: any;
+  colors: any;
+  legend: ApexLegend | any;
+  dataLabels: ApexDataLabels | any;
+  plotOptions: ApexPlotOptions | any;
+  stroke: ApexStroke | any;
+};
+
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
@@ -61,6 +74,7 @@ export class AdminDashboardComponent implements OnInit {
   public stats: DashboardStatsDto | null = null;
   public statsLoading = true;
   public statsError = false;
+  public isRefreshing = false;
   public userName: string = 'Utilisateur';
   public enterpriseName: string = 'Entreprise';
   public today: Date = new Date();
@@ -124,6 +138,7 @@ export class AdminDashboardComponent implements OnInit {
   };
   @ViewChild('chart') chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
+  public donutChartOptions: Partial<DonutChartOptions>;
 
   constructor(
     private common: CommonService,
@@ -144,11 +159,11 @@ export class AdminDashboardComponent implements OnInit {
           data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         },
       ],
-      colors: ['#28C76F', '#EA5455'],
+      colors: ['#28C76F', '#0084D6'],
       chart: {
         type: 'bar',
-        height: 320,
-        stacked: true,
+        height: 300,
+        stacked: false,
 
         zoom: {
           enabled: true,
@@ -170,17 +185,19 @@ export class AdminDashboardComponent implements OnInit {
           horizontal: false,
           borderRadius: 4,
           borderRadiusApplication: 'end',
-          borderRadiusWhenStacked: 'all',
-          columnWidth: '20%',
+          borderRadiusWhenStacked: 'last',
+          columnWidth: '55%',
         },
       },
       dataLabels: {
         enabled: false,
       },
       yaxis: {
-        min: -200,
-        max: 300,
+        min: 0,
         tickAmount: 5,
+        labels: {
+          formatter: (val: number) => this.formatYAxisLabel(val),
+        },
       },
       xaxis: {
         categories: [
@@ -188,10 +205,31 @@ export class AdminDashboardComponent implements OnInit {
           'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc',
         ],
       },
-      legend: { show: false },
+      legend: {
+        show: true,
+        position: 'top',
+        horizontalAlign: 'right',
+      },
       fill: {
         opacity: 1,
       },
+    };
+
+    this.donutChartOptions = {
+      series: [0, 0],
+      chart: { type: 'donut', height: 260 },
+      labels: ['Revenu encaissé', 'Dépenses réglées'],
+      colors: ['#28C76F', '#EA5455'],
+      legend: { position: 'bottom', fontSize: '13px' },
+      dataLabels: { enabled: false },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: '68%',
+          },
+        },
+      },
+      stroke: { width: 2, colors: ['#fff'] },
     };
     this.common.currency$.subscribe((res: string) => {
       this.currency = res;
@@ -236,24 +274,24 @@ export class AdminDashboardComponent implements OnInit {
       next: (data: DashboardStatsDto) => {
         this.stats = data;
         this.statsLoading = false;
+        this.isRefreshing = false;
         this.updateChart();
+        this.updateDonutChart();
       },
       error: (err: any) => {
         console.error('Erreur lors du chargement des statistiques:', err);
         this.statsError = true;
         this.statsLoading = false;
+        this.isRefreshing = false;
       }
     });
   }
 
   updateChart(): void {
     if (!this.stats) return;
-    const salesData = (this.stats.monthlySalesChart || []).map(m => m.amount || 0);
-    // Purchase values are negated so they display below zero on the stacked bar chart
-    // (negative = outgoing money, positive = incoming money)
-    const purchaseData = (this.stats.monthlyPurchasesChart || []).map(m => -(m.amount || 0));
-    const maxVal = Math.max(...salesData, 1);
-    const minVal = Math.min(...purchaseData, -1);
+    const salesData = (this.stats.monthlySalesChart || []).map(m => Math.round(m.amount || 0));
+    const purchaseData = (this.stats.monthlyPurchasesChart || []).map(m => Math.round(m.amount || 0));
+    const maxVal = Math.max(...salesData, ...purchaseData, 1);
 
     this.chartOptions = {
       ...this.chartOptions,
@@ -261,12 +299,73 @@ export class AdminDashboardComponent implements OnInit {
         { name: 'Ventes', data: salesData },
         { name: 'Achats', data: purchaseData },
       ],
+      chart: {
+        ...this.chartOptions.chart,
+        stacked: false,
+      },
       yaxis: {
-        min: Math.floor(minVal * 1.2),
+        min: 0,
         max: Math.ceil(maxVal * 1.2),
         tickAmount: 5,
+        labels: {
+          formatter: (val: number) => this.formatYAxisLabel(val),
+        },
       },
     };
+  }
+
+  updateDonutChart(): void {
+    if (!this.stats) return;
+    const revenue = Math.round(this.stats.totalRevenue || 0);
+    const expenses = Math.round(this.stats.totalExpenses || 0);
+    this.donutChartOptions = {
+      ...this.donutChartOptions,
+      series: [revenue, expenses],
+    };
+  }
+
+  refreshDashboard(): void {
+    this.isRefreshing = true;
+    this.loadDashboardStats();
+  }
+
+  get conversionRate(): number {
+    if (!this.stats) return 0;
+    const purchases = this.stats.totalPurchases || 0;
+    if (purchases === 0) return 0;
+    return Math.round(((this.stats.totalSalesRevenue || 0) / purchases) * 100);
+  }
+
+  get avgSaleValue(): number {
+    if (!this.stats) return 0;
+    const orders = this.stats.totalOrders || 0;
+    if (orders === 0) return 0;
+    return Math.round((this.stats.totalSalesRevenue || 0) / orders);
+  }
+
+  get inventoryTurnover(): number {
+    if (!this.stats) return 0;
+    const stockValue = this.stats.totalStockValue || 0;
+    if (stockValue === 0) return 0;
+    return Math.round(((this.stats.totalSalesRevenue || 0) / stockValue) * 10) / 10;
+  }
+
+  getProductShare(revenue: number): number {
+    if (!this.stats?.topProducts?.length) return 0;
+    const total = this.stats.topProducts.reduce((sum, p) => sum + (p.revenue || 0), 0);
+    if (total === 0) return 0;
+    return Math.round((revenue / total) * 100);
+  }
+
+  getRankClass(index: number): string {
+    if (index === 0) return 'rank-1';
+    if (index === 1) return 'rank-2';
+    if (index === 2) return 'rank-3';
+    return 'rank-other';
+  }
+
+  private formatYAxisLabel(val: number): string {
+    return val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val.toString();
   }
 
   getOrderStatusEntries(): { key: string, value: number }[] {

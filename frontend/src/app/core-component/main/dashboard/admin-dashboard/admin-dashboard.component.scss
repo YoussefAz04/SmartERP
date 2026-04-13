@@ -87,7 +87,277 @@ $text-light:     #8898AA;
 }
 
 // ============================================
-// SECTIONS
+// SECTION HEADER ROW (title + refresh button)
+// ============================================
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+
+  .section-title {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: $white;
+  border: 1.5px solid $border;
+  color: $text-secondary;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+
+  &:hover:not(:disabled) {
+    background: $light-bg;
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.spin {
+  animation: spin-anim 0.7s linear infinite;
+}
+
+@keyframes spin-anim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ============================================
+// ANALYTICS KPI GRID
+// ============================================
+.analytics-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: $white;
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid $border;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.12);
+  }
+
+  .kpi-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: $white;
+    flex-shrink: 0;
+
+    &.kpi-blue   { background: linear-gradient(135deg, #0084D6 0%, #00A8E8 100%); }
+    &.kpi-orange { background: linear-gradient(135deg, #E67E22 0%, #F39C12 100%); }
+    &.kpi-green  { background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%); }
+    &.kpi-purple { background: linear-gradient(135deg, #8E44AD 0%, #9B59B6 100%); }
+    &.kpi-cyan   { background: linear-gradient(135deg, #16A085 0%, #1ABC9C 100%); }
+    &.kpi-teal   { background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%); }
+  }
+
+  .kpi-body { flex: 1; min-width: 0; }
+
+  .kpi-value {
+    font-size: 19px;
+    font-weight: 700;
+    color: $slate;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $text-secondary;
+    margin: 4px 0 2px;
+  }
+
+  .kpi-detail {
+    font-size: 11px;
+    color: $text-light;
+  }
+}
+
+// ============================================
+// CHART WIDE (takes 2 columns in grid)
+// ============================================
+.chart-wide {
+  @media (min-width: 900px) {
+    grid-column: span 1;
+  }
+}
+
+// Override charts-grid for analytics section to give more space to bar chart
+.dashboard-section .charts-grid {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ============================================
+// CHART CARD – flush body variant
+// ============================================
+.chart-card-body-flush {
+  padding: 0 !important;
+}
+
+// ============================================
+// TOP PRODUCTS TABLE
+// ============================================
+.top-products-table {
+  .col-right {
+    text-align: right;
+  }
+
+  .col-bold {
+    font-weight: 600;
+    color: $slate;
+  }
+
+  .col-wide {
+    min-width: 130px;
+  }
+
+  .product-name {
+    font-weight: 500;
+    color: $slate;
+  }
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+
+  &.rank-1 { background: #FEF3C7; color: #D97706; border: 1px solid #FCD34D; }
+  &.rank-2 { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+  &.rank-3 { background: #FEF2F2; color: #C84630; border: 1px solid #FECACA; }
+  &.rank-other { background: $lighter-bg; color: $text-light; border: 1px solid $border; }
+}
+
+.qty-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #E0EEF9;
+  color: $primary;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+
+  .progress-bar-fill {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, $primary, $primary-dark);
+    min-width: 4px;
+    max-width: 80px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: $text-secondary;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 30px;
+    text-align: right;
+  }
+}
+
+// ============================================
+// DONUT CHART SUMMARY
+// ============================================
+.donut-summary {
+  padding: 12px 16px;
+  border-top: 1px solid $border;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.donut-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: $text-secondary;
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &.dot-green { background: #28C76F; }
+    &.dot-red   { background: #EA5455; }
+  }
+}
+
+.donut-profit {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 2px;
+  padding: 6px 10px;
+  border-radius: 6px;
+
+  &.profit-positive { color: $sage; background: rgba(39, 174, 96, 0.08); }
+  &.profit-negative { color: $danger; background: rgba(192, 57, 43, 0.08); }
+}
+
+.badge-count {
+  padding: 3px 10px;
+  background: $light-bg;
+  color: $text-secondary;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid $border;
+}
+
 // ============================================
 .dashboard-section {
   margin-bottom: 28px;
