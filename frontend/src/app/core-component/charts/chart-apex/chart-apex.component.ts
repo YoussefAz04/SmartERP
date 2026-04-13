@@ -181,7 +181,7 @@ export class ChartApexComponent implements OnInit {
       },
       yaxis: {
         title: {
-          text: '$ (thousands)',
+          text: 'DT (thousands)',
         },
       },
       fill: {
@@ -190,7 +190,7 @@ export class ChartApexComponent implements OnInit {
       tooltip: {
         y: {
           formatter: function (val: string) {
-            return '$ ' + val + ' thousands';
+            return 'DT ' + val + ' thousands';
           },
         },
       },

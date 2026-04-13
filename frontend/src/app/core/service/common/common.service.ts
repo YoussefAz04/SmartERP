@@ -9,6 +9,6 @@ export class CommonService {
   public page: BehaviorSubject<string> = new BehaviorSubject<string>('');
   public last: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  private _currency = new BehaviorSubject<string>('USD');
+  private _currency = new BehaviorSubject<string>('DT');
   public readonly currency$ = this._currency.asObservable();
 }

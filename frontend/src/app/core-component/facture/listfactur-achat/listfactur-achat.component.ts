@@ -172,11 +172,11 @@ export class ListfacturAchatComponent implements OnInit{
     yPosition += 12;
 
     const summaryData = [
-      ['Montant HT', `${(facture.montantHT || 0).toFixed(2)} €`],
-      ['Montant TVA', `${(facture.montantTVA || 0).toFixed(2)} €`],
-      ['Remise', `${(facture.remise || 0).toFixed(2)} €`],
-      ['Montant Total', `${(facture.montantTotal || 0).toFixed(2)} €`],
-      ['Montant TTC', `${(facture.montantTTC || 0).toFixed(2)} €`]
+      ['Montant HT', `${(facture.montantHT || 0).toFixed(2)} DT`],
+      ['Montant TVA', `${(facture.montantTVA || 0).toFixed(2)} DT`],
+      ['Remise', `${(facture.remise || 0).toFixed(2)} DT`],
+      ['Montant Total', `${(facture.montantTotal || 0).toFixed(2)} DT`],
+      ['Montant TTC', `${(facture.montantTTC || 0).toFixed(2)} DT`]
     ];
 
     autoTable(doc, {
@@ -242,11 +242,11 @@ export class ListfacturAchatComponent implements OnInit{
       yPosition += 12;
 
       const summaryData = [
-        ['Montant HT', `${(facture.montantHT || 0).toFixed(2)} €`],
-        ['Montant TVA', `${(facture.montantTVA || 0).toFixed(2)} €`],
-        ['Remise', `${(facture.remise || 0).toFixed(2)} €`],
-        ['Montant Total', `${(facture.montantTotal || 0).toFixed(2)} €`],
-        ['Montant TTC', `${(facture.montantTTC || 0).toFixed(2)} €`]
+        ['Montant HT', `${(facture.montantHT || 0).toFixed(2)} DT`],
+        ['Montant TVA', `${(facture.montantTVA || 0).toFixed(2)} DT`],
+        ['Remise', `${(facture.remise || 0).toFixed(2)} DT`],
+        ['Montant Total', `${(facture.montantTotal || 0).toFixed(2)} DT`],
+        ['Montant TTC', `${(facture.montantTTC || 0).toFixed(2)} DT`]
       ];
 
       autoTable(doc, {

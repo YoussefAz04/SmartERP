@@ -106,6 +106,7 @@ export class CurrencySettingsComponent {
   ];
   selectedList2: data[] = [
     { value: 'Choose Name' },
+    { value: 'Tunisian Dinar (TND)' },
     { value: 'Euro' },
     { value: 'England Pound' },
   ];
