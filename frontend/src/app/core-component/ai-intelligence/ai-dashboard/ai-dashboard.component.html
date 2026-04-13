@@ -257,7 +257,7 @@
           <p class="rec-desc">{{ rec.description }}</p>
           <div class="rec-footer">
             <span class="rec-type">{{ rec.type }}</span>
-            <button class="btn-action">{{ rec.actionLabel }}</button>
+            <button class="btn-action" (click)="navigateFromRecommendation(rec)">{{ rec.actionLabel }}</button>
           </div>
         </div>
       </div>
