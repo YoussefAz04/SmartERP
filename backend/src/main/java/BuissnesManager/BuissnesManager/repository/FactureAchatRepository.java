@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface FactureAchatRepository extends JpaRepository<FactureAchat, Long> {
 	List<FactureAchat> findAll();
+	Optional<FactureAchat> findByCommandeAchatId(Long commandeAchatId);
 }
