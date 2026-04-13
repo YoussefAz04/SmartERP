@@ -5,195 +5,337 @@
       <span class="hero-badge">
         <i class="feather icon-briefcase"></i> Gestion des Entreprises
       </span>
-      <h1 class="hero-title">Liste des Entreprises</h1>
-      <p class="hero-subtitle">{{ totalCount }} entreprise(s) enregistrée(s)</p>
+      <h1 class="hero-title">
+        <ng-container *ngIf="isSuperAdmin">Liste des Entreprises</ng-container>
+        <ng-container *ngIf="!isSuperAdmin">Mon Entreprise</ng-container>
+      </h1>
+      <p class="hero-subtitle" *ngIf="isSuperAdmin">{{ totalCount }} entreprise(s) enregistrée(s)</p>
+      <p class="hero-subtitle" *ngIf="!isSuperAdmin && currentEntreprise">{{ currentEntreprise.nom }}</p>
     </div>
     <div class="hero-actions">
-      <button type="button" class="btn-hero btn-hero-outline" (click)="loadEntreprises()">
+      <button type="button" class="btn-hero btn-hero-outline" (click)="refreshData()">
         <i class="feather icon-rotate-ccw"></i> Actualiser
       </button>
-      <button type="button" class="btn-hero btn-hero-primary" (click)="addEntreprise()">
+      <button type="button" class="btn-hero btn-hero-primary" (click)="addEntreprise()" *ngIf="isSuperAdmin">
         <i class="feather icon-plus-circle"></i> Ajouter Entreprise
       </button>
     </div>
   </div>
 </div>
 
-<!-- KPI Cards -->
-<div class="row mb-4">
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-purple kpi-delay-1">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ totalCount }}</div>
-          <div class="kpi-label">Total Entreprises</div>
-          <span class="kpi-trend"><i class="feather icon-trending-up"></i> Registre</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-briefcase"></i>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <i class="feather icon-list me-1"></i> Voir toutes les entreprises
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-teal kpi-delay-2">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ uniqueSectors }}</div>
-          <div class="kpi-label">Secteurs</div>
-          <span class="kpi-trend"><i class="feather icon-layers"></i> Diversité</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-layers"></i>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <i class="feather icon-bar-chart-2 me-1"></i> Secteurs d'activité uniques
-      </div>
-    </div>
-  </div>
-</div>
+<!-- ============================================================ -->
+<!-- SUPER ADMIN VIEW: KPI Cards + Filter + Full Table            -->
+<!-- ============================================================ -->
+<ng-container *ngIf="isSuperAdmin">
 
-<!-- Filter Card -->
-<div class="filter-card mb-4">
-  <div class="filter-header">
-    <i class="feather icon-filter"></i>
-    Filtres &amp; Recherche
-  </div>
-  <div class="filter-body">
-    <div class="row g-3 align-items-end">
-      <div class="col-md-9">
-        <label class="filter-label">Recherche</label>
-        <div class="filter-input-group">
-          <i class="feather icon-search filter-input-icon"></i>
-          <input type="text" class="filter-input" placeholder="Nom, raison sociale, email, secteur, adresse..."
-            [(ngModel)]="searchTerm">
+  <!-- KPI Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-6 col-sm-6 mb-4">
+      <div class="kpi-card kpi-purple kpi-delay-1">
+        <div class="kpi-body">
+          <div>
+            <div class="kpi-number">{{ totalCount }}</div>
+            <div class="kpi-label">Total Entreprises</div>
+            <span class="kpi-trend"><i class="feather icon-trending-up"></i> Registre</span>
+          </div>
+          <div class="kpi-icon-wrap">
+            <i class="feather icon-briefcase"></i>
+          </div>
+        </div>
+        <div class="kpi-footer">
+          <i class="feather icon-list me-1"></i> Voir toutes les entreprises
         </div>
       </div>
-      <div class="col-md-3">
-        <button type="button" class="btn-reset w-100" (click)="resetFilters()">
-          <i class="feather icon-refresh-cw"></i> Réinitialiser
+    </div>
+    <div class="col-xl-6 col-sm-6 mb-4">
+      <div class="kpi-card kpi-teal kpi-delay-2">
+        <div class="kpi-body">
+          <div>
+            <div class="kpi-number">{{ uniqueSectors }}</div>
+            <div class="kpi-label">Secteurs</div>
+            <span class="kpi-trend"><i class="feather icon-layers"></i> Diversité</span>
+          </div>
+          <div class="kpi-icon-wrap">
+            <i class="feather icon-layers"></i>
+          </div>
+        </div>
+        <div class="kpi-footer">
+          <i class="feather icon-bar-chart-2 me-1"></i> Secteurs d'activité uniques
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Card -->
+  <div class="filter-card mb-4">
+    <div class="filter-header">
+      <i class="feather icon-filter"></i>
+      Filtres &amp; Recherche
+    </div>
+    <div class="filter-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-9">
+          <label class="filter-label">Recherche</label>
+          <div class="filter-input-group">
+            <i class="feather icon-search filter-input-icon"></i>
+            <input type="text" class="filter-input" placeholder="Nom, raison sociale, email, secteur, adresse..."
+              [(ngModel)]="searchTerm">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <button type="button" class="btn-reset w-100" (click)="resetFilters()">
+            <i class="feather icon-refresh-cw"></i> Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entreprises Table -->
+  <div class="modern-panel">
+    <div class="panel-header panel-header-ent">
+      <h5 class="panel-title">
+        <i class="feather icon-briefcase"></i>
+        Liste des Entreprises
+        <span class="panel-badge">{{ filteredEntreprises.length }}</span>
+      </h5>
+    </div>
+    <div class="panel-body">
+
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="empty-state">
+        <div class="loading-spinner"></div>
+        <p>Chargement des entreprises...</p>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="errorMessage && !isLoading" class="empty-state">
+        <i class="feather icon-alert-circle empty-icon" style="color:#f5576c;"></i>
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="btn-retry" (click)="loadEntreprises()">
+          <i class="feather icon-refresh-cw"></i> Réessayer
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive" *ngIf="!isLoading && !errorMessage">
+        <table class="ent-table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Raison Sociale</th>
+              <th>Secteur</th>
+              <th>Statut Juridique</th>
+              <th>Contact</th>
+              <th>Site Web</th>
+              <th>NIF / RC</th>
+              <th>Date Création</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of filteredEntreprises">
+              <td>
+                <div class="ent-name-cell">
+                  <div class="ent-avatar">{{ (e.nom || '?').charAt(0).toUpperCase() }}</div>
+                  <div>
+                    <strong>{{ e.nom }}</strong>
+                    <div class="ent-meta">{{ e.adresse || '—' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ e.raisonSociale || '—' }}</td>
+              <td>
+                <span class="sector-pill" *ngIf="e.secteurActivite">{{ e.secteurActivite }}</span>
+                <span class="text-muted" *ngIf="!e.secteurActivite">—</span>
+              </td>
+              <td>
+                <span class="status-badge" *ngIf="e.statutJuridique">{{ e.statutJuridique }}</span>
+                <span class="text-muted" *ngIf="!e.statutJuridique">—</span>
+              </td>
+              <td>
+                <div class="contact-info">
+                  <a class="contact-link" [href]="'tel:' + e.telephone" *ngIf="e.telephone">
+                    <i class="feather icon-phone"></i> {{ e.telephone }}
+                  </a>
+                  <a class="contact-link" [href]="'mailto:' + e.email" *ngIf="e.email">
+                    <i class="feather icon-mail"></i> {{ e.email }}
+                  </a>
+                  <span class="text-muted" *ngIf="!e.telephone && !e.email">—</span>
+                </div>
+              </td>
+              <td>
+                <a class="web-link" [href]="e.siteWeb" target="_blank" *ngIf="e.siteWeb">
+                  <i class="feather icon-external-link"></i> Visiter
+                </a>
+                <span class="text-muted" *ngIf="!e.siteWeb">—</span>
+              </td>
+              <td>
+                <div class="id-info">
+                  <span class="id-code" *ngIf="e.numeroIdentificationFiscale">NIF: {{ e.numeroIdentificationFiscale }}</span>
+                  <span class="id-code" *ngIf="e.registreCommerce">RC: {{ e.registreCommerce }}</span>
+                  <span class="text-muted" *ngIf="!e.numeroIdentificationFiscale && !e.registreCommerce">—</span>
+                </div>
+              </td>
+              <td class="date-cell">{{ e.dateCreation | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <div class="action-btns">
+                  <button type="button" class="action-btn action-btn-view" (click)="editEntreprise(e.id)" title="Voir / Modifier">
+                    <i class="feather icon-eye"></i>
+                  </button>
+                  <button type="button" class="action-btn action-btn-delete" (click)="deleteEntreprise(e.id)" title="Supprimer">
+                    <i class="feather icon-trash-2"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredEntreprises.length === 0 && !isLoading">
+              <td colspan="9">
+                <div class="empty-state">
+                  <i class="feather icon-briefcase empty-icon"></i>
+                  <p>Aucune entreprise trouvée</p>
+                  <button type="button" class="btn-retry" *ngIf="searchTerm" (click)="resetFilters()">
+                    <i class="feather icon-x"></i> Effacer le filtre
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</ng-container>
+
+<!-- ============================================================ -->
+<!-- ADMIN / EMPLOYEE VIEW: Single Company Detail Card           -->
+<!-- ============================================================ -->
+<ng-container *ngIf="!isSuperAdmin">
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="empty-state">
+    <div class="loading-spinner"></div>
+    <p>Chargement des informations de votre entreprise...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="errorMessage && !isLoading" class="empty-state">
+    <i class="feather icon-alert-circle empty-icon" style="color:#f5576c;"></i>
+    <p>{{ errorMessage }}</p>
+    <button type="button" class="btn-retry" (click)="refreshData()">
+      <i class="feather icon-refresh-cw"></i> Réessayer
+    </button>
+  </div>
+
+  <!-- Single Company Card -->
+  <div class="modern-panel" *ngIf="!isLoading && !errorMessage && currentEntreprise">
+    <div class="panel-header panel-header-ent">
+      <h5 class="panel-title">
+        <i class="feather icon-briefcase"></i>
+        {{ currentEntreprise.nom }}
+      </h5>
+      <div class="panel-header-actions">
+        <span class="role-badge role-badge-admin" *ngIf="isAdmin">
+          <i class="feather icon-shield"></i> Administrateur
+        </span>
+        <span class="role-badge role-badge-employee" *ngIf="isEmployee">
+          <i class="feather icon-eye"></i> Lecture seule
+        </span>
+        <button type="button" class="action-btn-edit" (click)="editEntreprise(currentEntreprise.id)"
+                *ngIf="isAdmin && permissionEntreprise?.update" title="Modifier">
+          <i class="feather icon-edit-2"></i> Modifier
         </button>
       </div>
     </div>
-  </div>
-</div>
+    <div class="panel-body">
 
-<!-- Entreprises Table -->
-<div class="modern-panel">
-  <div class="panel-header panel-header-ent">
-    <h5 class="panel-title">
-      <i class="feather icon-briefcase"></i>
-      Liste des Entreprises
-      <span class="panel-badge">{{ filteredEntreprises.length }}</span>
-    </h5>
-  </div>
-  <div class="panel-body">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-briefcase"></i> Nom</div>
+          <div class="info-value">{{ currentEntreprise.nom || '—' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-file-text"></i> Raison Sociale</div>
+          <div class="info-value">{{ currentEntreprise.raisonSociale || '—' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-layers"></i> Secteur d'Activité</div>
+          <div class="info-value">
+            <span class="sector-pill" *ngIf="currentEntreprise.secteurActivite">{{ currentEntreprise.secteurActivite }}</span>
+            <span *ngIf="!currentEntreprise.secteurActivite">—</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-award"></i> Statut Juridique</div>
+          <div class="info-value">
+            <span class="status-badge" *ngIf="currentEntreprise.statutJuridique">{{ currentEntreprise.statutJuridique }}</span>
+            <span *ngIf="!currentEntreprise.statutJuridique">—</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-phone"></i> Téléphone</div>
+          <div class="info-value">
+            <a class="contact-link" [href]="'tel:' + currentEntreprise.telephone" *ngIf="currentEntreprise.telephone">
+              {{ currentEntreprise.telephone }}
+            </a>
+            <span *ngIf="!currentEntreprise.telephone">—</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-mail"></i> Email</div>
+          <div class="info-value">
+            <a class="contact-link" [href]="'mailto:' + currentEntreprise.email" *ngIf="currentEntreprise.email">
+              {{ currentEntreprise.email }}
+            </a>
+            <span *ngIf="!currentEntreprise.email">—</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-globe"></i> Site Web</div>
+          <div class="info-value">
+            <a class="web-link" [href]="currentEntreprise.siteWeb" target="_blank" *ngIf="currentEntreprise.siteWeb">
+              <i class="feather icon-external-link"></i> Visiter
+            </a>
+            <span *ngIf="!currentEntreprise.siteWeb">—</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-hash"></i> NIF</div>
+          <div class="info-value">
+            <span class="id-code" *ngIf="currentEntreprise.numeroIdentificationFiscale">{{ currentEntreprise.numeroIdentificationFiscale }}</span>
+            <span *ngIf="!currentEntreprise.numeroIdentificationFiscale">—</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-hash"></i> Registre Commerce</div>
+          <div class="info-value">
+            <span class="id-code" *ngIf="currentEntreprise.registreCommerce">{{ currentEntreprise.registreCommerce }}</span>
+            <span *ngIf="!currentEntreprise.registreCommerce">—</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label"><i class="feather icon-calendar"></i> Date de Création</div>
+          <div class="info-value">{{ currentEntreprise.dateCreation | date:'dd/MM/yyyy' }}</div>
+        </div>
+        <div class="info-item info-item-full" *ngIf="currentEntreprise.description">
+          <div class="info-label"><i class="feather icon-info"></i> Description</div>
+          <div class="info-value">{{ currentEntreprise.description }}</div>
+        </div>
+        <div class="info-item info-item-full" *ngIf="currentEntreprise.adresse">
+          <div class="info-label"><i class="feather icon-map-pin"></i> Adresse</div>
+          <div class="info-value">{{ currentEntreprise.adresse }}</div>
+        </div>
+      </div>
 
-    <!-- Loading state -->
-    <div *ngIf="isLoading" class="empty-state">
-      <div class="loading-spinner"></div>
-      <p>Chargement des entreprises...</p>
+      <!-- Read-only notice for employees -->
+      <div class="readonly-notice" *ngIf="isEmployee">
+        <i class="feather icon-lock"></i>
+        Vous consultez ces informations en mode lecture seule. Contactez votre administrateur pour toute modification.
+      </div>
+
     </div>
-
-    <!-- Error state -->
-    <div *ngIf="errorMessage && !isLoading" class="empty-state">
-      <i class="feather icon-alert-circle empty-icon" style="color:#f5576c;"></i>
-      <p>{{ errorMessage }}</p>
-      <button type="button" class="btn-retry" (click)="loadEntreprises()">
-        <i class="feather icon-refresh-cw"></i> Réessayer
-      </button>
-    </div>
-
-    <!-- Table -->
-    <div class="table-responsive" *ngIf="!isLoading && !errorMessage">
-      <table class="ent-table">
-        <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Raison Sociale</th>
-            <th>Secteur</th>
-            <th>Statut Juridique</th>
-            <th>Contact</th>
-            <th>Site Web</th>
-            <th>NIF / RC</th>
-            <th>Date Création</th>
-            <th class="text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let e of filteredEntreprises">
-            <td>
-              <div class="ent-name-cell">
-                <div class="ent-avatar">{{ (e.nom || '?').charAt(0).toUpperCase() }}</div>
-                <div>
-                  <strong>{{ e.nom }}</strong>
-                  <div class="ent-meta">{{ e.adresse || '—' }}</div>
-                </div>
-              </div>
-            </td>
-            <td>{{ e.raisonSociale || '—' }}</td>
-            <td>
-              <span class="sector-pill" *ngIf="e.secteurActivite">{{ e.secteurActivite }}</span>
-              <span class="text-muted" *ngIf="!e.secteurActivite">—</span>
-            </td>
-            <td>
-              <span class="status-badge" *ngIf="e.statutJuridique">{{ e.statutJuridique }}</span>
-              <span class="text-muted" *ngIf="!e.statutJuridique">—</span>
-            </td>
-            <td>
-              <div class="contact-info">
-                <a class="contact-link" [href]="'tel:' + e.telephone" *ngIf="e.telephone">
-                  <i class="feather icon-phone"></i> {{ e.telephone }}
-                </a>
-                <a class="contact-link" [href]="'mailto:' + e.email" *ngIf="e.email">
-                  <i class="feather icon-mail"></i> {{ e.email }}
-                </a>
-                <span class="text-muted" *ngIf="!e.telephone && !e.email">—</span>
-              </div>
-            </td>
-            <td>
-              <a class="web-link" [href]="e.siteWeb" target="_blank" *ngIf="e.siteWeb">
-                <i class="feather icon-external-link"></i> Visiter
-              </a>
-              <span class="text-muted" *ngIf="!e.siteWeb">—</span>
-            </td>
-            <td>
-              <div class="id-info">
-                <span class="id-code" *ngIf="e.numeroIdentificationFiscale">NIF: {{ e.numeroIdentificationFiscale }}</span>
-                <span class="id-code" *ngIf="e.registreCommerce">RC: {{ e.registreCommerce }}</span>
-                <span class="text-muted" *ngIf="!e.numeroIdentificationFiscale && !e.registreCommerce">—</span>
-              </div>
-            </td>
-            <td class="date-cell">{{ e.dateCreation | date:'dd/MM/yyyy' }}</td>
-            <td>
-              <div class="action-btns">
-                <button type="button" class="action-btn action-btn-view" (click)="editEntreprise(e.id)" title="Voir / Modifier">
-                  <i class="feather icon-eye"></i>
-                </button>
-                <button type="button" class="action-btn action-btn-delete" (click)="deleteEntreprise(e.id)" title="Supprimer">
-                  <i class="feather icon-trash-2"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr *ngIf="filteredEntreprises.length === 0 && !isLoading">
-            <td colspan="9">
-              <div class="empty-state">
-                <i class="feather icon-briefcase empty-icon"></i>
-                <p>Aucune entreprise trouvée</p>
-                <button type="button" class="btn-retry" *ngIf="searchTerm" (click)="resetFilters()">
-                  <i class="feather icon-x"></i> Effacer le filtre
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
   </div>
-</div>
+
+</ng-container>

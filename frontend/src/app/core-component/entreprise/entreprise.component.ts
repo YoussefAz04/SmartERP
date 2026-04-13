@@ -7,7 +7,6 @@ import {DatePipe, NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {MatTooltip} from "@angular/material/tooltip";
 import {PermissionDto} from "../../model/permissionDto.model";
-import {AuthResponse} from "../../auth/service/auth.service";
 import {ResponseDto} from "../../model/reponseDto.model";
 
 
@@ -30,9 +29,16 @@ export class EntrepriseComponent implements OnInit{
   permissionEntreprise!: PermissionDto;
   public routes = routes;
   entreprises: Entreprise[] = [];
+  currentEntreprise: Entreprise | null = null;
+  currentEntrepriseId: number | null = null;
   isLoading: boolean = true;
   errorMessage: string = '';
   searchTerm: string = '';
+
+  roleId: number = 0;
+  isSuperAdmin: boolean = false;
+  isAdmin: boolean = false;
+  isEmployee: boolean = false;
 
   get filteredEntreprises(): Entreprise[] {
     if (!this.searchTerm.trim()) return this.entreprises;
@@ -47,8 +53,6 @@ export class EntrepriseComponent implements OnInit{
   }
 
   get totalCount(): number { return this.entreprises.length; }
-  get withEmail(): number { return this.entreprises.filter(e => e.email).length; }
-  get withWebsite(): number { return this.entreprises.filter(e => e.siteWeb).length; }
   get uniqueSectors(): number { return new Set(this.entreprises.map(e => e.secteurActivite).filter(Boolean)).size; }
 
   resetFilters(): void { this.searchTerm = ''; }
@@ -60,24 +64,16 @@ export class EntrepriseComponent implements OnInit{
 
   ngOnInit(): void {
     this.getUserAuthData();
-    this.loadEntreprises();  // ✅ ADD THIS
   }
 
-  // ✅ ADD THIS METHOD
   loadEntreprises(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    
-    console.log('🔄 Loading entreprises...');
+
     this.entrepriseService.getAllEntreprises().subscribe({
       next: (data) => {
-        console.log("✅ Entreprises loaded:", data);
         this.entreprises = data;
         this.isLoading = false;
-        
-        if (data.length === 0) {
-          console.warn("⚠️ No entreprises found");
-        }
       },
       error: (err) => {
         console.error("❌ Error loading entreprises:", err);
@@ -87,6 +83,31 @@ export class EntrepriseComponent implements OnInit{
     });
   }
 
+  loadCurrentEntreprise(entrepriseId: number): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.entrepriseService.getEntrepriseById(entrepriseId).subscribe({
+      next: (data) => {
+        this.currentEntreprise = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error("❌ Error loading entreprise:", err);
+        this.isLoading = false;
+        this.errorMessage = "Erreur lors du chargement de votre entreprise";
+      }
+    });
+  }
+
+  refreshData(): void {
+    if (this.isSuperAdmin) {
+      this.loadEntreprises();
+    } else if (this.currentEntrepriseId) {
+      this.loadCurrentEntreprise(this.currentEntrepriseId);
+    }
+  }
+
   getUserAuthData(): void {
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
@@ -94,28 +115,42 @@ export class EntrepriseComponent implements OnInit{
     if (item) {
       try {
         currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
-        console.log('✅ User connected:', currentUser?.name);
-        console.log('Token:', currentUser?.token);
-        console.log('Permissions:', currentUser?.permission);
 
-        currentUser?.permission.map(per => {
+        currentUser?.permission?.forEach(per => {
           if (per.moduleTitle.includes("gestion entreprise")) {
             this.permissionEntreprise = per;
-            console.log("✅ Permission Entreprise:", this.permissionEntreprise);
           }
         });
-        console.log('Entreprise:', currentUser?.entreprise.nom);
+
+        this.roleId = currentUser?.roleId ?? 0;
+        this.isSuperAdmin = this.roleId === 0;
+        this.isAdmin = this.roleId === 1;
+        this.isEmployee = this.roleId >= 2;
+
+        if (this.isSuperAdmin) {
+          this.loadEntreprises();
+        } else {
+          const entrepriseId = currentUser?.entreprise?.id ?? currentUser?.entrepriseId ?? null;
+          if (entrepriseId) {
+            this.currentEntrepriseId = entrepriseId;
+            this.loadCurrentEntreprise(entrepriseId);
+          } else {
+            this.isLoading = false;
+            this.errorMessage = "Aucune entreprise associée à votre compte";
+          }
+        }
       } catch (error) {
         console.error('❌ Error parsing user data:', error);
+        this.isLoading = false;
       }
     } else {
       console.warn('⚠️ No user data found in localStorage');
+      this.isLoading = false;
     }
   }
 
   editEntreprise(id: number | undefined): void {
     if (id) {
-      console.log('📝 Editing entreprise:', id);
       this.router.navigate(['/entreprise/detaisEntreprise', id]);
     }
   }
@@ -127,12 +162,10 @@ export class EntrepriseComponent implements OnInit{
     }
 
     if (confirm("Voulez-vous vraiment supprimer cette entreprise ?")) {
-      console.log('🗑️ Deleting entreprise:', id);
       this.entrepriseService.deleteEntreprise(id).subscribe({
         next: () => {
-          console.log('✅ Entreprise deleted successfully');
           alert("Entreprise supprimée avec succès !");
-          this.loadEntreprises(); // ✅ Reload the list after delete
+          this.loadEntreprises();
         },
         error: (err) => {
           console.error('❌ Error deleting entreprise:', err);
@@ -143,7 +176,6 @@ export class EntrepriseComponent implements OnInit{
   }
 
   addEntreprise(): void {
-    console.log('➕ Adding new entreprise');
     this.router.navigate(['/entreprise/addEntreprise']);
   }
 }
