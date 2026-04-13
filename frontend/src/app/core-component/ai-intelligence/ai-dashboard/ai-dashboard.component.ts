@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -17,6 +18,7 @@ import {
   AiIntelligenceService,
   Recommendation,
 } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
+import { routes } from 'src/app/core/helpers/routes';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;
@@ -56,7 +58,7 @@ export class AiDashboardComponent implements OnInit {
   public forecastChartOptions: Partial<ChartOptions> = {};
   public productChartOptions: Partial<DonutChartOptions> = {};
 
-  constructor(private aiService: AiIntelligenceService) {}
+  constructor(private aiService: AiIntelligenceService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -209,5 +211,34 @@ export class AiDashboardComponent implements OnInit {
     if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + 'M';
     if (value >= 1_000) return (value / 1_000).toFixed(1) + 'k';
     return value.toFixed(2);
+  }
+
+  navigateFromRecommendation(rec: Recommendation): void {
+    switch (rec.type) {
+      case 'STOCK_CRITIQUE':
+        this.router.navigate([routes.manageStocks]);
+        break;
+      case 'STOCK_FAIBLE':
+        this.router.navigate([routes.stockAdjustment]);
+        break;
+      case 'VENTES_FAIBLES':
+        this.router.navigate([routes.salesList]);
+        break;
+      case 'PRODUIT_STAR':
+        this.router.navigate([routes.productList]);
+        break;
+      case 'MARGE_FAIBLE':
+      case 'BONNE_PERFORMANCE':
+        this.router.navigate([routes.purchaseList]);
+        break;
+      case 'SAISONNALITE':
+        this.router.navigate([routes.manageStocks]);
+        break;
+      case 'DONNEES_INSUFFISANTES':
+        this.router.navigate([routes.addCommandeAchat]);
+        break;
+      default:
+        break;
+    }
   }
 }
