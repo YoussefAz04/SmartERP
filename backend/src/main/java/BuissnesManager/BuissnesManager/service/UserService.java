@@ -62,12 +62,14 @@ public class UserService {
 
         return userRepository.save(user);
     }
-    public User createUserWithEntrepriseAndEquipe(UserRequest request, Long idEntreprise,Long idEquipe) {
+    public User createUserWithEntrepriseAndEquipe(UserRequest request, Long idEntreprise, Long idEquipe) {
+        if (request == null || request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username is required");
+        }
+
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Un utilisateur avec ce nom existe déjà.");
         }
-
-
 
         User user = new User();
         user.setUsername(request.getUsername());
@@ -76,7 +78,10 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
 
-        user.setEntreprise(entrepriseRepo.findById(idEntreprise).get());
+        Entreprise entreprise = entrepriseRepo.findById(idEntreprise)
+                .orElseThrow(() -> new RuntimeException("Entreprise non trouvée avec l'ID: " + idEntreprise));
+        user.setEntreprise(entreprise);
+
         return userRepository.save(user);
     }
 
