@@ -64,7 +64,7 @@ public class UserService {
     }
     public User createUserWithEntrepriseAndEquipe(UserRequest request, Long idEntreprise, Long idEquipe) {
         if (request == null || request.getUsername() == null || request.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username is required");
+            throw new IllegalArgumentException("Le nom d'utilisateur est requis");
         }
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -79,7 +79,7 @@ public class UserService {
         user.setEnabled(true);
 
         Entreprise entreprise = entrepriseRepo.findById(idEntreprise)
-                .orElseThrow(() -> new RuntimeException("Entreprise non trouvée avec l'ID: " + idEntreprise));
+                .orElseThrow(() -> new IllegalArgumentException("Entreprise non trouvée avec l'ID: " + idEntreprise));
         user.setEntreprise(entreprise);
 
         return userRepository.save(user);
