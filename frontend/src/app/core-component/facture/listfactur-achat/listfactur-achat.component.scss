@@ -1,0 +1,506 @@
+// =============================================
+// Modern Factures d'Achat Page Styles
+// =============================================
+
+// --- Page Header ---
+.modern-page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.75rem 2rem;
+  border-radius: 14px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+
+    .header-title {
+      color: white;
+
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem 0;
+        letter-spacing: -0.5px;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        opacity: 0.85;
+        margin: 0;
+      }
+    }
+
+    .header-actions {
+      .btn-refresh {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        color: white;
+        padding: 0.6rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover:not(:disabled) {
+          background: white;
+          color: #667eea;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        i.spinning {
+          animation: spin 0.8s linear infinite;
+        }
+      }
+    }
+  }
+}
+
+// --- Search & Filter ---
+.search-filter-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .search-box {
+    flex: 1;
+    position: relative;
+    max-width: 520px;
+
+    i {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 1rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.7rem 1rem 0.7rem 2.6rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      background: white;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+      }
+
+      &::placeholder {
+        color: #b0b8c4;
+      }
+    }
+  }
+
+  .batch-actions {
+    .btn-batch-export {
+      background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(67, 160, 71, 0.35);
+      }
+    }
+  }
+}
+
+// --- Modern Card ---
+.modern-card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+
+  .card-header-modern {
+    background: linear-gradient(135deg, #f8fafc 0%, #e8edf5 100%);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin: 0;
+    }
+
+    .count-badge {
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.8rem;
+
+      &.badge-info {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      &.badge-warning {
+        background: #fef3c7;
+        color: #d97706;
+      }
+    }
+  }
+}
+
+// --- Loading State ---
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+
+  .spinner {
+    width: 38px;
+    height: 38px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  p {
+    color: #718096;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+// --- Table ---
+.table-container {
+  overflow-x: auto;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  thead {
+    tr {
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    th {
+      padding: 0.9rem 1rem;
+      text-align: left;
+      font-weight: 700;
+      color: #4a5568;
+      white-space: nowrap;
+
+      &.sortable {
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s ease, background 0.2s ease;
+
+        &:hover {
+          color: #667eea;
+          background: rgba(102, 126, 234, 0.06);
+        }
+
+        i {
+          margin-left: 0.4rem;
+          font-size: 0.75rem;
+          opacity: 0.55;
+        }
+      }
+
+      &.checkbox-col {
+        width: 48px;
+        text-align: center;
+      }
+
+      &.status-col {
+        min-width: 110px;
+      }
+
+      &.actions-col {
+        min-width: 130px;
+        text-align: center;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #f0f4f8;
+      transition: background 0.18s ease, box-shadow 0.18s ease;
+
+      &.table-row:hover {
+        background: #f5f7ff;
+        box-shadow: inset 3px 0 0 #667eea;
+      }
+
+      &.table-row.selected {
+        background: #ebf4ff;
+      }
+
+      &.empty-row td {
+        padding: 3rem 1rem;
+        background: #fafbfc;
+      }
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      color: #4a5568;
+
+      &.checkbox-col {
+        text-align: center;
+
+        input[type='checkbox'] {
+          width: 17px;
+          height: 17px;
+          cursor: pointer;
+          accent-color: #667eea;
+        }
+      }
+
+      &.date-cell {
+        font-weight: 500;
+        color: #718096;
+      }
+
+      &.reference-cell {
+        .badge-ref {
+          background: #dbeafe;
+          color: #1d4ed8;
+          padding: 0.3rem 0.7rem;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.82rem;
+          white-space: nowrap;
+        }
+      }
+
+      &.amount-cell {
+        color: #4a5568;
+
+        &.highlight {
+          color: #276749;
+          font-size: 0.95rem;
+        }
+      }
+
+      &.payment-cell {
+        color: #718096;
+      }
+
+      &.status-cell {
+        .status-badge {
+          padding: 0.3rem 0.7rem;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.78rem;
+          display: inline-block;
+          white-space: nowrap;
+
+          &.status-payé,
+          &.status-paid {
+            background: #c6f6d5;
+            color: #276749;
+          }
+
+          &.status-en-attente,
+          &.status-pending {
+            background: #fefcbf;
+            color: #975a16;
+          }
+
+          &.status-annulé,
+          &.status-cancelled {
+            background: #fed7d7;
+            color: #9b2c2c;
+          }
+
+          &.status-en-retard,
+          &.status-overdue {
+            background: #fed7d7;
+            color: #9b2c2c;
+          }
+
+          &.status-default {
+            background: #e2e8f0;
+            color: #4a5568;
+          }
+        }
+      }
+
+      &.actions-cell {
+        .action-buttons-row {
+          display: flex;
+          justify-content: center;
+          gap: 0.4rem;
+
+          .btn-action {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+
+            i {
+              display: block;
+              line-height: 1;
+            }
+
+            &.view {
+              background: #dbeafe;
+              color: #1d4ed8;
+
+              &:hover {
+                background: #1d4ed8;
+                color: white;
+                transform: scale(1.1);
+              }
+            }
+
+            &.download {
+              background: #ede9fe;
+              color: #6d28d9;
+
+              &:hover {
+                background: #6d28d9;
+                color: white;
+                transform: scale(1.1);
+              }
+            }
+
+            &.delete {
+              background: #fee2e2;
+              color: #991b1b;
+
+              &:hover {
+                background: #991b1b;
+                color: white;
+                transform: scale(1.1);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// --- Empty State ---
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: #a0aec0;
+
+  i {
+    font-size: 3rem;
+    opacity: 0.35;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  small {
+    font-size: 0.82rem;
+    color: #b0b8c4;
+  }
+}
+
+// --- Animations ---
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// --- Responsive ---
+@media (max-width: 768px) {
+  .modern-page-header {
+    padding: 1.25rem;
+
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+
+      .header-title h1 {
+        font-size: 1.4rem;
+      }
+    }
+  }
+
+  .search-filter-section {
+    flex-direction: column;
+    align-items: stretch;
+
+    .search-box {
+      max-width: 100%;
+    }
+  }
+
+  .modern-table {
+    font-size: 0.82rem;
+
+    thead th,
+    tbody td {
+      padding: 0.65rem 0.6rem;
+    }
+
+    .action-buttons-row {
+      flex-wrap: wrap;
+    }
+  }
+}
