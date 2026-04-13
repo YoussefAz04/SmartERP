@@ -186,7 +186,7 @@ public class CommandeVenteService {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
-        // ✅ Change status to CONFIRMEE (valid for database constraint)
+        // ✅ Change status to CONFIRMEE (valid for commande_vente table)
         commande.setStatut("CONFIRMEE");
         commandeVenteRepository.save(commande);
 
@@ -215,7 +215,7 @@ public class CommandeVenteService {
         facture.setMontantTVA(totalTVA);
         facture.setMontantTTC(totalTTC);
         facture.setMontantTotal(totalTTC);
-        facture.setStatut("CONFIRMEE");
+        facture.setStatut("EN_ATTENTE");
         facture.setDescription("Facture générée automatiquement depuis la commande " + commande.getReference());
         facture.setClient(commande.getClient());
         facture.setModePaiement("A_DEFINIR");
