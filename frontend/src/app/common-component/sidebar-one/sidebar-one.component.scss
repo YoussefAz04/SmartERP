@@ -12,6 +12,9 @@ $border: #e2e8f0;
 $text-primary: #2d3748;
 $text-secondary: #718096;
 $text-light: #a0aec0;
+$sidebar-bg: #ffffff;
+$sidebar-bg-gradient: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+$transition-smooth: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 
 // Gradient helpers
 $gradient-primary: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
@@ -23,9 +26,13 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
 // SIDEBAR BASE
 // ============================================
 #sidebar {
+  background: $sidebar-bg-gradient;
+  border-right: 1px solid rgba($border, 0.8);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.06);
+
   .sidebar-inner {
     width: 100%;
-    padding: 12px 0;
+    padding: 8px 0 24px;
   }
 }
 
@@ -38,214 +45,282 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
     padding: 0;
     margin: 0;
 
+    // =========================================
     // SECTION HEADERS
+    // =========================================
     li.submenu-open {
-      margin-bottom: 24px;
+      margin-bottom: 6px;
       padding: 0;
 
       .submenu-hdr {
-        font-size: 11px;
-        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 10.5px;
+        font-weight: 800;
         text-transform: uppercase;
         color: $text-light;
-        letter-spacing: 1.4px;
-        padding: 14px 18px 8px;
+        letter-spacing: 1.6px;
+        padding: 16px 20px 8px;
         margin: 0;
         transition: color 0.3s ease;
         cursor: default;
         position: relative;
 
-        // Gradient underline accent
-        &::after {
-          content: '';
-          display: block;
-          height: 2px;
-          width: 28px;
-          margin-top: 6px;
-          background: $gradient-primary;
-          border-radius: 2px;
-          opacity: 0.5;
-          transition: width 0.3s ease, opacity 0.3s ease;
+        .hdr-text {
+          position: relative;
+
+          // Gradient underline accent
+          &::after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 22px;
+            margin-top: 5px;
+            background: $gradient-primary;
+            border-radius: 2px;
+            opacity: 0.45;
+            transition: width 0.35s ease, opacity 0.3s ease;
+          }
         }
       }
 
+      // =========================================
       // SUBMENU LIST
+      // =========================================
       > ul {
         list-style: none;
-        padding: 0;
+        padding: 0 8px 0 8px;
         margin: 0;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 2px;
 
-        li {
+        // =========================================
+        // NAV ITEMS
+        // =========================================
+        li.nav-item {
           margin: 0;
           padding: 0;
-          transition: transform 0.2s ease;
+          border-radius: 10px;
+          transition: transform 0.18s ease;
 
-          // MAIN MENU ITEMS
-          > a {
+          // MAIN NAV LINK
+          a.nav-link {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 11px 18px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 10px 14px;
+            font-size: 13.5px;
+            font-weight: 500;
             color: $text-secondary;
             text-decoration: none;
             cursor: pointer;
-            border: none;
             background: transparent;
-            border-left: 3px solid transparent;
-            border-radius: 0 8px 8px 0;
-            margin-right: 10px;
-            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            transition: $transition-smooth;
             position: relative;
-            width: calc(100% - 10px);
-            text-align: left;
+            gap: 11px;
+            outline: none;
 
-            // ICON
-            i {
-              font-size: 18px;
-              color: #cbd5e0;
-              margin-right: 12px;
-              transition: color 0.28s ease, transform 0.28s ease;
-              min-width: 20px;
-              text-align: center;
-            }
+            // Icon wrap
+            .nav-icon-wrap {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 34px;
+              height: 34px;
+              border-radius: 9px;
+              background: rgba($text-light, 0.10);
+              transition: $transition-smooth;
+              flex-shrink: 0;
 
-            // TEXT
-            span {
-              flex: 1;
-
-              // ARROW
-              &.menu-arrow {
-                margin-left: auto;
+              i {
                 font-size: 16px;
-                color: #cbd5e0;
-                transition: transform 0.3s ease, color 0.28s ease;
-                margin-right: 4px;
+                color: $text-light;
+                transition: color 0.28s ease, transform 0.28s ease;
+                display: block;
               }
             }
 
-            // FOCUS STATE (accessibility)
-            &:focus-visible {
-              outline: 2px solid $primary;
-              outline-offset: -2px;
-              border-radius: 0 8px 8px 0;
+            // Label
+            .nav-label {
+              flex: 1;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              transition: color 0.28s ease;
+              line-height: 1.3;
             }
 
-            // HOVER STATE
+            // Arrow
+            .menu-arrow {
+              margin-left: auto;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+
+              .arrow-icon {
+                font-size: 14px;
+                color: $text-light;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.28s ease;
+              }
+            }
+
+            // Focus state (accessibility)
+            &:focus-visible {
+              outline: 2px solid $primary;
+              outline-offset: 1px;
+            }
+
+            // Hover state
             &:hover {
               background: $gradient-hover-bg;
               color: $primary;
-              border-left-color: $primary;
-              padding-left: 22px;
-              box-shadow: inset 0 0 0 0 transparent, 2px 0 8px rgba(0, 180, 219, 0.08);
 
-              i {
-                color: $primary;
-                transform: scale(1.15);
+              .nav-icon-wrap {
+                background: rgba($primary, 0.12);
+
+                i {
+                  color: $primary;
+                  transform: scale(1.1);
+                }
               }
 
-              .menu-arrow {
+              .nav-label {
+                color: $primary;
+              }
+
+              .arrow-icon {
                 color: $primary;
               }
             }
 
-            // ACTIVE STATE
+            // Active/RouterLink active state
             &.active,
-            &.sub-active.active {
+            &.active-link {
               background: $gradient-active-bg;
               color: $primary;
-              border-left-color: $primary;
-              font-weight: 700;
-              box-shadow: 2px 0 12px rgba(0, 180, 219, 0.12);
+              font-weight: 600;
+              box-shadow: 0 2px 10px rgba($primary, 0.12);
 
-              i {
-                color: $primary;
-                filter: drop-shadow(0 0 4px $primary-glow);
+              .nav-icon-wrap {
+                background: linear-gradient(135deg, rgba($primary, 0.18) 0%, rgba($accent, 0.10) 100%);
+
+                i {
+                  color: $primary;
+                  filter: drop-shadow(0 0 4px $primary-glow);
+                }
               }
 
-              .menu-arrow {
+              .nav-label {
+                color: $primary;
+              }
+
+              .arrow-icon {
                 color: $primary;
               }
             }
 
-            // EXPANDED STATE
+            // Expanded (subdrop) state
             &.subdrop {
               background: $gradient-hover-bg;
               color: $primary;
-              border-left-color: $primary;
 
-              .menu-arrow {
-                transform: rotate(180deg);
+              .nav-icon-wrap {
+                background: rgba($primary, 0.12);
+
+                i {
+                  color: $primary;
+                }
+              }
+
+              .nav-label {
                 color: $primary;
               }
 
-              i {
+              .arrow-icon {
+                transform: rotate(180deg);
                 color: $primary;
-                transform: scale(1.1);
               }
             }
           }
 
-          // SUBMENU CONTAINER
+          // =========================================
+          // SUBMENU CONTAINER (collapsible)
+          // =========================================
           &.submenu {
-            // Nested submenu items
-            ul {
+            .submenu-list {
               list-style: none;
-              padding: 0;
-              margin: 4px 0 0 0;
-              background: transparent;
-              border-radius: 0;
+              padding: 3px 0 4px 0;
+              margin: 0;
               overflow: hidden;
 
               &.d-block {
-                display: flex;
+                display: flex !important;
                 flex-direction: column;
                 gap: 1px;
-                animation: submenuSlideIn 0.22s ease forwards;
+                animation: submenuSlideIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
               }
 
               &.d-none {
-                display: none;
+                display: none !important;
               }
 
-              li {
+              .submenu-item {
                 margin: 0;
                 padding: 0;
-                border-radius: 0;
+                border-radius: 8px;
 
-                a {
+                .submenu-link {
                   display: flex;
                   align-items: center;
-                  padding: 9px 18px 9px 46px;
-                  margin-right: 10px;
+                  gap: 10px;
+                  padding: 8px 14px 8px 18px;
                   font-size: 13px;
+                  font-weight: 400;
                   color: $text-light;
-                  border-radius: 0 8px 8px 0;
-                  border-left: 3px solid transparent;
-                  font-weight: 500;
-                  transition: all 0.25s ease;
+                  border-radius: 8px;
+                  transition: $transition-smooth;
+                  text-decoration: none;
+                  outline: none;
+
+                  // Dot indicator
+                  .submenu-dot {
+                    width: 5px;
+                    height: 5px;
+                    border-radius: 50%;
+                    background: $text-light;
+                    flex-shrink: 0;
+                    transition: background 0.25s ease, transform 0.25s ease;
+                  }
 
                   &:focus-visible {
                     outline: 2px solid $primary;
-                    outline-offset: -2px;
+                    outline-offset: 1px;
                   }
 
                   &:hover {
                     background: $gradient-hover-bg;
                     color: $primary;
-                    border-left-color: $primary;
-                    padding-left: 50px;
+                    padding-left: 20px;
+
+                    .submenu-dot {
+                      background: $primary;
+                      transform: scale(1.4);
+                    }
                   }
 
                   &.active {
                     background: $gradient-active-bg;
                     color: $primary;
-                    border-left-color: $primary;
                     font-weight: 600;
+
+                    .submenu-dot {
+                      background: $primary;
+                      box-shadow: 0 0 5px $primary-glow;
+                      transform: scale(1.3);
+                    }
                   }
                 }
               }
@@ -254,10 +329,10 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
 
           // MULTI-LEVEL SUBMENU
           &.submenu-two {
-            a {
+            .submenu-link {
               &.subdrop {
-                .inside-submenu {
-                  transform: rotate(180deg);
+                .arrow-icon-sm {
+                  transform: rotate(90deg);
                 }
               }
             }
@@ -265,14 +340,14 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
         }
       }
 
-      // HIGHLIGHT ACTIVE SECTION HEADER
-      &:has(.submenu-hdr:hover) {
+      // Highlight active section header on hover
+      &:hover {
         .submenu-hdr {
-          color: $primary;
+          color: $text-secondary;
 
-          &::after {
-            width: 44px;
-            opacity: 1;
+          .hdr-text::after {
+            width: 36px;
+            opacity: 0.7;
           }
         }
       }
@@ -286,7 +361,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
 @keyframes submenuSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -300,7 +375,7 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
 .sidebar-inner,
 #sidebar-menu {
   &::-webkit-scrollbar {
-    width: 5px;
+    width: 4px;
   }
 
   &::-webkit-scrollbar-track {
@@ -310,8 +385,8 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
   &::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, $primary 0%, $accent 100%);
     border-radius: 4px;
-    transition: opacity 0.3s ease;
     opacity: 0.5;
+    transition: opacity 0.3s ease;
 
     &:hover {
       opacity: 1;
@@ -323,96 +398,104 @@ $gradient-active-bg: linear-gradient(90deg, rgba(0, 180, 219, 0.18) 0%, rgba(102
 // RESPONSIVE DESIGN
 // ============================================
 @media (max-width: 1024px) {
-  #sidebar-menu ul li.submenu-open {
-    margin-bottom: 18px;
+  #sidebar-menu {
+    ul li.submenu-open {
+      margin-bottom: 4px;
 
-    .submenu-hdr {
-      padding: 12px 16px 8px;
-      font-size: 10px;
-    }
-
-    > ul {
-      gap: 2px;
-
-      li > a {
-        padding: 10px 16px;
-        font-size: 13px;
-
-        i {
-          font-size: 16px;
-          margin-right: 10px;
-        }
-
-        .menu-arrow {
-          font-size: 14px;
-        }
+      .submenu-hdr {
+        padding: 14px 16px 7px;
+        font-size: 10px;
       }
 
-      li.submenu ul a {
-        padding: 8px 16px 8px 40px;
+      > ul {
+        padding: 0 6px;
+        gap: 2px;
+
+        li.nav-item a.nav-link {
+          padding: 9px 12px;
+          font-size: 13px;
+          gap: 10px;
+
+          .nav-icon-wrap {
+            width: 30px;
+            height: 30px;
+
+            i { font-size: 15px; }
+          }
+        }
+
+        li.nav-item.submenu .submenu-list .submenu-item .submenu-link {
+          padding: 7px 12px 7px 16px;
+          font-size: 12.5px;
+        }
       }
     }
   }
 }
 
 @media (max-width: 768px) {
-  #sidebar-menu ul li.submenu-open {
-    margin-bottom: 16px;
-
-    .submenu-hdr {
-      padding: 10px 14px 6px;
-      font-size: 9px;
-    }
-
-    > ul {
-      li > a {
-        padding: 10px 14px;
-        font-size: 12px;
-
-        i {
-          font-size: 16px;
-          margin-right: 8px;
-        }
+  #sidebar-menu {
+    ul li.submenu-open {
+      .submenu-hdr {
+        padding: 12px 14px 6px;
+        font-size: 9.5px;
       }
 
-      li.submenu ul a {
-        padding: 8px 14px 8px 36px;
-        font-size: 12px;
+      > ul {
+        padding: 0 4px;
+
+        li.nav-item a.nav-link {
+          padding: 8px 10px;
+          font-size: 12.5px;
+          gap: 8px;
+
+          .nav-icon-wrap {
+            width: 28px;
+            height: 28px;
+
+            i { font-size: 14px; }
+          }
+        }
+
+        li.nav-item.submenu .submenu-list .submenu-item .submenu-link {
+          padding: 7px 10px 7px 14px;
+          font-size: 12px;
+        }
       }
     }
   }
 }
 
 @media (max-width: 480px) {
-  #sidebar-menu ul li.submenu-open {
-    margin-bottom: 12px;
-
-    .submenu-hdr {
-      padding: 8px 12px 4px;
-      font-size: 8px;
-      letter-spacing: 0.8px;
-    }
-
-    > ul {
-      gap: 2px;
-
-      li > a {
-        padding: 8px 12px;
-        font-size: 11px;
-
-        i {
-          font-size: 14px;
-          margin-right: 6px;
-        }
-
-        .menu-arrow {
-          font-size: 12px;
-        }
+  #sidebar-menu {
+    ul li.submenu-open {
+      .submenu-hdr {
+        padding: 10px 12px 5px;
+        font-size: 9px;
+        letter-spacing: 1px;
       }
 
-      li.submenu ul a {
-        padding: 6px 12px 6px 32px;
-        font-size: 11px;
+      > ul {
+        padding: 0 3px;
+        gap: 1px;
+
+        li.nav-item a.nav-link {
+          padding: 8px 9px;
+          font-size: 12px;
+          gap: 7px;
+
+          .nav-icon-wrap {
+            width: 26px;
+            height: 26px;
+
+            i { font-size: 13px; }
+          }
+        }
+
+        li.nav-item.submenu .submenu-list .submenu-item .submenu-link {
+          padding: 6px 9px 6px 12px;
+          font-size: 11.5px;
+        }
       }
     }
   }

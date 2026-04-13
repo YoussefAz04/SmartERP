@@ -82,21 +82,52 @@ export class SidebarService {
 
 generateSidebarData(modules: ModuleTittle[]) {
 
-    // 🔄 Mapping: DB name → Display name (professional French ERP names)
+    // titleMap: maps ModuleTittle.moduleTittle (section-level DB names) to display labels
     const titleMap: { [key: string]: string } = {
-  'Gestion Article achat': "Les Articles d'Achats",
-  'Gestion Article vente': 'Les Articles de Ventes',
-  'Gestion Stock': 'Gestion des Stocks',        // ← just add a new line
-  'Gestion Fournisseur': 'Les Fournisseurs',     // ← like this
-};
-
-    const menuValueMap: { [key: string]: string } = {
-      // Add any sub-module name overrides here, e.g.:
-      'Liste Article': 'Liste des Articles',
-      // 'Bon Commande': 'Bons de Commande',
+      'Gestion Article achat': "Les Articles d'Achats",
+      'Gestion Article vente': 'Les Articles de Ventes',
+      'Gestion Stock': 'Gestion des Stocks',
+      'Gestion Fournisseur': 'Les Fournisseurs',
+      'gestion de Client': 'Gestion des Clients',
+      'gestion de Fournisseur': 'Gestion des Fournisseurs',
+      'gestion Article': 'Gestion des Articles',
+      'gestion Achat': 'Gestion des Achats',
+      'gestion Vente': 'Gestion des Ventes',
+      'gestion Comptabilite': 'Gestion de la Comptabilité',
+      'gestion Document': 'Gestion des Documents',
+      'Parametrage': 'Paramétrage',
     };
 
-    const data = modules.map(moduleTitle => {
+    // menuValueMap: maps Module.title (item-level DB names) to display labels
+    const menuValueMap: { [key: string]: string } = {
+      'Liste Article': 'Liste des Articles',
+      'gestion de Client': 'Clients',
+      'gestion de Categorie Client': 'Catégories Clients',
+      'gestion de Fournisseur': 'Fournisseurs',
+      'gestion de Categorie Fournisseur': 'Catégories Fournisseurs',
+      'gestion Article Achat': 'Articles Achat',
+      'gestion Article Vente': 'Articles Vente',
+      'gestion Stock': 'Stock',
+      'Commande Achat': 'Commandes Achat',
+      'Commande Vente': 'Commandes Vente',
+    };
+
+    // Module sections to exclude entirely from the sidebar
+    const excludedModuleTitles = ['gestion Module'];
+
+    // Sous-module links to exclude from the sidebar
+    const excludedSousModuleLinks = ['achat/listBonReception'];
+
+    // Sous-module titles to exclude from the sidebar
+    const excludedSousModuleTitles = ['Bon Reception', 'Module titre', 'Module', 'Sous Module'];
+
+    const filteredModules = modules.filter((moduleTitle: ModuleTittle) =>
+      !excludedModuleTitles.some(excluded =>
+        moduleTitle.moduleTittle?.toLowerCase().trim() === excluded.toLowerCase().trim()
+      )
+    );
+
+    const data = filteredModules.map((moduleTitle: ModuleTittle) => {
       const activeModules = moduleTitle.modules.filter((mod: Module) => mod.status === true);
 
       return {
@@ -105,22 +136,30 @@ generateSidebarData(modules: ModuleTittle[]) {
         separateRoute: false,
         hasSubRoute: activeModules.some((mod: Module) => mod.sousModules.length > 0),
         showSubRoute: true,
-        menu: activeModules.map((mod: Module) => ({
-          menuValue: menuValueMap[mod.title] || mod.title,
-          hasSubRoute: mod.sousModules.length > 0,
-          showSubRoute: true,
-          icon: 'grid',
-          base1: 'managementEntreprise',
-          subMenus: mod.sousModules.map((sous: SousModule) => ({
-            menuValue: sous.titreSousModule,
-            route: sous.link,
-            hasSubRoute: false,
-            showSubRoute: false,
-            customSubmenuTwo: false,
-          }))
-        }))
+        menu: activeModules.map((mod: Module) => {
+          const filteredSousModules = mod.sousModules.filter((sous: SousModule) =>
+            !(sous.link && excludedSousModuleLinks.includes(sous.link.trim())) &&
+            !excludedSousModuleTitles.some(excluded =>
+              sous.titreSousModule?.toLowerCase().trim() === excluded.toLowerCase().trim()
+            )
+          );
+          return {
+            menuValue: menuValueMap[mod.title] || mod.title,
+            hasSubRoute: filteredSousModules.length > 0,
+            showSubRoute: true,
+            icon: 'grid',
+            base1: 'managementEntreprise',
+            subMenus: filteredSousModules.map((sous: SousModule) => ({
+              menuValue: sous.titreSousModule,
+              route: sous.link,
+              hasSubRoute: false,
+              showSubRoute: false,
+              customSubmenuTwo: false,
+            }))
+          };
+        }).filter((mod: any) => mod.subMenus.length > 0 || !mod.hasSubRoute)
       };
-    });
+    }).filter((section: any) => section.menu && section.menu.length > 0);
 
     this.sidebarDataSubject.next(data);
   }
