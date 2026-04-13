@@ -18,14 +18,6 @@ export class ListCategorieFournisseurComponent implements OnInit {
   protected readonly routes = routes;
   protected readonly router: Router;
 
-  get withDescription(): number {
-    return this.categories.filter(c => c.description && c.description.trim()).length;
-  }
-
-  get withFournisseurs(): number {
-    return this.categories.filter(c => c.fournisseurs && c.fournisseurs.length > 0).length;
-  }
-
   get mostUsedCategory(): string {
     const truncateLength = 10;
     if (!this.categories.length) return '—';
