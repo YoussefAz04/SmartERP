@@ -82,7 +82,7 @@ export class SidebarService {
 
 generateSidebarData(modules: ModuleTittle[]) {
 
-    // 🔄 Mapping: DB name → Display name (professional French ERP names)
+    // titleMap: maps ModuleTittle.moduleTittle (section-level DB names) to display labels
     const titleMap: { [key: string]: string } = {
       'Gestion Article achat': "Les Articles d'Achats",
       'Gestion Article vente': 'Les Articles de Ventes',
@@ -98,6 +98,7 @@ generateSidebarData(modules: ModuleTittle[]) {
       'Parametrage': 'Paramétrage',
     };
 
+    // menuValueMap: maps Module.title (item-level DB names) to display labels
     const menuValueMap: { [key: string]: string } = {
       'Liste Article': 'Liste des Articles',
       'gestion de Client': 'Clients',
