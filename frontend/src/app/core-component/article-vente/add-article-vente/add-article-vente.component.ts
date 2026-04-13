@@ -30,6 +30,8 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
 
   toast: ToastState = { visible: false, message: '', type: 'success' };
 
+  private readonly DEFAULT_TOAST_DURATION = 4000;
+  private readonly NAVIGATION_DELAY = 1200;
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
   private subs = new Subscription();
 
@@ -111,7 +113,7 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  showToast(message: string, type: ToastState['type'] = 'success', duration = 4000): void {
+  showToast(message: string, type: ToastState['type'] = 'success', duration = this.DEFAULT_TOAST_DURATION): void {
     if (this.toastTimer) clearTimeout(this.toastTimer);
     this.toast = { visible: true, message, type };
     this.toastTimer = setTimeout(() => { this.toast = { ...this.toast, visible: false }; }, duration);
@@ -153,7 +155,7 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
       next: () => {
         this.isLoading = false;
         this.showToast('Article vente ajouté avec succès !', 'success');
-        setTimeout(() => this.router.navigate(['/article-vente/listArticleVente']), 1200);
+        setTimeout(() => this.router.navigate(['/article-vente/listArticleVente']), this.NAVIGATION_DELAY);
       },
       error: (err: any) => {
         this.isLoading = false;
