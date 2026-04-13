@@ -117,7 +117,7 @@ export class routes {
   // core pages child routes
 
   public static get productList(): string {
-    return this.inventory + '/product/product-list';
+    return this.inventory + '/listArticleAchat';
   }
   public static get addProduct(): string {
     return this.inventory + '/product/add-product';
