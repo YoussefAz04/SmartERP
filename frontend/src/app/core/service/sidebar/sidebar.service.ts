@@ -112,7 +112,7 @@ generateSidebarData(modules: ModuleTittle[]) {
     };
 
     // Module sections to exclude entirely from the sidebar
-    const excludedModuleTittles = ['gestion Module'];
+    const excludedModuleTitles = ['gestion Module'];
 
     // Sous-module links to exclude from the sidebar
     const excludedSousModuleLinks = ['achat/listBonReception'];
@@ -121,7 +121,7 @@ generateSidebarData(modules: ModuleTittle[]) {
     const excludedSousModuleTitles = ['Bon Reception', 'Module titre', 'Module', 'Sous Module'];
 
     const filteredModules = modules.filter((moduleTitle: ModuleTittle) =>
-      !excludedModuleTittles.some(excluded =>
+      !excludedModuleTitles.some(excluded =>
         moduleTitle.moduleTittle?.toLowerCase().trim() === excluded.toLowerCase().trim()
       )
     );
@@ -137,7 +137,7 @@ generateSidebarData(modules: ModuleTittle[]) {
         showSubRoute: true,
         menu: activeModules.map((mod: Module) => {
           const filteredSousModules = mod.sousModules.filter((sous: SousModule) =>
-            !excludedSousModuleLinks.includes(sous.link?.trim()) &&
+            !(sous.link && excludedSousModuleLinks.includes(sous.link.trim())) &&
             !excludedSousModuleTitles.some(excluded =>
               sous.titreSousModule?.toLowerCase().trim() === excluded.toLowerCase().trim()
             )
