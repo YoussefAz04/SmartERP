@@ -39,7 +39,7 @@ export class LocalizationSettingsComponent {
   ];
   selectedList7: data[] = [
     { value: 'Tunisia' },
-    { value: 'United Stated of America' },
+    { value: 'United States of America' },
     { value: 'India' },
   ];
   selectedList8: data[] = [{ value: 'DT' }, { value: '$' }, { value: '€' }, { value: '¥' }];
