@@ -308,7 +308,7 @@ public class CommandeAchatService {
         facture.setMontantTVA(commande.getMontantTVA() != null ? commande.getMontantTVA().doubleValue() : 0.0);
         facture.setMontantTTC(commande.getMontantTTC() != null ? commande.getMontantTTC().doubleValue() : 0.0);
         facture.setMontantTotal(commande.getMontantTTC() != null ? commande.getMontantTTC().doubleValue() : 0.0);
-        facture.setStatut("CONFIRMEE");
+        facture.setStatut("EN_ATTENTE");
         facture.setModePaiement("A_DEFINIR");
         facture.setFournisseur(commande.getFournisseur());
         facture.setEntreprise(commande.getEntreprise());
