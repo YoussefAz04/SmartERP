@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,6 +30,15 @@ public class ArticleAchatService {
 
     @Autowired
     private FournisseurRepo fournisseurRepo;
+
+    @Autowired
+    private LigneCommandeAchatRepository ligneCommandeAchatRepository;
+
+    @Autowired
+    private ArticleVenteRepo articleVenteRepo;
+
+    @Autowired
+    private StockRepository stockRepository;
 
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
@@ -159,6 +169,30 @@ public class ArticleAchatService {
         if (!articleRepository.existsById(id)) {
             throw new RuntimeException("ArticleAchat non trouvé avec id: " + id);
         }
+
+        List<String> blockers = new ArrayList<>();
+
+        long lcaCount = ligneCommandeAchatRepository.countByArticleId(id);
+        if (lcaCount > 0) {
+            blockers.add(lcaCount + " ligne(s) de commande d'achat");
+        }
+
+        long avCount = articleVenteRepo.countByArticleAchatId(id);
+        if (avCount > 0) {
+            blockers.add(avCount + " article(s) de vente");
+        }
+
+        long stockCount = stockRepository.countByArticleAchatId(id);
+        if (stockCount > 0) {
+            blockers.add(stockCount + " entrée(s) de stock");
+        }
+
+        if (!blockers.isEmpty()) {
+            throw new IllegalStateException(
+                "Impossible de supprimer cet article car il est référencé par : " + String.join(", ", blockers) + ". Veuillez supprimer ces enregistrements d'abord."
+            );
+        }
+
         articleRepository.deleteById(id);
     }
 }
