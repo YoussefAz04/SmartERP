@@ -1,3 +1,4 @@
+
 // ─── Design tokens ────────────────────────────────────────────────────────────
 $slate-900: #0f172a;
 $slate-800: #1e293b;
@@ -5,6 +6,7 @@ $slate-700: #334155;
 $slate-600: #475569;
 $slate-500: #64748b;
 $slate-400: #94a3b8;
+$slate-300: #cbd5e1;
 $slate-200: #e2e8f0;
 $slate-100: #f1f5f9;
 $slate-50:  #f8fafc;
@@ -108,14 +110,13 @@ $transition: all .2s ease;
 
     &:hover {
       background: $slate-50;
-      border-color: $slate-300;
       color: $slate-900;
       box-shadow: $shadow-sm;
     }
   }
 }
 
-// ─── Notifications ─────────────────────────────────────────────────────────────
+// ─── Notifications ────────────────────────────────────────────────────────────
 .notification {
   display: flex;
   align-items: flex-start;
@@ -147,7 +148,7 @@ $transition: all .2s ease;
   to   { opacity: 1; transform: translateY(0); }
 }
 
-// ─── Form Card ─────────────────────────────────────────────────────────────────
+// ─── Form Card ────────────────────────────────────────────────────────────────
 .form-card {
   background: #fff;
   border-radius: $radius-lg;
@@ -156,7 +157,7 @@ $transition: all .2s ease;
   overflow: hidden;
 }
 
-// ─── Form Section ──────────────────────────────────────────────────────────────
+// ─── Form Section ─────────────────────────────────────────────────────────────
 .form-section {
   padding: 28px 32px;
 
@@ -203,7 +204,7 @@ $transition: all .2s ease;
   margin: 0;
 }
 
-// ─── Fields Grid ───────────────────────────────────────────────────────────────
+// ─── Fields Grid ──────────────────────────────────────────────────────────────
 .fields-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -221,7 +222,7 @@ $transition: all .2s ease;
   }
 }
 
-// ─── Field group ───────────────────────────────────────────────────────────────
+// ─── Field group ──────────────────────────────────────────────────────────────
 .field-group {
   display: flex;
   flex-direction: column;
@@ -242,7 +243,7 @@ $transition: all .2s ease;
   }
 }
 
-// ─── Text / Number inputs ──────────────────────────────────────────────────────
+// ─── Text / Number inputs ────────────────────────────────────────────────────
 .input-wrapper {
   position: relative;
   display: flex;
@@ -333,7 +334,7 @@ $transition: all .2s ease;
   }
 }
 
-// ─── Select inputs ─────────────────────────────────────────────────────────────
+// ─── Select inputs ────────────────────────────────────────────────────────────
 .select-wrapper {
   position: relative;
   display: flex;
@@ -396,7 +397,7 @@ $transition: all .2s ease;
   }
 }
 
-// ─── Field errors ──────────────────────────────────────────────────────────────
+// ─── Field errors ─────────────────────────────────────────────────────────────
 .field-error {
   display: flex;
   align-items: center;
@@ -407,7 +408,7 @@ $transition: all .2s ease;
   animation: slideIn .15s ease;
 }
 
-// ─── Form Actions ──────────────────────────────────────────────────────────────
+// ─── Form Actions ─────────────────────────────────────────────────────────────
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -482,7 +483,7 @@ $transition: all .2s ease;
   }
 }
 
-// ─── Spinner ───────────────────────────────────────────────────────────────────
+// ─── Spinner ──────────────────────────────────────────────────────────────────
 .spin {
   animation: rotate .7s linear infinite;
 }
