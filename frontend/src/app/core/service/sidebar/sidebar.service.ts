@@ -113,13 +113,13 @@ generateSidebarData(modules: ModuleTittle[]) {
     };
 
     // Module sections to exclude entirely from the sidebar
-    const excludedModuleTitles = ['gestion Module', 'gestion departement'];
+    const excludedModuleTitles = ['gestion Module', 'gestion departement', 'Departement', 'Departemen'];
 
     // Sous-module links to exclude from the sidebar
     const excludedSousModuleLinks = ['achat/listBonReception'];
 
     // Sous-module titles to exclude from the sidebar
-    const excludedSousModuleTitles = ['Bon Reception', 'Module titre', 'Module', 'Sous Module', 'Bon Livraison', 'Categorie Depense', 'Select Zone'];
+    const excludedSousModuleTitles = ['Bon Reception', 'Bon de reception', 'Module titre', 'Module', 'Sous Module', 'Bon Livraison', 'Categorie Depense', 'Select Zone'];
 
     const filteredModules = modules.filter((moduleTitle: ModuleTittle) =>
       !excludedModuleTitles.some(excluded =>
