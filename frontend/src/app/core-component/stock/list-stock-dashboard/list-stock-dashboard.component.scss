@@ -8,6 +8,7 @@
   margin-bottom: 28px;
   position: relative;
   overflow: hidden;
+  animation: fadeInDown 0.5s ease;
 
   &::before {
     content: '';
@@ -18,6 +19,7 @@
     height: 400px;
     background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
     border-radius: 50%;
+    pointer-events: none;
   }
 
   &::after {
@@ -29,6 +31,7 @@
     height: 250px;
     background: radial-gradient(circle, rgba(118, 75, 162, 0.2) 0%, transparent 70%);
     border-radius: 50%;
+    pointer-events: none;
   }
 
   .header-content {
@@ -125,6 +128,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   border: none;
+  animation: fadeInUp 0.5s ease both;
 
   &:hover {
     transform: translateY(-6px);
@@ -136,6 +140,11 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+  }
+
+  .kpi-info {
+    flex: 1;
+    min-width: 0;
   }
 
   .kpi-number {
@@ -391,6 +400,7 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
   border: none;
   margin-bottom: 24px;
+  animation: fadeInUp 0.5s ease;
 
   .panel-header {
     padding: 20px 24px;
@@ -514,4 +524,65 @@
   &.pill-ajustement { background: #fff3cd; color: #856404; }
   &.pill-reservation { background: #cce5ff; color: #004085; }
   &.pill-default { background: #f0f0f0; color: #555; }
+}
+
+// ============================================================
+// Animations
+// ============================================================
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// ============================================================
+// Responsive
+// ============================================================
+@media (max-width: 768px) {
+  .stock-dashboard-header {
+    padding: 24px 20px;
+
+    .header-title { font-size: 24px; }
+
+    .header-actions {
+      flex-direction: column;
+      width: 100%;
+
+      .btn-modern { justify-content: center; }
+    }
+  }
+
+  .kpi-card .kpi-number { font-size: 32px; }
+}
+
+// ============================================================
+// Reduced Motion Accessibility
+// ============================================================
+@media (prefers-reduced-motion: reduce) {
+  .stock-dashboard-header,
+  .kpi-card,
+  .modern-panel {
+    animation: none;
+  }
+
+  .kpi-card:hover {
+    transform: none;
+  }
+
+  .btn-modern:hover {
+    transform: none;
+  }
+
+  .action-card:hover {
+    transform: none;
+  }
 }
