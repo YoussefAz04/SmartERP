@@ -109,10 +109,10 @@
             <span class="badge-ref">{{ facture.referance }}</span>
           </td>
           <td class="amount-cell">
-            <strong>{{ facture.montantTTC | number:'1.2-2' }} €</strong>
+            <strong>{{ facture.montantTTC | number:'1.2-2' }} DT</strong>
           </td>
-          <td class="amount-cell">{{ facture.montantHT | number:'1.2-2' }} €</td>
-          <td class="amount-cell">{{ facture.montantTVA | number:'1.2-2' }} €</td>
+          <td class="amount-cell">{{ facture.montantHT | number:'1.2-2' }} DT</td>
+          <td class="amount-cell">{{ facture.montantTVA | number:'1.2-2' }} DT</td>
           <td class="payment-cell">{{ facture.modePaiement }}</td>
           <td class="status-cell">
             <span class="status-badge" [ngClass]="getStatusClass(facture.statut)">

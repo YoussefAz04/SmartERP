@@ -38,11 +38,12 @@ export class LocalizationSettingsComponent {
     { value: 'March' },
   ];
   selectedList7: data[] = [
-    { value: 'United Stated of America' },
+    { value: 'Tunisia' },
+    { value: 'United States of America' },
     { value: 'India' },
   ];
-  selectedList8: data[] = [{ value: '$' }, { value: '€' }, { value: '¥' }];
-  selectedList9: data[] = [{ value: '$100' }, { value: '$400' }];
+  selectedList8: data[] = [{ value: 'DT' }, { value: '$' }, { value: '€' }, { value: '¥' }];
+  selectedList9: data[] = [{ value: 'DT 100' }, { value: 'DT 400' }];
   selectedList10: data[] = [{ value: '.' }, { value: '.' }];
   selectedList11: data[] = [{ value: ',' }, { value: ',' }];
   selectedList12: data[] = [

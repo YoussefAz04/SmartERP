@@ -151,9 +151,9 @@ export class FactureDeVenteServiceService {
       return [
         d.article || `Article ${i + 1}`,
         qte.toString(),
-        prix.toFixed(2) + " €",
+        prix.toFixed(2) + " DT",
         `${tva}%`,
-        totalTTC.toFixed(2) + " €",
+        totalTTC.toFixed(2) + " DT",
       ];
     });
 
@@ -177,14 +177,14 @@ export class FactureDeVenteServiceService {
 
     doc.setFontSize(10);
     doc.text("Sous-total HT:", 140, finalY);
-    doc.text(totalHT.toFixed(2) + " €", 180, finalY, { align: "right" });
+    doc.text(totalHT.toFixed(2) + " DT", 180, finalY, { align: "right" });
 
     doc.text("TVA:", 140, finalY + 7);
-    doc.text(totalTVA.toFixed(2) + " €", 180, finalY + 7, { align: "right" });
+    doc.text(totalTVA.toFixed(2) + " DT", 180, finalY + 7, { align: "right" });
 
     doc.setFontSize(12);
     doc.text("TOTAL TTC:", 140, finalY + 14);
-    doc.text(totalTTC.toFixed(2) + " €", 180, finalY + 14, { align: "right" });
+    doc.text(totalTTC.toFixed(2) + " DT", 180, finalY + 14, { align: "right" });
 
 
 
