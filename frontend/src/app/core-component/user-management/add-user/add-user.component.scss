@@ -180,3 +180,166 @@
     }
   }
 }
+
+// ─── Enterprise Assignment Section ───────────────────────────────────────────
+
+.enterprise-assignment-section {
+  margin-top: 28px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+    color: #fff;
+
+    .section-icon {
+      font-size: 20px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+  }
+
+  .form-group {
+    padding: 20px 20px 0;
+    margin-bottom: 0;
+    background: #fff;
+  }
+
+  .enterprise-select {
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 0 14px;
+    font-size: 14px;
+    color: #333;
+    background: #fafafa;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+
+    &:focus {
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+      outline: none;
+    }
+  }
+
+  .loading-state,
+  .empty-state {
+    padding: 12px 0;
+    color: #666;
+    font-size: 13px;
+  }
+
+  .validation-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .required {
+    color: #e74c3c;
+  }
+}
+
+// ─── Enterprise Info Preview Card ────────────────────────────────────────────
+
+.enterprise-info-card {
+  margin: 16px 20px 20px;
+  border-radius: 8px;
+  border: 1px solid #e3eaf8;
+  background: #f4f8ff;
+  overflow: hidden;
+  animation: fadeSlideIn 0.3s ease;
+
+  .card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid #e3eaf8;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .card-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 18px;
+
+    &:first-child {
+      border-right: 1px solid #e3eaf8;
+    }
+  }
+
+  .info-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #7a8ba0;
+  }
+
+  .info-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a2a3a;
+  }
+}
+
+// ─── Status Badge ────────────────────────────────────────────────────────────
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.active {
+    background: #e6f4ea;
+    color: #1e7e34;
+  }
+
+  &.inactive {
+    background: #f1f3f4;
+    color: #6c757d;
+  }
+}
+
+// ─── Fade-slide animation ────────────────────────────────────────────────────
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────────────
+
+@media (max-width: 576px) {
+  .enterprise-info-card .card-row {
+    grid-template-columns: 1fr;
+
+    .card-col:first-child {
+      border-right: none;
+      border-bottom: 1px solid #e3eaf8;
+    }
+  }
+}
