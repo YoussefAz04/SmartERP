@@ -467,10 +467,15 @@
                   background: #ffebee;
                   color: #c62828;
 
-                  &:hover {
+                  &:hover:not(:disabled) {
                     background: #c62828;
                     color: white;
                     transform: scale(1.1);
+                  }
+
+                  &:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
                   }
                 }
               }
