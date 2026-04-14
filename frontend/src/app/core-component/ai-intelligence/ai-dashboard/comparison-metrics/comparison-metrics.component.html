@@ -18,7 +18,7 @@
         <div class="period-row">
           <div class="period-info">
             <span class="period-label">Ce mois (MTD)</span>
-            <span class="period-value current">{{ formatCurrency(comparison.mtdVsLtd.current) }} DA</span>
+            <span class="period-value current">{{ formatCurrency(comparison.mtdVsLtd.current) }} TND</span>
           </div>
           <div class="progress-track">
             <div class="progress-bar current-bar"
@@ -30,7 +30,7 @@
         <div class="period-row">
           <div class="period-info">
             <span class="period-label">Mois précédent (LTD)</span>
-            <span class="period-value previous">{{ formatCurrency(comparison.mtdVsLtd.previous) }} DA</span>
+            <span class="period-value previous">{{ formatCurrency(comparison.mtdVsLtd.previous) }} TND</span>
           </div>
           <div class="progress-track">
             <div class="progress-bar previous-bar"
@@ -52,7 +52,7 @@
         </div>
         <span class="change-amount"
               [ngClass]="comparison.mtdVsLtd.change >= 0 ? 'text-success' : 'text-danger'">
-          {{ comparison.mtdVsLtd.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.mtdVsLtd.change) }} DA
+          {{ comparison.mtdVsLtd.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.mtdVsLtd.change) }} TND
         </span>
       </div>
     </div>
@@ -71,7 +71,7 @@
         <div class="period-row">
           <div class="period-info">
             <span class="period-label">Cette année (YTD)</span>
-            <span class="period-value current">{{ formatCurrency(comparison.ytdVsLastYear.current) }} DA</span>
+            <span class="period-value current">{{ formatCurrency(comparison.ytdVsLastYear.current) }} TND</span>
           </div>
           <div class="progress-track">
             <div class="progress-bar current-bar"
@@ -83,7 +83,7 @@
         <div class="period-row">
           <div class="period-info">
             <span class="period-label">Année précédente</span>
-            <span class="period-value previous">{{ formatCurrency(comparison.ytdVsLastYear.previous) }} DA</span>
+            <span class="period-value previous">{{ formatCurrency(comparison.ytdVsLastYear.previous) }} TND</span>
           </div>
           <div class="progress-track">
             <div class="progress-bar previous-bar"
@@ -105,7 +105,7 @@
         </div>
         <span class="change-amount"
               [ngClass]="comparison.ytdVsLastYear.change >= 0 ? 'text-success' : 'text-danger'">
-          {{ comparison.ytdVsLastYear.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear.change) }} DA
+          {{ comparison.ytdVsLastYear.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear.change) }} TND
         </span>
       </div>
     </div>
