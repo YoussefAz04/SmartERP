@@ -109,10 +109,10 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
 }
 
 // ─── Page Wrapper (centered) ─────────────────────────────────────────────────
-.page-wrapper {
+.article-add-wrapper {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 16px 40px;
+  padding: 20px 16px 40px;
   animation: fadeInPage .4s cubic-bezier(.4,0,.2,1);
 }
 
@@ -685,7 +685,7 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
 
 // ─── Reduced Motion ───────────────────────────────────────────────────────────
 @media (prefers-reduced-motion: reduce) {
-  .page-wrapper,
+  .article-add-wrapper,
   .section-animate,
   .toast-notification,
   .header-icon-wrap,
