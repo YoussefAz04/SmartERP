@@ -130,7 +130,12 @@
             <span class="toggle-password fas"
                   [class.fa-eye]="!password[0]"
                   [class.fa-eye-slash]="password[0]"
-                  (click)="togglePassword(0)">
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="password[0] ? 'Hide password' : 'Show password'"
+                  (click)="togglePassword(0)"
+                  (keydown.enter)="togglePassword(0)"
+                  (keydown.space)="togglePassword(0)">
             </span>
           </div>
           <span class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
@@ -147,7 +152,7 @@
         <!-- Remember / Forgot -->
         <div class="form-options">
           <label class="remember-me">
-            <input type="checkbox" class="checkbox-input">
+            <input type="checkbox" class="checkbox-input" [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
             <span class="checkbox-custom"></span>
             Remember me
           </label>
@@ -169,13 +174,13 @@
 
         <!-- Social Login -->
         <div class="social-login">
-          <a href="javascript:void(0);" class="social-btn facebook">
+          <a href="javascript:void(0);" class="social-btn facebook" aria-label="Sign in with Facebook">
             <i class="fab fa-facebook-f"></i>
           </a>
-          <a href="javascript:void(0);" class="social-btn google">
+          <a href="javascript:void(0);" class="social-btn google" aria-label="Sign in with Google">
             <i class="fab fa-google"></i>
           </a>
-          <a href="javascript:void(0);" class="social-btn apple">
+          <a href="javascript:void(0);" class="social-btn apple" aria-label="Sign in with Apple">
             <i class="fab fa-apple"></i>
           </a>
         </div>
