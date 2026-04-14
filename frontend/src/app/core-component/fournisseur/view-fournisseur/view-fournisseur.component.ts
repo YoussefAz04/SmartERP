@@ -15,6 +15,7 @@ export class ViewFournisseurComponent implements OnInit {
   fournisseur: Fournisseur | null = null;
   isLoading = false;
   errorMessage = '';
+  canEditFournisseur = false;
 
   constructor(
     private fournisseurService: FournisseurService,
@@ -23,11 +24,24 @@ export class ViewFournisseurComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadRolePermissions();
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
       this.loadFournisseur(id);
     } else {
       this.errorMessage = 'ID fournisseur invalide';
+    }
+  }
+
+  loadRolePermissions(): void {
+    try {
+      const raw = localStorage.getItem('myLSkey');
+      if (!raw) return;
+      const session = JSON.parse(decodeURIComponent(escape(atob(raw))));
+      const roles: string[] = Array.isArray(session?.roles) ? session.roles : [];
+      this.canEditFournisseur = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
+    } catch {
+      this.canEditFournisseur = false;
     }
   }
 

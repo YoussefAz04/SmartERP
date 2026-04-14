@@ -37,7 +37,7 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">{{ fournisseur.nom }}</h5>
         <div class="d-flex gap-2">
-          <button type="button" class="btn btn-primary btn-sm" (click)="editFournisseur()">
+          <button type="button" class="btn btn-primary btn-sm" *ngIf="canEditFournisseur" (click)="editFournisseur()">
             <i class="feather icon-edit me-1"></i>Modifier
           </button>
           <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">

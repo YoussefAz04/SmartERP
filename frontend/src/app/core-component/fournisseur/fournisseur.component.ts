@@ -176,6 +176,16 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         const isEmployee = roles.includes('EMPLOYEE');
         const canByRole = isSuperAdmin || isAdmin;
 
+        // EMPLOYEE always has read-only access regardless of DB permissions
+        if (isEmployee && !canByRole) {
+          this.canCreateFournisseur = false;
+          this.canEditFournisseur = false;
+          this.canDeleteFournisseur = false;
+          this.permissionFournisseur = { create: false, view: true, update: false, delete: false, moduleTitle: 'gestion Fournisseur' } as PermissionDto;
+          this.cdr.detectChanges();
+          return;
+        }
+
         let fournisseurPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           const fournisseurPerm = currentUser.permission.find((p: any) =>

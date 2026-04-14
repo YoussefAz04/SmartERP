@@ -8,6 +8,7 @@ import {ListCategorieClientComponent} from "./list-categorie-client/list-categor
 import {AddClientComponent} from "./add-client/add-client.component";
 import {AddCategorieClientComponent} from "./add-categorie-client/add-categorie-client.component";
 import {EditClientComponent} from "./edit-client/edit-client.component";
+import { RoleGuard } from '../../core/guard/role/role.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'listClient', pathMatch: 'full' },
@@ -17,15 +18,23 @@ const routes: Routes = [
   }, {
     path: 'listCategorieClient',
     component: ListCategorieClientComponent,
+    canActivate: [RoleGuard],
+    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
   },{
     path: 'addClient',
     component: AddClientComponent,
+    canActivate: [RoleGuard],
+    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
   },{
     path: 'addCategorieClient',
     component: AddCategorieClientComponent,
+    canActivate: [RoleGuard],
+    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
   },{
     path: 'editClient/:id',
     component: EditClientComponent,
+    canActivate: [RoleGuard],
+    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
   },
   
 ];
