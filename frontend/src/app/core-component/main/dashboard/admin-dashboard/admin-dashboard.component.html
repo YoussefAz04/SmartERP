@@ -1,12 +1,12 @@
 <!-- ====================================================
-     DASHBOARD ADMINISTRATEUR – Simplified Modern Layout
+     DASHBOARD – Modern Glassmorphism Layout
      ==================================================== -->
 
 <!-- Header -->
 <div class="db-header fade-in">
   <div class="db-header__inner">
     <div>
-      <h1 class="db-header__title">Dashboard Administrateur</h1>
+      <h1 class="db-header__title">Dashboard</h1>
       <p class="db-header__sub">Bienvenue, <strong>{{ userName }}</strong>! 👋</p>
     </div>
     <div class="db-header__meta">
@@ -20,7 +20,7 @@
   <div class="stats-grid">
 
     <!-- Clients Card -->
-    <div class="stat-card stat-card--blue" (click)="navigateTo('/client/listClient')">
+    <div class="stat-card stat-card--blue" (click)="onStatCardClick($event, '/client/listClient')">
       <div class="stat-card__icon">
         <i class="feather icon-users"></i>
       </div>
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Fournisseurs Card -->
-    <div class="stat-card stat-card--orange" (click)="navigateTo('/fournisseur/listFournisseur')">
+    <div class="stat-card stat-card--orange" (click)="onStatCardClick($event, '/fournisseur/listFournisseur')">
       <div class="stat-card__icon">
         <i class="feather icon-truck"></i>
       </div>
@@ -54,7 +54,7 @@
     </div>
 
     <!-- Articles Card -->
-    <div class="stat-card stat-card--teal" (click)="navigateTo('/article-achat/listArticleAchat')">
+    <div class="stat-card stat-card--green" (click)="onStatCardClick($event, '/article-achat/listArticleAchat')">
       <div class="stat-card__icon">
         <i class="feather icon-package"></i>
       </div>

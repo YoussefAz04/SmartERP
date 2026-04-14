@@ -172,5 +172,20 @@ export class AdminDashboardComponent implements OnInit {
   navigateTo(path: string): void {
     this.router.navigate([path]);
   }
+
+  onStatCardClick(event: MouseEvent, path: string): void {
+    const card = (event.currentTarget as HTMLElement);
+    const ripple = document.createElement('span');
+    const rect = card.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.className = 'ripple';
+    ripple.style.width = `${size}px`;
+    ripple.style.height = `${size}px`;
+    ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+    ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+    card.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+    setTimeout(() => this.router.navigate([path]), 120);
+  }
 }
 
