@@ -1,5 +1,5 @@
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
+// ─── Design Tokens ───────────────────────────────────────────────────────────
 $slate-900: #0f172a;
 $slate-800: #1e293b;
 $slate-700: #334155;
@@ -14,9 +14,11 @@ $slate-50:  #f8fafc;
 $teal-700:  #0e7490;
 $teal-600:  #0891b2;
 $teal-500:  #06b6d4;
+$teal-400:  #22d3ee;
 $teal-100:  #cffafe;
 $teal-50:   #ecfeff;
 
+$green-700: #15803d;
 $green-600: #16a34a;
 $green-100: #dcfce7;
 $green-50:  #f0fdf4;
@@ -25,38 +27,136 @@ $red-600:   #dc2626;
 $red-100:   #fee2e2;
 $red-50:    #fef2f2;
 
+$amber-600: #d97706;
 $amber-500: #f59e0b;
 $amber-100: #fef3c7;
+$amber-50:  #fffbeb;
 
 $radius-sm: 6px;
 $radius:    10px;
-$radius-lg: 14px;
-$shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-$shadow:    0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
-$shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
-$transition: all .2s ease;
+$radius-lg: 16px;
+$radius-xl: 20px;
 
-// ─── Page Header ──────────────────────────────────────────────────────────────
-.form-page-header {
+$shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+$shadow:    0 4px 16px rgba(0,0,0,.08);
+$shadow-lg: 0 12px 32px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
+
+$transition:      all .22s cubic-bezier(.4,0,.2,1);
+$transition-fast: all .15s cubic-bezier(.4,0,.2,1);
+
+// ─── Toast Notifications ─────────────────────────────────────────────────────
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  pointer-events: none;
+
+  @media (max-width: 480px) {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+}
+
+.toast-notification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: $radius;
+  font-size: .84rem;
+  font-weight: 500;
+  box-shadow: $shadow-lg;
+  pointer-events: all;
+  animation: toastIn .3s cubic-bezier(.34,1.56,.64,1);
+  min-width: 280px;
+  max-width: 400px;
+
+  @media (max-width: 480px) {
+    min-width: unset;
+    max-width: 100%;
+  }
+
+  .toast-icon { display: flex; align-items: center; flex-shrink: 0; }
+  .toast-message { flex: 1; line-height: 1.4; }
+
+  .toast-close {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    opacity: .7;
+    flex-shrink: 0;
+    transition: $transition-fast;
+    &:hover { opacity: 1; }
+  }
+
+  &.toast-success {
+    background: $green-600;
+    color: #fff;
+    .toast-close { color: #fff; }
+  }
+
+  &.toast-error {
+    background: $red-600;
+    color: #fff;
+    .toast-close { color: #fff; }
+  }
+}
+
+// ─── Page Wrapper (centered) ─────────────────────────────────────────────────
+.page-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  animation: fadeInPage .4s cubic-bezier(.4,0,.2,1);
+}
+
+// ─── Page Header ─────────────────────────────────────────────────────────────
+.page-header {
+  position: relative;
+  background: linear-gradient(135deg, $slate-800 0%, $slate-900 100%);
+  border-radius: $radius-xl;
   margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: $shadow-lg;
 
-  .header-content {
+  .header-bg-accent {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba($teal-500, .18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 12px;
+    padding: 22px 28px;
+
+    @media (max-width: 560px) { padding: 18px 20px; }
   }
 
   .header-left {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
   }
 
-  .header-icon {
-    width: 46px;
-    height: 46px;
+  .header-icon-wrap {
+    width: 50px;
+    height: 50px;
     border-radius: $radius;
     background: linear-gradient(135deg, $teal-600, $teal-700);
     display: flex;
@@ -64,110 +164,101 @@ $transition: all .2s ease;
     justify-content: center;
     color: #fff;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba($teal-600, .35);
+    box-shadow: 0 4px 14px rgba($teal-500, .4);
+    animation: iconPulse 3s ease-in-out infinite;
+
+    @media (max-width: 480px) { width: 40px; height: 40px; }
   }
 
   .page-title {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    color: $slate-800;
-    margin: 0 0 3px;
-    letter-spacing: -0.02em;
+    color: #fff;
+    margin: 0 0 4px;
+    letter-spacing: -.02em;
+
+    @media (max-width: 480px) { font-size: 1.05rem; }
   }
 
   .breadcrumb-nav {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 4px;
-    font-size: .78rem;
-    color: $slate-500;
+    font-size: .75rem;
+    color: rgba(255,255,255,.55);
 
     a {
-      color: $teal-600;
+      color: rgba($teal-400, .9);
       text-decoration: none;
-      transition: $transition;
-      &:hover { color: $teal-700; text-decoration: underline; }
+      transition: $transition-fast;
+      &:hover { color: $teal-400; text-decoration: underline; }
     }
 
-    .separator { color: $slate-400; }
-    .current { color: $slate-600; font-weight: 500; }
+    .sep { color: rgba(255,255,255,.3); }
+    .current { color: rgba(255,255,255,.75); font-weight: 500; }
   }
 
   .btn-back {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: $radius-sm;
-    background: #fff;
-    border: 1.5px solid $slate-200;
-    color: $slate-700;
-    font-size: .82rem;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.85);
+    font-size: .8rem;
     font-weight: 500;
     text-decoration: none;
     transition: $transition;
-    cursor: pointer;
+    backdrop-filter: blur(4px);
 
     &:hover {
-      background: $slate-50;
-      color: $slate-900;
-      box-shadow: $shadow-sm;
+      background: rgba(255,255,255,.2);
+      border-color: rgba(255,255,255,.3);
+      color: #fff;
+      transform: translateX(-2px);
     }
   }
 }
 
-// ─── Notifications ────────────────────────────────────────────────────────────
-.notification {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: $radius;
-  font-size: .84rem;
-  font-weight: 500;
-  margin-bottom: 20px;
-  animation: slideIn .2s ease;
-
-  svg { flex-shrink: 0; margin-top: 1px; }
-
-  &.success {
-    background: $green-50;
-    border: 1px solid lighten($green-600, 40%);
-    color: $green-600;
-  }
-
-  &.error {
-    background: $red-50;
-    border: 1px solid lighten($red-600, 35%);
-    color: $red-600;
-  }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-// ─── Form Card ────────────────────────────────────────────────────────────────
+// ─── Form Card ───────────────────────────────────────────────────────────────
 .form-card {
   background: #fff;
-  border-radius: $radius-lg;
-  box-shadow: $shadow;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-lg;
   border: 1px solid $slate-200;
   overflow: hidden;
+
+  .card-header-bar {
+    height: 5px;
+    background: linear-gradient(90deg, $teal-600, $teal-500, $teal-400);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 6px;
+
+    .card-header-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.45);
+      flex-shrink: 0;
+    }
+  }
 }
 
-// ─── Form Section ─────────────────────────────────────────────────────────────
+// ─── Form Sections ───────────────────────────────────────────────────────────
 .form-section {
   padding: 28px 32px;
+  transition: background $transition;
 
-  & + .form-section {
-    border-top: 1px solid $slate-100;
-  }
+  & + .form-section { border-top: 1px solid $slate-100; }
 
-  @media (max-width: 640px) {
-    padding: 20px 18px;
-  }
+  &:hover { background: rgba($slate-50, .6); }
+
+  @media (max-width: 640px) { padding: 20px 18px; }
 }
 
 .section-header {
@@ -175,66 +266,102 @@ $transition: all .2s ease;
   align-items: center;
   gap: 14px;
   margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid $slate-100;
+}
+
+.section-text { flex: 1; min-width: 0; }
+
+.section-step {
+  font-size: .7rem;
+  font-weight: 700;
+  color: $slate-400;
+  background: $slate-100;
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  letter-spacing: .04em;
+  flex-shrink: 0;
 }
 
 .section-icon {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: $radius;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: $transition;
 
-  &.product  { background: $teal-50;  color: $teal-600;  border: 1.5px solid $teal-100;   }
-  &.pricing  { background: $green-50; color: $green-600; border: 1.5px solid $green-100;  }
-  &.supplier { background: $amber-100; color: darken($amber-500, 10%); border: 1.5px solid lighten($amber-500, 25%); }
+  &.product {
+    background: linear-gradient(135deg, $teal-50, rgba($teal-100, .6));
+    color: $teal-600;
+    border: 1.5px solid rgba($teal-500, .2);
+    box-shadow: 0 2px 8px rgba($teal-500, .12);
+  }
+
+  &.pricing {
+    background: linear-gradient(135deg, $green-50, rgba($green-100, .6));
+    color: $green-600;
+    border: 1.5px solid rgba($green-600, .2);
+    box-shadow: 0 2px 8px rgba($green-600, .12);
+  }
+
+  &.supplier {
+    background: linear-gradient(135deg, $amber-50, rgba($amber-100, .6));
+    color: $amber-600;
+    border: 1.5px solid rgba($amber-500, .2);
+    box-shadow: 0 2px 8px rgba($amber-500, .12);
+  }
 }
 
 .section-title {
-  font-size: .95rem;
+  font-size: .92rem;
   font-weight: 700;
   color: $slate-800;
   margin: 0 0 2px;
+  letter-spacing: -.01em;
 }
 
 .section-subtitle {
-  font-size: .76rem;
+  font-size: .73rem;
   color: $slate-500;
   margin: 0;
+  font-weight: 400;
 }
 
 // ─── Fields Grid ──────────────────────────────────────────────────────────────
 .fields-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 18px 24px;
+  gap: 16px 22px;
 
-  &.two-cols {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  &.two-cols { grid-template-columns: repeat(2, 1fr); }
   .full-width { grid-column: 1 / -1; }
 
-  @media (max-width: 640px) {
+  @media (max-width: 600px) {
     grid-template-columns: 1fr;
     .full-width { grid-column: 1; }
   }
 }
 
-// ─── Field group ──────────────────────────────────────────────────────────────
+// ─── Field Group ─────────────────────────────────────────────────────────────
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .field-label {
-  font-size: .78rem;
+  font-size: .74rem;
   font-weight: 600;
-  color: $slate-700;
-  letter-spacing: 0.02em;
+  color: $slate-600;
+  letter-spacing: .04em;
   text-transform: uppercase;
+  transition: color $transition-fast;
+
+  .field-group:focus-within & { color: $teal-600; }
 
   &.required::after {
     content: ' *';
@@ -243,7 +370,7 @@ $transition: all .2s ease;
   }
 }
 
-// ─── Text / Number inputs ────────────────────────────────────────────────────
+// ─── Input Wrapper ────────────────────────────────────────────────────────────
 .input-wrapper {
   position: relative;
   display: flex;
@@ -251,42 +378,47 @@ $transition: all .2s ease;
 
   .input-icon {
     position: absolute;
-    left: 12px;
+    left: 13px;
     display: flex;
     align-items: center;
     color: $slate-400;
     pointer-events: none;
     z-index: 1;
+    transition: color $transition-fast;
 
     &.currency {
-      font-size: .72rem;
+      font-size: .7rem;
       font-weight: 700;
       color: $slate-500;
       letter-spacing: .04em;
     }
   }
 
+  &:focus-within .input-icon { color: $teal-500; }
+  &:focus-within .input-icon.currency { color: $teal-600; }
+
   &.invalid .field-input {
     border-color: $red-600;
     background: $red-50;
+    animation: shake .35s ease;
     &:focus { box-shadow: 0 0 0 3px rgba($red-600, .12); }
   }
 }
 
 .field-input {
   width: 100%;
-  height: 42px;
-  padding: 0 14px 0 40px;
+  height: 44px;
+  padding: 0 14px 0 42px;
   border: 1.5px solid $slate-200;
   border-radius: $radius;
   background: $slate-50;
   color: $slate-800;
   font-size: .875rem;
+  font-family: inherit;
   transition: $transition;
   outline: none;
 
-  &.with-currency { padding-left: 44px; }
-
+  &.with-currency { padding-left: 46px; }
   &::placeholder { color: $slate-400; }
 
   &:hover:not(:focus) {
@@ -297,13 +429,11 @@ $transition: all .2s ease;
   &:focus {
     border-color: $teal-500;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba($teal-500, .12);
+    box-shadow: 0 0 0 3px rgba($teal-500, .14);
+    transform: translateY(-1px);
   }
 
-  &:disabled {
-    opacity: .55;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
 .field-textarea {
@@ -314,11 +444,12 @@ $transition: all .2s ease;
   background: $slate-50;
   color: $slate-800;
   font-size: .875rem;
+  font-family: inherit;
   resize: vertical;
   transition: $transition;
   outline: none;
-  font-family: inherit;
-  min-height: 90px;
+  min-height: 88px;
+  line-height: 1.5;
 
   &::placeholder { color: $slate-400; }
 
@@ -330,11 +461,11 @@ $transition: all .2s ease;
   &:focus {
     border-color: $teal-500;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba($teal-500, .12);
+    box-shadow: 0 0 0 3px rgba($teal-500, .14);
   }
 }
 
-// ─── Select inputs ────────────────────────────────────────────────────────────
+// ─── Select Wrapper ───────────────────────────────────────────────────────────
 .select-wrapper {
   position: relative;
   display: flex;
@@ -342,40 +473,47 @@ $transition: all .2s ease;
 
   .select-icon {
     position: absolute;
-    left: 12px;
+    left: 13px;
     display: flex;
     align-items: center;
     color: $slate-400;
     pointer-events: none;
     z-index: 1;
+    transition: color $transition-fast;
   }
 
   .select-chevron {
     position: absolute;
-    right: 12px;
+    right: 13px;
     display: flex;
     align-items: center;
     color: $slate-400;
     pointer-events: none;
     z-index: 1;
+    transition: $transition-fast;
   }
+
+  &:focus-within .select-icon { color: $teal-500; }
+  &:focus-within .select-chevron { color: $teal-500; transform: rotate(180deg); }
 
   &.invalid .field-select {
     border-color: $red-600;
     background: $red-50;
+    animation: shake .35s ease;
     &:focus { box-shadow: 0 0 0 3px rgba($red-600, .12); }
   }
 }
 
 .field-select {
   width: 100%;
-  height: 42px;
-  padding: 0 40px 0 40px;
+  height: 44px;
+  padding: 0 42px;
   border: 1.5px solid $slate-200;
   border-radius: $radius;
   background: $slate-50;
   color: $slate-800;
   font-size: .875rem;
+  font-family: inherit;
   transition: $transition;
   outline: none;
   appearance: none;
@@ -389,23 +527,26 @@ $transition: all .2s ease;
   &:focus {
     border-color: $teal-500;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba($teal-500, .12);
+    box-shadow: 0 0 0 3px rgba($teal-500, .14);
+    transform: translateY(-1px);
   }
 
-  option[value=''], option[ngValue='null'] {
-    color: $slate-400;
-  }
+  option:first-child { color: $slate-400; }
 }
 
-// ─── Field errors ─────────────────────────────────────────────────────────────
+// ─── Field Errors ─────────────────────────────────────────────────────────────
 .field-error {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: .75rem;
+  font-size: .73rem;
   color: $red-600;
   font-weight: 500;
-  animation: slideIn .15s ease;
+  animation: slideDown .18s ease-out;
+  padding: 4px 8px;
+  background: $red-50;
+  border-radius: 5px;
+  border-left: 2.5px solid $red-600;
 }
 
 // ─── Form Actions ─────────────────────────────────────────────────────────────
@@ -416,11 +557,11 @@ $transition: all .2s ease;
   gap: 12px;
   padding: 20px 32px 28px;
   border-top: 1px solid $slate-100;
+  background: linear-gradient(180deg, transparent, rgba($slate-50, .5));
 
   @media (max-width: 480px) {
     flex-direction: column-reverse;
-    padding: 16px 18px 20px;
-
+    padding: 16px 18px 22px;
     button { width: 100%; justify-content: center; }
   }
 }
@@ -428,14 +569,15 @@ $transition: all .2s ease;
 .btn-cancel {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   padding: 10px 22px;
   border-radius: $radius;
   background: #fff;
   border: 1.5px solid $slate-200;
   color: $slate-600;
-  font-size: .875rem;
+  font-size: .865rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   transition: $transition;
   text-decoration: none;
@@ -445,8 +587,10 @@ $transition: all .2s ease;
     border-color: $slate-300;
     color: $slate-800;
     box-shadow: $shadow-sm;
+    transform: translateY(-1px);
   }
 
+  &:active:not(:disabled) { transform: translateY(0); }
   &:disabled { opacity: .45; cursor: not-allowed; }
 }
 
@@ -454,21 +598,24 @@ $transition: all .2s ease;
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 10px 26px;
+  padding: 10px 28px;
   border-radius: $radius;
   background: linear-gradient(135deg, $teal-600, $teal-700);
   border: none;
   color: #fff;
-  font-size: .875rem;
+  font-size: .865rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   transition: $transition;
-  box-shadow: 0 4px 12px rgba($teal-600, .30);
+  box-shadow: 0 4px 14px rgba($teal-600, .32);
+  min-width: 180px;
+  justify-content: center;
 
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, $teal-500, $teal-600);
-    box-shadow: 0 6px 16px rgba($teal-600, .40);
-    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba($teal-600, .42);
+    transform: translateY(-2px);
   }
 
   &:active:not(:disabled) {
@@ -477,18 +624,77 @@ $transition: all .2s ease;
   }
 
   &:disabled {
-    opacity: .65;
+    opacity: .6;
     cursor: not-allowed;
     transform: none;
   }
 }
 
 // ─── Spinner ──────────────────────────────────────────────────────────────────
-.spin {
-  animation: rotate .7s linear infinite;
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
 }
 
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+// ─── Section Entry Animation ─────────────────────────────────────────────────
+.section-animate {
+  animation: sectionFadeUp .4s cubic-bezier(.4,0,.2,1) both;
+}
+
+// ─── Keyframes ───────────────────────────────────────────────────────────────
+@keyframes fadeInPage {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sectionFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(30px) scale(.94); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60%  { transform: translateX(-4px); }
+  40%, 80%  { transform: translateX(4px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba($teal-500, .4); }
+  50%       { box-shadow: 0 4px 20px rgba($teal-500, .6); }
+}
+
+// ─── Reduced Motion ───────────────────────────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  .page-wrapper,
+  .section-animate,
+  .toast-notification,
+  .header-icon-wrap,
+  .field-input,
+  .field-select,
+  .btn-cancel,
+  .btn-submit,
+  .btn-spinner {
+    animation: none !important;
+    transition: none !important;
+  }
 }

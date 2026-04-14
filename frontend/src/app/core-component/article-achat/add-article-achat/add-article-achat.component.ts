@@ -1,10 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { Fournisseur } from '../../../model/fournisseur.model';
+
+interface ToastState {
+  visible: boolean;
+  message: string;
+  type: 'success' | 'error';
+}
 
 @Component({
   selector: 'app-add-article-achat',
@@ -13,17 +19,21 @@ import { Fournisseur } from '../../../model/fournisseur.model';
   templateUrl: './add-article-achat.component.html',
   styleUrl: './add-article-achat.component.scss'
 })
-export class AddArticleAchatComponent implements OnInit {
+export class AddArticleAchatComponent implements OnInit, OnDestroy {
   articleForm!: FormGroup;
   fournisseurs: Fournisseur[] = [];
   categories: any[] = [];
   units: string[] = ['Pièce', 'kg', 'Mètre', 'Ream', 'Set', 'g', 'Litre', 'Unité'];
   isLoading = false;
   submitted = false;
-  errorMessage = '';
-  successMessage = '';
+
+  toast: ToastState = { visible: false, message: '', type: 'success' };
 
   private entrepriseId: number | null = null;
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private static readonly REDIRECT_DELAY_MS = 1200;
+  private static readonly TOAST_DURATION_MS = 4000;
 
   constructor(
     private articleAchatService: ArticleAchatService,
@@ -39,7 +49,11 @@ export class AddArticleAchatComponent implements OnInit {
     this.loadCategories();
   }
 
-  private static readonly REDIRECT_DELAY_MS = 1200;
+  ngOnDestroy(): void {
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+  }
 
   private readEntrepriseId(): void {
     const item = localStorage.getItem('myLSkey');
@@ -95,21 +109,32 @@ export class AddArticleAchatComponent implements OnInit {
     });
   }
 
+  showToast(message: string, type: 'success' | 'error'): void {
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+    this.toast = { visible: true, message, type };
+    this.toastTimer = setTimeout(() => this.dismissToast(), AddArticleAchatComponent.TOAST_DURATION_MS);
+  }
+
+  dismissToast(): void {
+    this.toast = { ...this.toast, visible: false };
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+      this.toastTimer = null;
+    }
+  }
+
   onCancel(): void {
     this.router.navigate(['/article-achat/listArticleAchat']);
   }
 
-  clearMessages(): void {
-    this.errorMessage = '';
-    this.successMessage = '';
-  }
-
   onSubmit(): void {
     this.submitted = true;
-    this.clearMessages();
+    this.dismissToast();
 
     if (!this.entrepriseId) {
-      this.errorMessage = 'Impossible de déterminer l\'entreprise. Veuillez vous reconnecter.';
+      this.showToast('Impossible de déterminer l\'entreprise. Veuillez vous reconnecter.', 'error');
       return;
     }
 
@@ -134,7 +159,7 @@ export class AddArticleAchatComponent implements OnInit {
         next: () => {
           this.isLoading = false;
           this.submitted = false;
-          this.successMessage = 'Article achat ajouté avec succès !';
+          this.showToast('Article achat ajouté avec succès !', 'success');
           this.articleForm.reset({ unite: 'Pièce' });
           setTimeout(
             () => this.router.navigate(['/article-achat/listArticleAchat']),
@@ -143,11 +168,11 @@ export class AddArticleAchatComponent implements OnInit {
         },
         error: (err: any) => {
           this.isLoading = false;
-          this.errorMessage = err.error?.message || err.message || 'Impossible d\'ajouter l\'article';
+          this.showToast(err.error?.message || err.message || 'Impossible d\'ajouter l\'article', 'error');
         }
       });
     } else {
-      this.errorMessage = 'Veuillez remplir correctement tous les champs obligatoires.';
+      this.showToast('Veuillez remplir correctement tous les champs obligatoires.', 'error');
     }
   }
 }
