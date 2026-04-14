@@ -199,14 +199,14 @@ const routes: Routes = [
         path: 'article-achat',
         canActivate: [RoleGuard],
         canActivateChild: [RoleGuard],
-        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
         loadChildren: () =>
           import('./article-achat/article-achat.module').then((m) => m.ArticleAchatModule),
       },{
         path: 'article-vente',
         canActivate: [RoleGuard],
         canActivateChild: [RoleGuard],
-        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
         loadChildren: () =>
           import('./article-vente/article-vente.module').then((m) => m.ArticleVenteModule),
       },{

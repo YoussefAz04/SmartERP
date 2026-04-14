@@ -185,13 +185,21 @@ generateSidebarData(modules: ModuleTittle[]) {
           )
         );
       } else {
-        // EMPLOYEE: show only modules explicitly permitted by their role's permissions
-        activeModules = moduleTitle.modules.filter((mod: Module) =>
-          permittedModuleIds.has(mod.id) &&
-          !excludedModuleItemTitles.some(excluded =>
-            mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
-          )
-        );
+        // EMPLOYEE: show only the 4 allowed sections (Articles Achat, Articles Vente, Clients, Fournisseur)
+        // Filter by section title keywords rather than by DB permission IDs (which may be unset)
+        const employeeAllowedSectionKeywords = ['article achat', 'article vente', 'client', 'fournisseur'];
+        const sectionTitle = moduleTitle.moduleTittle?.toLowerCase().trim() ?? '';
+        const isSectionAllowed = employeeAllowedSectionKeywords.some(kw => sectionTitle.includes(kw));
+
+        if (!isSectionAllowed) {
+          activeModules = [];
+        } else {
+          activeModules = moduleTitle.modules.filter((mod: Module) =>
+            !excludedModuleItemTitles.some(excluded =>
+              mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
+            )
+          );
+        }
       }
 
       return {

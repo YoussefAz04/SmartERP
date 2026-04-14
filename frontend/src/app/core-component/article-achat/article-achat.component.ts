@@ -53,7 +53,17 @@ export class ArticleAchatComponent implements OnInit {
         const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
+        const isEmployee = roles.includes('EMPLOYEE');
         const canByRole = isSuperAdmin || isAdmin;
+
+        // EMPLOYEE always has read-only access regardless of DB permissions
+        if (isEmployee && !canByRole) {
+          this.canCreateArticle = false;
+          this.canEditArticle = false;
+          this.canDeleteArticle = false;
+          this.cdr.detectChanges();
+          return;
+        }
 
         let achatPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
