@@ -83,4 +83,12 @@ public class NotificationService {
     public long getUnreadCount(Long entrepriseId) {
         return notificationRepository.countByEntrepriseIdAndStatut(entrepriseId, NotificationStatus.NOUVEAU);
     }
+
+    @Transactional
+    public void markAllAsViewed(Long entrepriseId) {
+        List<Notification> unread = notificationRepository.findByEntrepriseIdAndStatutOrderByCreatedAtDesc(
+                entrepriseId, NotificationStatus.NOUVEAU);
+        unread.forEach(n -> n.setStatut(NotificationStatus.VU));
+        notificationRepository.saveAll(unread);
+    }
 }

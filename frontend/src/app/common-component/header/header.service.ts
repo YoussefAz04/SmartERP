@@ -14,8 +14,8 @@ export interface SearchResult {
 export interface Notification {
   id: number;
   message: string;
-  lu: boolean;
-  date: string;
+  statut: 'NOUVEAU' | 'VU' | 'IGNORE';
+  createdAt: string;
   type?: string;
 }
 
@@ -63,13 +63,13 @@ export class HeaderService {
   }
 
   markNotificationRead(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/api/notifications/${id}/lu`, {}).pipe(
+    return this.http.put(`${this.apiUrl}/api/notifications/${id}/mark-viewed`, {}).pipe(
       catchError(() => of(null))
     );
   }
 
-  markAllNotificationsRead(): Observable<any> {
-    return this.http.put(`${this.apiUrl}/api/notifications/markAllRead`, {}).pipe(
+  markAllNotificationsRead(entrepriseId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/api/notifications/markAll/${entrepriseId}`, {}).pipe(
       catchError(() => of(null))
     );
   }

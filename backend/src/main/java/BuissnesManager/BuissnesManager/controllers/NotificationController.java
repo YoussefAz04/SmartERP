@@ -66,4 +66,14 @@ public class NotificationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PutMapping("/markAll/{entrepriseId}")
+    public ResponseEntity<Void> markAllAsViewed(@PathVariable Long entrepriseId) {
+        try {
+            notificationService.markAllAsViewed(entrepriseId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
