@@ -25,7 +25,7 @@
             <i class="fas fa-chart-bar"></i>
           </div>
           <div class="stat-info">
-            <span class="stat-value" data-target="10000">0</span>
+            <span class="stat-value" data-target="10000" aria-live="polite" aria-atomic="true">0</span>
             <span class="stat-suffix">+ Businesses</span>
             <p>Track everything with real-time analytics</p>
           </div>
@@ -37,7 +37,7 @@
             <i class="fas fa-trending-up"></i>
           </div>
           <div class="stat-info">
-            <span class="stat-prefix">+</span><span class="stat-value" data-target="45">0</span><span class="stat-suffix">% Avg Growth</span>
+            <span class="stat-prefix">+</span><span class="stat-value" data-target="45" aria-live="polite" aria-atomic="true">0</span><span class="stat-suffix">% Avg Growth</span>
             <p>See your business thrive with smart insights</p>
           </div>
         </div>
@@ -172,17 +172,17 @@
           <span>or continue with</span>
         </div>
 
-        <!-- Social Login -->
-        <div class="social-login">
-          <a href="javascript:void(0);" class="social-btn facebook" aria-label="Sign in with Facebook">
+        <!-- Social Login (placeholder – OAuth integration pending) -->
+        <div class="social-login" aria-hidden="true">
+          <span class="social-btn facebook" tabindex="-1">
             <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="javascript:void(0);" class="social-btn google" aria-label="Sign in with Google">
+          </span>
+          <span class="social-btn google" tabindex="-1">
             <i class="fab fa-google"></i>
-          </a>
-          <a href="javascript:void(0);" class="social-btn apple" aria-label="Sign in with Apple">
+          </span>
+          <span class="social-btn apple" tabindex="-1">
             <i class="fab fa-apple"></i>
-          </a>
+          </span>
         </div>
 
         <!-- Signup Link -->
