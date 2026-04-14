@@ -411,10 +411,15 @@
               background: #fee2e2;
               color: #991b1b;
 
-              &:hover {
+              &:hover:not(:disabled) {
                 background: #991b1b;
                 color: white;
                 transform: scale(1.1);
+              }
+
+              &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
               }
             }
           }

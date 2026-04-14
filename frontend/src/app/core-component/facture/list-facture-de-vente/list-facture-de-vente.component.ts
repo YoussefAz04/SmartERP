@@ -13,6 +13,7 @@ import {PermissionDto} from "../../../model/permissionDto.model";
 import {FormsModule} from "@angular/forms";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-list-facture-de-vente',
@@ -49,6 +50,7 @@ export class ListFactureDeVenteComponent implements OnInit{
   
   // UI States
   isLoading: boolean = false;
+  deletingIds: Set<number> = new Set();
   idFactureAssigne!: number;
 
   constructor(private factureService : FactureDeVenteServiceService,
@@ -75,7 +77,12 @@ export class ListFactureDeVenteComponent implements OnInit{
       },
       error: () => {
         this.isLoading = false;
-        alert('Erreur lors du chargement des factures.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors du chargement des factures.',
+          confirmButtonColor: '#4caf50'
+        });
       }
     });
   }
@@ -177,15 +184,44 @@ export class ListFactureDeVenteComponent implements OnInit{
 
   deleteFacture(id: number | undefined) {
     if (id === undefined) return;
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette facture ?')) return;
-    
-    this.factureService.deleteFacture(id).subscribe({
-      next: () => {
-        this.factureAchatList = this.factureAchatList.filter(f => f.id !== id);
-        this.applyFiltersAndSort();
-      },
-      error: () => {
-        alert('Erreur lors de la suppression de la facture.');
+
+    Swal.fire({
+      title: 'Confirmer la suppression',
+      text: 'Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deletingIds.add(id);
+        this.factureService.deleteFacture(id).subscribe({
+          next: () => {
+            this.deletingIds.delete(id);
+            this.factureAchatList = this.factureAchatList.filter(f => f.id !== id);
+            this.applyFiltersAndSort();
+            Swal.fire({
+              icon: 'success',
+              title: 'Supprimé !',
+              text: 'La facture a été supprimée avec succès.',
+              confirmButtonColor: '#4caf50',
+              timer: 2500,
+              timerProgressBar: true
+            });
+          },
+          error: () => {
+            this.deletingIds.delete(id);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Erreur lors de la suppression de la facture.',
+              confirmButtonColor: '#4caf50'
+            });
+          }
+        });
       }
     });
   }
@@ -258,7 +294,12 @@ export class ListFactureDeVenteComponent implements OnInit{
 
   exportMultipleToPdf() {
     if (this.selectedFactures.size === 0) {
-      alert('Veuillez sélectionner au moins une facture.');
+      Swal.fire({
+        icon: 'info',
+        title: 'Aucune sélection',
+        text: 'Veuillez sélectionner au moins une facture.',
+        confirmButtonColor: '#4caf50'
+      });
       return;
     }
 
@@ -329,7 +370,12 @@ export class ListFactureDeVenteComponent implements OnInit{
         this.clients = data;
       },
       error: () => {
-        alert('Erreur lors du chargement des clients.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors du chargement des clients.',
+          confirmButtonColor: '#4caf50'
+        });
       }
     });
   }
@@ -357,7 +403,12 @@ export class ListFactureDeVenteComponent implements OnInit{
           }
         },
         error: () => {
-          alert('Erreur lors de l\'assignation du client.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur lors de l\'assignation du client.',
+            confirmButtonColor: '#4caf50'
+          });
         }
       });
     }

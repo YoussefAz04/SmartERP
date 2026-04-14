@@ -178,9 +178,11 @@
               <button class="btn-action delete" 
                       (click)="deleteFacture(facture.id)" 
                       *ngIf="permissionVente?.delete" 
+                      [disabled]="deletingIds.has(facture.id!)"
                       title="Supprimer"
                       matTooltip="Supprimer">
-                <i class="feather icon-trash-2"></i>
+                <i class="feather" 
+                   [ngClass]="deletingIds.has(facture.id!) ? 'icon-loader spinning' : 'icon-trash-2'"></i>
               </button>
             </div>
           </td>
