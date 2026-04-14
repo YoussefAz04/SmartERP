@@ -1,437 +1,289 @@
-<!-- En-tête du Tableau de Bord -->
-<div class="dashboard-header">
-  <div class="header-content">
+<!-- ====================================================
+     DASHBOARD ADMINISTRATEUR – Simplified Modern Layout
+     ==================================================== -->
+
+<!-- Header -->
+<div class="db-header fade-in">
+  <div class="db-header__inner">
     <div>
-      <h1 class="page-title">{{ labels.tableauBord }}</h1>
-      <p class="page-subtitle">{{ labels.bienvenue }}, {{ userName }}! 👋</p>
+      <h1 class="db-header__title">Dashboard Administrateur</h1>
+      <p class="db-header__sub">Bienvenue, <strong>{{ userName }}</strong>! 👋</p>
     </div>
-    <div class="header-meta">
-      <span class="enterprise-badge">{{ enterpriseName }}</span>
-      <span class="date-badge">{{ today | date: 'd MMMM yyyy' }}</span>
-    </div>
-  </div>
-</div>
-
-<!-- États de chargement / erreur -->
-<div *ngIf="statsLoading" class="text-center p-4">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Chargement...</span>
-  </div>
-  <p class="mt-2">{{ labels.chargement }}</p>
-</div>
-
-<div *ngIf="statsError && !statsLoading" class="alert alert-warning mb-3" role="alert">
-  <i class="feather icon-alert-triangle me-2"></i>
-  {{ labels.erreurChargement }}
-</div>
-
-<!-- Statistiques ERP -->
-<div *ngIf="stats && !statsLoading">
-
-  <!-- Section: Métriques Clés -->
-  <div class="dashboard-section">
-    <h2 class="section-title">{{ labels.metriquesCles }}</h2>
-    <div class="metrics-grid">
-      <app-stat-card
-        [label]="labels.ventesTotales"
-        [value]=" (stats.totalSalesRevenue | number:'1.2-2') + currency"
-        [icon]="'feather icon-bar-chart-2'"
-        [color]="'blue'"
-        [trend]="'up'"
-        [trendValue]="labels.revenuVentes">
-      </app-stat-card>
-
-      <app-stat-card
-        [label]="labels.achatsTotaux"
-        [value]=" (stats.totalPurchases | number:'1.2-2') + currency"
-        [icon]="'feather icon-shopping-bag'"
-        [color]="'orange'"
-        [trend]="'up'"
-        [trendValue]="labels.totalAchats">
-      </app-stat-card>
-
-      <app-stat-card
-        [label]="labels.beneficePerte"
-        [value]=" (stats.profitLoss | number:'1.2-2') + currency"
-        [icon]="'feather icon-trending-up'"
-        [color]="'green'"
-        [trend]="stats.profitLoss >= 0 ? 'up' : 'down'"
-        [trendValue]="stats.profitLoss >= 0 ? labels.benefice : labels.perte">
-      </app-stat-card>
-
-      <app-stat-card
-        [label]="labels.chiffreAffaires"
-        [value]=" (stats.totalRevenue | number:'1.2-2') + currency"
-        [icon]="'feather icon-dollar-sign'"
-        [color]="'cyan'"
-        [trend]="'up'"
-        [trendValue]="labels.revenuNet">
-      </app-stat-card>
-    </div>
-  </div>
-
-  <!-- Section: Aperçu Métier -->
-  <div class="dashboard-section">
-    <h2 class="section-title">{{ labels.apercuMetier }}</h2>
-    <div class="overview-grid">
-      <div class="overview-card">
-        <div class="overview-icon blue">
-          <i class="feather icon-users"></i>
-        </div>
-        <h3>{{ stats.totalCustomers }}</h3>
-        <p>{{ labels.totalClients }}</p>
-        <span class="overview-badge">+{{ stats.newCustomersThisMonth }} {{ labels.nouveau }}</span>
-      </div>
-
-      <div class="overview-card">
-        <div class="overview-icon orange">
-          <i class="feather icon-box"></i>
-        </div>
-        <h3>{{ stats.totalSKUs }}</h3>
-        <p>{{ labels.articlesSkus }}</p>
-        <span class="overview-badge">{{ labels.enStock }}</span>
-      </div>
-
-      <div class="overview-card">
-        <div class="overview-icon cyan">
-          <i class="feather icon-file-text"></i>
-        </div>
-        <h3>{{ stats.totalOrders }}</h3>
-        <p>{{ labels.commandesVente }}</p>
-        <span class="overview-badge">{{ labels.actif }}</span>
-      </div>
-
-      <div class="overview-card">
-        <div class="overview-icon green">
-          <i class="feather icon-package"></i>
-        </div>
-        <h3>{{ stats.totalPurchaseOrders }}</h3>
-        <p>{{ labels.commandesAchat }}</p>
-        <span class="overview-badge">{{ labels.enAttente }}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section: État du Stock -->
-  <div class="dashboard-section">
-    <h2 class="section-title">{{ labels.etatStock }}</h2>
-    <div class="inventory-grid">
-      <div class="inventory-card inv-primary">
-        <div class="inventory-header">
-          <i class="feather icon-layers"></i>
-          <span>{{ labels.valeurStock }}</span>
-        </div>
-        <h2 class="inventory-value">{{ stats.totalStockValue | number:'1.2-2' }}{{ currency }}</h2>
-        <p class="inventory-detail">{{ labels.valeurTotalStock }}</p>
-      </div>
-
-      <div class="inventory-card inv-warning">
-        <div class="inventory-header">
-          <i class="feather icon-alert-triangle"></i>
-          <span>{{ labels.stockFaible }}</span>
-        </div>
-        <h2 class="inventory-value">{{ stats.lowStockItemsCount }}</h2>
-        <p class="inventory-detail">{{ labels.articlesAttention }}</p>
-      </div>
-
-      <div class="inventory-card inv-danger">
-        <div class="inventory-header">
-          <i class="feather icon-x-circle"></i>
-          <span>{{ labels.ruptureStock }}</span>
-        </div>
-        <h2 class="inventory-value">{{ stats.outOfStockItemsCount }}</h2>
-        <p class="inventory-detail">{{ labels.articlesIndisponibles }}</p>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Section: Analytique -->
-<div class="dashboard-section">
-  <div class="section-header-row">
-    <h2 class="section-title">{{ labels.analytique }}</h2>
-    <button class="btn-refresh" (click)="refreshDashboard()" [disabled]="statsLoading || isRefreshing">
-      <i class="feather icon-refresh-cw" [class.spin]="isRefreshing"></i>
-      Actualiser
-    </button>
-  </div>
-
-  <!-- Analytics KPI Cards -->
-  <div class="analytics-kpi-grid" *ngIf="stats">
-    <div class="kpi-card">
-      <div class="kpi-icon-wrap kpi-blue"><i class="feather icon-calendar"></i></div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{ stats.salesThisMonth | number:'1.0-0' }}{{ currency }}</div>
-        <div class="kpi-label">Ventes ce mois</div>
-        <div class="kpi-detail">{{ stats.salesThisYear | number:'1.0-0' }}{{ currency }} cette année</div>
-      </div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-icon-wrap kpi-orange"><i class="feather icon-shopping-cart"></i></div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{ stats.purchasesThisMonth | number:'1.0-0' }}{{ currency }}</div>
-        <div class="kpi-label">Achats ce mois</div>
-        <div class="kpi-detail">{{ stats.totalPurchases | number:'1.0-0' }}{{ currency }} total</div>
-      </div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-icon-wrap kpi-green"><i class="feather icon-percent"></i></div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{ conversionRate }}%</div>
-        <div class="kpi-label">Ratio Ventes/Achats</div>
-        <div class="kpi-detail">Revenu ventes / coût achats</div>
-      </div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-icon-wrap kpi-purple"><i class="feather icon-activity"></i></div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{ avgSaleValue | number:'1.0-0' }}{{ currency }}</div>
-        <div class="kpi-label">Valeur moy. vente</div>
-        <div class="kpi-detail">{{ stats.totalOrders }} commandes</div>
-      </div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-icon-wrap kpi-cyan"><i class="feather icon-repeat"></i></div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{ inventoryTurnover }}x</div>
-        <div class="kpi-label">Rotation des stocks</div>
-        <div class="kpi-detail">CA / Valeur stock</div>
-      </div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-icon-wrap kpi-teal"><i class="feather icon-credit-card"></i></div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{ stats.accountsReceivable | number:'1.0-0' }}{{ currency }}</div>
-        <div class="kpi-label">Créances clients</div>
-        <div class="kpi-detail">Factures en attente</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Charts Row -->
-  <div class="charts-grid">
-    <div class="chart-card chart-wide">
-      <div class="chart-card-header">
-        <h3>{{ labels.achatsVentes }}</h3>
-        <div class="chart-legend">
-          <span class="legend-item legend-sales">{{ labels.ventes }}</span>
-          <span class="legend-item legend-purchase">{{ labels.achats }}</span>
-        </div>
-      </div>
-      <div class="chart-card-body">
-        <apx-chart
-          [series]="chartOptions.series"
-          [chart]="chartOptions.chart"
-          [dataLabels]="chartOptions.dataLabels"
-          [plotOptions]="chartOptions.plotOptions"
-          [yaxis]="chartOptions.yaxis"
-          [xaxis]="chartOptions.xaxis"
-          [colors]="chartOptions.colors"
-          [legend]="chartOptions.legend"
-        ></apx-chart>
-      </div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-card-header">
-        <h3>Revenu vs Dépenses</h3>
-      </div>
-      <div class="chart-card-body">
-        <apx-chart
-          [series]="donutChartOptions.series"
-          [chart]="donutChartOptions.chart"
-          [labels]="donutChartOptions.labels"
-          [colors]="donutChartOptions.colors"
-          [legend]="donutChartOptions.legend"
-          [dataLabels]="donutChartOptions.dataLabels"
-          [plotOptions]="donutChartOptions.plotOptions"
-          [stroke]="donutChartOptions.stroke"
-        ></apx-chart>
-        <div class="donut-summary" *ngIf="stats">
-          <div class="donut-stat">
-            <span class="dot dot-green"></span>
-            <span>Revenu: {{ stats.totalRevenue | number:'1.0-0' }}{{ currency }}</span>
-          </div>
-          <div class="donut-stat">
-            <span class="dot dot-red"></span>
-            <span>Dépenses: {{ stats.totalExpenses | number:'1.0-0' }}{{ currency }}</span>
-          </div>
-          <div class="donut-profit" [class.profit-positive]="(stats.profitLoss || 0) >= 0" [class.profit-negative]="(stats.profitLoss || 0) < 0"
-            [attr.aria-label]="((stats.profitLoss || 0) >= 0 ? 'Bénéfice positif' : 'Déficit') + ': ' + (stats.profitLoss | number:'1.0-0')">
-            {{ (stats.profitLoss || 0) >= 0 ? '▲' : '▼' }} Bénéfice net: {{ stats.profitLoss | number:'1.0-0' }}{{ currency }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Top Products Enhanced Table -->
-  <div class="chart-card" *ngIf="stats">
-    <div class="chart-card-header">
-      <h3>{{ labels.meilleursArticles }}</h3>
-      <span class="badge-count" *ngIf="stats.topProducts?.length">Top {{ stats.topProducts.length }}</span>
-    </div>
-    <div class="chart-card-body chart-card-body-flush">
-      <div class="table-responsive" *ngIf="stats.topProducts && stats.topProducts.length > 0">
-        <table class="modern-table top-products-table">
-          <thead>
-            <tr>
-              <th style="width:52px">{{ labels.numero }}</th>
-              <th>{{ labels.article }}</th>
-              <th class="col-right">{{ labels.quantiteVendue }}</th>
-              <th class="col-right">{{ labels.revenu }}</th>
-              <th class="col-right col-wide">Part du total</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (product of stats.topProducts; track product; let i = $index) {
-              <tr>
-                <td><span class="rank-badge" [ngClass]="getRankClass(i)">{{ i + 1 }}</span></td>
-                <td class="product-name">{{ product.productName }}</td>
-                <td class="col-right"><span class="qty-badge">{{ product.quantitySold }}</span></td>
-                <td class="col-right col-bold">{{ currency }}{{ product.revenue | number:'1.0-0' }}</td>
-                <td class="col-right col-wide">
-                  <ng-container *ngIf="getProductShare(product.revenue) as share">
-                    <div class="progress-bar-wrap">
-                      <div class="progress-bar-fill" [style.width.%]="share"></div>
-                      <span class="progress-label">{{ share }}%</span>
-                    </div>
-                  </ng-container>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      <div *ngIf="!stats.topProducts || stats.topProducts.length === 0" class="empty-state">
-        {{ labels.aucuneDonneeArticle }}
-      </div>
+    <div class="db-header__meta">
+      <span class="meta-badge">{{ today | date: 'd MMMM yyyy' }}</span>
     </div>
   </div>
 </div>
 
-<!-- Meilleurs Clients & État des Commandes -->
-<div class="charts-grid" *ngIf="stats">
-  <div class="chart-card">
-    <div class="chart-card-header">
-      <h3>{{ labels.meilleursClients }}</h3>
+<!-- ── Section 1: Quick Stats ── -->
+<section class="db-section fade-in" style="animation-delay:0.05s">
+  <div class="stats-grid">
+
+    <!-- Clients Card -->
+    <div class="stat-card stat-card--blue" (click)="navigateTo('/client/listClient')">
+      <div class="stat-card__icon">
+        <i class="feather icon-users"></i>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">
+          <ng-container *ngIf="statsLoaded; else skeleton">
+            <span [countUp]="stats.totalClients" [options]="countUpOptions">0</span>
+          </ng-container>
+          <ng-template #skeleton><span class="skel skel--num"></span></ng-template>
+        </div>
+        <div class="stat-card__label">Clients</div>
+      </div>
+      <a class="stat-card__link" routerLink="/client/listClient">Voir tout →</a>
     </div>
-    <div class="chart-card-body">
-      <div class="table-responsive" *ngIf="stats.topCustomers && stats.topCustomers.length > 0">
+
+    <!-- Fournisseurs Card -->
+    <div class="stat-card stat-card--orange" (click)="navigateTo('/fournisseur/listFournisseur')">
+      <div class="stat-card__icon">
+        <i class="feather icon-truck"></i>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">
+          <ng-container *ngIf="statsLoaded; else skelF">
+            <span [countUp]="stats.totalFournisseurs" [options]="countUpOptions">0</span>
+          </ng-container>
+          <ng-template #skelF><span class="skel skel--num"></span></ng-template>
+        </div>
+        <div class="stat-card__label">Fournisseurs</div>
+      </div>
+      <a class="stat-card__link" routerLink="/fournisseur/listFournisseur">Voir tout →</a>
+    </div>
+
+    <!-- Articles Card -->
+    <div class="stat-card stat-card--teal" (click)="navigateTo('/article-achat/listArticleAchat')">
+      <div class="stat-card__icon">
+        <i class="feather icon-package"></i>
+      </div>
+      <div class="stat-card__body">
+        <div class="stat-card__value">
+          <ng-container *ngIf="statsLoaded; else skelA">
+            <span [countUp]="stats.totalArticles" [options]="countUpOptions">0</span>
+          </ng-container>
+          <ng-template #skelA><span class="skel skel--num"></span></ng-template>
+        </div>
+        <div class="stat-card__label">Articles</div>
+      </div>
+      <a class="stat-card__link" routerLink="/article-achat/listArticleAchat">Voir tout →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Section 2: Recent Clients ── -->
+<section class="db-section fade-in" style="animation-delay:0.1s">
+  <div class="db-card">
+    <div class="db-card__header">
+      <div class="db-card__title">
+        <i class="feather icon-users"></i>
+        Clients Récents
+      </div>
+      <a class="view-all-link" routerLink="/client/listClient">Voir tous les clients →</a>
+    </div>
+    <div class="db-card__body">
+      <div *ngIf="loadingClients" class="skel-rows">
+        <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
+      </div>
+      <div *ngIf="!loadingClients && recentClients.length === 0" class="empty-state">
+        <i class="feather icon-inbox"></i> Aucun client trouvé
+      </div>
+      <div *ngIf="!loadingClients && recentClients.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>{{ labels.numero }}</th>
-              <th>{{ labels.client }}</th>
-              <th>{{ labels.commandes }}</th>
-              <th>{{ labels.totalDepense }}</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th class="col-action">Actions</th>
             </tr>
           </thead>
           <tbody>
-            @for (customer of stats.topCustomers; track customer; let i = $index) {
-              <tr>
-                <td>{{ i + 1 }}</td>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.ordersCount }}</td>
-                <td>{{ currency }}{{ customer.totalSpent | number:'1.2-2' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      <div *ngIf="!stats.topCustomers || stats.topCustomers.length === 0" class="empty-state">
-        {{ labels.aucunDonneeClient }}
-      </div>
-    </div>
-  </div>
-
-  <div class="chart-card">
-    <div class="chart-card-header">
-      <h3>{{ labels.etatCommandes }}</h3>
-    </div>
-    <div class="chart-card-body">
-      <h6 class="status-subtitle">{{ labels.commandesVenteTitre }}</h6>
-      <div class="status-badges">
-        @for (entry of getOrderStatusEntries(); track entry) {
-          <span class="status-badge badge-primary">{{ entry.key }}: {{ entry.value }}</span>
-        }
-        <span *ngIf="getOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucuneDonnee }}</span>
-      </div>
-      <h6 class="status-subtitle mt-3">{{ labels.commandesAchatTitre }}</h6>
-      <div class="status-badges">
-        @for (entry of getPurchaseOrderStatusEntries(); track entry) {
-          <span class="status-badge badge-secondary">{{ entry.key }}: {{ entry.value }}</span>
-        }
-        <span *ngIf="getPurchaseOrderStatusEntries().length === 0" class="empty-state">{{ labels.aucuneDonnee }}</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Tableau des Articles Expirés -->
-<div class="chart-card">
-  <div class="chart-card-header">
-    <h3>{{ labels.articlesExpires }}</h3>
-  </div>
-  <div class="chart-card-body">
-    <div class="table-responsive dataview">
-      <table class="table dashboard-expired-products" matSort matSortActive="Sno"
-        matSortDirection="asc" matSortDisableClear>
-        <thead>
-          <tr>
-            <th class="no-sort">
-              <label class="checkboxs" (click)="selectAll(initChecked)">
-                <input type="checkbox" id="select-all" [(ngModel)]="initChecked">
-                <span class="checkmarks"></span>
-              </label>
-            </th>
-            <th mat-sort-header="product">{{ labels.article }}</th>
-            <th mat-sort-header="sku">{{ labels.sku }}</th>
-            <th mat-sort-header="date">{{ labels.dateFabrication }}</th>
-            <th mat-sort-header="expireddate">{{ labels.dateExpiration }}</th>
-            <th class="no-sort">{{ labels.action }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (data of tableData; track data; let i = $index) {
-            <tr>
+            <tr *ngFor="let c of recentClients; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
               <td>
-                <label class="checkboxs">
-                  <input type="checkbox" [(ngModel)]="data.isSelected">
-                  <span class="checkmarks"></span>
-                </label>
-              </td>
-              <td>
-                <div class="productimgname">
-                  <a href="javascript:void(0);" class="product-img stock-img">
-                    <img [src]="data.img" alt="article">
-                  </a>
-                  <a href="javascript:void(0);">{{data.product}}</a>
+                <div class="avatar-cell">
+                  <div class="avatar">{{ (c.nom || '?')[0].toUpperCase() }}</div>
+                  <span>{{ getClientName(c) }}</span>
                 </div>
               </td>
-              <td><a href="javascript:void(0);">{{data.sku}}</a></td>
-              <td>{{data.manufacturedDate}}</td>
-              <td>{{data.expiredDate}}</td>
-              <td class="action-table-data">
-                <div class="edit-delete-action">
-                  <a class="me-2 p-2" href="javascript:void(0);">
-                    <i class="feather icon-edit feather-edit"></i>
-                  </a>
-                  <a class="confirm-text p-2" href="javascript:void(0);" (click)="confirmColor()">
-                    <i class="feather icon-trash-2 feather-trash-2"></i>
-                  </a>
+              <td class="text-muted">{{ c.email }}</td>
+              <td class="text-muted">{{ c.telephone }}</td>
+              <td class="col-action">
+                <div class="action-btns">
+                  <button class="btn-icon btn-view" title="Voir" (click)="navigateTo('/client/listClient')">
+                    <i class="feather icon-eye"></i>
+                  </button>
                 </div>
               </td>
             </tr>
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
+</section>
+
+<!-- ── Section 3: Recent Fournisseurs ── -->
+<section class="db-section fade-in" style="animation-delay:0.15s">
+  <div class="db-card">
+    <div class="db-card__header">
+      <div class="db-card__title">
+        <i class="feather icon-truck"></i>
+        Fournisseurs Récents
+      </div>
+      <a class="view-all-link" routerLink="/fournisseur/listFournisseur">Voir tous les fournisseurs →</a>
+    </div>
+    <div class="db-card__body">
+      <div *ngIf="loadingFournisseurs" class="skel-rows">
+        <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
+      </div>
+      <div *ngIf="!loadingFournisseurs && recentFournisseurs.length === 0" class="empty-state">
+        <i class="feather icon-inbox"></i> Aucun fournisseur trouvé
+      </div>
+      <div *ngIf="!loadingFournisseurs && recentFournisseurs.length > 0" class="table-wrap">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Téléphone</th>
+              <th>Ville</th>
+              <th class="col-action">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let f of recentFournisseurs; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
+              <td>
+                <div class="avatar-cell">
+                  <div class="avatar avatar--orange">{{ (f.nom || '?')[0].toUpperCase() }}</div>
+                  <span>{{ f.nom }}</span>
+                </div>
+              </td>
+              <td class="text-muted">{{ f.telephone }}</td>
+              <td class="text-muted">{{ f.ville }}</td>
+              <td class="col-action">
+                <div class="action-btns">
+                  <button class="btn-icon btn-view" title="Voir" (click)="navigateTo('/fournisseur/listFournisseur')">
+                    <i class="feather icon-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Section 4: Articles en Stock ── -->
+<section class="db-section fade-in" style="animation-delay:0.2s">
+  <div class="db-card">
+    <div class="db-card__header">
+      <div class="db-card__title">
+        <i class="feather icon-package"></i>
+        Articles en Stock
+      </div>
+      <a class="view-all-link" routerLink="/article-achat/listArticleAchat">Voir tous les articles →</a>
+    </div>
+    <div class="db-card__body">
+      <div *ngIf="loadingArticles" class="skel-rows">
+        <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
+      </div>
+      <div *ngIf="!loadingArticles && recentArticles.length === 0" class="empty-state">
+        <i class="feather icon-inbox"></i> Aucun article trouvé
+      </div>
+      <div *ngIf="!loadingArticles && recentArticles.length > 0" class="table-wrap">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Article</th>
+              <th>Quantité</th>
+              <th>Statut Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of recentArticles; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
+              <td><span class="article-name">{{ a.name }}</span></td>
+              <td>
+                <div class="progress-cell">
+                  <span class="progress-qty">{{ a.quantity }}</span>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill"
+                         [class.fill--green]="a.stockStatus === 'IN_STOCK'"
+                         [class.fill--orange]="a.stockStatus === 'LOW_STOCK'"
+                         [class.fill--red]="a.stockStatus === 'OUT_OF_STOCK'"
+                         [style.width.%]="a.stockPercent">
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="status-badge"
+                      [class.badge--in-stock]="a.stockStatus === 'IN_STOCK'"
+                      [class.badge--low-stock]="a.stockStatus === 'LOW_STOCK'"
+                      [class.badge--out-of-stock]="a.stockStatus === 'OUT_OF_STOCK'">
+                  <ng-container [ngSwitch]="a.stockStatus">
+                    <ng-container *ngSwitchCase="'IN_STOCK'">En Stock</ng-container>
+                    <ng-container *ngSwitchCase="'LOW_STOCK'">Stock Faible</ng-container>
+                    <ng-container *ngSwitchDefault>Rupture</ng-container>
+                  </ng-container>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Section 5: Recent Commandes ── -->
+<section class="db-section fade-in" style="animation-delay:0.25s">
+  <div class="db-card">
+    <div class="db-card__header">
+      <div class="db-card__title">
+        <i class="feather icon-file-text"></i>
+        Commandes Récentes
+      </div>
+      <a class="view-all-link" routerLink="/commande-vente">Voir toutes les commandes →</a>
+    </div>
+    <div class="db-card__body">
+      <div *ngIf="loadingCommandes" class="skel-rows">
+        <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
+      </div>
+      <div *ngIf="!loadingCommandes && recentCommandes.length === 0" class="empty-state">
+        <i class="feather icon-inbox"></i> Aucune commande trouvée
+      </div>
+      <div *ngIf="!loadingCommandes && recentCommandes.length > 0" class="table-wrap">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Client</th>
+              <th>Montant TTC</th>
+              <th>Date</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cmd of recentCommandes; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
+              <td>
+                <span class="ref-id">#{{ cmd.id }}</span>
+              </td>
+              <td class="text-muted">{{ cmd.client?.nom || '—' }}</td>
+              <td><strong>{{ (cmd.montantTTC || 0) | number:'1.2-2' }} DA</strong></td>
+              <td class="text-muted">{{ cmd.dateCommande | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="getCommandeStatusClass(cmd.statut)">
+                  {{ getCommandeStatusLabel(cmd.statut) }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
