@@ -253,17 +253,24 @@ export class HeaderComponent implements OnInit {
   }
 
   // ===== OTHER METHODS =====
-  getResultRoute(result: SearchResult): string {
+  getResultRoute(result: SearchResult): string[] {
     switch (result.type) {
       case 'Client':
-        return this.routes.customerList;
+        return ['/client/editClient', String(result.id)];
       case 'Article':
-        return this.routes.articleAchatList;
+        return ['/article-achat/edit', String(result.id)];
+      case 'Fournisseur':
+        return ['/fournisseur/editFournisseur', String(result.id)];
       case 'Commande':
-        return this.routes.commandeAchatList;
+        return ['/commande-achat/edit', String(result.id)];
       default:
-        return '/';
+        return ['/'];
     }
+  }
+
+  navigateToResult(result: SearchResult): void {
+    this.clearSearch();
+    this.router.navigate(this.getResultRoute(result));
   }
 
   toggleSidebar(): void {

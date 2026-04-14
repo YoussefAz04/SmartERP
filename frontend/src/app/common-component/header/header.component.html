@@ -41,7 +41,7 @@
           <div class="dropdown-results" *ngIf="searchResults.length > 0">
             <ul class="results-list">
               <li *ngFor="let result of searchResults" class="result-item">
-                <a [routerLink]="getResultRoute(result)" (click)="clearSearch()">
+                <a (click)="navigateToResult(result)">
                   <span class="result-badge" [ngClass]="'badge-' + result.type.toLowerCase()">
                     {{ result.type }}
                   </span>

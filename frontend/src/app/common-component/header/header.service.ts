@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 export interface SearchResult {
   id: number;
   nom: string;
-  type: 'Client' | 'Article' | 'Commande';
+  type: 'Client' | 'Article' | 'Fournisseur' | 'Commande';
   detail?: string;
 }
 
@@ -44,8 +44,14 @@ export class HeaderService {
             .map(a => ({ id: a.id, nom: a.nom, type: 'Article' as const, detail: a.reference }))),
           catchError(() => of([] as SearchResult[]))
         );
-        return forkJoin([clients$, articles$]).pipe(
-          map(([clients, articles]) => [...clients, ...articles]),
+        const fournisseurs$ = this.http.get<any[]>(`${this.apiUrl}/fournisseurs/getAllFournisseurs`).pipe(
+          map(fournisseurs => fournisseurs
+            .filter(f => f.nom && f.nom.toLowerCase().includes(lowerQuery))
+            .map(f => ({ id: f.id, nom: f.nom, type: 'Fournisseur' as const, detail: f.email }))),
+          catchError(() => of([] as SearchResult[]))
+        );
+        return forkJoin([clients$, articles$, fournisseurs$]).pipe(
+          map(([clients, articles, fournisseurs]) => [...clients, ...articles, ...fournisseurs]),
           catchError(() => of([] as SearchResult[]))
         );
       })
