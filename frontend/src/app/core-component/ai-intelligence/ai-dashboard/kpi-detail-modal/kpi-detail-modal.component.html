@@ -47,7 +47,7 @@
                 <tr *ngFor="let p of kpiDetails.revenue.topProducts; let i = index">
                   <td><span class="rank-badge-sm">{{ i + 1 }}</span></td>
                   <td>{{ p.name }}</td>
-                  <td class="value-cell">{{ formatCurrency(p.value) }} DA</td>
+                  <td class="value-cell">{{ formatCurrency(p.value) }} TND</td>
                 </tr>
               </tbody>
             </table>
@@ -66,7 +66,7 @@
                 <tr *ngFor="let c of kpiDetails.revenue.topCustomers; let i = index">
                   <td><span class="rank-badge-sm">{{ i + 1 }}</span></td>
                   <td>{{ c.name }}</td>
-                  <td class="value-cell">{{ formatCurrency(c.value) }} DA</td>
+                  <td class="value-cell">{{ formatCurrency(c.value) }} TND</td>
                 </tr>
               </tbody>
             </table>
@@ -101,11 +101,11 @@
             </div>
             <div class="overview-card">
               <span class="ov-label">Valeur Moy. Commande</span>
-              <span class="ov-value">{{ formatCurrency(kpiDetails.orders.avgOrderValue) }} DA</span>
+              <span class="ov-value">{{ formatCurrency(kpiDetails.orders.avgOrderValue) }} TND</span>
             </div>
             <div class="overview-card">
               <span class="ov-label">Revenu Total</span>
-              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.orders.totalRevenue) }} DA</span>
+              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.orders.totalRevenue) }} TND</span>
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@
             </div>
             <div class="overview-card">
               <span class="ov-label">Valeur Total Stock</span>
-              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.products.totalStockValue) }} DA</span>
+              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.products.totalStockValue) }} TND</span>
             </div>
           </div>
         </div>
@@ -185,15 +185,15 @@
           <div class="overview-grid">
             <div class="overview-card">
               <span class="ov-label">Mois prochain</span>
-              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.forecast.predictedNextMonth) }} DA</span>
+              <span class="ov-value highlight">{{ formatCurrency(kpiDetails.forecast.predictedNextMonth) }} TND</span>
             </div>
             <div class="overview-card">
               <span class="ov-label">3 prochains mois</span>
-              <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext3Months) }} DA</span>
+              <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext3Months) }} TND</span>
             </div>
             <div class="overview-card">
               <span class="ov-label">6 prochains mois</span>
-              <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext6Months) }} DA</span>
+              <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext6Months) }} TND</span>
             </div>
           </div>
           <div class="methodology-info" *ngIf="kpiDetails.forecast.methodology">

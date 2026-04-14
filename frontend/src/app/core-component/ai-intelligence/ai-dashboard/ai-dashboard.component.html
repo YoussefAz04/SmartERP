@@ -43,7 +43,7 @@
         <div class="kpi-icon"><i class="fas fa-coins"></i></div>
         <div class="kpi-body">
           <div class="kpi-label">Revenu Total</div>
-          <div class="kpi-value">{{ formatCurrency(dashboard.kpiSummary.totalRevenue) }} DA</div>
+          <div class="kpi-value">{{ formatCurrency(dashboard.kpiSummary.totalRevenue) }} TND</div>
           <div class="kpi-trend" [ngClass]="growthClass">
             {{ growthArrow }} {{ dashboard.salesAnalysis.growthRate | number:'1.1-1' }}% vs S1
           </div>
@@ -56,7 +56,7 @@
         <div class="kpi-body">
           <div class="kpi-label">Commandes Totales</div>
           <div class="kpi-value">{{ dashboard.kpiSummary.totalOrders | number }}</div>
-          <div class="kpi-trend text-muted">Valeur moy. {{ formatCurrency(dashboard.kpiSummary.avgOrderValue) }} DA</div>
+          <div class="kpi-trend text-muted">Valeur moy. {{ formatCurrency(dashboard.kpiSummary.avgOrderValue) }} TND</div>
         </div>
         <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
@@ -80,7 +80,7 @@
         <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
         <div class="kpi-body">
           <div class="kpi-label">Prévision Mois Prochain</div>
-          <div class="kpi-value">{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} DA</div>
+          <div class="kpi-value">{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} TND</div>
           <div class="kpi-trend text-info">
             Fiabilité: {{ dashboard.forecast.confidenceScore | number:'1.0-0' }}%
           </div>
@@ -122,8 +122,8 @@
           </apx-chart>
         </div>
         <div class="chart-footer">
-          <span>Total: <strong>{{ formatCurrency(dashboard.salesAnalysis.totalRevenue) }} DA</strong></span>
-          <span>Moyenne/mois: <strong>{{ formatCurrency(dashboard.salesAnalysis.averageMonthlyRevenue) }} DA</strong></span>
+          <span>Total: <strong>{{ formatCurrency(dashboard.salesAnalysis.totalRevenue) }} TND</strong></span>
+          <span>Moyenne/mois: <strong>{{ formatCurrency(dashboard.salesAnalysis.averageMonthlyRevenue) }} TND</strong></span>
         </div>
       </div>
 
@@ -158,15 +158,15 @@
       <div class="forecast-kpis">
         <div class="forecast-kpi">
           <span class="fkpi-label">Mois prochain</span>
-          <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} DA</span>
+          <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} TND</span>
         </div>
         <div class="forecast-kpi">
           <span class="fkpi-label">3 prochains mois</span>
-          <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext3Months) }} DA</span>
+          <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext3Months) }} TND</span>
         </div>
         <div class="forecast-kpi">
           <span class="fkpi-label">6 prochains mois</span>
-          <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext6Months) }} DA</span>
+          <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext6Months) }} TND</span>
         </div>
         <div class="forecast-kpi">
           <span class="fkpi-label">Score de fiabilité</span>
@@ -213,7 +213,7 @@
               <td><span class="rank-badge" [ngClass]="'rank-' + p.rank">{{ p.rank }}</span></td>
               <td class="product-name">{{ p.productName }}</td>
               <td>{{ p.quantitySold | number }}</td>
-              <td>{{ formatCurrency(p.revenue) }} DA</td>
+              <td>{{ formatCurrency(p.revenue) }} TND</td>
               <td>
                 <div class="progress-bar-mini">
                   <div class="progress-fill" [style.width.%]="p.revenueShare"></div>
