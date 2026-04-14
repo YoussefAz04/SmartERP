@@ -5,7 +5,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../auth/service/user/user.service';
 import { ModuleService } from '../../../core/service/Module/module.service';
+import { EntrepriseService } from '../../../core/service/entreprise/entreprise.service';
 import { Module } from '../../../model/module.model';
+import { Entreprise } from '../../../model/entreprise.model';
 
 interface CreateEmployeeRequest {
   username: string;
@@ -14,6 +16,12 @@ interface CreateEmployeeRequest {
   phone?: string;
   enterpriseId?: number | null;
   moduleIds: number[];
+}
+
+/** Extends the base Entreprise model with fields that may be included in API list responses */
+interface EntrepriseListItem extends Entreprise {
+  active?: boolean;
+  userCount?: number;
 }
 
 @Component({
@@ -33,10 +41,16 @@ export class AddUserComponent implements OnInit {
   modules: Module[] = [];
   selectedModuleIds: Set<number> = new Set();
 
+  enterprises: EntrepriseListItem[] = [];
+  selectedEnterpriseId: number | null = null;
+  selectedEnterpriseInfo: EntrepriseListItem | null = null;
+  enterprisesLoading = false;
+
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
     private moduleService: ModuleService,
+    private entrepriseService: EntrepriseService,
     private router: Router
   ) {}
 
@@ -44,6 +58,9 @@ export class AddUserComponent implements OnInit {
     this.loadSessionData();
     this.initializeForm();
     this.loadModules();
+    if (this.isSuperAdmin) {
+      this.loadEnterprises();
+    }
   }
 
   loadSessionData(): void {
@@ -93,6 +110,34 @@ export class AddUserComponent implements OnInit {
     return this.selectedModuleIds.has(moduleId);
   }
 
+  loadEnterprises(): void {
+    this.enterprisesLoading = true;
+    this.entrepriseService.getAllEntreprises().subscribe({
+      next: (data: EntrepriseListItem[]) => {
+        this.enterprises = data;
+        this.enterprisesLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Error loading enterprises:', err);
+        this.enterprisesLoading = false;
+      }
+    });
+  }
+
+  onEnterpriseSelected(enterpriseId: number): void {
+    this.selectedEnterpriseId = enterpriseId;
+    this.selectedEnterpriseInfo = this.enterprises.find(e => e.id === enterpriseId) ?? null;
+  }
+
+  formatDate(date: string): string {
+    if (!date) return '-';
+    try {
+      return new Date(date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: '2-digit' });
+    } catch {
+      return date;
+    }
+  }
+
   isFieldInvalid(fieldName: string): boolean {
     const field = this.addUserForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
@@ -101,6 +146,11 @@ export class AddUserComponent implements OnInit {
   onSubmitAddUser(): void {
     if (!this.addUserForm.valid) {
       alert('Please fill all required fields');
+      return;
+    }
+
+    if (this.isSuperAdmin && !this.selectedEnterpriseId) {
+      alert('❌ Please select an enterprise to assign the user to.');
       return;
     }
 
@@ -117,7 +167,7 @@ export class AddUserComponent implements OnInit {
       email: formValue.email,
       password: formValue.password,
       phone: formValue.phone || undefined,
-      enterpriseId: this.currentEnterpriseId,
+      enterpriseId: this.isSuperAdmin ? this.selectedEnterpriseId! : this.currentEnterpriseId,
       moduleIds: Array.from(this.selectedModuleIds)
     };
 
