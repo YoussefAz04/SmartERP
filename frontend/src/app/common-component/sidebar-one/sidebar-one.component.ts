@@ -6,12 +6,29 @@ import { url } from 'src/app/shared/model/sidebar.model';
 interface MenuItem {
   menuValue: string;
   showSubRoute: boolean;
-  menu: SubMenu[];
+  hasSubRoute?: boolean;
+  icon?: string;
+  route?: string;
+  base?: string;
+  base1?: string;
+  page?: string;
+  subMenus?: SubMenu[];
 }
 
 interface SubMenu {
   menuValue: string;
   showSubRoute: boolean;
+  route?: string;
+  customSubmenuTwo?: boolean;
+  subMenusTwo?: SubMenu[];
+  page1?: string;
+  page2?: string;
+  page3?: string;
+  page4?: string;
+  page5?: string;
+  page6?: string;
+  page7?: string;
+  page8?: string;
 }
 
 interface SidebarSection {
@@ -39,7 +56,6 @@ export class SidebarOneComponent implements OnInit {
   public side_bar_data: Array<any> = [];
 
   constructor(
-    private Router: Router,
     private sidebar: SidebarService,
     private router: Router,
   ) {
@@ -74,8 +90,8 @@ export class SidebarOneComponent implements OnInit {
 
   expandSubMenus(menu: MenuItem): void {
     sessionStorage.setItem('menuValue', menu.menuValue);
-    this.side_bar_data.forEach((mainMenus: MenuItem) => {
-      mainMenus.menu.forEach((resMenu: SubMenu) => {
+    this.side_bar_data.forEach((section: SidebarSection) => {
+      section.menu.forEach((resMenu: MenuItem) => {
         if (resMenu.menuValue === menu.menuValue) {
           menu.showSubRoute = !menu.showSubRoute;
         } else {
@@ -86,7 +102,7 @@ export class SidebarOneComponent implements OnInit {
   }
 
   openMenuItem: MenuItem | null = null;
-  openSubmenuOneItem: SubMenu[] | null = null;
+  openSubmenuOneItem: SubMenu | null = null;
   multiLevel1 = false;
   multiLevel2 = false;
   multiLevel3 = false;
@@ -99,7 +115,7 @@ export class SidebarOneComponent implements OnInit {
     }
   }
 
-  openSubmenuOne(subMenus: SubMenu[]): void {
+  openSubmenuOne(subMenus: SubMenu): void {
     if (this.openSubmenuOneItem === subMenus) {
       this.openSubmenuOneItem = null;
     } else {
