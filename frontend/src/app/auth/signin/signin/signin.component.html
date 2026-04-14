@@ -160,7 +160,8 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="button" class="btn-signin" (click)="navigation()" [disabled]="loading">
+        <button type="button" class="btn-signin" (click)="navigation()" [disabled]="loading"
+                [attr.aria-label]="loading ? 'Connexion en cours' : 'Se connecter'">
           <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status"></span>
           <span>{{ loading ? 'Connexion en cours...' : 'Connexion' }}</span>
           <i *ngIf="!loading" class="fas fa-arrow-right btn-arrow"></i>

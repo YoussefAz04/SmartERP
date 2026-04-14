@@ -321,7 +321,6 @@
     padding: 2px;
     background: linear-gradient(135deg, #ff9f43, #ffb84d, #ff9f43);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
     opacity: 0.6;
@@ -690,6 +689,12 @@
       &:hover {
         transform: translateY(-4px) scale(1.1) rotate(5deg);
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        &:hover {
+          transform: translateY(-2px) scale(1.05);
+        }
       }
 
       &.facebook {
