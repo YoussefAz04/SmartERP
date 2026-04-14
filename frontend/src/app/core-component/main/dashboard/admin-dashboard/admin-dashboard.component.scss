@@ -1,22 +1,23 @@
 // ============================================================
-// ADMIN DASHBOARD – Modern Glassmorphism + Animation Styles
+// ADMIN DASHBOARD – Ultra-Modern Glassmorphism + Animation
 // ============================================================
 
 // ── Variables ──────────────────────────────────────────────
-$blue:     #0084D6;
+$blue:     #3B82F6;
 $orange:   #FF9F43;
-$teal:     #00B8A9;
-$green:    #28C76F;
-$red:      #EA5455;
+$green:    #10B981;
+$warning:  #F59E0B;
+$red:      #EF4444;
 $dark:     #1A2942;
-$card-bg:  rgba(255,255,255,0.82);
-$card-blur: blur(14px);
-$border:   rgba(0,0,0,0.07);
-$shadow:   0 4px 24px rgba(26,41,66,0.10);
-$shadow-h: 0 8px 32px rgba(26,41,66,0.18);
+$gray:     #6B7280;
+$card-bg:  rgba(255,255,255,0.95);
+$card-blur: blur(10px);
+$border:   rgba(200,200,200,0.2);
+$shadow:   0 4px 12px rgba(0,0,0,0.08);
+$shadow-h: 0 8px 24px rgba(0,0,0,0.12);
 $radius:   12px;
-$text:     #1A2942;
-$muted:    #6c7a94;
+$text:     #111827;
+$muted:    #6B7280;
 
 // ── Page fade-in animation ──────────────────────────────────
 @keyframes fadeInUp {
@@ -82,10 +83,10 @@ $muted:    #6c7a94;
 
   &__title {
     margin: 0;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: #fff;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.5px;
   }
 
   &__sub {
@@ -127,47 +128,75 @@ $muted:    #6c7a94;
   position: relative;
   background: $card-bg;
   backdrop-filter: $card-blur;
-  border: 1px solid $border;
   border-radius: $radius;
   padding: 24px 22px 18px;
   box-shadow: $shadow;
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   gap: 2px;
 
+  // Gradient border via pseudo-element
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 4px;
-    height: 100%;
-    border-radius: $radius 0 0 $radius;
+    inset: 0;
+    border-radius: $radius;
+    padding: 1px;
+    background: linear-gradient(135deg, $orange, $blue);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
   }
 
-  &--blue::before  { background: $blue; }
-  &--orange::before { background: $orange; }
-  &--teal::before  { background: $teal; }
+  // Colored top accent
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    border-radius: $radius $radius 0 0;
+  }
+
+  &--blue::after   { background: $blue; }
+  &--orange::after { background: $orange; }
+  &--green::after  { background: $green; }
 
   &:hover {
-    transform: translateY(-3px) scale(1.01);
+    transform: translateY(-4px) scale(1.02);
     box-shadow: $shadow-h;
+  }
+
+  // Ripple container
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba($blue, 0.18);
+    transform: scale(0);
+    animation: rippleOut 0.6s linear;
+    pointer-events: none;
   }
 
   &__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    font-size: 20px;
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    font-size: 22px;
+    transition: transform 0.3s ease;
 
     .stat-card--blue &   { background: rgba($blue,0.10);   color: $blue; }
     .stat-card--orange & { background: rgba($orange,0.12); color: $orange; }
-    .stat-card--teal &   { background: rgba($teal,0.10);   color: $teal; }
+    .stat-card--green &  { background: rgba($green,0.10);  color: $green; }
+  }
+
+  &:hover &__icon {
+    transform: rotate(5deg) scale(1.08);
   }
 
   &__body {
@@ -175,7 +204,7 @@ $muted:    #6c7a94;
   }
 
   &__value {
-    font-size: 38px;
+    font-size: 40px;
     font-weight: 800;
     color: $text;
     line-height: 1.1;
@@ -189,19 +218,25 @@ $muted:    #6c7a94;
   }
 
   &__link {
-    display: inline-block;
-    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 16px;
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
-    transition: opacity 0.2s;
+    transition: gap 0.2s ease, opacity 0.2s;
 
     .stat-card--blue &   { color: $blue; }
     .stat-card--orange & { color: $orange; }
-    .stat-card--teal &   { color: $teal; }
+    .stat-card--green &  { color: $green; }
 
-    &:hover { opacity: 0.72; }
+    &:hover { gap: 8px; opacity: 0.85; }
   }
+}
+
+@keyframes rippleOut {
+  to { transform: scale(4); opacity: 0; }
 }
 
 // ── Generic Card ────────────────────────────────────────────
@@ -240,12 +275,15 @@ $muted:    #6c7a94;
 }
 
 .view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
   font-weight: 600;
   color: $blue;
   text-decoration: none;
-  transition: opacity 0.2s;
-  &:hover { opacity: 0.70; }
+  transition: gap 0.2s ease, opacity 0.2s;
+  &:hover { gap: 8px; opacity: 0.80; }
 }
 
 // ── Modern Table ─────────────────────────────────────────────
@@ -257,7 +295,7 @@ $muted:    #6c7a94;
   font-size: 13px;
 
   thead tr {
-    background: rgba($dark,0.04);
+    background: rgba($dark,0.03);
   }
 
   th {
@@ -272,12 +310,20 @@ $muted:    #6c7a94;
   }
 
   td {
-    padding: 11px 14px;
+    padding: 12px 14px;
     color: $text;
     border-bottom: 1px solid rgba(0,0,0,0.04);
   }
 
-  tbody tr:last-child td { border-bottom: none; }
+  tbody tr {
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: rgba($blue, 0.04);
+    }
+
+    &:last-child td { border-bottom: none; }
+  }
 
   .col-action { width: 80px; text-align: center; }
 }
@@ -393,6 +439,24 @@ $muted:    #6c7a94;
   color: $blue;
 }
 
+// ── Status badge pulse animation ─────────────────────────────
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+.status-badge.badge-pending {
+  animation: badgePulse 2s ease infinite;
+}
+
+// ── Progress bar animate-in ───────────────────────────────────
+@keyframes barGrow {
+  from { width: 0 !important; }
+}
+.progress-bar-fill {
+  animation: barGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 // ── Empty state ──────────────────────────────────────────────
 .empty-state {
   padding: 28px 0;
@@ -405,4 +469,20 @@ $muted:    #6c7a94;
   gap: 6px;
 
   i { font-size: 28px; opacity: 0.35; }
+}
+
+// ── Responsive ───────────────────────────────────────────────
+@media (max-width: 768px) {
+  .db-header {
+    padding: 18px 16px;
+    &__title { font-size: 20px; }
+  }
+
+  .db-card {
+    &__header { padding: 14px 16px; }
+    &__body   { padding: 12px 16px; }
+  }
+
+  .modern-table th,
+  .modern-table td { padding: 9px 10px; }
 }
