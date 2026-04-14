@@ -91,8 +91,8 @@
         <div class="login-logo">
           <img src="assets/img/logo.png" alt="DreamsPOS Logo">
         </div>
-        <h2>Welcome Back</h2>
-        <p>Sign in to continue to your dashboard</p>
+        <h2>Bienvenue</h2>
+        <p>Connectez-vous pour continuer vers votre tableau de bord</p>
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="navigation()" class="modern-form">
@@ -108,10 +108,10 @@
               class="modern-input"
               placeholder=" "
               autocomplete="username">
-            <label for="username" class="floating-label">Username</label>
+            <label for="username" class="floating-label">Nom d'utilisateur</label>
           </div>
           <span class="field-error" *ngIf="f['username'].invalid && f['username'].touched">
-            Username is required
+            Nom d'utilisateur requis
           </span>
         </div>
 
@@ -126,20 +126,20 @@
               class="modern-input"
               placeholder=" "
               autocomplete="current-password">
-            <label for="password" class="floating-label">Password</label>
+            <label for="password" class="floating-label">Mot de passe</label>
             <span class="toggle-password fas"
                   [class.fa-eye]="!password[0]"
                   [class.fa-eye-slash]="password[0]"
                   role="button"
                   tabindex="0"
-                  [attr.aria-label]="password[0] ? 'Hide password' : 'Show password'"
+                  [attr.aria-label]="password[0] ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
                   (click)="togglePassword(0)"
                   (keydown.enter)="togglePassword(0)"
                   (keydown.space)="togglePassword(0)">
             </span>
           </div>
           <span class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
-            Password is required
+            Mot de passe requis
           </span>
         </div>
 
@@ -149,40 +149,26 @@
           {{ errorMessage }}
         </div>
 
-          <div class="form-login authentication-check">
-            <div class="row">
-              <div class="col-12 d-flex align-items-center justify-content-between">
-                <div class="custom-control custom-checkbox custom-class-check">
-                  <label class="checkboxs ps-4 mb-0 pb-0 line-height-1">
-                    <input type="checkbox" class="form-control">
-                    <span class="checkmarks"></span>Remember me
-                  </label>
-                </div>
-              
-              </div>
-            </div>
-          </div>
         <!-- Remember / Forgot -->
         <div class="form-options">
           <label class="remember-me">
             <input type="checkbox" class="checkbox-input" [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
             <span class="checkbox-custom"></span>
-            Remember me
+            Se souvenir de moi
           </label>
-          <a class="forgot-link" [routerLink]="routes.forgotPassword">Forgot Password?</a>
+          <a class="forgot-link" [routerLink]="routes.forgotPassword">Mot de passe oublié ?</a>
         </div>
 
         <!-- Submit Button -->
         <button type="button" class="btn-signin" (click)="navigation()" [disabled]="loading">
           <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status"></span>
-          <i *ngIf="!loading" class="fas fa-sign-in-alt"></i>
-          <span>{{ loading ? 'Signing In...' : 'Sign In' }}</span>
+          <span>{{ loading ? 'Connexion en cours...' : 'Connexion' }}</span>
           <i *ngIf="!loading" class="fas fa-arrow-right btn-arrow"></i>
         </button>
 
         <!-- Divider -->
         <div class="divider">
-          <span>or continue with</span>
+          <span>ou continuer avec</span>
         </div>
 
         <!-- Social Login (placeholder – OAuth integration pending) -->
@@ -200,9 +186,9 @@
 
         <!-- Signup Link -->
         <div class="signup-link">
-          <span>New on our platform?</span>
+          <span>Nouveau sur la plateforme ?</span>
           <a [routerLink]="routes.registerbyStepper">
-            Create an account <i class="fas fa-arrow-right"></i>
+            Créer un compte <i class="fas fa-arrow-right"></i>
           </a>
         </div>
 
