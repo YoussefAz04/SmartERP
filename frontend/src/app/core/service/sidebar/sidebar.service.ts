@@ -71,8 +71,42 @@ export class SidebarService {
     return this.http.get<ModuleTittle[]>(`${this.baseUrl}`);
   }
 
+  /** Parses and returns the session object stored in localStorage, or null on error. */
+  private getSession(): any {
+    try {
+      const raw = localStorage.getItem('myLSkey');
+      if (!raw) return null;
+      return JSON.parse(decodeURIComponent(escape(atob(raw))));
+    } catch {
+      return null;
+    }
+  }
 
+  /** Returns the current user's role: 'SUPER_ADMIN', 'ADMIN', or 'EMPLOYEE'. */
+  getUserRole(): string {
+    const session = this.getSession();
+    if (!session) return 'EMPLOYEE';
+    const roles: string[] = Array.isArray(session.roles) ? session.roles : [];
+    if (roles.includes('SUPER_ADMIN')) return 'SUPER_ADMIN';
+    if (roles.includes('ADMIN')) return 'ADMIN';
+    return 'EMPLOYEE';
+  }
 
+  /**
+   * Returns the set of module IDs that the current EMPLOYEE user has access to,
+   * based on the permissions stored in the session.
+   */
+  private getUserPermissionModuleIds(): Set<number> {
+    const session = this.getSession();
+    if (!session) return new Set();
+    const permissions: any[] = Array.isArray(session.permission) ? session.permission : [];
+    return new Set(
+      permissions
+        .map((p: any) => p.moduleId)
+        .filter((id: any) => id != null)
+        .map((id: any) => Number(id))
+    );
+  }
 
 
   updateData(data: unknown) {
@@ -81,6 +115,8 @@ export class SidebarService {
 
 
 generateSidebarData(modules: ModuleTittle[]) {
+    const userRole = this.getUserRole();
+    const permittedModuleIds = this.getUserPermissionModuleIds();
 
     // titleMap: maps ModuleTittle.moduleTittle (section-level DB names) to display labels
     const titleMap: { [key: string]: string } = {
@@ -139,12 +175,24 @@ generateSidebarData(modules: ModuleTittle[]) {
     );
 
     const data = filteredModules.map((moduleTitle: ModuleTittle) => {
-      const activeModules = moduleTitle.modules.filter((mod: Module) =>
-        mod.status === true &&
-        !excludedModuleItemTitles.some(excluded =>
-          mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
-        )
-      );
+      let activeModules: Module[];
+
+      if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+        // ADMIN and SUPER_ADMIN see all modules (not filtered by status)
+        activeModules = moduleTitle.modules.filter((mod: Module) =>
+          !excludedModuleItemTitles.some(excluded =>
+            mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
+          )
+        );
+      } else {
+        // EMPLOYEE: show only modules explicitly permitted by their role's permissions
+        activeModules = moduleTitle.modules.filter((mod: Module) =>
+          permittedModuleIds.has(mod.id) &&
+          !excludedModuleItemTitles.some(excluded =>
+            mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
+          )
+        );
+      }
 
       return {
         tittle: titleMap[moduleTitle.moduleTittle] || moduleTitle.moduleTittle,
@@ -177,26 +225,29 @@ generateSidebarData(modules: ModuleTittle[]) {
       };
     }).filter((section: any) => section.menu && section.menu.length > 0);
 
-    // Append static AI Intelligence section
-    const aiSection = {
-      tittle: 'Intelligence Artificielle',
-      showAsTab: false,
-      separateRoute: false,
-      hasSubRoute: false,
-      showSubRoute: true,
-      menu: [
-        {
-          menuValue: 'Tableau de Bord IA',
-          hasSubRoute: false,
-          showSubRoute: false,
-          icon: 'cpu',
-          base1: 'ai-intelligence',
-          route: 'ai-intelligence',
-          subMenus: []
-        }
-      ]
-    };
-    this.sidebarDataSubject.next([...data, aiSection]);
+    // AI Intelligence section is only visible to ADMIN and SUPER_ADMIN, not EMPLOYEE
+    const result: any[] = [...data];
+    if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+      result.push({
+        tittle: 'Intelligence Artificielle',
+        showAsTab: false,
+        separateRoute: false,
+        hasSubRoute: false,
+        showSubRoute: true,
+        menu: [
+          {
+            menuValue: 'Tableau de Bord IA',
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'cpu',
+            base1: 'ai-intelligence',
+            route: 'ai-intelligence',
+            subMenus: []
+          }
+        ]
+      });
+    }
+    this.sidebarDataSubject.next(result);
   }
 
   // public sidebarData1 = [

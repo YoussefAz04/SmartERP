@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import { SidebarService, routes } from 'src/app/core/core.index';
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router';
 import { url } from 'src/app/shared/model/sidebar.model';
-import {ModuleService} from "../../core/service/Module/module.service";
 
 interface MenuItem {
   menuValue: string;
@@ -43,7 +42,6 @@ export class SidebarOneComponent implements OnInit {
     private Router: Router,
     private sidebar: SidebarService,
     private router: Router,
-    private  moduleService : ModuleService
   ) {
     router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationEnd) {
@@ -53,7 +51,6 @@ export class SidebarOneComponent implements OnInit {
     this.getRoutes(this.router);
     this.sidebar.getAllModuleTitles().subscribe(modules => {
       this.sidebar.generateSidebarData(modules);
-      console.log('Sidebar data:', this.sidebar.sidebarData1);
     });
     this.sidebar.sidebarData$.subscribe(data => {
       // Filter out sections with no active menu items to avoid orphaned section headers
@@ -121,23 +118,13 @@ export class SidebarOneComponent implements OnInit {
   multiLevelThree() {
     this.multiLevel3 = !this.multiLevel3;
   }
-  idRoleLogin !: number ;
 
   ngOnInit(): void {
-    const item = localStorage.getItem('myLSkey');
-
-    if (item) {
-      let currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
-      this.idRoleLogin = currentUser.roleId;
-
-    }
-    if (this.idRoleLogin) {
-      this.moduleService.updateStatusByRole(this.idRoleLogin).subscribe(()=>{ this.sidebar.getAllModuleTitles().subscribe(modules => {
-        this.sidebar.generateSidebarData(modules);
-        console.log('Sidebar data:', this.sidebar.sidebarData1);
-      });})
-    }
-
+    // Reload sidebar data on init to apply role-based filtering for the logged-in user.
+    // Role and permission filtering is handled inside generateSidebarData using localStorage.
+    this.sidebar.getAllModuleTitles().subscribe(modules => {
+      this.sidebar.generateSidebarData(modules);
+    });
   }
 
 
