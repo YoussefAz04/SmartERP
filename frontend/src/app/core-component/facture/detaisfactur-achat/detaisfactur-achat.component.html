@@ -1,103 +1,211 @@
-<div class="container mt-4">
-  <div class="card shadow-lg">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0">Modifier la Facture d'Achat</h5>
+<!-- Modern Page Header -->
+<div class="modern-page-header">
+  <div class="header-content">
+    <div class="header-title">
+      <h1>Détail Facture d'Achat</h1>
+      <p class="subtitle">Modifier et gérer les informations de la facture</p>
     </div>
-    <div class="card-body">
-      <form (ngSubmit)="onSubmit()" #factureForm="ngForm" *ngIf="factureDetais">
-
-        <div class="mb-3">
-          <label for="dateAchat" class="form-label">Date Achat</label>
-          <input type="text" id="dateAchat" class="form-control" name="dateAchat" [(ngModel)]="factureDetais.dateAchat" required>
-        </div>
-
-        <div class="mb-3">
-          <label for="referance" class="form-label">Référence</label>
-          <input type="text" id="referance" class="form-control" name="referance" [(ngModel)]="factureDetais.referance" required>
-        </div>
-
-        <div class="mb-3">
-          <label for="montantTotal" class="form-label">Montant Total</label>
-          <input type="number" id="montantTotal" class="form-control" name="montantTotal" [(ngModel)]="factureDetais.montantTotal" required>
-        </div>
-
-        <div class="mb-3 row">
-          <div class="col">
-            <label for="montantHT" class="form-label">Montant HT</label>
-            <input type="number" id="montantHT" class="form-control" name="montantHT" [(ngModel)]="factureDetais.montantHT">
-          </div>
-          <div class="col">
-            <label for="montantTVA" class="form-label">Montant TVA</label>
-            <input type="number" id="montantTVA" class="form-control" name="montantTVA" [(ngModel)]="factureDetais.montantTVA">
-          </div>
-          <div class="col">
-            <label for="montantTTC" class="form-label">Montant TTC</label>
-            <input type="number" id="montantTTC" class="form-control" name="montantTTC" [(ngModel)]="factureDetais.montantTTC">
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label for="remise" class="form-label">Remise</label>
-          <input type="number" id="remise" class="form-control" name="remise" [(ngModel)]="factureDetais.remise">
-        </div>
-
-        <div class="mb-3">
-          <label for="modePaiement" class="form-label">Mode de Paiement</label>
-          <input type="text" id="modePaiement" class="form-control" name="modePaiement" [(ngModel)]="factureDetais.modePaiement">
-        </div>
-
-        <div class="mb-3">
-          <label for="statut" class="form-label">Statut</label>
-          <input type="text" id="statut" class="form-control" name="statut" [(ngModel)]="factureDetais.statut">
-        </div>
-
-        <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
-          <textarea id="description" rows="3" class="form-control" name="description" [(ngModel)]="factureDetais.description"></textarea>
-        </div>
-
-        <div class="mb-3">
-          <label for="cheminFichier" class="form-label">Chemin Fichier</label>
-          <input type="text" id="cheminFichier" class="form-control" name="cheminFichier" [(ngModel)]="factureDetais.cheminFichier">
-        </div>
-
-        <button type="submit" class="btn btn-primary" [disabled]="!factureForm.form.valid">Enregistrer</button>
-
-      </form>
+    <div class="header-actions">
+      <button class="btn-header back" (click)="goBack()">
+        <i class="feather icon-arrow-left"></i>
+        Retour
+      </button>
     </div>
   </div>
 </div>
-<!-- Ton formulaire ici ... -->
-<div class="container mt-4">
-  <div class="card shadow-lg">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0">Les détails de la Facture d'Achat</h5>
-    </div>
 
-    <div class="card-body">
-      <div *ngIf="factureDetais.detaisFactureAchat">
-        <h5 class="mb-3">Détails de la Facture</h5>
-        <table class="table table-hover mb-0 align-middle">
-          <thead class="table-light">
-          <tr>
-            <th>Article</th>
-            <th>Quantité</th>
-            <th>Prix Unitaire HT</th>
-            <th>TVA</th>
-            <th>Total TTC</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td>{{ factureDetais.detaisFactureAchat.article }}</td>
-            <td>{{ factureDetais.detaisFactureAchat.quantite }}</td>
-            <td>{{ factureDetais.detaisFactureAchat.prixUnitaireHT | number: '1.2-2' }}</td>
-            <td>{{ factureDetais.detaisFactureAchat.tva | number: '1.2-2' }} %</td>
-            <td>{{ factureDetais.detaisFactureAchat.totalTTC | number: '1.2-2' }}</td>
-          </tr>
-          </tbody>
-        </table>
+<!-- Alerts -->
+<div class="alert-success" *ngIf="successMessage">
+  <i class="feather icon-check-circle"></i>
+  {{ successMessage }}
+</div>
+<div class="alert-error" *ngIf="errorMessage">
+  <i class="feather icon-alert-circle"></i>
+  {{ errorMessage }}
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<div class="confirm-overlay" *ngIf="showDeleteConfirm">
+  <div class="confirm-dialog">
+    <div class="confirm-icon">
+      <i class="feather icon-alert-triangle"></i>
+    </div>
+    <h4>Confirmer la suppression</h4>
+    <p>Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm cancel" (click)="cancelDelete()">Annuler</button>
+      <button class="btn-confirm delete" (click)="deleteFacture()" [disabled]="isDeleting">
+        <span *ngIf="isDeleting" class="btn-spinner"></span>
+        <i *ngIf="!isDeleting" class="feather icon-trash-2"></i>
+        {{ isDeleting ? 'Suppression...' : 'Supprimer' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Form Card -->
+<div class="detail-card" *ngIf="factureDetais">
+  <form (ngSubmit)="onSubmit()" #factureForm="ngForm">
+
+    <!-- Section: Informations Générales -->
+    <div class="form-section">
+      <div class="section-header">
+        <i class="feather icon-file-text"></i>
+        <h3>Informations Générales</h3>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="dateAchat" class="form-label">Date Achat <span class="required">*</span></label>
+          <input type="text" id="dateAchat" class="form-input" name="dateAchat"
+                 [(ngModel)]="factureDetais.dateAchat" required>
+        </div>
+        <div class="form-group">
+          <label for="referance" class="form-label">Référence <span class="required">*</span></label>
+          <input type="text" id="referance" class="form-input" name="referance"
+                 [(ngModel)]="factureDetais.referance" required>
+        </div>
+        <div class="form-group">
+          <label for="modePaiement" class="form-label">Mode de Paiement</label>
+          <input type="text" id="modePaiement" class="form-input" name="modePaiement"
+                 [(ngModel)]="factureDetais.modePaiement">
+        </div>
+        <div class="form-group">
+          <label for="statut" class="form-label">Statut</label>
+          <input type="text" id="statut" class="form-input" name="statut"
+                 [(ngModel)]="factureDetais.statut">
+        </div>
       </div>
     </div>
-  </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section: Informations Financières -->
+    <div class="form-section">
+      <div class="section-header">
+        <i class="feather icon-dollar-sign"></i>
+        <h3>Informations Financières</h3>
+      </div>
+      <div class="form-grid form-grid-3">
+        <div class="form-group">
+          <label for="montantHT" class="form-label">Montant HT</label>
+          <div class="input-with-unit">
+            <input type="number" id="montantHT" class="form-input" name="montantHT"
+                   [(ngModel)]="factureDetais.montantHT">
+            <span class="unit">DT</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="montantTVA" class="form-label">Montant TVA</label>
+          <div class="input-with-unit">
+            <input type="number" id="montantTVA" class="form-input" name="montantTVA"
+                   [(ngModel)]="factureDetais.montantTVA">
+            <span class="unit">DT</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="montantTTC" class="form-label">Montant TTC</label>
+          <div class="input-with-unit">
+            <input type="number" id="montantTTC" class="form-input" name="montantTTC"
+                   [(ngModel)]="factureDetais.montantTTC">
+            <span class="unit">DT</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="montantTotal" class="form-label">Montant Total <span class="required">*</span></label>
+          <div class="input-with-unit">
+            <input type="number" id="montantTotal" class="form-input" name="montantTotal"
+                   [(ngModel)]="factureDetais.montantTotal" required>
+            <span class="unit">DT</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="remise" class="form-label">Remise</label>
+          <div class="input-with-unit">
+            <input type="number" id="remise" class="form-input" name="remise"
+                   [(ngModel)]="factureDetais.remise">
+            <span class="unit">DT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section: Détails -->
+    <div class="form-section">
+      <div class="section-header">
+        <i class="feather icon-info"></i>
+        <h3>Détails Supplémentaires</h3>
+      </div>
+      <div class="form-grid form-grid-1">
+        <div class="form-group">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" rows="3" class="form-input form-textarea" name="description"
+                    [(ngModel)]="factureDetais.description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="cheminFichier" class="form-label">Chemin Fichier</label>
+          <input type="text" id="cheminFichier" class="form-input" name="cheminFichier"
+                 [(ngModel)]="factureDetais.cheminFichier">
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button type="button" class="btn-action-form back" (click)="goBack()">
+        <i class="feather icon-arrow-left"></i>
+        Retour
+      </button>
+      <div class="action-right">
+        <button type="button" class="btn-action-form delete" (click)="confirmDelete()" [disabled]="isDeleting">
+          <i class="feather icon-trash-2"></i>
+          Supprimer
+        </button>
+        <button type="submit" class="btn-action-form save" [disabled]="!factureForm.form.valid || isSaving">
+          <span *ngIf="isSaving" class="btn-spinner"></span>
+          <i *ngIf="!isSaving" class="feather icon-save"></i>
+          {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+        </button>
+      </div>
+    </div>
+
+  </form>
 </div>
+
+<!-- Détails de la Facture Table -->
+<div class="detail-card mt-section" *ngIf="factureDetais">
+  <div class="section-header card-section-header">
+    <i class="feather icon-list"></i>
+    <h3>Lignes de la Facture</h3>
+  </div>
+  <div class="table-container" *ngIf="factureDetais.detaisFactureAchat; else noDetails">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Article</th>
+          <th>Quantité</th>
+          <th>Prix Unitaire HT</th>
+          <th>TVA</th>
+          <th>Total TTC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ factureDetais.detaisFactureAchat.article }}</td>
+          <td>{{ factureDetais.detaisFactureAchat.quantite }}</td>
+          <td class="amount-cell">{{ factureDetais.detaisFactureAchat.prixUnitaireHT | number: '1.2-2' }} DT</td>
+          <td>{{ factureDetais.detaisFactureAchat.tva | number: '1.2-2' }} %</td>
+          <td class="amount-cell total">{{ factureDetais.detaisFactureAchat.totalTTC | number: '1.2-2' }} DT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noDetails>
+    <div class="empty-state">
+      <i class="feather icon-inbox"></i>
+      <p>Aucun détail disponible pour cette facture</p>
+    </div>
+  </ng-template>
+</div>
+

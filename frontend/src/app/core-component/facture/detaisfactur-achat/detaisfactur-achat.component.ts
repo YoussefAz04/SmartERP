@@ -16,29 +16,68 @@ import {DecimalPipe, NgIf} from "@angular/common";
   templateUrl: './detaisfactur-achat.component.html',
   styleUrl: './detaisfactur-achat.component.scss'
 })
-export class DetaisfacturAchatComponent  implements OnInit{
-factureDetais !:FactureAchat ;
-factureId !: number;
+export class DetaisfacturAchatComponent implements OnInit {
+  factureDetais!: FactureAchat;
+  factureId!: number;
+  isSaving: boolean = false;
+  isDeleting: boolean = false;
+  showDeleteConfirm: boolean = false;
+  successMessage: string = '';
+  errorMessage: string = '';
 
-  constructor(private factureService :  FactureService,
-              private activatedRouter :ActivatedRoute,
-              private router : Router) {
-
+  constructor(private factureService: FactureService,
+              private activatedRouter: ActivatedRoute,
+              private router: Router) {
   }
 
   ngOnInit() {
     this.factureId = this.activatedRouter.snapshot.params['id'];
     this.factureService.getFactureAchatById(this.factureId).subscribe(data => {
       this.factureDetais = data;
-    })
+    });
   }
+
   onSubmit() {
-    this.factureService.updateFactureAchat(this.factureId,this.factureDetais).subscribe(()=>{
-      console.log("le update est succes");
-      this.router.navigate(['/facture/listFactureAchat']);
-    })
+    this.isSaving = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.factureService.updateFactureAchat(this.factureId, this.factureDetais).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.successMessage = 'Facture mise à jour avec succès.';
+        setTimeout(() => this.router.navigate(['/facture/listFactureAchat']), 1200);
+      },
+      error: () => {
+        this.isSaving = false;
+        this.errorMessage = 'Erreur lors de la mise à jour de la facture.';
+      }
+    });
   }
 
+  confirmDelete() {
+    this.showDeleteConfirm = true;
+  }
 
+  cancelDelete() {
+    this.showDeleteConfirm = false;
+  }
 
+  deleteFacture() {
+    this.isDeleting = true;
+    this.showDeleteConfirm = false;
+    this.factureService.deleteFactureAchat(this.factureId).subscribe({
+      next: () => {
+        this.isDeleting = false;
+        this.router.navigate(['/facture/listFactureAchat']);
+      },
+      error: () => {
+        this.isDeleting = false;
+        this.errorMessage = 'Erreur lors de la suppression de la facture.';
+      }
+    });
+  }
+
+  goBack() {
+    this.router.navigate(['/facture/listFactureAchat']);
+  }
 }
