@@ -25,7 +25,6 @@ describe('AdminDashboardComponent', () => {
   };
   const commandeServiceMock = {
     getAllCommandes: () => of([]),
-    getCommandesByEntreprise: () => of([]),
   };
 
   beforeEach(async () => {

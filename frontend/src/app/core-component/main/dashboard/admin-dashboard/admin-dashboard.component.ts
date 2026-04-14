@@ -104,16 +104,16 @@ export class AdminDashboardComponent implements OnInit {
     // Each source uses catchError so a single API failure only marks its own section as errored.
     forkJoin({
       clients: this.clientService.getAllClients().pipe(
-        catchError(err => { console.error('Error loading clients:', err); this.errorClients = true; return of(null); })
+        catchError(err => this.handleLoadError(err, 'clients', () => this.errorClients = true))
       ),
       fournisseurs: this.fournisseurService.getAllFournisseurs().pipe(
-        catchError(err => { console.error('Error loading fournisseurs:', err); this.errorFournisseurs = true; return of(null); })
+        catchError(err => this.handleLoadError(err, 'fournisseurs', () => this.errorFournisseurs = true))
       ),
       articles: this.articleService.getAllArticlesAchat().pipe(
-        catchError(err => { console.error('Error loading articles:', err); this.errorArticles = true; return of(null); })
+        catchError(err => this.handleLoadError(err, 'articles', () => this.errorArticles = true))
       ),
       commandes: this.commandeService.getAllCommandes().pipe(
-        catchError(err => { console.error('Error loading commandes:', err); this.errorCommandes = true; return of(null); })
+        catchError(err => this.handleLoadError(err, 'commandes', () => this.errorCommandes = true))
       ),
     }).subscribe({
       next: ({ clients, fournisseurs, articles, commandes }) => {
@@ -139,9 +139,10 @@ export class AdminDashboardComponent implements OnInit {
 
         // Recent articles with stock status (last 5, sorted by id desc)
         if (articles) {
-          const qtys = articles.map(a => a.quantite || 0);
+          const typedArticles = articles as ArticleAchat[];
+          const qtys = typedArticles.map(a => a.quantite || 0);
           const maxQty = qtys.length > 0 ? Math.max(...qtys, 1) : 1;
-          this.recentArticles = [...articles]
+          this.recentArticles = [...typedArticles]
             .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
             .slice(0, 5)
             .map(a => {
@@ -168,6 +169,14 @@ export class AdminDashboardComponent implements OnInit {
         this.resetStates();
       },
     });
+  }
+
+  private handleLoadError(err: any, resource: string, setError: () => void) {
+    console.error(`Error loading ${resource}:`, err);
+    setError();
+    // Return null; the caller checks for null before processing the result.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return of(null as any);
   }
 
   private resetStates(): void {
