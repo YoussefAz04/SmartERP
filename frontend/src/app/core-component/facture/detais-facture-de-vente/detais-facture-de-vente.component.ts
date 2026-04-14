@@ -21,49 +21,96 @@ import {PermissionDto} from "../../../model/permissionDto.model";
   templateUrl: './detais-facture-de-vente.component.html',
   styleUrl: './detais-facture-de-vente.component.scss'
 })
-export class DetaisFactureDeVenteComponent implements OnInit{
-  factureDetais !:FactureVente ;
-  factureId !: number;
+export class DetaisFactureDeVenteComponent implements OnInit {
+  factureDetais!: FactureVente;
+  factureId!: number;
   permissionVente!: PermissionDto;
+  isSaving: boolean = false;
+  isDeleting: boolean = false;
+  showDeleteConfirm: boolean = false;
+  successMessage: string = '';
+  errorMessage: string = '';
 
-  constructor(private factureService :  FactureDeVenteServiceService,
-              private activatedRouter :ActivatedRoute,
-              private router : Router) {
-
+  constructor(private factureService: FactureDeVenteServiceService,
+              private activatedRouter: ActivatedRoute,
+              private router: Router) {
   }
 
   ngOnInit() {
     this.factureId = this.activatedRouter.snapshot.params['id'];
     this.factureService.getFactureById(this.factureId).subscribe(data => {
       this.factureDetais = data;
-      console.log(data);
-    })
-  }
-  onSubmit() {
-    this.factureService.updateFacture(this.factureId,this.factureDetais).subscribe(()=>{
-      console.log("le update est succes");
-      this.router.navigate(['/facture/listFactureAchat']);
-    })
+    });
+    this.getUserAuthData();
   }
 
-  getUserAuthData(){
+  onSubmit() {
+    this.isSaving = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.factureService.updateFacture(this.factureId, this.factureDetais).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.successMessage = 'Facture mise à jour avec succès.';
+        setTimeout(() => this.router.navigate(['/facture/listFactureVente']), 1200);
+      },
+      error: () => {
+        this.isSaving = false;
+        this.errorMessage = 'Erreur lors de la mise à jour de la facture.';
+      }
+    });
+  }
+
+  confirmDelete() {
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDelete() {
+    this.showDeleteConfirm = false;
+  }
+
+  deleteFacture() {
+    this.isDeleting = true;
+    this.showDeleteConfirm = false;
+    this.factureService.deleteFacture(this.factureId).subscribe({
+      next: () => {
+        this.isDeleting = false;
+        this.router.navigate(['/facture/listFactureVente']);
+      },
+      error: () => {
+        this.isDeleting = false;
+        this.errorMessage = 'Erreur lors de la suppression de la facture.';
+      }
+    });
+  }
+
+  exportToPdf() {
+    if (this.factureDetais) {
+      this.factureService.generateFactureVentePDF(this.factureDetais);
+    }
+  }
+
+  sendEmail() {
+    if (this.factureDetais) {
+      this.factureService.sendEmailFactureVente(this.factureDetais);
+    }
+  }
+
+  goBack() {
+    this.router.navigate(['/facture/listFactureVente']);
+  }
+
+  getUserAuthData() {
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
 
     if (item) {
       currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
-      console.log('User connecté:', currentUser?.name);
-
-      console.log('Token:', currentUser?.token);
-      console.log('Permissions:', currentUser?.permission);
-      currentUser?.permission.map(per =>{
-        if (per.moduleTitle == "Vente"){
-          this.permissionVente = per ;
-          console.log("permission Vente" ,this.permissionVente);
+      currentUser?.permission.map(per => {
+        if (per.moduleTitle == "Vente") {
+          this.permissionVente = per;
         }
-      })
-      console.log('Vente:', currentUser?.entreprise.nom);
+      });
     }
   }
-
 }
