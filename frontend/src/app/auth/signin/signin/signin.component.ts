@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { routes } from 'src/app/core/helpers/routes';
 import { AuthService } from "../../service/auth.service";
@@ -12,12 +12,15 @@ import { ModuleService } from "../../../core/service/Module/module.service";
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.scss'
 })
-export class SigninComponent implements OnInit {
+export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
   public routes = routes;
 
   loginForm: FormGroup;
   loading = false;
   errorMessage = '';
+  rememberMe = false;
+
+  private counterTimers: ReturnType<typeof setInterval>[] = [];
   
   constructor(
     private router: Router, 
@@ -32,6 +35,33 @@ export class SigninComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+    this.animateCounters();
+  }
+
+  private animateCounters(): void {
+    const elements = document.querySelectorAll<HTMLElement>('.stat-value[data-target]');
+    elements.forEach(el => {
+      const target = parseInt(el.getAttribute('data-target') || '0', 10);
+      const duration = 1800;
+      const step = target / (duration / 16);
+      let current = 0;
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        el.textContent = Math.floor(current).toLocaleString();
+      }, 16);
+      this.counterTimers.push(timer);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.counterTimers.forEach(t => clearInterval(t));
   }
 
   responseLogin!: PermissionDto;

@@ -1,112 +1,200 @@
-<div class="account-content">
-  <div class="login-wrapper bg-img">
-    <div class="login-content">
-      <form [formGroup]="loginForm" (ngSubmit)="navigation()">
-        <div class="login-userset">
-          <div class="login-logo logo-normal">
-            <img src="assets/img/logo.png" alt="img">
-          </div>
-          <a [routerLink]="routes.adminDashboard" class="login-logo logo-white">
-            <img src="assets/img/logo-white.png" alt="">
-          </a>
+<div class="login-modern-wrapper">
 
-          <div class="login-userheading">
-            <h3>Sign In</h3>
-  
-          </div>
+  <!-- Left Panel: Stats & Benefits -->
+  <div class="login-stats-panel">
+    <div class="stats-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
 
-          <div class="form-login mb-3">
-            <label class="form-label">Username</label>
-            <div class="form-addons">
-              <input
-                type="text"
-                id="username"
-                formControlName="username"
-                class="form-control"
-                [class.is-invalid]="f['username'].invalid && f['username'].touched"
-                placeholder="Entrez votre nom d'utilisateur">
-              <img src="assets/img/icons/mail.svg" alt="img">
-            </div>
-          </div>
+    <div class="stats-content">
+      <div class="stats-header">
+        <div class="brand-logo">
+          <i class="fas fa-chart-line brand-icon"></i>
+          <span>DreamsPOS</span>
+        </div>
+        <h1>Transform Your<br><span class="highlight">Business Today</span></h1>
+        <p>Modern management solutions that drive real results for thousands of businesses worldwide.</p>
+      </div>
 
-          <div class="form-login mb-3">
-            <label class="form-label">Password</label>
-            <div class="pass-group">
-              <input
-                [type]="password[0] ? 'text' : 'password'"
-                id="password"
-                formControlName="password"
-                class="form-control"
-                [class.is-invalid]="f['password'].invalid && f['password'].touched"
-                placeholder="Entrez votre mot de passe">
-              <span class="fas toggle-password"
-                    [ngClass]="password[0] ? 'fa-eye' : 'fa-eye-slash'"
-                    (click)="togglePassword(0)">
-              </span>
-            </div>
+      <div class="stats-cards">
+        <!-- Stat 1: Data Analytics -->
+        <div class="stat-card" style="animation-delay: 0.1s">
+          <div class="stat-icon-wrap analytics">
+            <i class="fas fa-chart-bar"></i>
           </div>
-
-          <!-- ✅ ADD ERROR MESSAGE DISPLAY -->
-          <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-            {{ errorMessage }}
-          </div>
-
-          <div class="form-login authentication-check">
-            <div class="row">
-              <div class="col-12 d-flex align-items-center justify-content-between">
-                <div class="custom-control custom-checkbox custom-class-check">
-                  <label class="checkboxs ps-4 mb-0 pb-0 line-height-1">
-                    <input type="checkbox" class="form-control">
-                    <span class="checkmarks"></span>Remember me
-                  </label>
-                </div>
-                <div class="text-end">
-                  <a class="forgot-link" [routerLink]="routes.forgotPassword">Forgot Password?</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-login">
-            <!-- ✅ CHANGED: Use (click)="navigation()" instead of form submit -->
-            <button type="button" class="btn btn-login" (click)="navigation()" [disabled]="loading">
-              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-              {{ loading ? 'Signing In...' : 'Sign In' }}
-            </button>
-          </div>
-
-          <div class="signinform">
-            <h4>New on our platform?<a [routerLink]="routes.registerbyStepper" class="hover-a"> Create an account</a></h4>
-          </div>
-
-          <div class="form-setlogin or-text">
-            <h4>OR</h4>
-          </div>
-
-          <div class="form-sociallink">
-            <ul class="d-flex">
-              <li>
-                <a href="javascript:void(0);" class="facebook-logo">
-                  <img src="assets/img/icons/facebook-logo.svg" alt="Facebook">
-                </a>
-              </li>
-              <li>
-                <a href="javascript:void(0);">
-                  <img src="assets/img/icons/google.png" alt="Google">
-                </a>
-              </li>
-              <li>
-                <a href="javascript:void(0);" class="apple-logo">
-                  <img src="assets/img/icons/apple-logo.svg" alt="Apple">
-                </a>
-              </li>
-            </ul>
-            <div class="my-4 d-flex justify-content-center align-items-center copyright-text">
-              
-            </div>
+          <div class="stat-info">
+            <span class="stat-value" data-target="10000" aria-live="polite" aria-atomic="true">0</span>
+            <span class="stat-suffix">+ Businesses</span>
+            <p>Track everything with real-time analytics</p>
           </div>
         </div>
+
+        <!-- Stat 2: Revenue Growth -->
+        <div class="stat-card" style="animation-delay: 0.25s">
+          <div class="stat-icon-wrap growth">
+            <i class="fas fa-trending-up"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-prefix">+</span><span class="stat-value" data-target="45" aria-live="polite" aria-atomic="true">0</span><span class="stat-suffix">% Avg Growth</span>
+            <p>See your business thrive with smart insights</p>
+          </div>
+        </div>
+
+        <!-- Stat 3: Lightning Fast -->
+        <div class="stat-card" style="animation-delay: 0.4s">
+          <div class="stat-icon-wrap speed">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value stat-text">Sub-second</span>
+            <span class="stat-suffix">Response</span>
+            <p>Real-time updates &amp; instant notifications</p>
+          </div>
+        </div>
+
+        <!-- Stat 4: Enterprise Security -->
+        <div class="stat-card" style="animation-delay: 0.55s">
+          <div class="stat-icon-wrap security">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value stat-text">256-bit</span>
+            <span class="stat-suffix">Encryption</span>
+            <p>Enterprise-grade security for your data</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="trust-indicators">
+        <div class="trust-badge">
+          <i class="fas fa-users"></i>
+          <span>50K+ Users</span>
+        </div>
+        <div class="trust-badge">
+          <i class="fas fa-server"></i>
+          <span>99.9% Uptime</span>
+        </div>
+        <div class="trust-badge">
+          <i class="fas fa-star"></i>
+          <span>4.9 Rating</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Login Form -->
+  <div class="login-form-panel">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="login-logo">
+          <img src="assets/img/logo.png" alt="DreamsPOS Logo">
+        </div>
+        <h2>Welcome Back</h2>
+        <p>Sign in to continue to your dashboard</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="navigation()" class="modern-form">
+
+        <!-- Username Field -->
+        <div class="field-group">
+          <div class="input-wrapper" [class.input-error]="f['username'].invalid && f['username'].touched">
+            <i class="fas fa-user field-icon"></i>
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              class="modern-input"
+              placeholder=" "
+              autocomplete="username">
+            <label for="username" class="floating-label">Username</label>
+          </div>
+          <span class="field-error" *ngIf="f['username'].invalid && f['username'].touched">
+            Username is required
+          </span>
+        </div>
+
+        <!-- Password Field -->
+        <div class="field-group">
+          <div class="input-wrapper" [class.input-error]="f['password'].invalid && f['password'].touched">
+            <i class="fas fa-lock field-icon"></i>
+            <input
+              [type]="password[0] ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              class="modern-input"
+              placeholder=" "
+              autocomplete="current-password">
+            <label for="password" class="floating-label">Password</label>
+            <span class="toggle-password fas"
+                  [class.fa-eye]="!password[0]"
+                  [class.fa-eye-slash]="password[0]"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="password[0] ? 'Hide password' : 'Show password'"
+                  (click)="togglePassword(0)"
+                  (keydown.enter)="togglePassword(0)"
+                  (keydown.space)="togglePassword(0)">
+            </span>
+          </div>
+          <span class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
+            Password is required
+          </span>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="error-banner">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Remember / Forgot -->
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" class="checkbox-input" [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
+            <span class="checkbox-custom"></span>
+            Remember me
+          </label>
+          <a class="forgot-link" [routerLink]="routes.forgotPassword">Forgot Password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="button" class="btn-signin" (click)="navigation()" [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status"></span>
+          <i *ngIf="!loading" class="fas fa-sign-in-alt"></i>
+          <span>{{ loading ? 'Signing In...' : 'Sign In' }}</span>
+          <i *ngIf="!loading" class="fas fa-arrow-right btn-arrow"></i>
+        </button>
+
+        <!-- Divider -->
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+
+        <!-- Social Login (placeholder – OAuth integration pending) -->
+        <div class="social-login" aria-hidden="true">
+          <span class="social-btn facebook" tabindex="-1">
+            <i class="fab fa-facebook-f"></i>
+          </span>
+          <span class="social-btn google" tabindex="-1">
+            <i class="fab fa-google"></i>
+          </span>
+          <span class="social-btn apple" tabindex="-1">
+            <i class="fab fa-apple"></i>
+          </span>
+        </div>
+
+        <!-- Signup Link -->
+        <div class="signup-link">
+          <span>New on our platform?</span>
+          <a [routerLink]="routes.registerbyStepper">
+            Create an account <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
       </form>
     </div>
   </div>
+
 </div>
