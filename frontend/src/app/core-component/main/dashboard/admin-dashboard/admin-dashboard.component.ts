@@ -179,7 +179,10 @@ export class AdminDashboardComponent implements OnInit {
     const rect = card.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
     ripple.className = 'ripple';
-    ripple.style.cssText = `width:${size}px;height:${size}px;left:${event.clientX - rect.left - size / 2}px;top:${event.clientY - rect.top - size / 2}px`;
+    ripple.style.width = `${size}px`;
+    ripple.style.height = `${size}px`;
+    ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+    ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
     card.appendChild(ripple);
     ripple.addEventListener('animationend', () => ripple.remove());
     setTimeout(() => this.router.navigate([path]), 120);

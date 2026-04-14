@@ -6,10 +6,8 @@
 $blue:     #3B82F6;
 $orange:   #FF9F43;
 $green:    #10B981;
-$warning:  #F59E0B;
 $red:      #EF4444;
 $dark:     #1A2942;
-$gray:     #6B7280;
 $card-bg:  rgba(255,255,255,0.95);
 $card-blur: blur(10px);
 $border:   rgba(200,200,200,0.2);
@@ -451,7 +449,7 @@ $muted:    #6B7280;
 
 // ── Progress bar animate-in ───────────────────────────────────
 @keyframes barGrow {
-  from { width: 0 !important; }
+  from { width: 0; }
 }
 .progress-bar-fill {
   animation: barGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
