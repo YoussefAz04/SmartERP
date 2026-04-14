@@ -353,6 +353,15 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
 }
 
+.result-detail {
+  font-size: 11px;
+  color: $text-light;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
 // ============================================
 // ICON BUTTONS
 // ============================================

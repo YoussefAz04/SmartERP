@@ -41,11 +41,12 @@
           <div class="dropdown-results" *ngIf="searchResults.length > 0">
             <ul class="results-list">
               <li *ngFor="let result of searchResults" class="result-item">
-                <a href="javascript:void(0);">
+                <a [routerLink]="getResultRoute(result)" (click)="clearSearch()">
                   <span class="result-badge" [ngClass]="'badge-' + result.type.toLowerCase()">
                     {{ result.type }}
                   </span>
                   <span class="result-text">{{ result.nom }}</span>
+                  <span class="result-detail" *ngIf="result.detail">{{ result.detail }}</span>
                 </a>
               </li>
             </ul>
@@ -99,16 +100,16 @@
             <ul class="notifications-list" *ngIf="!isLoadingNotifications">
               <li *ngFor="let notif of notifications" 
                 class="notification-item"
-                [class.unread]="!notif.lu"
+                [class.unread]="notif.statut === 'NOUVEAU'"
                 (click)="markRead(notif.id)">
                 <div class="notif-icon">
                   <i class="feather icon-bell"></i>
                 </div>
                 <div class="notif-content">
                   <p class="notif-message">{{ notif.message }}</p>
-                  <span class="notif-time">{{ notif.date | date:'dd/MM HH:mm' }}</span>
+                  <span class="notif-time">{{ notif.createdAt | date:'dd/MM HH:mm' }}</span>
                 </div>
-                <span class="unread-indicator" *ngIf="!notif.lu"></span>
+                <span class="unread-indicator" *ngIf="notif.statut === 'NOUVEAU'"></span>
               </li>
               <li *ngIf="notifications.length === 0" class="empty-state">
                 <p>No notifications</p>

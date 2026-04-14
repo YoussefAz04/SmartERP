@@ -69,7 +69,14 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.lightMode = true;
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark_mode') {
+      this.lightMode = false;
+      document.body.classList.add('dark-mode');
+    } else {
+      this.lightMode = true;
+      document.body.classList.remove('dark-mode');
+    }
     this.getUserAuthData();
     this.setupSearch();
     this.loadNotifications();
@@ -88,6 +95,7 @@ export class HeaderComponent implements OnInit {
           return of([]);
         }
         this.isSearching = true;
+        this.showSearchDropdown = true;
         return this.headerService.searchGlobal(query).pipe(
           catchError(() => of([]))
         );
@@ -95,7 +103,6 @@ export class HeaderComponent implements OnInit {
     ).subscribe((results: SearchResult[]) => {
       this.searchResults = results;
       this.isSearching = false;
-      this.showSearchDropdown = results.length > 0;
     });
   }
 
@@ -155,30 +162,21 @@ export class HeaderComponent implements OnInit {
   }
 
   loadNotifications(): void {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const currentUser: ResponseDto = JSON.parse(
-          decodeURIComponent(escape(atob(item)))
-        );
-        const entrepriseId = currentUser.entrepriseId || 1;
-        
-        this.isLoadingNotifications = true;
-        this.headerService.getNotifications(entrepriseId).subscribe({
-          next: (data) => {
-            this.notifications = data;
-            this.unreadCount = data.filter(n => !n.lu).length;
-            this.isLoadingNotifications = false;
-          },
-          error: (err) => {
-            console.error('Error loading notifications:', err);
-            this.isLoadingNotifications = false;
-          }
-        });
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+    const currentUser = this.getCurrentUser();
+    if (!currentUser?.entrepriseId) return;
+
+    this.isLoadingNotifications = true;
+    this.headerService.getNotifications(currentUser.entrepriseId).subscribe({
+      next: (data) => {
+        this.notifications = data;
+        this.unreadCount = data.filter(n => n.statut === 'NOUVEAU').length;
+        this.isLoadingNotifications = false;
+      },
+      error: (err) => {
+        console.error('Error loading notifications:', err);
+        this.isLoadingNotifications = false;
       }
-    }
+    });
   }
 
   markRead(id: number): void {
@@ -186,8 +184,8 @@ export class HeaderComponent implements OnInit {
       next: () => {
         const notif = this.notifications.find(n => n.id === id);
         if (notif) {
-          notif.lu = true;
-          this.unreadCount = this.notifications.filter(n => !n.lu).length;
+          notif.statut = 'VU';
+          this.unreadCount = this.notifications.filter(n => n.statut === 'NOUVEAU').length;
         }
       },
       error: (err) => {
@@ -197,9 +195,12 @@ export class HeaderComponent implements OnInit {
   }
 
   markAllRead(): void {
-    this.headerService.markAllNotificationsRead().subscribe({
+    const currentUser = this.getCurrentUser();
+    if (!currentUser?.entrepriseId) return;
+
+    this.headerService.markAllNotificationsRead(currentUser.entrepriseId).subscribe({
       next: () => {
-        this.notifications.forEach(n => n.lu = true);
+        this.notifications.forEach(n => n.statut = 'VU');
         this.unreadCount = 0;
       },
       error: (err) => {
@@ -219,38 +220,52 @@ export class HeaderComponent implements OnInit {
   }
 
   // ===== USER AUTH DATA =====
-  getUserAuthData(): void {
+  private getCurrentUser(): ResponseDto | null {
     const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const currentUser: ResponseDto = JSON.parse(
-          decodeURIComponent(escape(atob(item)))
-        );
-        this.userName = currentUser.name || 'User';
-        this.roleName = Array.isArray(currentUser.roles) ? currentUser.roles : [];
-        
-        // Get enterprise name
-        if (currentUser.entreprise && currentUser.entreprise.nom) {
-          this.entrepriseName = currentUser.entreprise.nom;
-        } else if (currentUser.entrepriseName) {
-          this.entrepriseName = currentUser.entrepriseName;
-        }
-        
-        // Generate initials
-        if (this.userName) {
-          this.userInitials = this.userName.split(' ')
-            .map(n => n.charAt(0))
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
+    if (!item) return null;
+    try {
+      return JSON.parse(decodeURIComponent(escape(atob(item)))) as ResponseDto;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  }
+
+  getUserAuthData(): void {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) return;
+    this.userName = currentUser.name || 'User';
+    this.roleName = Array.isArray(currentUser.roles) ? currentUser.roles : [];
+
+    if (currentUser.entreprise && currentUser.entreprise.nom) {
+      this.entrepriseName = currentUser.entreprise.nom;
+    } else if (currentUser.entrepriseName) {
+      this.entrepriseName = currentUser.entrepriseName;
+    }
+
+    if (this.userName) {
+      this.userInitials = this.userName.split(' ')
+        .map(n => n.charAt(0))
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
     }
   }
 
   // ===== OTHER METHODS =====
+  getResultRoute(result: SearchResult): string {
+    switch (result.type) {
+      case 'Client':
+        return this.routes.customerList;
+      case 'Article':
+        return this.routes.articleAchatList;
+      case 'Commande':
+        return this.routes.commandeAchatList;
+      default:
+        return '/';
+    }
+  }
+
   toggleSidebar(): void {
     // Toggle sidebar by updating localStorage or using sidebar service
     const currentState = localStorage.getItem('sidebarState');
