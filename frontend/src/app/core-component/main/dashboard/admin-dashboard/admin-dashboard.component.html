@@ -7,7 +7,9 @@
   <div class="db-header__inner">
     <div>
       <h1 class="db-header__title">Dashboard</h1>
-      <p class="db-header__sub">Bienvenue, <strong>{{ userName }}</strong>! 👋</p>
+      <p class="db-header__sub">Bienvenue, <strong>{{ userName }}</strong>! 👋
+        <span *ngIf="entrepriseName" class="enterprise-tag">{{ entrepriseName }}</span>
+      </p>
     </div>
     <div class="db-header__meta">
       <span class="meta-badge">{{ today | date: 'd MMMM yyyy' }}</span>
@@ -87,10 +89,15 @@
       <div *ngIf="loadingClients" class="skel-rows">
         <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
       </div>
-      <div *ngIf="!loadingClients && recentClients.length === 0" class="empty-state">
+      <div *ngIf="!loadingClients && errorClients" class="error-state">
+        <i class="feather icon-alert-circle"></i>
+        <span>Erreur lors du chargement des clients</span>
+        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+      </div>
+      <div *ngIf="!loadingClients && !errorClients && recentClients.length === 0" class="empty-state">
         <i class="feather icon-inbox"></i> Aucun client trouvé
       </div>
-      <div *ngIf="!loadingClients && recentClients.length > 0" class="table-wrap">
+      <div *ngIf="!loadingClients && !errorClients && recentClients.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
@@ -139,10 +146,15 @@
       <div *ngIf="loadingFournisseurs" class="skel-rows">
         <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
       </div>
-      <div *ngIf="!loadingFournisseurs && recentFournisseurs.length === 0" class="empty-state">
+      <div *ngIf="!loadingFournisseurs && errorFournisseurs" class="error-state">
+        <i class="feather icon-alert-circle"></i>
+        <span>Erreur lors du chargement des fournisseurs</span>
+        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+      </div>
+      <div *ngIf="!loadingFournisseurs && !errorFournisseurs && recentFournisseurs.length === 0" class="empty-state">
         <i class="feather icon-inbox"></i> Aucun fournisseur trouvé
       </div>
-      <div *ngIf="!loadingFournisseurs && recentFournisseurs.length > 0" class="table-wrap">
+      <div *ngIf="!loadingFournisseurs && !errorFournisseurs && recentFournisseurs.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
@@ -191,10 +203,15 @@
       <div *ngIf="loadingArticles" class="skel-rows">
         <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
       </div>
-      <div *ngIf="!loadingArticles && recentArticles.length === 0" class="empty-state">
+      <div *ngIf="!loadingArticles && errorArticles" class="error-state">
+        <i class="feather icon-alert-circle"></i>
+        <span>Erreur lors du chargement des articles</span>
+        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+      </div>
+      <div *ngIf="!loadingArticles && !errorArticles && recentArticles.length === 0" class="empty-state">
         <i class="feather icon-inbox"></i> Aucun article trouvé
       </div>
-      <div *ngIf="!loadingArticles && recentArticles.length > 0" class="table-wrap">
+      <div *ngIf="!loadingArticles && !errorArticles && recentArticles.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
@@ -253,10 +270,15 @@
       <div *ngIf="loadingCommandes" class="skel-rows">
         <div class="skel skel--row" *ngFor="let i of [1,2,3]"></div>
       </div>
-      <div *ngIf="!loadingCommandes && recentCommandes.length === 0" class="empty-state">
+      <div *ngIf="!loadingCommandes && errorCommandes" class="error-state">
+        <i class="feather icon-alert-circle"></i>
+        <span>Erreur lors du chargement des commandes</span>
+        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+      </div>
+      <div *ngIf="!loadingCommandes && !errorCommandes && recentCommandes.length === 0" class="empty-state">
         <i class="feather icon-inbox"></i> Aucune commande trouvée
       </div>
-      <div *ngIf="!loadingCommandes && recentCommandes.length > 0" class="table-wrap">
+      <div *ngIf="!loadingCommandes && !errorCommandes && recentCommandes.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
@@ -287,3 +309,4 @@
     </div>
   </div>
 </section>
+

@@ -34,6 +34,8 @@ export class AdminDashboardComponent implements OnInit {
   private readonly LOW_STOCK_THRESHOLD = 10;
 
   public userName = 'Administrateur';
+  public entrepriseName = '';
+  public entrepriseId: number | null = null;
   public today: Date = new Date();
 
   // Stats for count-up cards
@@ -52,6 +54,12 @@ export class AdminDashboardComponent implements OnInit {
   public loadingArticles = true;
   public loadingCommandes = true;
 
+  // Error states
+  public errorClients = false;
+  public errorFournisseurs = false;
+  public errorArticles = false;
+  public errorCommandes = false;
+
   // Count-up options
   public countUpOptions = { duration: 2, separator: ' ' };
 
@@ -64,19 +72,26 @@ export class AdminDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadUserInfo();
+    this.loadEnterpriseContext();
     this.loadAllData();
   }
 
-  loadUserInfo(): void {
+  loadEnterpriseContext(): void {
     try {
       const item = localStorage.getItem('myLSkey');
       if (item) {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        const token = user.token;
-        if (token && token.split('.').length === 3) {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          this.userName = payload.firstName || payload.username || 'Administrateur';
+        const session = JSON.parse(decodeURIComponent(escape(atob(item))));
+        // Extract enterprise info from session
+        this.entrepriseId = session.entrepriseId ?? null;
+        this.entrepriseName = session.entrepriseName || session.entreprise?.nom || '';
+        // Extract user display name from session or JWT payload
+        this.userName = session.name || session.username || 'Administrateur';
+        if (!this.userName || this.userName === 'Administrateur') {
+          const token = session.token;
+          if (token && token.split('.').length === 3) {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            this.userName = payload.firstName || payload.sub || 'Administrateur';
+          }
         }
       }
     } catch {
@@ -85,6 +100,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadAllData(): void {
+    // All getAllXxx() backend services filter by enterprise via JWT context automatically.
     forkJoin({
       clients: this.clientService.getAllClients(),
       fournisseurs: this.fournisseurService.getAllFournisseurs(),
@@ -131,12 +147,30 @@ export class AdminDashboardComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erreur chargement dashboard:', err);
+        this.statsLoaded = true;
         this.loadingClients = false;
         this.loadingFournisseurs = false;
         this.loadingArticles = false;
         this.loadingCommandes = false;
+        this.errorClients = true;
+        this.errorFournisseurs = true;
+        this.errorArticles = true;
+        this.errorCommandes = true;
       },
     });
+  }
+
+  retryLoad(): void {
+    this.loadingClients = true;
+    this.loadingFournisseurs = true;
+    this.loadingArticles = true;
+    this.loadingCommandes = true;
+    this.errorClients = false;
+    this.errorFournisseurs = false;
+    this.errorArticles = false;
+    this.errorCommandes = false;
+    this.statsLoaded = false;
+    this.loadAllData();
   }
 
   getCommandeStatusClass(statut: string | undefined): string {
