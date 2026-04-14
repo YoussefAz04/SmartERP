@@ -231,6 +231,14 @@ public class CommandeVenteService {
             savedFacture = factureDeVenteRepository.save(savedFacture);
         }
 
+        // ✅ Update stock: move reserved quantity to sold (quantite_reserve → quantite_vendue)
+        try {
+            stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
+            logger.info("✅ Stock updated on sale confirmation for commande {}", id);
+        } catch (RuntimeException e) {
+            logger.warn("⚠️ Could not update stock for commande {}: {}", id, e.getMessage());
+        }
+
         logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={}", 
             id, savedFacture.getId(), totalHT, totalTVA, totalTTC);
         
@@ -270,6 +278,9 @@ public class CommandeVenteService {
             throw new RuntimeException("Cette commande a déjà été livrée");
         }
 
+        // Stock was already updated when the commande was confirmed (validerCommande)
+        boolean stockAlreadyUpdated = "CONFIRMEE".equals(commande.getStatut());
+
         commande.setStatut("LIVREE");
         commandeVenteRepository.save(commande);
 
@@ -281,7 +292,10 @@ public class CommandeVenteService {
         bon.setEntreprise(commande.getEntreprise());
         BonLivraison savedBon = bonLivraisonRepository.save(bon);
 
-        stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
+        if (!stockAlreadyUpdated) {
+            // Only decrement stock if not already done at validation step
+            stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
+        }
 
         return savedBon;
     }
