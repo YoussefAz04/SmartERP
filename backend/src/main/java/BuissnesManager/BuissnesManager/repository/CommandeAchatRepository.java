@@ -46,6 +46,6 @@ public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Lo
     @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.statut NOT IN ('LIVREE', 'ANNULEE') AND c.dateLivraisonPrevue < :today")
     Long getOverdueOrdersCount(@Param("entrepriseId") Long entrepriseId, @Param("today") LocalDate today);
 
-    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.statut != 'ANNULEE'")
+    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.statut NOT IN ('ANNULEE', 'LIVREE')")
     Long getActiveOrdersCount(@Param("entrepriseId") Long entrepriseId);
 }

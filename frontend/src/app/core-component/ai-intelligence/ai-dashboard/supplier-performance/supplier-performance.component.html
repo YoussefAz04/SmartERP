@@ -55,7 +55,7 @@
         <span class="status-pill annulee" *ngIf="getStatusCount(s, 'ANNULEE') > 0">
           <i class="fas fa-times-circle"></i> {{ getStatusCount(s, 'ANNULEE') }}
         </span>
-        <span class="status-pill en-cours" *ngIf="getStatusCount(s, 'CONFIRMEE') > 0">
+        <span class="status-pill confirmee" *ngIf="getStatusCount(s, 'CONFIRMEE') > 0">
           <i class="fas fa-check"></i> {{ getStatusCount(s, 'CONFIRMEE') }}
         </span>
       </div>
