@@ -1,8 +1,8 @@
 // header.component.ts
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
-import { Subject, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { Subject, of, interval, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil } from 'rxjs/operators';
 import { CommonService, SettingsService, SidebarService } from 'src/app/core/core.index';
 import { WebstorageService } from 'src/app/shared/webstorage.service';
 import { routes } from 'src/app/core/helpers/routes';
@@ -15,11 +15,11 @@ import { HeaderService, SearchResult, Notification } from './header.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   // Routes
   public routes = routes;
 
-  // Theme
+  // Theme - synced with SettingsService
   public lightMode = true;
 
   // Sidebar
@@ -37,6 +37,7 @@ export class HeaderComponent implements OnInit {
   public unreadCount = 0;
   public isLoadingNotifications = false;
   public showNotifications = false;
+  private notificationPollSub: Subscription | null = null;
 
   // User Info
   public userInitials = '';
@@ -50,6 +51,9 @@ export class HeaderComponent implements OnInit {
   public base = '';
   public page = '';
   public last = '';
+
+  // Cleanup
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -69,18 +73,24 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark_mode') {
-      this.lightMode = false;
-      document.body.classList.add('dark-mode');
-    } else {
-      this.lightMode = true;
-      document.body.classList.remove('dark-mode');
-    }
+    // Sync theme with SettingsService
+    this.settings.themeMode.pipe(takeUntil(this.destroy$)).subscribe((mode: string) => {
+      this.lightMode = mode !== 'dark_mode';
+    });
+
     this.getUserAuthData();
     this.setupSearch();
     this.loadNotifications();
+    this.startNotificationPolling();
     this.subscribeToServices();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.notificationPollSub) {
+      this.notificationPollSub.unsubscribe();
+    }
   }
 
   // ===== SETUP METHODS =====
@@ -88,6 +98,7 @@ export class HeaderComponent implements OnInit {
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
+      takeUntil(this.destroy$),
       switchMap(query => {
         if (!query || query.length < 2) {
           this.searchResults = [];
@@ -107,16 +118,16 @@ export class HeaderComponent implements OnInit {
   }
 
   private subscribeToServices(): void {
-    this.sidebar.sideBarPosition.subscribe((res: string) => {
+    this.sidebar.sideBarPosition.pipe(takeUntil(this.destroy$)).subscribe((res: string) => {
       this.miniSidebar = res === 'true';
     });
-    this.common.base.subscribe((base: string) => {
+    this.common.base.pipe(takeUntil(this.destroy$)).subscribe((base: string) => {
       this.base = base;
     });
-    this.common.page.subscribe((page: string) => {
+    this.common.page.pipe(takeUntil(this.destroy$)).subscribe((page: string) => {
       this.page = page;
     });
-    this.common.last.subscribe((last: string) => {
+    this.common.last.pipe(takeUntil(this.destroy$)).subscribe((last: string) => {
       this.last = last;
     });
   }
@@ -141,24 +152,27 @@ export class HeaderComponent implements OnInit {
 
   // ===== THEME METHODS =====
   changeThemeMode(mode: string): void {
-    // Store theme in localStorage
-    localStorage.setItem('theme', mode);
-    
-    // Apply theme
-    this.lightMode = mode === 'light_mode';
-    const body = document.body;
-    
-    if (mode === 'dark_mode') {
-      body.classList.add('dark-mode');
-    } else {
-      body.classList.remove('dark-mode');
-    }
+    // Delegate to SettingsService which handles localStorage and BehaviorSubject
+    this.settings.changeThemeMode(mode);
   }
 
   // ===== NOTIFICATION METHODS =====
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
     this.showProfile = false;
+    // Refresh notifications when opening
+    if (this.showNotifications) {
+      this.loadNotifications();
+    }
+  }
+
+  private startNotificationPolling(): void {
+    // Poll every 30 seconds for new notifications
+    this.notificationPollSub = interval(30000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadNotifications();
+      });
   }
 
   loadNotifications(): void {
@@ -168,12 +182,11 @@ export class HeaderComponent implements OnInit {
     this.isLoadingNotifications = true;
     this.headerService.getNotifications(currentUser.entrepriseId).subscribe({
       next: (data) => {
-        this.notifications = data;
-        this.unreadCount = data.filter(n => n.statut === 'NOUVEAU').length;
+        this.notifications = Array.isArray(data) ? data : [];
+        this.unreadCount = this.notifications.filter(n => n.statut === 'NOUVEAU').length;
         this.isLoadingNotifications = false;
       },
-      error: (err) => {
-        console.error('Error loading notifications:', err);
+      error: () => {
         this.isLoadingNotifications = false;
       }
     });
@@ -187,9 +200,6 @@ export class HeaderComponent implements OnInit {
           notif.statut = 'VU';
           this.unreadCount = this.notifications.filter(n => n.statut === 'NOUVEAU').length;
         }
-      },
-      error: (err) => {
-        console.error('Error marking notification as read:', err);
       }
     });
   }
@@ -202,9 +212,6 @@ export class HeaderComponent implements OnInit {
       next: () => {
         this.notifications.forEach(n => n.statut = 'VU');
         this.unreadCount = 0;
-      },
-      error: (err) => {
-        console.error('Error marking all notifications as read:', err);
       }
     });
   }
@@ -225,8 +232,7 @@ export class HeaderComponent implements OnInit {
     if (!item) return null;
     try {
       return JSON.parse(decodeURIComponent(escape(atob(item)))) as ResponseDto;
-    } catch (error) {
-      console.error('Error parsing user data:', error);
+    } catch {
       return null;
     }
   }
@@ -274,15 +280,10 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleSidebar(): void {
-    // Toggle sidebar by updating localStorage or using sidebar service
     const currentState = localStorage.getItem('sidebarState');
     const newState = currentState === 'collapsed' ? 'expanded' : 'collapsed';
     localStorage.setItem('sidebarState', newState);
-    
-    // Emit event to sidebar
     this.sidebar.sideBarPosition.next(newState === 'collapsed' ? 'true' : 'false');
-    
-    // Toggle body class
     document.body.classList.toggle('mini-sidebar');
   }
 
@@ -290,38 +291,20 @@ export class HeaderComponent implements OnInit {
     document.body.classList.toggle('slide-nav');
   }
 
-  fullscreen(): void {
-    const elem = document.documentElement as any;
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
-    }
-  }
-
   // ===== CLOSE DROPDOWNS ON CLICK OUTSIDE =====
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    
-    // Check if click is outside dropdowns
-    const isOutsideNotifications = !target.closest('.notifications-wrapper');
-    const isOutsideProfile = !target.closest('.profile-wrapper');
-    const isOutsideSearch = !target.closest('.search-wrapper');
-    
-    if (isOutsideNotifications) {
+
+    if (!target.closest('.notifications-wrapper')) {
       this.showNotifications = false;
     }
-    
-    if (isOutsideProfile) {
+
+    if (!target.closest('.profile-wrapper')) {
       this.showProfile = false;
     }
-    
-    if (isOutsideSearch) {
+
+    if (!target.closest('.search-wrapper')) {
       this.showSearchDropdown = false;
     }
   }

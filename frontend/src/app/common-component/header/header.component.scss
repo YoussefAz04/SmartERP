@@ -14,8 +14,62 @@ $accent-orange: #ff6b35;
 $danger: #ef4444;
 $success: #10b981;
 
+// Dark Mode Variables
+$dark-bg: #1a1d29;
+$dark-surface: #232738;
+$dark-border: #2f3349;
+$dark-text: #e2e8f0;
+$dark-text-light: #a0aec0;
+
 // Transitions
-$trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$trans: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+$trans-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+$trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+// ============================================
+// ANIMATIONS
+// ============================================
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+@keyframes searchGlow {
+  0%, 100% { box-shadow: 0 0 0 3px rgba($accent-blue, 0.08); }
+  50% { box-shadow: 0 0 0 5px rgba($accent-blue, 0.15); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
 
 // ============================================
 // HEADER WRAPPER
@@ -36,10 +90,11 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   height: 70px;
   background: $white;
   border-bottom: 1px solid $border-light;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
   padding: 0 24px;
   gap: 24px;
   width: 100%;
+  transition: background $trans, border-color $trans, box-shadow $trans;
 }
 
 // ============================================
@@ -65,13 +120,12 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 .header-action-section {
   flex-shrink: 0;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
 // ============================================
-// LOGO STYLING - IMPROVED
+// LOGO STYLING
 // ============================================
-
 .logo-brand {
   display: inline-flex;
   align-items: center;
@@ -79,13 +133,13 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   outline: none;
   transition: all $trans;
-  
+
   &:hover {
-    transform: scale(1.02);
+    transform: translateY(-1px);
   }
 
   &:active {
-    transform: scale(0.98);
+    transform: translateY(0) scale(0.98);
   }
 }
 
@@ -94,60 +148,42 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 50px;
-  padding: 8px 12px;
+  height: 46px;
+  padding: 8px 14px;
   border-radius: 12px;
   background: linear-gradient(135deg, #f5f7fa 0%, #f0f4ff 100%);
-  border: 1px solid rgba($accent-blue, 0.2);
-  box-shadow: 
-    0 2px 8px rgba($accent-blue, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba($accent-blue, 0.15);
+  box-shadow: 0 2px 6px rgba($accent-blue, 0.06);
   transition: all $trans;
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba($accent-blue, 0.05) 100%);
-    pointer-events: none;
-  }
-
   .logo-brand:hover & {
-    background: linear-gradient(135deg, rgba($accent-blue, 0.05) 0%, rgba($accent-blue, 0.1) 100%);
-    border-color: rgba($accent-blue, 0.3);
-    box-shadow: 
-      0 4px 12px rgba($accent-blue, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg, rgba($accent-blue, 0.04) 0%, rgba($accent-blue, 0.08) 100%);
+    border-color: rgba($accent-blue, 0.25);
+    box-shadow: 0 4px 12px rgba($accent-blue, 0.12);
   }
 }
 
 .logo-img {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.06));
+  transition: transform $trans-spring;
+
+  .logo-brand:hover & {
+    transform: rotate(-5deg) scale(1.05);
+  }
 }
 
 .logo-text {
   font-size: 14px;
   font-weight: 700;
-  color: $text-primary;
   letter-spacing: 0.3px;
   text-transform: capitalize;
   white-space: nowrap;
-  position: relative;
-  z-index: 1;
   background: linear-gradient(135deg, $text-primary 0%, $accent-blue 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -169,8 +205,6 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: 0.5px;
   text-transform: uppercase;
   white-space: nowrap;
-  position: relative;
-  z-index: 1;
   box-shadow: 0 2px 4px rgba($accent-blue, 0.3);
 
   @media (min-width: 1024px) {
@@ -187,24 +221,30 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   align-items: center;
   height: 44px;
   background: $bg-light;
-  border: 1px solid $border-light;
-  border-radius: 10px;
-  padding: 0 12px;
-  gap: 8px;
+  border: 1.5px solid $border-light;
+  border-radius: 12px;
+  padding: 0 14px;
+  gap: 10px;
   transition: all $trans;
   width: 100%;
 
   &:focus-within {
     border-color: $accent-blue;
     background: $white;
-    box-shadow: 0 0 0 3px rgba($accent-blue, 0.1);
-  }
+    animation: searchGlow 2s ease-in-out infinite;
 
-  i {
-    font-size: 18px;
-    color: $text-light;
-    flex-shrink: 0;
+    .search-icon {
+      color: $accent-blue;
+      transform: scale(1.1);
+    }
   }
+}
+
+.search-icon {
+  font-size: 18px;
+  color: $text-light;
+  flex-shrink: 0;
+  transition: all $trans;
 }
 
 .search-input {
@@ -214,13 +254,11 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   font-size: 14px;
   color: $text-primary;
+  transition: color $trans;
 
   &::placeholder {
     color: $text-light;
-  }
-
-  &:focus {
-    color: $text-primary;
+    transition: color $trans;
   }
 }
 
@@ -236,11 +274,13 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   color: $text-light;
   cursor: pointer;
-  transition: color $trans;
+  transition: all $trans;
   padding: 0;
+  border-radius: 6px;
 
   &:hover {
     color: $text-primary;
+    background: rgba(0, 0, 0, 0.05);
   }
 
   i {
@@ -252,6 +292,11 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   animation: spin 1s linear infinite;
 }
 
+// Dropdown animation class
+.animate-dropdown {
+  animation: slideDown 0.2s ease-out forwards;
+}
+
 // Search Dropdown
 .search-dropdown {
   position: absolute;
@@ -260,11 +305,12 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   right: 0;
   background: $white;
   border: 1px solid $border-light;
-  border-radius: 10px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
   z-index: 100;
   max-height: 400px;
   overflow-y: auto;
+  transition: background $trans, border-color $trans;
 }
 
 .dropdown-empty {
@@ -300,6 +346,7 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
 .result-item {
   border-bottom: 1px solid $border-light;
+  animation: fadeInUp 0.25s ease-out both;
 
   &:last-child {
     border-bottom: none;
@@ -313,10 +360,11 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     color: $text-primary;
     cursor: pointer;
-    transition: background $trans;
+    transition: all $trans-fast;
 
     &:hover {
       background: $bg-light;
+      padding-left: 20px;
     }
   }
 }
@@ -331,24 +379,29 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: transform $trans-fast;
+
+  .result-item a:hover & {
+    transform: scale(1.05);
+  }
 
   &.badge-client {
-    background: rgba($accent-blue, 0.15);
+    background: rgba($accent-blue, 0.12);
     color: $accent-blue;
   }
 
   &.badge-article {
-    background: rgba($success, 0.15);
+    background: rgba($success, 0.12);
     color: $success;
   }
 
   &.badge-commande {
-    background: rgba($accent-orange, 0.15);
+    background: rgba($accent-orange, 0.12);
     color: $accent-orange;
   }
 
   &.badge-fournisseur {
-    background: rgba(#6f42c1, 0.15);
+    background: rgba(#6f42c1, 0.12);
     color: #6f42c1;
   }
 }
@@ -378,7 +431,7 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   width: 40px;
   height: 40px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: transparent;
   color: $text-secondary;
   cursor: pointer;
@@ -386,18 +439,32 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   font-size: 0;
   padding: 0;
+  position: relative;
 
   i {
     font-size: 18px;
+    transition: all $trans;
   }
 
   &:hover {
     background: $bg-light;
     color: $accent-blue;
+    transform: translateY(-1px);
+
+    i {
+      transform: scale(1.1);
+    }
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: translateY(0) scale(0.95);
+  }
+}
+
+// Theme toggle special animation
+.theme-toggle-btn {
+  &:hover i {
+    transform: rotate(20deg) scale(1.1);
   }
 }
 
@@ -409,27 +476,32 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.has-badge {
     color: $accent-orange;
+
+    &:hover {
+      color: darken($accent-orange, 8%);
+    }
   }
 }
 
 .badge-count {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: -4px;
+  right: -4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
+  min-width: 18px;
+  height: 18px;
   background: $accent-orange;
   color: $white;
-  border-radius: 10px;
+  border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
   border: 2px solid $white;
+  animation: badgePulse 2s ease-in-out infinite;
+  transition: border-color $trans;
 }
 
-// Notifications Dropdown
 .notifications-dropdown {
   min-width: 380px;
   max-width: 400px;
@@ -448,19 +520,22 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   top: calc(100% + 8px);
   background: $white;
   border: 1px solid $border-light;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
   z-index: 100;
   min-width: 320px;
+  overflow: hidden;
+  transition: background $trans, border-color $trans;
 }
 
 .dropdown-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 16px 18px;
   border-bottom: 1px solid $border-light;
   gap: 12px;
+  transition: border-color $trans;
 }
 
 .dropdown-title {
@@ -469,20 +544,23 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
   color: $text-primary;
   flex: 1;
+  transition: color $trans;
 }
 
 .mark-read-btn {
-  background: none;
+  background: rgba($accent-blue, 0.08);
   border: none;
   color: $accent-blue;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
-  transition: color $trans;
-  padding: 0;
+  transition: all $trans;
+  padding: 4px 10px;
+  border-radius: 6px;
   white-space: nowrap;
 
   &:hover {
+    background: rgba($accent-blue, 0.15);
     color: darken($accent-blue, 10%);
   }
 }
@@ -500,14 +578,16 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   color: $text-light;
 
   i {
+    font-size: 20px;
     animation: spin 1s linear infinite;
   }
 }
 
 .dropdown-footer {
-  padding: 12px 16px;
+  padding: 12px 18px;
   border-top: 1px solid $border-light;
   text-align: center;
+  transition: border-color $trans;
 }
 
 .view-all-link {
@@ -518,14 +598,19 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
   color: $accent-blue;
   text-decoration: none;
-  transition: color $trans;
+  transition: all $trans;
 
   &:hover {
     color: darken($accent-blue, 10%);
+
+    i {
+      transform: translateX(3px);
+    }
   }
 
   i {
     font-size: 14px;
+    transition: transform $trans;
   }
 }
 
@@ -542,10 +627,11 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-bottom: 1px solid $border-light;
   cursor: pointer;
-  transition: background $trans;
+  transition: all $trans-fast;
+  animation: fadeInUp 0.25s ease-out both;
 
   &:last-child {
     border-bottom: none;
@@ -556,7 +642,11 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &.unread {
-    background: rgba($accent-blue, 0.05);
+    background: rgba($accent-blue, 0.04);
+
+    &:hover {
+      background: rgba($accent-blue, 0.08);
+    }
   }
 }
 
@@ -566,11 +656,20 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: $bg-light;
-  border-radius: 8px;
-  color: $text-secondary;
+  border-radius: 10px;
   flex-shrink: 0;
   font-size: 16px;
+  transition: all $trans;
+
+  &.notif-icon-new {
+    background: rgba($accent-blue, 0.1);
+    color: $accent-blue;
+  }
+
+  &.notif-icon-seen {
+    background: $bg-light;
+    color: $text-light;
+  }
 }
 
 .notif-content {
@@ -583,6 +682,7 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 13px;
   color: $text-primary;
   line-height: 1.4;
+  transition: color $trans;
 }
 
 .notif-time {
@@ -599,14 +699,22 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 6px;
+  animation: badgePulse 2s ease-in-out infinite;
 }
 
 .empty-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
   color: $text-light;
+
+  i {
+    font-size: 28px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
 
   p {
     margin: 0;
@@ -622,29 +730,31 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   align-items: center;
   gap: 10px;
   padding: 6px 12px;
-  border: 1px solid $border-light;
-  border-radius: 10px;
+  border: 1.5px solid $border-light;
+  border-radius: 12px;
   background: $white;
   cursor: pointer;
   transition: all $trans;
   font-size: 0;
 
   &:hover {
-    border-color: $accent-blue;
-    background: rgba($accent-blue, 0.05);
+    border-color: rgba($accent-blue, 0.3);
+    background: rgba($accent-blue, 0.03);
+    box-shadow: 0 2px 8px rgba($accent-blue, 0.08);
   }
 
   &:active {
     transform: scale(0.98);
   }
+}
 
-  i {
-    font-size: 14px;
-    color: $text-light;
-    transition: all $trans;
-  }
+.chevron-icon {
+  font-size: 14px !important;
+  color: $text-light;
+  transition: all $trans !important;
 
-  &:hover i {
+  &.chevron-open {
+    transform: rotate(180deg);
     color: $accent-blue;
   }
 }
@@ -655,7 +765,7 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
   font-size: 12px;
@@ -692,12 +802,14 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
   color: $text-primary;
   white-space: nowrap;
+  transition: color $trans;
 }
 
 .user-role {
   font-size: 10px;
   color: $text-light;
   white-space: nowrap;
+  transition: color $trans;
 }
 
 // Profile Dropdown
@@ -709,8 +821,9 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px;
+  padding: 18px;
   border-bottom: 1px solid $border-light;
+  transition: border-color $trans;
 }
 
 .profile-avatar-large {
@@ -724,7 +837,7 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: 12px;
   background: linear-gradient(135deg, $accent-blue 0%, #7c6ff1 100%);
   color: $white;
   font-weight: 700;
@@ -734,19 +847,20 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 .profile-avatar-large img {
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: 12px;
   object-fit: cover;
 }
 
 .online-badge {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: -2px;
+  right: -2px;
   width: 12px;
   height: 12px;
   background: $success;
   border-radius: 50%;
   border: 2px solid $white;
+  transition: border-color $trans;
 }
 
 .profile-details {
@@ -759,6 +873,7 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
   font-weight: 600;
   color: $text-primary;
+  transition: color $trans;
 }
 
 .profile-role {
@@ -784,14 +899,14 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 .profile-menu {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  padding: 6px 0;
 }
 
 .profile-menu-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 11px 18px;
   border: none;
   background: none;
   color: $text-primary;
@@ -799,11 +914,12 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
-  transition: all $trans;
+  transition: all $trans-fast;
 
   &:hover {
     background: $bg-light;
     color: $accent-blue;
+    padding-left: 22px;
 
     i {
       color: $accent-blue;
@@ -813,14 +929,18 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   i {
     font-size: 16px;
     color: $text-light;
-    transition: color $trans;
+    transition: all $trans;
   }
 
   &.logout {
     color: $danger;
 
+    i {
+      color: $danger;
+    }
+
     &:hover {
-      background: rgba($danger, 0.1);
+      background: rgba($danger, 0.06);
       color: $danger;
 
       i {
@@ -833,61 +953,53 @@ $trans: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 .menu-divider {
   height: 1px;
   background: $border-light;
-  margin: 8px 0;
+  margin: 4px 0;
+  transition: background $trans;
 }
 
 // ============================================
-// ANIMATIONS
+// DARK MODE - Uses :host-context(.dark) to
+// match the .dark class on .main-wrapper
 // ============================================
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-// ============================================
-// DARK MODE
-// ============================================
-body.dark-mode {
-  $dark-bg: #1a1d29;
-  $dark-border: #2f3349;
-  $dark-text: #e2e8f0;
-  $dark-text-light: #a0aec0;
-
+:host-context(.dark) {
   .header-modern {
     background: $dark-bg;
     border-bottom-color: $dark-border;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
   .logo-wrapper {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(91, 95, 248, 0.1) 100%);
-    border-color: rgba($accent-blue, 0.3);
-    box-shadow: 
-      0 2px 8px rgba($accent-blue, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba($accent-blue, 0.08) 100%);
+    border-color: rgba($accent-blue, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 
     .logo-brand:hover & {
-      background: linear-gradient(135deg, rgba($accent-blue, 0.1) 0%, rgba($accent-blue, 0.15) 100%);
-      border-color: rgba($accent-blue, 0.4);
-      box-shadow: 
-        0 4px 12px rgba($accent-blue, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      background: linear-gradient(135deg, rgba($accent-blue, 0.08) 0%, rgba($accent-blue, 0.12) 100%);
+      border-color: rgba($accent-blue, 0.35);
+      box-shadow: 0 4px 12px rgba($accent-blue, 0.15);
     }
   }
 
   .logo-text {
-    background: linear-gradient(135deg, #e2e8f0 0%, $accent-blue 100%);
+    background: linear-gradient(135deg, $dark-text 0%, lighten($accent-blue, 10%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .search-wrapper {
-    background: rgba($white, 0.05);
+    background: $dark-surface;
     border-color: $dark-border;
 
     &:focus-within {
       border-color: $accent-blue;
-      background: rgba($accent-blue, 0.05);
+      background: rgba($accent-blue, 0.06);
+      animation: none;
+      box-shadow: 0 0 0 3px rgba($accent-blue, 0.15);
+    }
+
+    i {
+      color: $dark-text-light;
     }
   }
 
@@ -895,53 +1007,120 @@ body.dark-mode {
     color: $dark-text;
 
     &::placeholder {
+      color: darken($dark-text-light, 10%);
+    }
+  }
+
+  .search-clear:hover,
+  .search-spinner:hover {
+    color: $dark-text;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .icon-btn {
+    color: $dark-text-light;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: lighten($accent-blue, 10%);
+    }
+  }
+
+  .notification-btn.has-badge {
+    color: $accent-orange;
+  }
+
+  .badge-count {
+    border-color: $dark-bg;
+  }
+
+  .search-dropdown,
+  .dropdown-panel {
+    background: $dark-bg;
+    border-color: $dark-border;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .dropdown-header {
+    border-bottom-color: $dark-border;
+  }
+
+  .dropdown-footer {
+    border-top-color: $dark-border;
+  }
+
+  .dropdown-title {
+    color: $dark-text;
+  }
+
+  .dropdown-empty {
+    color: $dark-text-light;
+  }
+
+  .result-item {
+    border-bottom-color: $dark-border;
+
+    a {
+      color: $dark-text;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+    }
+  }
+
+  .notification-item {
+    border-bottom-color: $dark-border;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    &.unread {
+      background: rgba($accent-blue, 0.06);
+
+      &:hover {
+        background: rgba($accent-blue, 0.1);
+      }
+    }
+  }
+
+  .notif-icon {
+    &.notif-icon-new {
+      background: rgba($accent-blue, 0.15);
+    }
+
+    &.notif-icon-seen {
+      background: $dark-surface;
       color: $dark-text-light;
     }
   }
 
-  .icon-btn:hover {
-    background: rgba($white, 0.1);
+  .notif-message {
+    color: $dark-text;
   }
 
-  .search-dropdown {
-    background: $dark-bg;
-    border-color: $dark-border;
+  .notif-time {
+    color: $dark-text-light;
   }
 
-  .dropdown-panel {
-    background: $dark-bg;
-    border-color: $dark-border;
-
-    .dropdown-header,
-    .dropdown-footer {
-      border-bottom-color: $dark-border;
-      border-top-color: $dark-border;
-    }
-
-    .dropdown-title {
-      color: $dark-text;
-    }
-
-    .result-item a,
-    .notification-item {
-      border-bottom-color: $dark-border;
-      color: $dark-text;
-
-      &:hover {
-        background: rgba($white, 0.05);
-      }
-    }
+  .empty-state {
+    color: $dark-text-light;
   }
 
   .user-profile-btn {
     background: transparent;
     border-color: $dark-border;
-    color: $dark-text;
 
     &:hover {
-      background: rgba($accent-blue, 0.1);
-      border-color: $accent-blue;
+      background: rgba($accent-blue, 0.08);
+      border-color: rgba($accent-blue, 0.3);
+      box-shadow: 0 2px 8px rgba($accent-blue, 0.1);
     }
+  }
+
+  .chevron-icon {
+    color: $dark-text-light;
   }
 
   .user-name {
@@ -952,20 +1131,66 @@ body.dark-mode {
     color: $dark-text-light;
   }
 
+  .profile-header {
+    border-bottom-color: $dark-border;
+  }
+
+  .online-badge {
+    border-color: $dark-bg;
+  }
+
   .profile-name {
     color: $dark-text;
   }
 
-  .profile-role {
+  .profile-role,
+  .profile-org {
     color: $dark-text-light;
   }
 
   .profile-menu-item {
     color: $dark-text;
 
-    &:hover {
-      background: rgba($white, 0.1);
+    i {
+      color: $dark-text-light;
     }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: lighten($accent-blue, 10%);
+
+      i {
+        color: lighten($accent-blue, 10%);
+      }
+    }
+
+    &.logout {
+      color: $danger;
+
+      i {
+        color: $danger;
+      }
+
+      &:hover {
+        background: rgba($danger, 0.08);
+      }
+    }
+  }
+
+  .menu-divider {
+    background: $dark-border;
+  }
+
+  .mark-read-btn {
+    background: rgba($accent-blue, 0.12);
+
+    &:hover {
+      background: rgba($accent-blue, 0.2);
+    }
+  }
+
+  .loading-state {
+    color: $dark-text-light;
   }
 }
 
@@ -988,8 +1213,8 @@ body.dark-mode {
   }
 
   .logo-img {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
   }
 
   .logo-text {
@@ -1017,7 +1242,7 @@ body.dark-mode {
 
   .user-profile-btn {
     padding: 6px;
-    border-radius: 8px;
+    border-radius: 10px;
   }
 
   .logo-wrapper {
@@ -1027,8 +1252,8 @@ body.dark-mode {
   }
 
   .logo-img {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
   }
 
   .logo-text {
@@ -1053,6 +1278,7 @@ body.dark-mode {
 
   .search-wrapper {
     height: 40px;
+    border-radius: 10px;
 
     i {
       font-size: 16px;
@@ -1091,7 +1317,7 @@ body.dark-mode {
     font-size: 11px;
   }
 
-  .notification-dropdown,
+  .notifications-dropdown,
   .profile-dropdown {
     position: fixed;
     right: 12px;
@@ -1107,8 +1333,8 @@ body.dark-mode {
   }
 
   .logo-img {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -1126,13 +1352,14 @@ body.dark-mode {
   }
 
   .logo-img {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 
   .header-search-section {
     flex: 1;
     max-width: none;
+    min-width: 0;
   }
 
   .search-wrapper {
@@ -1145,7 +1372,7 @@ body.dark-mode {
     font-size: 12px;
   }
 
-  .notification-dropdown {
+  .notifications-dropdown {
     min-width: auto;
   }
 
@@ -1169,9 +1396,5 @@ body.dark-mode {
 
   .avatar-init {
     font-size: 9px;
-  }
-
-  .logo-brand:hover {
-    transform: scale(1.05);
   }
 }

@@ -27,44 +27,64 @@ export class HeaderService {
 
   constructor(private http: HttpClient) {}
 
+  private getEntrepriseId(): number | null {
+    const item = localStorage.getItem('myLSkey');
+    if (!item) return null;
+    try {
+      const user = JSON.parse(decodeURIComponent(escape(atob(item))));
+      return user.entrepriseId || null;
+    } catch {
+      return null;
+    }
+  }
+
   searchGlobal(query: string): Observable<SearchResult[]> {
-    const params = new HttpParams().set('q', query);
-    return this.http.get<SearchResult[]>(`${this.apiUrl}/api/search`, { params }).pipe(
-      catchError(() => {
-        const lowerQuery = query.toLowerCase();
-        const clients$ = this.http.get<any[]>(`${this.apiUrl}/clients/getAllClients`).pipe(
-          map(clients => clients
-            .filter(c => c.nom && c.nom.toLowerCase().includes(lowerQuery))
-            .map(c => ({ id: c.id, nom: c.nom, type: 'Client' as const, detail: c.email }))),
-          catchError(() => of([] as SearchResult[]))
-        );
-        const articles$ = this.http.get<any[]>(`${this.apiUrl}/articles/getAll`).pipe(
-          map(articles => articles
-            .filter(a => a.nom && a.nom.toLowerCase().includes(lowerQuery))
-            .map(a => ({ id: a.id, nom: a.nom, type: 'Article' as const, detail: a.reference }))),
-          catchError(() => of([] as SearchResult[]))
-        );
-        const fournisseurs$ = this.http.get<any[]>(`${this.apiUrl}/fournisseurs/getAllFournisseurs`).pipe(
-          map(fournisseurs => fournisseurs
-            .filter(f => f.nom && f.nom.toLowerCase().includes(lowerQuery))
-            .map(f => ({ id: f.id, nom: f.nom, type: 'Fournisseur' as const, detail: f.email }))),
-          catchError(() => of([] as SearchResult[]))
-        );
-        return forkJoin([clients$, articles$, fournisseurs$]).pipe(
-          map(([clients, articles, fournisseurs]) => [...clients, ...articles, ...fournisseurs]),
-          catchError(() => of([] as SearchResult[]))
-        );
-      })
+    const lowerQuery = query.toLowerCase();
+    const entrepriseId = this.getEntrepriseId();
+
+    // Use enterprise-scoped endpoints when available
+    const clientsUrl = entrepriseId
+      ? `${this.apiUrl}/clients/byEntreprise/${entrepriseId}`
+      : `${this.apiUrl}/clients/getAllClients`;
+    const articlesUrl = entrepriseId
+      ? `${this.apiUrl}/api/articles/entreprise/${entrepriseId}`
+      : `${this.apiUrl}/api/articles`;
+    const fournisseursUrl = entrepriseId
+      ? `${this.apiUrl}/fournisseurs/byEntreprise/${entrepriseId}`
+      : `${this.apiUrl}/fournisseurs/getAllFournisseurs`;
+
+    const clients$ = this.http.get<any[]>(clientsUrl).pipe(
+      map(clients => (clients || [])
+        .filter(c => c.nom && c.nom.toLowerCase().includes(lowerQuery))
+        .slice(0, 5)
+        .map(c => ({ id: c.id, nom: c.nom, type: 'Client' as const, detail: c.email }))),
+      catchError(() => of([] as SearchResult[]))
+    );
+    const articles$ = this.http.get<any[]>(articlesUrl).pipe(
+      map(articles => (articles || [])
+        .filter(a => (a.nom && a.nom.toLowerCase().includes(lowerQuery)) ||
+                     (a.reference && a.reference.toLowerCase().includes(lowerQuery)))
+        .slice(0, 5)
+        .map(a => ({ id: a.id, nom: a.nom || a.reference, type: 'Article' as const, detail: a.reference }))),
+      catchError(() => of([] as SearchResult[]))
+    );
+    const fournisseurs$ = this.http.get<any[]>(fournisseursUrl).pipe(
+      map(fournisseurs => (fournisseurs || [])
+        .filter(f => f.nom && f.nom.toLowerCase().includes(lowerQuery))
+        .slice(0, 5)
+        .map(f => ({ id: f.id, nom: f.nom, type: 'Fournisseur' as const, detail: f.email }))),
+      catchError(() => of([] as SearchResult[]))
+    );
+
+    return forkJoin([clients$, articles$, fournisseurs$]).pipe(
+      map(([clients, articles, fournisseurs]) => [...clients, ...articles, ...fournisseurs]),
+      catchError(() => of([] as SearchResult[]))
     );
   }
 
-  // ✅ UPDATED: Accept entrepriseId as parameter
   getNotifications(entrepriseId: number): Observable<Notification[]> {
     return this.http.get<Notification[]>(`${this.apiUrl}/api/notifications/${entrepriseId}`).pipe(
-      catchError((error) => {
-        console.error('❌ Error fetching notifications:', error);
-        return of([] as Notification[]);
-      })
+      catchError(() => of([] as Notification[]))
     );
   }
 
