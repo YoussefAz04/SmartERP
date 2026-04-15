@@ -255,7 +255,7 @@ public class AuthController {
             List<PermissionDto> permissionDtoList = new ArrayList<>();
             
             for (Role role : user.getRoles()) {
-                permissionDtoList = permissionService.getPermissionsByRole(role.getId());
+                permissionDtoList.addAll(permissionService.getPermissionsByRole(role.getId()));
             }
 
             System.out.println("✅ Permissions refreshed for user: " + userId);

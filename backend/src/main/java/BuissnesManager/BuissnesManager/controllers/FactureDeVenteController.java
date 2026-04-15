@@ -66,11 +66,11 @@ public class FactureDeVenteController {
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("affecterFactureClient/{idFacture}/{idClient}")
 
-    public ResponseEntity<String> affecterFactureClient(
+    public ResponseEntity<Void> affecterFactureClient(
             @PathVariable Long idFacture,
             @PathVariable Long idClient) {
 
-        factureDeVenteService.affecterFatureClient(idFacture, idClient);
+        factureDeVenteService.affecterFactureClient(idFacture, idClient);
         return ResponseEntity.ok().build();
     }
 

@@ -10,9 +10,8 @@ import {
 import { SidebarService } from 'src/app/core/service/sidebar/sidebar.service';
 import { PaginationService } from 'src/app/shared/shared.index';
 import Swal from 'sweetalert2';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {RoleService} from "../../../core/service/role/role.service";
-import {Validators} from "ngx-editor";
 import {Role} from "../../../model/role.model";
 import {UserService} from "../../../auth/service/user/user.service";
 import {UserDTO} from "../../../model/userDTO.model";

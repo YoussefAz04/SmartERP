@@ -93,9 +93,11 @@ public class FactureDeVenteService {
         factureDeVenteRepo.deleteById(id);
     }
 
-    public void affecterFatureClient(Long idFacture, Long IdClient){
-        FactureDeVente factureDeVente = factureDeVenteRepo.findById(idFacture).get() ;
-        factureDeVente.setClient(clientRepo.findById(IdClient).get());
+    public void affecterFactureClient(Long idFacture, Long idClient){
+        FactureDeVente factureDeVente = factureDeVenteRepo.findById(idFacture)
+                .orElseThrow(() -> new RuntimeException("Facture non trouvée avec l'id : " + idFacture));
+        factureDeVente.setClient(clientRepo.findById(idClient)
+                .orElseThrow(() -> new RuntimeException("Client non trouvé avec l'id : " + idClient)));
         factureDeVenteRepo.save(factureDeVente);
     }
 }
