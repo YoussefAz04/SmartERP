@@ -1,15 +1,59 @@
-<!-- Modern Page Header -->
-<div class="modern-page-header">
-  <div class="header-content">
-    <div class="header-title">
-      <h1>Factures d'Achat</h1>
-      <p class="subtitle">Gestion complète de vos factures d'achat</p>
+<!-- Modern Page Header with Glassmorphism -->
+<div class="page-header-wrapper">
+  <div class="header-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="modern-page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <div class="title-icon">
+          <i class="feather icon-shopping-bag"></i>
+        </div>
+        <div>
+          <h1>Factures d'Achat</h1>
+          <p class="subtitle">Gestion complète de vos factures d'achat</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-header btn-refresh" (click)="getAllFactureAchat()" [disabled]="isLoading">
+          <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
+          <span>Actualiser</span>
+        </button>
+      </div>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-primary btn-lg" (click)="getAllFactureAchat()" [disabled]="isLoading">
-        <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
-        Actualiser
-      </button>
+  </div>
+</div>
+
+<!-- Stats Summary Cards -->
+<div class="stats-row" *ngIf="!isLoading">
+  <div class="stat-card stat-total">
+    <div class="stat-icon"><i class="feather icon-layers"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ filteredList.length }}</span>
+      <span class="stat-label">Total Factures</span>
+    </div>
+  </div>
+  <div class="stat-card stat-amount">
+    <div class="stat-icon"><i class="feather icon-dollar-sign"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ getTotalAmount() | number:'1.2-2' }} DT</span>
+      <span class="stat-label">Montant Total TTC</span>
+    </div>
+  </div>
+  <div class="stat-card stat-ht">
+    <div class="stat-icon"><i class="feather icon-trending-up"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ getTotalHT() | number:'1.2-2' }} DT</span>
+      <span class="stat-label">Montant Total HT</span>
+    </div>
+  </div>
+  <div class="stat-card stat-pending">
+    <div class="stat-icon"><i class="feather icon-clock"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ getPendingCount() }}</span>
+      <span class="stat-label">En Attente</span>
     </div>
   </div>
 </div>
@@ -23,12 +67,14 @@
            [(ngModel)]="searchTerm" 
            (input)="onSearch(searchTerm)"
            class="search-input">
+    <button class="search-clear" *ngIf="searchTerm" (click)="searchTerm = ''; onSearch('')">
+      <i class="feather icon-x"></i>
+    </button>
   </div>
   
-  <div class="action-buttons">
-    <button class="btn btn-success" 
+  <div class="batch-actions" *ngIf="selectedFactures.size > 0">
+    <button class="btn-batch-export" 
             (click)="exportMultipleToPdf()" 
-            *ngIf="selectedFactures.size > 0"
             title="Exporter les factures sélectionnées">
       <i class="feather icon-download"></i>
       Exporter ({{ selectedFactures.size }})
@@ -39,15 +85,21 @@
 <!-- Factures Table -->
 <div class="modern-card">
   <div class="card-header-modern">
-    <h5 class="card-title">{{ filteredList.length }} Facture(s)</h5>
-    <span class="badge" [ngClass]="{'badge-info': filteredList.length > 0, 'badge-warning': filteredList.length === 0}">
+    <h5 class="card-title">
+      <i class="feather icon-list"></i>
+      {{ filteredList.length }} Facture(s)
+    </h5>
+    <span class="count-badge" [ngClass]="{'badge-info': filteredList.length > 0, 'badge-warning': filteredList.length === 0}">
       {{ filteredList.length }}
     </span>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
-    <div class="spinner"></div>
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <div class="spinner-ring"></div>
+    </div>
     <p>Chargement des factures...</p>
   </div>
 
@@ -57,9 +109,12 @@
       <thead>
         <tr>
           <th class="checkbox-col">
-            <input type="checkbox" 
-                   [checked]="selectAll"
-                   (change)="toggleSelectAll($any($event.target).checked)">
+            <label class="custom-checkbox">
+              <input type="checkbox" 
+                     [checked]="selectAll"
+                     (change)="toggleSelectAll($any($event.target).checked)">
+              <span class="checkmark"></span>
+            </label>
           </th>
           <th (click)="onSort('dateAchat')" class="sortable" title="Cliquer pour trier">
             Date Achat
@@ -96,28 +151,37 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let facture of filteredList" 
+        <tr *ngFor="let facture of filteredList; let i = index" 
             class="table-row" 
-            [class.selected]="isFactureSelected(facture.id)">
+            [class.selected]="isFactureSelected(facture.id)"
+            [style.animation-delay]="i * 0.04 + 's'">
           <td class="checkbox-col">
-            <input type="checkbox" 
-                   [checked]="isFactureSelected(facture.id)"
-                   (change)="toggleSelectFacture(facture.id)">
+            <label class="custom-checkbox">
+              <input type="checkbox" 
+                     [checked]="isFactureSelected(facture.id)"
+                     (change)="toggleSelectFacture(facture.id)">
+              <span class="checkmark"></span>
+            </label>
           </td>
-          <td class="date-cell">{{ facture.dateAchat }}</td>
+          <td class="date-cell">
+            <i class="feather icon-calendar"></i>
+            {{ facture.dateAchat }}
+          </td>
           <td class="reference-cell">
             <span class="badge-ref">{{ facture.referance }}</span>
           </td>
-          <td class="amount-cell">
+          <td class="amount-cell highlight">
             <strong>{{ facture.montantTTC | number:'1.2-2' }} DT</strong>
           </td>
           <td class="amount-cell">{{ facture.montantHT | number:'1.2-2' }} DT</td>
           <td class="amount-cell">{{ facture.montantTVA | number:'1.2-2' }} DT</td>
-          <td class="payment-cell">{{ facture.modePaiement }}</td>
+          <td class="payment-cell">
+            <span class="payment-badge">{{ facture.modePaiement }}</span>
+          </td>
           <td class="status-cell">
             <span class="status-badge" [ngClass]="getStatusClass(facture.statut)">
-  {{ facture.statut }}
-</span>
+              {{ facture.statut }}
+            </span>
           </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
@@ -125,7 +189,7 @@
                       (click)="viewFacture(facture.id)" 
                       *ngIf="permissionAchat?.view" 
                       title="Voir les détails"
-                      matTooltip="Voir">
+                      matTooltip="Voir les détails">
                 <i class="feather icon-eye"></i>
               </button>
               <button class="btn-action download" 
@@ -133,6 +197,19 @@
                       title="Télécharger en PDF"
                       matTooltip="Télécharger PDF">
                 <i class="feather icon-download"></i>
+              </button>
+              <button class="btn-action edit" 
+                      (click)="viewFacture(facture.id)" 
+                      *ngIf="permissionAchat?.update" 
+                      title="Modifier la facture"
+                      matTooltip="Modifier">
+                <i class="feather icon-edit-2"></i>
+              </button>
+              <button class="btn-action print" 
+                      (click)="exportToPdf(facture)" 
+                      title="Imprimer la facture"
+                      matTooltip="Imprimer">
+                <i class="feather icon-printer"></i>
               </button>
               <button class="btn-action delete" 
                       (click)="deleteFacture(facture.id)" 
@@ -149,7 +226,9 @@
         <tr *ngIf="filteredList.length === 0" class="empty-row">
           <td [attr.colspan]="9">
             <div class="empty-message">
-              <i class="feather icon-inbox"></i>
+              <div class="empty-icon-wrapper">
+                <i class="feather icon-inbox"></i>
+              </div>
               <p>Aucune facture trouvée</p>
               <small *ngIf="searchTerm">Essayez de modifier votre recherche</small>
             </div>

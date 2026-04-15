@@ -414,6 +414,22 @@ export class ListFactureDeVenteComponent implements OnInit{
     }
   }
 
+  getTotalAmount(): number {
+    return this.filteredList.reduce((sum, f) => sum + (f.montantTTC || 0), 0);
+  }
+
+  getPendingCount(): number {
+    return this.filteredList.filter(f => 
+      f.statut?.toUpperCase() === 'EN_ATTENTE' || f.statut?.toUpperCase() === 'EN ATTENTE'
+    ).length;
+  }
+
+  getPaidCount(): number {
+    return this.filteredList.filter(f => 
+      f.statut?.toUpperCase() === 'PAYÉ' || f.statut?.toUpperCase() === 'PAYE' || f.statut?.toUpperCase() === 'PAID'
+    ).length;
+  }
+
   getUserAuthData(){
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;

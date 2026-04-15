@@ -310,6 +310,20 @@ export class ListfacturAchatComponent implements OnInit{
     this.selectAll = false;
   }
 
+  getTotalAmount(): number {
+    return this.filteredList.reduce((sum, f) => sum + (f.montantTTC || 0), 0);
+  }
+
+  getTotalHT(): number {
+    return this.filteredList.reduce((sum, f) => sum + (f.montantHT || 0), 0);
+  }
+
+  getPendingCount(): number {
+    return this.filteredList.filter(f => 
+      f.statut?.toUpperCase() === 'EN_ATTENTE' || f.statut?.toUpperCase() === 'EN ATTENTE'
+    ).length;
+  }
+
   getUserAuthData(){
     const item = localStorage.getItem('myLSkey');
     let currentUser: ResponseDto | null = null;
