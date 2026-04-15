@@ -101,6 +101,12 @@ export interface ComparisonMetrics {
   grossMarginYtd?: number;
   salesOrderCountYtd?: number;
   purchaseOrderCountYtd?: number;
+  // Enhanced MTD multi-dimensional
+  purchaseMtdVsLtd?: PeriodComparison;
+  marginMtdVsLtd?: PeriodComparison;
+  marginYtdVsLastYear?: PeriodComparison;
+  orderCountMtdVsLtd?: PeriodComparison;
+  orderCountYtdVsLastYear?: PeriodComparison;
 }
 
 export interface SupplierStatusCount {

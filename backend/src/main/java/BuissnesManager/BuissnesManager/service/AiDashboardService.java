@@ -153,6 +153,36 @@ public class AiDashboardService {
         Long purchaseOrderCount = commandeAchatRepository.getPurchaseOrderCountInPeriod(entrepriseId, ytdStart, today);
         comparison.setPurchaseOrderCountYtd(purchaseOrderCount != null ? purchaseOrderCount : 0L);
 
+        // === Enhanced MTD multi-dimensional metrics ===
+
+        // Purchase MTD vs LTD
+        Double purchaseMtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, mtdStart, mtdEnd);
+        Double purchaseLtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
+        purchaseMtd = purchaseMtd != null ? purchaseMtd : 0.0;
+        purchaseLtd = purchaseLtd != null ? purchaseLtd : 0.0;
+        comparison.setPurchaseMtdVsLtd(buildPeriodComparison(purchaseMtd, purchaseLtd));
+
+        // Gross margin MTD vs LTD = (sales - purchases) for each period
+        comparison.setMarginMtdVsLtd(buildPeriodComparison(mtd - purchaseMtd, ltd - purchaseLtd));
+
+        // Gross margin YTD vs last year same period
+        comparison.setMarginYtdVsLastYear(buildPeriodComparison(ytd - purchaseYtd, lastYear - purchaseLastYear));
+
+        // Sales order count MTD vs LTD
+        Long orderCountMtd = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, mtdStart, mtdEnd);
+        Long orderCountLtd = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
+        comparison.setOrderCountMtdVsLtd(buildPeriodComparison(
+                orderCountMtd != null ? orderCountMtd.doubleValue() : 0.0,
+                orderCountLtd != null ? orderCountLtd.doubleValue() : 0.0
+        ));
+
+        // Sales order count YTD vs last year same period
+        Long orderCountLastYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
+        comparison.setOrderCountYtdVsLastYear(buildPeriodComparison(
+                salesOrderCount != null ? salesOrderCount.doubleValue() : 0.0,
+                orderCountLastYear != null ? orderCountLastYear.doubleValue() : 0.0
+        ));
+
         return comparison;
     }
 

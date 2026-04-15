@@ -39,4 +39,11 @@ export class ComparisonMetricsComponent {
     if (pct >= 15) return 'text-warning';
     return 'text-danger';
   }
+
+  getMtdMarginClass(): string {
+    const current = this.comparison?.marginMtdVsLtd?.current ?? 0;
+    if (current > 0) return 'text-success';
+    if (current === 0) return 'text-muted';
+    return 'text-danger';
+  }
 }

@@ -77,6 +77,12 @@ public class AiDashboardDto {
         private Double grossMarginYtd;
         private Long salesOrderCountYtd;
         private Long purchaseOrderCountYtd;
+        // Enhanced MTD multi-dimensional
+        private PeriodComparisonDto purchaseMtdVsLtd;
+        private PeriodComparisonDto marginMtdVsLtd;
+        private PeriodComparisonDto marginYtdVsLastYear;
+        private PeriodComparisonDto orderCountMtdVsLtd;
+        private PeriodComparisonDto orderCountYtdVsLastYear;
 
         public ComparisonMetricsDto() {}
 
@@ -97,6 +103,21 @@ public class AiDashboardDto {
 
         public Long getPurchaseOrderCountYtd() { return purchaseOrderCountYtd; }
         public void setPurchaseOrderCountYtd(Long purchaseOrderCountYtd) { this.purchaseOrderCountYtd = purchaseOrderCountYtd; }
+
+        public PeriodComparisonDto getPurchaseMtdVsLtd() { return purchaseMtdVsLtd; }
+        public void setPurchaseMtdVsLtd(PeriodComparisonDto purchaseMtdVsLtd) { this.purchaseMtdVsLtd = purchaseMtdVsLtd; }
+
+        public PeriodComparisonDto getMarginMtdVsLtd() { return marginMtdVsLtd; }
+        public void setMarginMtdVsLtd(PeriodComparisonDto marginMtdVsLtd) { this.marginMtdVsLtd = marginMtdVsLtd; }
+
+        public PeriodComparisonDto getMarginYtdVsLastYear() { return marginYtdVsLastYear; }
+        public void setMarginYtdVsLastYear(PeriodComparisonDto marginYtdVsLastYear) { this.marginYtdVsLastYear = marginYtdVsLastYear; }
+
+        public PeriodComparisonDto getOrderCountMtdVsLtd() { return orderCountMtdVsLtd; }
+        public void setOrderCountMtdVsLtd(PeriodComparisonDto orderCountMtdVsLtd) { this.orderCountMtdVsLtd = orderCountMtdVsLtd; }
+
+        public PeriodComparisonDto getOrderCountYtdVsLastYear() { return orderCountYtdVsLastYear; }
+        public void setOrderCountYtdVsLastYear(PeriodComparisonDto orderCountYtdVsLastYear) { this.orderCountYtdVsLastYear = orderCountYtdVsLastYear; }
     }
 
     public static class PeriodComparisonDto {
