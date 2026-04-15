@@ -538,15 +538,27 @@
               }
             }
 
-            &.cancel {
-              background: #fef3c7;
-              color: #92400e;
+            &.pending {
+              background: #feebc8;
+              color: #c05621;
 
               &:hover {
-                background: #d97706;
+                background: #ED8936;
                 color: white;
                 transform: scale(1.12);
-                box-shadow: 0 3px 8px rgba(217, 119, 6, 0.4);
+                box-shadow: 0 3px 8px rgba(237, 137, 54, 0.4);
+              }
+            }
+
+            &.cancel {
+              background: #fee2e2;
+              color: #991b1b;
+
+              &:hover {
+                background: #E53E3E;
+                color: white;
+                transform: scale(1.12);
+                box-shadow: 0 3px 8px rgba(229, 62, 62, 0.4);
               }
             }
 

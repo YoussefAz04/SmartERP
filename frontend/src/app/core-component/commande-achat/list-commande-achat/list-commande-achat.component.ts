@@ -163,6 +163,31 @@ export class ListCommandeAchatComponent implements OnInit {
     return statut !== 'RECUE' && statut !== 'ANNULEE';
   }
 
+  canChangeToEnAttente(statut?: string): boolean {
+    return statut !== 'EN_ATTENTE' && statut !== 'RECUE' && statut !== 'ANNULEE';
+  }
+
+  setEnAttente(id: number): void {
+    if (!confirm('Passer cette commande à "En Attente" ?')) return;
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.commandeAchatService.changeStatutToEnAttente(id).subscribe({
+      next: () => {
+        this.loadCommandes();
+        this.isLoading = false;
+        alert('✅ Statut changé en "En Attente".');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        const errorMessage = err?.error?.message || 'Erreur lors du changement de statut';
+        this.errorMessage = errorMessage;
+        alert('❌ ' + errorMessage);
+      }
+    });
+  }
+
   getStatutClass(statut?: string): string {
     switch (statut) {
       case 'EN_ATTENTE': return 'status-badge status-en-attente';
