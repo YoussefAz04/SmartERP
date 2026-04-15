@@ -1,5 +1,10 @@
 <!-- Dashboard Header -->
 <div class="stock-dashboard-header">
+  <div class="header-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
   <div class="header-content">
     <div class="header-text">
       <div class="header-badge">
@@ -22,21 +27,21 @@
   </div>
 </div>
 
-<!-- Loading -->
+<!-- Loading Skeleton -->
 @if (isLoading) {
-  <div class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Chargement...</span>
-    </div>
-    <p class="mt-2">Chargement des données...</p>
+  <div class="skeleton-grid">
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
   </div>
 }
 
 @if (!isLoading) {
   <!-- KPI Cards -->
-  <div class="row g-3 mb-4">
+  <div class="row g-3 mb-4" [class.content-enter]="contentReady">
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-dark-blue">
+      <div class="kpi-card kpi-indigo" style="--stagger: 0" routerLink="/stock/list">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ totalItems }}</div>
@@ -51,12 +56,13 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir l'inventaire →</span>
+          <span>Voir l'inventaire</span>
+          <i class="feather icon-arrow-right"></i>
         </div>
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-green">
+      <div class="kpi-card kpi-emerald" style="--stagger: 1" routerLink="/stock/list">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ totalAvailable }}</div>
@@ -71,12 +77,13 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir le stock →</span>
+          <span>Voir le stock</span>
+          <i class="feather icon-arrow-right"></i>
         </div>
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-teal">
+      <div class="kpi-card kpi-amber" style="--stagger: 2" routerLink="/stock/list">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ lowStockCount }}</div>
@@ -91,12 +98,13 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir les alertes →</span>
+          <span>Voir les alertes</span>
+          <i class="feather icon-arrow-right"></i>
         </div>
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-slate">
+      <div class="kpi-card kpi-slate" style="--stagger: 3" routerLink="/stock/movements">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ movements.length }}</div>
@@ -111,19 +119,20 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir l'historique →</span>
+          <span>Voir l'historique</span>
+          <i class="feather icon-arrow-right"></i>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Quick Actions -->
-  <div class="section-header">
+  <div class="section-header" #animateOnScroll>
     <h2 class="section-title">Actions Rapides</h2>
     <div class="section-divider"></div>
   </div>
   <div class="actions-grid">
-    <div class="action-card action-blue" routerLink="/stock/list">
+    <div class="action-card action-blue" routerLink="/stock/list" style="--stagger: 0">
       <div class="action-icon"><i class="feather icon-list"></i></div>
       <div class="action-text">
         <h4>Voir tout l'inventaire</h4>
@@ -131,7 +140,7 @@
       </div>
       <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
     </div>
-    <div class="action-card action-green" routerLink="/stock/adjust">
+    <div class="action-card action-green" routerLink="/stock/adjust" style="--stagger: 1">
       <div class="action-icon"><i class="feather icon-edit-3"></i></div>
       <div class="action-text">
         <h4>Ajuster le stock</h4>
@@ -139,7 +148,7 @@
       </div>
       <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
     </div>
-    <div class="action-card action-teal" routerLink="/stock/movements">
+    <div class="action-card action-teal" routerLink="/stock/movements" style="--stagger: 2">
       <div class="action-icon"><i class="feather icon-clock"></i></div>
       <div class="action-text">
         <h4>Historique des mouvements</h4>
@@ -147,7 +156,7 @@
       </div>
       <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
     </div>
-    <div class="action-card action-orange" routerLink="/stock/list">
+    <div class="action-card action-orange" routerLink="/stock/list" style="--stagger: 3">
       <div class="action-icon"><i class="feather icon-alert-triangle"></i></div>
       <div class="action-text">
         <h4>Alertes stock bas</h4>
@@ -160,15 +169,20 @@
   <!-- Bottom Panels -->
   <div class="row g-3">
     <!-- Low Stock Items -->
-    <div class="col-xl-6">
+    <div class="col-xl-6" #animateOnScroll>
       <div class="modern-panel h-100">
         <div class="panel-header panel-header-danger">
           <div class="panel-title">
-            <i class="feather icon-alert-triangle"></i>
-            Articles En Rupture De Stock
+            <div class="panel-icon-wrap">
+              <i class="feather icon-alert-triangle"></i>
+            </div>
+            <span>Articles En Rupture De Stock</span>
             <span class="panel-badge">{{ lowStockCount }}</span>
           </div>
-          <a routerLink="/stock/list" class="panel-link">Voir tout</a>
+          <a routerLink="/stock/list" class="panel-link">
+            Voir tout
+            <i class="feather icon-arrow-right"></i>
+          </a>
         </div>
         <div class="panel-body">
           @if (lowStockItems.length > 0) {
@@ -202,7 +216,7 @@
                         </span>
                       </td>
                       <td>
-                        <a [routerLink]="['/stock/view', stock.id]" class="btn btn-sm btn-outline-primary">
+                        <a [routerLink]="['/stock/view', stock.id]" class="view-btn">
                           <i class="feather icon-eye"></i>
                         </a>
                       </td>
@@ -212,9 +226,11 @@
               </table>
             </div>
           } @else {
-            <div class="text-center py-4 text-muted">
-              <i class="feather icon-check-circle fs-1 text-success"></i>
-              <p class="mt-2">Aucune rupture de stock détectée</p>
+            <div class="empty-state">
+              <div class="empty-icon success">
+                <i class="feather icon-check-circle"></i>
+              </div>
+              <p>Aucune rupture de stock détectée</p>
             </div>
           }
         </div>
@@ -222,14 +238,19 @@
     </div>
 
     <!-- Recent Movements -->
-    <div class="col-xl-6">
+    <div class="col-xl-6" #animateOnScroll>
       <div class="modern-panel h-100">
         <div class="panel-header panel-header-primary">
           <div class="panel-title">
-            <i class="feather icon-activity"></i>
-            Derniers Mouvements
+            <div class="panel-icon-wrap">
+              <i class="feather icon-activity"></i>
+            </div>
+            <span>Derniers Mouvements</span>
           </div>
-          <a routerLink="/stock/movements" class="panel-link">Voir tout</a>
+          <a routerLink="/stock/movements" class="panel-link">
+            Voir tout
+            <i class="feather icon-arrow-right"></i>
+          </a>
         </div>
         <div class="panel-body">
           @if (recentMovements.length > 0) {
@@ -265,9 +286,11 @@
               </table>
             </div>
           } @else {
-            <div class="text-center py-4 text-muted">
-              <i class="feather icon-inbox fs-1"></i>
-              <p class="mt-2">Aucun mouvement enregistré</p>
+            <div class="empty-state">
+              <div class="empty-icon neutral">
+                <i class="feather icon-inbox"></i>
+              </div>
+              <p>Aucun mouvement enregistré</p>
             </div>
           }
         </div>
