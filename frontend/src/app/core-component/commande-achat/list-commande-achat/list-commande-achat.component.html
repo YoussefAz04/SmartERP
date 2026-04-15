@@ -116,30 +116,39 @@
           </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
-              <button *ngIf="canEditOrValidate(commande.statut)"
+              <!-- Validate button - Show if not in final state -->
+              <button *ngIf="commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE'"
                       class="btn-action validate"
                       (click)="validerCommande(commande.id!)"
                       title="Valider et générer facture">
                 <i class="feather icon-check-circle"></i>
               </button>
-              <button *ngIf="canEditOrValidate(commande.statut)"
+
+              <!-- Edit button - Show if not in final state -->
+              <button *ngIf="commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE'"
                       class="btn-action edit"
                       (click)="editCommande(commande.id!)"
                       title="Modifier">
                 <i class="feather icon-edit-2"></i>
               </button>
-              <button *ngIf="canChangeToEnAttente(commande.statut)"
+
+              <!-- Set to En Attente button - Show always except if already EN_ATTENTE -->
+              <button *ngIf="commande.statut !== 'EN_ATTENTE'"
                       class="btn-action pending"
                       (click)="setEnAttente(commande.id!)"
                       title="Passer à En Attente">
                 <i class="feather icon-clock"></i>
               </button>
-              <button *ngIf="canCancel(commande.statut)"
+
+              <!-- Cancel button - Show if not already cancelled -->
+              <button *ngIf="commande.statut !== 'ANNULEE'"
                       class="btn-action cancel"
                       (click)="annulerCommande(commande.id!)"
                       title="Annuler la commande">
                 <i class="feather icon-x-circle"></i>
               </button>
+
+              <!-- Delete button - Always show -->
               <button class="btn-action delete"
                       (click)="deleteCommande(commande.id!)"
                       title="Supprimer">

@@ -88,7 +88,6 @@ export class ListCommandeAchatComponent implements OnInit {
         this.isLoading = false;
         console.error('❌ Erreur validation:', err);
         
-        // Extract detailed error message from backend
         const errorMessage = err?.error?.message || 
                            err?.message || 
                            'Erreur lors de la validation';
@@ -123,53 +122,10 @@ export class ListCommandeAchatComponent implements OnInit {
     });
   }
 
-  annulerCommande(id: number): void {
-    if (!confirm('Annuler cette commande ?')) return;
-    
-    this.commandeAchatService.annulerCommande(id).subscribe({
-      next: () => {
-        this.loadCommandes();
-        alert('✅ Commande annulée.');
-      },
-      error: (err) => {
-        console.error('❌ Erreur annulation:', err);
-        const errorMessage = err?.error?.message || 'Erreur lors de l\'annulation';
-        alert('❌ ' + errorMessage);
-      }
-    });
-  }
-
-  deleteCommande(id: number): void {
-    if (!confirm('Supprimer cette commande ?')) return;
-    
-    this.commandeAchatService.deleteCommande(id).subscribe({
-      next: () => {
-        this.loadCommandes();
-        alert('✅ Commande supprimée.');
-      },
-      error: (err) => {
-        console.error('❌ Erreur suppression:', err);
-        const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
-        alert('❌ ' + errorMessage);
-      }
-    });
-  }
-
-  canEditOrValidate(statut?: string): boolean {
-    return statut !== 'CONFIRMEE' && statut !== 'RECUE' && statut !== 'ANNULEE';
-  }
-
-  canCancel(statut?: string): boolean {
-    return statut !== 'RECUE' && statut !== 'ANNULEE';
-  }
-
-  canChangeToEnAttente(statut?: string): boolean {
-    return statut !== 'EN_ATTENTE' && statut !== 'RECUE' && statut !== 'ANNULEE';
-  }
-
+  // ✅ NEW: Set status to EN_ATTENTE
   setEnAttente(id: number): void {
     if (!confirm('Passer cette commande à "En Attente" ?')) return;
-
+    
     this.isLoading = true;
     this.errorMessage = '';
 
@@ -181,7 +137,52 @@ export class ListCommandeAchatComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
+        console.error('❌ Erreur changement de statut:', err);
         const errorMessage = err?.error?.message || 'Erreur lors du changement de statut';
+        this.errorMessage = errorMessage;
+        alert('❌ ' + errorMessage);
+      }
+    });
+  }
+
+  annulerCommande(id: number): void {
+    if (!confirm('Annuler cette commande ?')) return;
+    
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.commandeAchatService.annulerCommande(id).subscribe({
+      next: () => {
+        this.loadCommandes();
+        this.isLoading = false;
+        alert('✅ Commande annulée.');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('❌ Erreur annulation:', err);
+        const errorMessage = err?.error?.message || 'Erreur lors de l\'annulation';
+        this.errorMessage = errorMessage;
+        alert('❌ ' + errorMessage);
+      }
+    });
+  }
+
+  deleteCommande(id: number): void {
+    if (!confirm('Supprimer cette commande ?')) return;
+    
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.commandeAchatService.deleteCommande(id).subscribe({
+      next: () => {
+        this.loadCommandes();
+        this.isLoading = false;
+        alert('✅ Commande supprimée.');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('❌ Erreur suppression:', err);
+        const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
         this.errorMessage = errorMessage;
         alert('❌ ' + errorMessage);
       }

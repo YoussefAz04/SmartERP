@@ -47,9 +47,8 @@ export class CommandeAchatService {
   }
 
   createCommande(payload: any): Observable<any> {
-  return this.http.post<any>(`${this.baseUrl}/add`, payload, { headers: this.getHeaders() });
-  // ↑ ADD /add HERE
-}
+    return this.http.post<any>(`${this.baseUrl}/add`, payload, { headers: this.getHeaders() });
+  }
 
   updateCommande(id: number, commande: CommandeAchat): Observable<CommandeAchat> {
     return this.http.put<CommandeAchat>(`${this.baseUrl}/${id}`, commande, { headers: this.getHeaders() });
@@ -63,6 +62,7 @@ export class CommandeAchatService {
     return this.http.put<any>(`${this.baseUrl}/${id}/recevoir`, {}, { headers: this.getHeaders() });
   }
 
+  // ✅ NEW: Change status to EN_ATTENTE
   changeStatutToEnAttente(id: number): Observable<CommandeAchat> {
     return this.http.patch<CommandeAchat>(`${this.baseUrl}/${id}/statut?statut=EN_ATTENTE`, {}, { headers: this.getHeaders() });
   }
