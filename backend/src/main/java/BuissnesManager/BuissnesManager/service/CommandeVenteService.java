@@ -139,9 +139,15 @@ public class CommandeVenteService {
         } else {
             commandes = commandeVenteRepository.findByEntrepriseId(entrepriseId);
         }
-        // Recalculate totals for commandes with missing amounts
+        // Recalculate totals for commandes with missing amounts and batch save
+        List<CommandeVente> toSave = new java.util.ArrayList<>();
         for (CommandeVente commande : commandes) {
-            recalculateTotalsIfMissing(commande);
+            if (recalculateTotalsIfMissing(commande)) {
+                toSave.add(commande);
+            }
+        }
+        if (!toSave.isEmpty()) {
+            commandeVenteRepository.saveAll(toSave);
         }
         return commandes;
     }
@@ -149,22 +155,23 @@ public class CommandeVenteService {
     /**
      * Recalculates montantHT, montantTVA, montantTTC from line items
      * when these fields are null or zero.
+     * @return true if the commande was modified and needs saving
      */
-    private void recalculateTotalsIfMissing(CommandeVente commande) {
+    private boolean recalculateTotalsIfMissing(CommandeVente commande) {
         boolean hasMissingAmounts = commande.getMontantHT() == null
                 || commande.getMontantTVA() == null
                 || commande.getMontantTTC() == null
-                || commande.getMontantHT().compareTo(BigDecimal.ZERO) == 0
+                || (commande.getMontantHT().compareTo(BigDecimal.ZERO) == 0
                     && commande.getMontantTVA().compareTo(BigDecimal.ZERO) == 0
-                    && commande.getMontantTTC().compareTo(BigDecimal.ZERO) == 0;
+                    && commande.getMontantTTC().compareTo(BigDecimal.ZERO) == 0);
 
         if (!hasMissingAmounts) {
-            return;
+            return false;
         }
 
         List<LigneCommandeVente> lignes = commande.getLignes();
         if (lignes == null || lignes.isEmpty()) {
-            return;
+            return false;
         }
 
         BigDecimal totalHT = BigDecimal.ZERO;
@@ -193,7 +200,7 @@ public class CommandeVenteService {
         commande.setMontantHT(totalHT);
         commande.setMontantTVA(totalTVA);
         commande.setMontantTTC(totalTTC);
-        commandeVenteRepository.save(commande);
+        return true;
     }
 
     public List<CommandeVente> getCommandesByEntreprise(Long entrepriseId) {

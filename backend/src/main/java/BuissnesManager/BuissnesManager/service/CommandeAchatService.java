@@ -70,9 +70,15 @@ public class CommandeAchatService {
         }
         
         List<CommandeAchat> commandes = commandeAchatRepository.findByEntrepriseId(entrepriseId);
-        // Recalculate totals for commandes with missing amounts
+        // Recalculate totals for commandes with missing amounts and batch save
+        List<CommandeAchat> toSave = new java.util.ArrayList<>();
         for (CommandeAchat commande : commandes) {
-            recalculateTotalsIfMissing(commande);
+            if (recalculateTotalsIfMissing(commande)) {
+                toSave.add(commande);
+            }
+        }
+        if (!toSave.isEmpty()) {
+            commandeAchatRepository.saveAll(toSave);
         }
         logger.info("✅ Found {} purchase orders for enterprise {}", commandes.size(), entrepriseId);
         return commandes;
@@ -81,22 +87,23 @@ public class CommandeAchatService {
     /**
      * Recalculates montantHT, montantTVA, montantTTC from line items
      * when these fields are null or zero.
+     * @return true if the commande was modified and needs saving
      */
-    private void recalculateTotalsIfMissing(CommandeAchat commande) {
+    private boolean recalculateTotalsIfMissing(CommandeAchat commande) {
         boolean hasMissingAmounts = commande.getMontantHT() == null
                 || commande.getMontantTVA() == null
                 || commande.getMontantTTC() == null
-                || commande.getMontantHT().compareTo(BigDecimal.ZERO) == 0
+                || (commande.getMontantHT().compareTo(BigDecimal.ZERO) == 0
                     && commande.getMontantTVA().compareTo(BigDecimal.ZERO) == 0
-                    && commande.getMontantTTC().compareTo(BigDecimal.ZERO) == 0;
+                    && commande.getMontantTTC().compareTo(BigDecimal.ZERO) == 0);
 
         if (!hasMissingAmounts) {
-            return;
+            return false;
         }
 
         List<LigneCommandeAchat> lignes = commande.getLignes();
         if (lignes == null || lignes.isEmpty()) {
-            return;
+            return false;
         }
 
         BigDecimal totalHT = BigDecimal.ZERO;
@@ -125,7 +132,7 @@ public class CommandeAchatService {
         commande.setMontantHT(totalHT);
         commande.setMontantTVA(totalTVA);
         commande.setMontantTTC(totalTTC);
-        commandeAchatRepository.save(commande);
+        return true;
     }
 
     public Optional<CommandeAchat> getCommandeById(Long id) {
