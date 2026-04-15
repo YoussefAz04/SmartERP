@@ -104,10 +104,10 @@
           <td class="supplier-cell">
             <span class="supplier-name">{{ commande.fournisseur?.nom || '-' }}</span>
           </td>
-          <td class="amount-cell">{{ commande.montantHT | number:'1.2-2' }} DT</td>
-          <td class="amount-cell">{{ commande.montantTVA | number:'1.2-2' }} DT</td>
+          <td class="amount-cell">{{ (commande.montantHT || 0) | number:'1.2-2' }} DT</td>
+          <td class="amount-cell">{{ (commande.montantTVA || 0) | number:'1.2-2' }} DT</td>
           <td class="amount-cell highlight">
-            <strong>{{ commande.montantTTC | number:'1.2-2' }} DT</strong>
+            <strong>{{ (commande.montantTTC || 0) | number:'1.2-2' }} DT</strong>
           </td>
           <td class="status-cell">
             <span class="status-badge" [ngClass]="getStatutClass(commande.statut)">

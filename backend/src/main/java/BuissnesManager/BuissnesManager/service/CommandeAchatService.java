@@ -70,8 +70,69 @@ public class CommandeAchatService {
         }
         
         List<CommandeAchat> commandes = commandeAchatRepository.findByEntrepriseId(entrepriseId);
+        // Recalculate totals for commandes with missing amounts and batch save
+        List<CommandeAchat> toSave = new java.util.ArrayList<>();
+        for (CommandeAchat commande : commandes) {
+            if (recalculateTotalsIfMissing(commande)) {
+                toSave.add(commande);
+            }
+        }
+        if (!toSave.isEmpty()) {
+            commandeAchatRepository.saveAll(toSave);
+        }
         logger.info("✅ Found {} purchase orders for enterprise {}", commandes.size(), entrepriseId);
         return commandes;
+    }
+
+    /**
+     * Recalculates montantHT, montantTVA, montantTTC from line items
+     * when these fields are null or zero.
+     * @return true if the commande was modified and needs saving
+     */
+    private boolean recalculateTotalsIfMissing(CommandeAchat commande) {
+        boolean hasMissingAmounts = commande.getMontantHT() == null
+                || commande.getMontantTVA() == null
+                || commande.getMontantTTC() == null
+                || (commande.getMontantHT().compareTo(BigDecimal.ZERO) == 0
+                    && commande.getMontantTVA().compareTo(BigDecimal.ZERO) == 0
+                    && commande.getMontantTTC().compareTo(BigDecimal.ZERO) == 0);
+
+        if (!hasMissingAmounts) {
+            return false;
+        }
+
+        List<LigneCommandeAchat> lignes = commande.getLignes();
+        if (lignes == null || lignes.isEmpty()) {
+            return false;
+        }
+
+        BigDecimal totalHT = BigDecimal.ZERO;
+        BigDecimal totalTTC = BigDecimal.ZERO;
+
+        for (LigneCommandeAchat ligne : lignes) {
+            BigDecimal ht = ligne.getMontantHT();
+            BigDecimal ttc = ligne.getMontantTTC();
+
+            // If line amounts are missing, calculate from quantity * unit price
+            if (ht == null || ht.compareTo(BigDecimal.ZERO) == 0) {
+                BigDecimal quantite = ligne.getQuantite() != null ? ligne.getQuantite() : BigDecimal.ZERO;
+                BigDecimal prix = ligne.getPrixUnitaireHT() != null ? ligne.getPrixUnitaireHT() : BigDecimal.ZERO;
+                ht = quantite.multiply(prix);
+            }
+            if (ttc == null || ttc.compareTo(BigDecimal.ZERO) == 0) {
+                BigDecimal tva = ligne.getTva() != null ? ligne.getTva() : BigDecimal.ZERO;
+                ttc = ht.multiply(BigDecimal.ONE.add(tva.divide(BigDecimal.valueOf(100), 4, java.math.RoundingMode.HALF_UP)));
+            }
+
+            totalHT = totalHT.add(ht);
+            totalTTC = totalTTC.add(ttc);
+        }
+
+        BigDecimal totalTVA = totalTTC.subtract(totalHT);
+        commande.setMontantHT(totalHT);
+        commande.setMontantTVA(totalTVA);
+        commande.setMontantTTC(totalTTC);
+        return true;
     }
 
     public Optional<CommandeAchat> getCommandeById(Long id) {
