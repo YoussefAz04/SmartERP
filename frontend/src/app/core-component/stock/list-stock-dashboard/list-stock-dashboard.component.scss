@@ -201,8 +201,15 @@ $radius-sm: 8px;
 .content-enter {
   .kpi-card {
     animation: cardEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: calc(var(--stagger, 0) * 0.08s);
+    animation-delay: calc(var(--stagger, 0) * 0.06s);
   }
+}
+
+// Fallback: if content-enter is never applied, cards stay visible
+:host .kpi-card {
+  // Starts hidden, animated by .content-enter
+  // After 1s fallback, ensure visibility even without animation trigger
+  animation: cardEnterFallback 0s 0.8s both;
 }
 
 // ============================================================
@@ -853,6 +860,13 @@ $radius-sm: 8px;
 @keyframes orbFloat {
   0% { transform: translate(0, 0) scale(1); }
   100% { transform: translate(20px, -15px) scale(1.08); }
+}
+
+@keyframes cardEnterFallback {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 // ============================================================

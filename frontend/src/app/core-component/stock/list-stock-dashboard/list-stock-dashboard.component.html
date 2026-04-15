@@ -41,7 +41,7 @@
   <!-- KPI Cards -->
   <div class="row g-3 mb-4" [class.content-enter]="contentReady">
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-indigo" style="--stagger: 0" routerLink="/stock/list">
+      <div class="kpi-card kpi-indigo" style="--stagger: 0" routerLink="/stock/list" role="link" tabindex="0">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ totalItems }}</div>
@@ -62,7 +62,7 @@
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-emerald" style="--stagger: 1" routerLink="/stock/list">
+      <div class="kpi-card kpi-emerald" style="--stagger: 1" routerLink="/stock/list" role="link" tabindex="0">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ totalAvailable }}</div>
@@ -83,7 +83,7 @@
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-amber" style="--stagger: 2" routerLink="/stock/list">
+      <div class="kpi-card kpi-amber" style="--stagger: 2" routerLink="/stock/list" role="link" tabindex="0">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ lowStockCount }}</div>
@@ -104,7 +104,7 @@
       </div>
     </div>
     <div class="col-xl-3 col-sm-6">
-      <div class="kpi-card kpi-slate" style="--stagger: 3" routerLink="/stock/movements">
+      <div class="kpi-card kpi-slate" style="--stagger: 3" routerLink="/stock/movements" role="link" tabindex="0">
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ movements.length }}</div>

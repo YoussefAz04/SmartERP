@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { StockService } from '../../../core/service/stock/stock.service';
@@ -13,7 +13,7 @@ import { StockMouvement } from '../../../model/stock-mouvement.model';
   templateUrl: './list-stock-dashboard.component.html',
   styleUrl: './list-stock-dashboard.component.scss'
 })
-export class ListStockDashboardComponent implements OnInit, AfterViewInit {
+export class ListStockDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   stocks: Stock[] = [];
   movements: StockMouvement[] = [];
   isLoading = false;
@@ -139,5 +139,9 @@ export class ListStockDashboardComponent implements OnInit, AfterViewInit {
 
   navigateTo(path: string): void {
     this.router.navigate([path]);
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
   }
 }
