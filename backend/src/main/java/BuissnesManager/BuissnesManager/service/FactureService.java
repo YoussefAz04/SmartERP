@@ -96,7 +96,8 @@ public List<FactureAchat> getAllFactureAchat(){
         return factureAchatRepo.findByEntrepriseId(entrepriseId);
 }
 public FactureAchat getById(Long id){
-   return  this.factureAchatRepo.findById(id).get();
+   return  this.factureAchatRepo.findById(id)
+           .orElseThrow(() -> new RuntimeException("Facture non trouvée avec l'id : " + id));
 }
 
     public FactureAchat updateFactureAchat(Long id, FactureAchat updatedFacture) {

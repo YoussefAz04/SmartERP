@@ -40,8 +40,10 @@ public class PermissionService {
         }
 
 
-        Module module = moduleRepo.findById(idModule).get();
-        Role role = roleRepo.findById(idRole).get();
+        Module module = moduleRepo.findById(idModule)
+                .orElseThrow(() -> new RuntimeException("Module non trouvé avec l'id : " + idModule));
+        Role role = roleRepo.findById(idRole)
+                .orElseThrow(() -> new RuntimeException("Role non trouvé avec l'id : " + idRole));
         permission.setModule(module);
         permission.setRole(role);
         roleRepo.save(role);

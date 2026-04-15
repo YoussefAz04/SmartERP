@@ -71,7 +71,8 @@ public class EntrepriseService {
         userRepo.save(user);
     }
     public Entreprise getById(Long idEntreprise){
-        return entrepriseRepository.findById(idEntreprise).get();
+        return entrepriseRepository.findById(idEntreprise)
+                .orElseThrow(() -> new RuntimeException("Entreprise non trouvée avec l'id : " + idEntreprise));
     }
 
 
