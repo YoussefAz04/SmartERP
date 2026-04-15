@@ -3,7 +3,6 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {DepartementService} from "../../../core/service/departement/departement.service";
 import {EntrepriseService} from "../../../core/service/entreprise/entreprise.service";
 import {Router, RouterLink} from "@angular/router";
-
 import {NgForOf} from "@angular/common";
 import {routes} from "../../../core/helpers/routes";
 
