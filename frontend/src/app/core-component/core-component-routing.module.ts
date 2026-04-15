@@ -87,12 +87,6 @@ const routes: Routes = [
             (m) => m.EntrepriseModule
           ),
       }, {
-        path: 'departement',
-        loadChildren: () =>
-          import('./departement/departement.module').then(
-            (m) => m.DepartementModule
-          ),
-      },{
         path: 'facture',
         canActivate: [RoleGuard],
         data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
