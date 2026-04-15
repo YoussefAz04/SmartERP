@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {Validators} from "ngx-editor";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategorieProjetService} from "../../../core/service/categorieProjet/categorie-projet.service";
 import { routes } from 'src/app/core/helpers/routes';
 import {Router, RouterLink} from "@angular/router";

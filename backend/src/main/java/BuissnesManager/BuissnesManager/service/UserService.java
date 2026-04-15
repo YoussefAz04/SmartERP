@@ -240,7 +240,8 @@ public class UserService {
 
 
     public UserDTO getUserById(Long idUser){
-        User user = userRepository.findById(idUser).get();
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + idUser));
         UserDTO dto =new UserDTO();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
@@ -261,7 +262,8 @@ public class UserService {
 
     }
     public void updateUser(UserDTO userDTO , Long idUser){
-        User user = userRepository.findById(idUser).get();
+        User user = userRepository.findById(idUser)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + idUser));
         user.setUsername(userDTO.getUsername());
         user.setPhone(userDTO.getPhone());
         Entreprise entreprise = entrepriseRepo.findById(userDTO.getEntrepriseId())

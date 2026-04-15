@@ -50,7 +50,8 @@ public class ModuleService {
     }
 
     public Module getByIdModule(Long idModule) {
-        return moduleRepo.findById(idModule).get();
+        return moduleRepo.findById(idModule)
+                .orElseThrow(() -> new RuntimeException("Module non trouvé avec l'id : " + idModule));
     }
 
 
@@ -147,21 +148,24 @@ public class ModuleService {
 
 
         public void affecterModuleToModuleTittle(List<Module> modules , Long idModuleTittle){
+           ModuleTittle moduleTittle = moduleTittleRepo.findById(idModuleTittle)
+                   .orElseThrow(() -> new RuntimeException("ModuleTittle non trouvé avec l'id : " + idModuleTittle));
            for (Module module: modules){
-
-               module.setModuleTittle(moduleTittleRepo.findById(idModuleTittle).get());
+               module.setModuleTittle(moduleTittle);
                moduleRepo.save(module);
            }
         }
 
 
         public Module addModuleWithTitreModule(Module module,Long idModuleTitre){
-           ModuleTittle  moduleTittle = moduleTittleRepo.findById(idModuleTitre).get() ;
+           ModuleTittle  moduleTittle = moduleTittleRepo.findById(idModuleTitre)
+                   .orElseThrow(() -> new RuntimeException("ModuleTittle non trouvé avec l'id : " + idModuleTitre));
            module.setModuleTittle(moduleTittle);
            return moduleRepo.save(module);
         }
         public SousModule createSousModule(SousModule sousModule,Long idModule){
-            Module module = moduleRepo.findById(idModule).get();
+            Module module = moduleRepo.findById(idModule)
+                    .orElseThrow(() -> new RuntimeException("Module non trouvé avec l'id : " + idModule));
             sousModule.setModule(module);
             return sousModuleRepo.save(sousModule);
         }

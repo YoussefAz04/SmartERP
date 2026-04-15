@@ -1,10 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {DepartementService} from "../../../core/service/departement/departement.service";
 import {EntrepriseService} from "../../../core/service/entreprise/entreprise.service";
 import {Router, RouterLink} from "@angular/router";
-import {Validators} from "ngx-editor";
-import {Entreprise} from "../../../model/entreprise.model";
 import {NgForOf} from "@angular/common";
 import {routes} from "../../../core/helpers/routes";
 

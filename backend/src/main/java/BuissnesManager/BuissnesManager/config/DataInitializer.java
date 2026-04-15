@@ -20,7 +20,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        UserRequest userRequest = new UserRequest("admin", "admin@gmail.com","admin123","54575533","C:\\Users\\Adminn\\Pictures\\Screenshots");
+        UserRequest userRequest = new UserRequest("admin", "admin@gmail.com","admin123","54575533","");
         try {
             userService.createUser(userRequest);
             System.out.println("Utilisateur admin créé avec succès.");

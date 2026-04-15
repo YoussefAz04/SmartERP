@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategorieDocument} from "../../../model/CategorieDocument.model";
 import {DocumentService} from "../../../core/service/document/document.service";
-import {Validators} from "ngx-editor";
 import {RouterLink} from "@angular/router";
 import {routes} from "../../../core/helpers/routes";
 import {NgForOf} from "@angular/common";

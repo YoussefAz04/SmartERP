@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router, RouterLink} from "@angular/router";
-import {Validators} from "ngx-editor";
 import {CategorieTacheService} from "../../../core/service/categorieTache/categorie-tache.service";
 import { routes } from 'src/app/core/helpers/routes';
 

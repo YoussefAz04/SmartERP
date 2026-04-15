@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.EntityResponse;
 
 @RestController
 @RequestMapping("permission")
@@ -20,7 +19,7 @@ public class PermissionController {
 
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("add/{idRole}/{idModule}")
-    private ResponseEntity<?> createPermission(@RequestBody Permission permission, @PathVariable Long idRole , @PathVariable Long idModule){
+    public ResponseEntity<?> createPermission(@RequestBody Permission permission, @PathVariable Long idRole , @PathVariable Long idModule){
         try {
             return ResponseEntity.ok().body(permissionService.addPermission(permission, idRole, idModule));
         }catch (Exception e){

@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {Validators} from "ngx-editor";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgForOf, NgIf} from "@angular/common";
 import {UserService} from "../service/user/user.service";
 import {EntrepriseService} from "../../core/service/entreprise/entreprise.service";
@@ -56,7 +55,7 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
   ngOnInit(): void {
     this.userFormGroup = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required()],
+      password: ['', Validators.required],
       email: ['', [Validators.required]],
     });
 
@@ -73,21 +72,27 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
       dateDerniereModification: ['']
     });
     localStorage.removeItem('tempUserData');
-    localStorage.removeItem('tempEntrepirseData');
+    localStorage.removeItem('tempEntrepriseData');
   }
 
   async createEntreprise(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (this.entrepriseFormGroup.valid) {
         this.entrepriseService.ajouterEntreprise(this.entrepriseFormGroup.value).subscribe({
           next: (data) => {
-            if (data?.id!=null){
+            if (data?.id != null){
               this.idEntreprise = data.id;
+              resolve(this.idEntreprise);
+            } else {
+              reject(new Error('Entreprise creation returned no ID'));
             }
-            console.log("Entreprise créée avec ID:", this.idEntreprise);
-            resolve(this.idEntreprise);
+          },
+          error: (err) => {
+            reject(err);
           }
         });
+      } else {
+        reject(new Error('Entreprise form is invalid'));
       }
     });
   }
@@ -122,7 +127,7 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
     } else if (stepNumber === 2) {
       const entrepriseData = this.entrepriseFormGroup.value;
 
-      localStorage.setItem('tempEntrepirseData', JSON.stringify(entrepriseData));
+      localStorage.setItem('tempEntrepriseData', JSON.stringify(entrepriseData));
     }
     this.currentStep = stepNumber;
 

@@ -93,7 +93,7 @@ public class ModuleController {
     }
 
     @DeleteMapping("deleteModuleTittle/{id}")
-    public ResponseEntity<?>  deleteModuleTittle(@PathVariable Long idModuleTittle){
+    public ResponseEntity<?>  deleteModuleTittle(@PathVariable("id") Long idModuleTittle){
         moduleService.deleteModuleTittle(idModuleTittle);
         return ResponseEntity.ok().build();
     }

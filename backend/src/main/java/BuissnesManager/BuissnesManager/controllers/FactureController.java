@@ -20,12 +20,12 @@ public class FactureController {
 
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("addFacture/{idDocument}")
-    private ResponseEntity<?> ajouterFacture(@PathVariable Long idDocument) throws Exception {
+    public ResponseEntity<?> ajouterFacture(@PathVariable Long idDocument) throws Exception {
         try {
             factureService.AjouterFactureAchat(idDocument) ;
             return ResponseEntity.ok().build() ;
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("error" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("error: " + e.getMessage());
         }
     }
 

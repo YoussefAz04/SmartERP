@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Equipe} from "../../../model/equipe.model";
 import {EquipeService} from "../../../core/service/equipe/equipe.service";
 import {MembreService} from "../../../core/service/membre/membre.service";
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {Validators} from "ngx-editor";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgForOf} from "@angular/common";
 import {SharedModule} from "../../../shared/shared.module";
 import {Router, RouterLink} from "@angular/router";
@@ -39,8 +38,8 @@ export class AddMembreComponent implements OnInit{
     this.membreForm = this.fb.group({
       membreTitre: ['', Validators.required],
       description: ['', Validators.required],
-      specialite: ['', Validators.required()],
-      idEquipe :['', Validators.required()]
+      specialite: ['', Validators.required],
+      idEquipe :['', Validators.required]
     });
 
   }
