@@ -148,20 +148,41 @@ generateSidebarData(modules: ModuleTittle[]) {
       'Commande Vente': 'Commandes Vente',
     };
 
+    // iconMap: maps Module.title to feather icon names for visual variety
+    const iconMap: { [key: string]: string } = {
+      'Liste Article': 'package',
+      'gestion de Client': 'users',
+      'gestion de Categorie Client': 'tag',
+      'gestion de Fournisseur': 'truck',
+      'gestion de Categorie Fournisseur': 'tag',
+      'gestion Article Achat': 'shopping-bag',
+      'gestion Article Vente': 'shopping-cart',
+      'gestion Stock': 'box',
+      'Commande Achat': 'file-text',
+      'Commande Vente': 'file-text',
+      'Facture Achat': 'credit-card',
+      'Facture Vente': 'credit-card',
+      'Liste Document': 'folder',
+      'Liste Depense': 'dollar-sign',
+    };
+
     // Module sections to exclude entirely from the sidebar
-    const excludedModuleTitles = ['gestion Module', 'gestion departement', 'Departement', 'Departemen'];
+    const excludedModuleTitles = [
+      'gestion Module', 'gestion departement', 'Departement', 'Departemen',
+      'gestion Departement',
+    ];
 
     // Sous-module links to exclude from the sidebar
-    const excludedSousModuleLinks = ['achat/listBonReception'];
+    const excludedSousModuleLinks = ['achat/listBonReception', 'vente/listBonLivraison'];
 
     // Shared list of titles to exclude at both the Module and SousModule levels
     // 'Departemen' is kept intentionally as a DB misspelling variant of 'Departement'
     const excludedItemTitles = [
-      'Bon Reception', 'Bon de reception',
-      'Bon Livraison', 'Bon livraison',
+      'Bon Reception', 'Bon de reception', 'Bon de Reception', 'Bon De Reception',
+      'Bon Livraison', 'Bon livraison', 'Bon de livraison', 'Bon de Livraison', 'Bon De Livraison',
       'Categorie Depense',
       'Select Zone',
-      'Departement', 'Departemen',
+      'Departement', 'Departemen', 'departement',
       'Module titre', 'Module', 'Sous Module',
     ];
 
@@ -219,7 +240,7 @@ generateSidebarData(modules: ModuleTittle[]) {
             menuValue: menuValueMap[mod.title] || mod.title,
             hasSubRoute: filteredSousModules.length > 0,
             showSubRoute: true,
-            icon: 'grid',
+            icon: iconMap[mod.title] || 'grid',
             base1: 'managementEntreprise',
             subMenus: filteredSousModules.map((sous: SousModule) => ({
               menuValue: sous.titreSousModule,
