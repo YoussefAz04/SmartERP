@@ -155,6 +155,34 @@ export class ListCommandeAchatComponent implements OnInit {
     });
   }
 
+  canEditOrValidate(statut?: string): boolean {
+    return statut !== 'CONFIRMEE' && statut !== 'RECUE' && statut !== 'ANNULEE';
+  }
+
+  canCancel(statut?: string): boolean {
+    return statut !== 'RECUE' && statut !== 'ANNULEE';
+  }
+
+  getStatutClass(statut?: string): string {
+    switch (statut) {
+      case 'EN_ATTENTE': return 'status-badge status-en-attente';
+      case 'CONFIRMEE':  return 'status-badge status-confirmee';
+      case 'RECUE':      return 'status-badge status-recue';
+      case 'ANNULEE':    return 'status-badge status-annulee';
+      default:           return 'status-badge status-default';
+    }
+  }
+
+  getStatutLabel(statut?: string): string {
+    switch (statut) {
+      case 'EN_ATTENTE': return 'En attente';
+      case 'CONFIRMEE':  return 'Confirmée';
+      case 'RECUE':      return 'Reçue';
+      case 'ANNULEE':    return 'Annulée';
+      default:           return statut || '-';
+    }
+  }
+
   getStatutBadgeClass(statut?: string): string {
     switch (statut) {
       case 'CONFIRMEE': return 'badge bg-success';
