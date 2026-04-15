@@ -16,7 +16,7 @@
     <!-- CENTER: Search Bar -->
     <div class="header-section header-search-section">
       <div class="search-wrapper">
-        <i class="feather icon-search"></i>
+        <i class="feather icon-search search-icon"></i>
         <input 
           type="text" 
           class="search-input"
@@ -33,14 +33,16 @@
         </div>
 
         <!-- Search Dropdown -->
-        <div class="search-dropdown" *ngIf="showSearchDropdown">
+        <div class="search-dropdown animate-dropdown" *ngIf="showSearchDropdown">
           <div class="dropdown-empty" *ngIf="searchResults.length === 0 && !isSearching">
             <i class="feather icon-inbox"></i>
             <p>No results found</p>
           </div>
           <div class="dropdown-results" *ngIf="searchResults.length > 0">
             <ul class="results-list">
-              <li *ngFor="let result of searchResults" class="result-item">
+              <li *ngFor="let result of searchResults; let i = index" 
+                class="result-item"
+                [style.animation-delay]="(i * 0.04) + 's'">
                 <a (click)="navigateToResult(result)">
                   <span class="result-badge" [ngClass]="'badge-' + result.type.toLowerCase()">
                     {{ result.type }}
@@ -59,14 +61,11 @@
     <div class="header-section header-action-section">
       
       <!-- Theme Toggle -->
-      <button class="icon-btn" [title]="lightMode ? 'Dark mode' : 'Light mode'" type="button"
+      <button class="icon-btn theme-toggle-btn" 
+        [title]="lightMode ? 'Dark mode' : 'Light mode'" 
+        type="button"
         (click)="changeThemeMode(lightMode ? 'dark_mode' : 'light_mode')">
         <i class="feather" [ngClass]="lightMode ? 'icon-moon' : 'icon-sun'"></i>
-      </button>
-
-      <!-- Fullscreen -->
-      <button class="icon-btn" title="Fullscreen" type="button" (click)="fullscreen()">
-        <i class="feather icon-maximize-2"></i>
       </button>
 
       <!-- Settings -->
@@ -86,10 +85,10 @@
         </button>
 
         <!-- Notifications Dropdown -->
-        <div class="dropdown-panel notifications-dropdown" *ngIf="showNotifications">
+        <div class="dropdown-panel notifications-dropdown animate-dropdown" *ngIf="showNotifications">
           <div class="dropdown-header">
             <h6 class="dropdown-title">Notifications</h6>
-            <button class="mark-read-btn" (click)="markAllRead()" type="button">Mark all</button>
+            <button class="mark-read-btn" (click)="markAllRead()" type="button" *ngIf="unreadCount > 0">Mark all read</button>
           </div>
           
           <div class="dropdown-content">
@@ -98,11 +97,15 @@
             </div>
             
             <ul class="notifications-list" *ngIf="!isLoadingNotifications">
-              <li *ngFor="let notif of notifications" 
+              <li *ngFor="let notif of notifications; let i = index" 
                 class="notification-item"
                 [class.unread]="notif.statut === 'NOUVEAU'"
+                [style.animation-delay]="(i * 0.04) + 's'"
                 (click)="markRead(notif.id)">
-                <div class="notif-icon">
+                <div class="notif-icon" [ngClass]="{
+                  'notif-icon-new': notif.statut === 'NOUVEAU',
+                  'notif-icon-seen': notif.statut !== 'NOUVEAU'
+                }">
                   <i class="feather icon-bell"></i>
                 </div>
                 <div class="notif-content">
@@ -112,12 +115,13 @@
                 <span class="unread-indicator" *ngIf="notif.statut === 'NOUVEAU'"></span>
               </li>
               <li *ngIf="notifications.length === 0" class="empty-state">
-                <p>No notifications</p>
+                <i class="feather icon-bell-off"></i>
+                <p>No notifications yet</p>
               </li>
             </ul>
           </div>
 
-          <div class="dropdown-footer">
+          <div class="dropdown-footer" *ngIf="notifications.length > 0">
             <a [routerLink]="routes.activities" class="view-all-link">
               View all <i class="feather icon-arrow-right"></i>
             </a>
@@ -136,11 +140,11 @@
             <span class="user-name">{{ userName }}</span>
             <span class="user-role">{{ roleName?.[0] || 'User' }}</span>
           </span>
-          <i class="feather icon-chevron-down"></i>
+          <i class="feather icon-chevron-down chevron-icon" [class.chevron-open]="showProfile"></i>
         </button>
 
         <!-- Profile Dropdown -->
-        <div class="dropdown-panel profile-dropdown" *ngIf="showProfile">
+        <div class="dropdown-panel profile-dropdown animate-dropdown" *ngIf="showProfile">
           <div class="profile-header">
             <div class="profile-avatar-large">
               <span class="avatar-init-large" *ngIf="userInitials">{{ userInitials }}</span>
