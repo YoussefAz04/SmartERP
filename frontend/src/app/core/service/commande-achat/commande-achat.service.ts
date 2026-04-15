@@ -63,6 +63,10 @@ export class CommandeAchatService {
     return this.http.put<any>(`${this.baseUrl}/${id}/recevoir`, {}, { headers: this.getHeaders() });
   }
 
+  changeStatutToEnAttente(id: number): Observable<CommandeAchat> {
+    return this.http.patch<CommandeAchat>(`${this.baseUrl}/${id}/statut?statut=EN_ATTENTE`, {}, { headers: this.getHeaders() });
+  }
+
   annulerCommande(id: number): Observable<CommandeAchat> {
     return this.http.put<CommandeAchat>(`${this.baseUrl}/${id}/annuler`, {}, { headers: this.getHeaders() });
   }
