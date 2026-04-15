@@ -11,6 +11,7 @@ public class AiDashboardDto {
     private KpiSummaryDto kpiSummary;
     private ComparisonMetricsDto comparison;
     private KpiDetailsDto kpiDetails;
+    private List<SupplierPerformanceDto> supplierPerformance;
 
     public AiDashboardDto() {}
 
@@ -34,6 +35,9 @@ public class AiDashboardDto {
 
     public KpiDetailsDto getKpiDetails() { return kpiDetails; }
     public void setKpiDetails(KpiDetailsDto kpiDetails) { this.kpiDetails = kpiDetails; }
+
+    public List<SupplierPerformanceDto> getSupplierPerformance() { return supplierPerformance; }
+    public void setSupplierPerformance(List<SupplierPerformanceDto> supplierPerformance) { this.supplierPerformance = supplierPerformance; }
 
     public static class KpiSummaryDto {
         private Double totalRevenue;
@@ -69,6 +73,10 @@ public class AiDashboardDto {
     public static class ComparisonMetricsDto {
         private PeriodComparisonDto mtdVsLtd;
         private PeriodComparisonDto ytdVsLastYear;
+        private PeriodComparisonDto purchaseYtd;
+        private Double grossMarginYtd;
+        private Long salesOrderCountYtd;
+        private Long purchaseOrderCountYtd;
 
         public ComparisonMetricsDto() {}
 
@@ -77,6 +85,18 @@ public class AiDashboardDto {
 
         public PeriodComparisonDto getYtdVsLastYear() { return ytdVsLastYear; }
         public void setYtdVsLastYear(PeriodComparisonDto ytdVsLastYear) { this.ytdVsLastYear = ytdVsLastYear; }
+
+        public PeriodComparisonDto getPurchaseYtd() { return purchaseYtd; }
+        public void setPurchaseYtd(PeriodComparisonDto purchaseYtd) { this.purchaseYtd = purchaseYtd; }
+
+        public Double getGrossMarginYtd() { return grossMarginYtd; }
+        public void setGrossMarginYtd(Double grossMarginYtd) { this.grossMarginYtd = grossMarginYtd; }
+
+        public Long getSalesOrderCountYtd() { return salesOrderCountYtd; }
+        public void setSalesOrderCountYtd(Long salesOrderCountYtd) { this.salesOrderCountYtd = salesOrderCountYtd; }
+
+        public Long getPurchaseOrderCountYtd() { return purchaseOrderCountYtd; }
+        public void setPurchaseOrderCountYtd(Long purchaseOrderCountYtd) { this.purchaseOrderCountYtd = purchaseOrderCountYtd; }
     }
 
     public static class PeriodComparisonDto {
@@ -226,5 +246,33 @@ public class AiDashboardDto {
         public void setCount(Long count) { this.count = count; }
         public Double getAmount() { return amount; }
         public void setAmount(Double amount) { this.amount = amount; }
+    }
+
+    // ===== Supplier Performance =====
+    public static class SupplierPerformanceDto {
+        private Long supplierId;
+        private String supplierName;
+        private Long orderCount;
+        private Double totalSpend;
+        private Double deliveryRate;
+        private Double rating;
+        private List<StatusCountDto> statusBreakdown;
+
+        public SupplierPerformanceDto() {}
+
+        public Long getSupplierId() { return supplierId; }
+        public void setSupplierId(Long supplierId) { this.supplierId = supplierId; }
+        public String getSupplierName() { return supplierName; }
+        public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
+        public Long getOrderCount() { return orderCount; }
+        public void setOrderCount(Long orderCount) { this.orderCount = orderCount; }
+        public Double getTotalSpend() { return totalSpend; }
+        public void setTotalSpend(Double totalSpend) { this.totalSpend = totalSpend; }
+        public Double getDeliveryRate() { return deliveryRate; }
+        public void setDeliveryRate(Double deliveryRate) { this.deliveryRate = deliveryRate; }
+        public Double getRating() { return rating; }
+        public void setRating(Double rating) { this.rating = rating; }
+        public List<StatusCountDto> getStatusBreakdown() { return statusBreakdown; }
+        public void setStatusBreakdown(List<StatusCountDto> statusBreakdown) { this.statusBreakdown = statusBreakdown; }
     }
 }

@@ -1,0 +1,211 @@
+.supplier-panel {
+  width: 100%;
+}
+
+.supplier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.supplier-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.2fr 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8f9fc;
+  border-radius: 10px;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #eef2ff;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 8px;
+  }
+}
+
+.supplier-rank-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.supplier-rank {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  &.rank-top {
+    background: linear-gradient(135deg, #f6c90e, #f77f00);
+    color: #fff;
+  }
+
+  &.rank-normal {
+    background: #e2e8f0;
+    color: #64748b;
+  }
+}
+
+.supplier-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.supplier-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.star-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star-filled {
+  color: #f6c90e;
+  font-size: 0.65rem;
+}
+
+.star-empty {
+  color: #ddd;
+  font-size: 0.65rem;
+}
+
+.rating-num {
+  font-size: 0.65rem;
+  color: #999;
+  margin-left: 3px;
+}
+
+.supplier-delivery {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.delivery-label {
+  font-size: 0.65rem;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.delivery-bar-wrap {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.delivery-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+
+  &.rate-good {
+    background: linear-gradient(90deg, #06d6a0, #48cae4);
+  }
+
+  &.rate-medium {
+    background: linear-gradient(90deg, #ffd166, #f77f00);
+  }
+
+  &.rate-poor {
+    background: linear-gradient(90deg, #ef476f, #f72585);
+  }
+}
+
+.delivery-pct {
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  &.rate-good { color: #06d6a0; }
+  &.rate-medium { color: #f77f00; }
+  &.rate-poor { color: #ef476f; }
+}
+
+.supplier-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-icon {
+  color: #4361ee;
+  font-size: 0.7rem;
+  width: 14px;
+  text-align: center;
+}
+
+.stat-val {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.stat-lbl {
+  font-size: 0.65rem;
+  color: #999;
+}
+
+.supplier-status-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+
+  &.livree {
+    background: #e8f9ef;
+    color: #06d6a0;
+  }
+
+  &.en-cours {
+    background: #eef2ff;
+    color: #4361ee;
+  }
+
+  &.annulee {
+    background: #fff5f5;
+    color: #ef476f;
+  }
+}
+
+.no-data {
+  text-align: center;
+  color: #999;
+  padding: 24px;
+  font-size: 0.9rem;
+}

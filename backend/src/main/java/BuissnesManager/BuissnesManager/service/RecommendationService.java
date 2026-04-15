@@ -113,16 +113,28 @@ public class RecommendationService {
             }
         }
 
-        // 5. Seasonal recommendations
-        int currentMonth = now.getMonthValue();
-        if (currentMonth >= 10 || currentMonth <= 1) {
+        // 5. Data-driven delivery quality recommendation
+        Long overdueOrders = commandeAchatRepository.getOverdueOrdersCount(entrepriseId, now);
+        Long activeOrders = commandeAchatRepository.getActiveOrdersCount(entrepriseId);
+        if (overdueOrders != null && overdueOrders > 0) {
+            String urgency = overdueOrders > 5 ? "HAUTE" : "MOYENNE";
+            String icon = overdueOrders > 5 ? "fa-exclamation-circle" : "fa-clock";
             recommendations.add(new RecommendationDto(
-                "SAISONNALITE",
-                "Période de Forte Demande à Venir",
-                "La période de fin d'année approche. Anticipez vos stocks et préparez des offres promotionnelles pour maximiser vos ventes.",
-                "MOYENNE",
-                "fa-calendar-alt",
-                "Planifier"
+                "LIVRAISON_RETARD",
+                "Commandes en Retard de Livraison",
+                overdueOrders + " commande(s) d'achat dépassent leur date de livraison prévue. Contactez vos fournisseurs pour suivre ces livraisons.",
+                urgency,
+                icon,
+                "Voir Commandes"
+            ));
+        } else if (activeOrders != null && activeOrders > 0) {
+            recommendations.add(new RecommendationDto(
+                "LIVRAISON_OK",
+                "Livraisons à Jour",
+                "Toutes vos commandes d'achat actives (" + activeOrders + ") respectent leurs délais de livraison prévus.",
+                "INFO",
+                "fa-truck",
+                "Voir Commandes"
             ));
         }
 

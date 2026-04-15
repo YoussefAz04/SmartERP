@@ -1,0 +1,71 @@
+<div class="supplier-panel" *ngIf="suppliers?.length; else noData">
+  <div class="supplier-list">
+    <div class="supplier-row" *ngFor="let s of suppliers; let i = index">
+
+      <!-- Rank + Name -->
+      <div class="supplier-rank-name">
+        <span class="supplier-rank" [ngClass]="i < 3 ? 'rank-top' : 'rank-normal'">{{ i + 1 }}</span>
+        <div class="supplier-identity">
+          <span class="supplier-name">{{ s.supplierName }}</span>
+          <div class="star-row">
+            <i class="fas"
+               *ngFor="let star of getStars(s.rating)"
+               [ngClass]="star ? 'fa-star star-filled' : 'fa-star star-empty'">
+            </i>
+            <span class="rating-num">({{ s.rating | number:'1.1-1' }})</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Rate -->
+      <div class="supplier-delivery">
+        <span class="delivery-label">Livraison</span>
+        <div class="delivery-bar-wrap">
+          <div class="delivery-bar" [ngClass]="getDeliveryRateClass(s.deliveryRate)"
+               [style.width.%]="s.deliveryRate || 0">
+          </div>
+        </div>
+        <span class="delivery-pct" [ngClass]="getDeliveryRateClass(s.deliveryRate)">
+          {{ s.deliveryRate | number:'1.0-0' }}%
+        </span>
+      </div>
+
+      <!-- Orders & Spend -->
+      <div class="supplier-stats">
+        <div class="stat-item">
+          <span class="stat-icon"><i class="fas fa-shopping-bag"></i></span>
+          <span class="stat-val">{{ s.orderCount | number }}</span>
+          <span class="stat-lbl">cmdes</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon"><i class="fas fa-coins"></i></span>
+          <span class="stat-val">{{ formatCurrency(s.totalSpend) }}</span>
+          <span class="stat-lbl">TND</span>
+        </div>
+      </div>
+
+      <!-- Status Breakdown -->
+      <div class="supplier-status-breakdown">
+        <span class="status-pill livree" *ngIf="getStatusCount(s, 'LIVREE') > 0">
+          <i class="fas fa-check-circle"></i> {{ getStatusCount(s, 'LIVREE') }}
+        </span>
+        <span class="status-pill en-cours" *ngIf="getStatusCount(s, 'EN_COURS') > 0">
+          <i class="fas fa-clock"></i> {{ getStatusCount(s, 'EN_COURS') }}
+        </span>
+        <span class="status-pill annulee" *ngIf="getStatusCount(s, 'ANNULEE') > 0">
+          <i class="fas fa-times-circle"></i> {{ getStatusCount(s, 'ANNULEE') }}
+        </span>
+        <span class="status-pill en-cours" *ngIf="getStatusCount(s, 'CONFIRMEE') > 0">
+          <i class="fas fa-check"></i> {{ getStatusCount(s, 'CONFIRMEE') }}
+        </span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #noData>
+  <div class="no-data">
+    <i class="fas fa-truck me-2"></i>Aucun fournisseur avec des commandes enregistrées
+  </div>
+</ng-template>
