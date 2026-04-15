@@ -163,11 +163,18 @@ generateSidebarData(modules: ModuleTittle[]) {
       'gestion article achat': 'shopping-bag',
       'gestion article vente': 'shopping-cart',
       'gestion stock': 'box',
+      'gestion stocks': 'box',
       'stock': 'box',
       'commande achat': 'file-text',
+      'commandes achat': 'file-text',
       'commande vente': 'file-text',
+      'commandes vente': 'file-text',
+      'module achats': 'shopping-bag',
+      'module ventes': 'shopping-cart',
       'facture achat': 'credit-card',
+      'factures achats': 'credit-card',
       'facture vente': 'credit-card',
+      'factures ventes': 'credit-card',
       'liste document': 'folder',
       'liste depense': 'dollar-sign',
       'users': 'users',
@@ -191,8 +198,8 @@ generateSidebarData(modules: ModuleTittle[]) {
     // Comparisons use normalize() (accent-insensitive, case-insensitive)
     const excludedModuleTitles = [
       'gestion module', 'gestion departement', 'departement', 'departemen',
-      'bon de reception', 'bon reception',
-      'bon de livraison', 'bon livraison',
+      'bon de reception', 'bon reception', 'bons de reception', 'bons reception',
+      'bon de livraison', 'bon livraison', 'bons de livraison', 'bons livraison',
     ];
 
     // Sous-module links to exclude from the sidebar
@@ -202,8 +209,8 @@ generateSidebarData(modules: ModuleTittle[]) {
     // All values are pre-normalized — comparisons use normalize()
     // 'departemen' is kept intentionally as a DB misspelling variant of 'departement'
     const excludedItemTitles = [
-      'bon reception', 'bon de reception',
-      'bon livraison', 'bon de livraison',
+      'bon reception', 'bon de reception', 'bons reception', 'bons de reception',
+      'bon livraison', 'bon de livraison', 'bons livraison', 'bons de livraison',
       'categorie depense',
       'select zone',
       'departement', 'departemen',
@@ -217,8 +224,8 @@ generateSidebarData(modules: ModuleTittle[]) {
     // All values are pre-normalized — comparisons use normalize()
     const excludedKeywords = [
       'departement', 'departemen',
-      'bon de reception', 'bon reception',
-      'bon de livraison', 'bon livraison',
+      'bon de reception', 'bon reception', 'bons de reception', 'bons reception',
+      'bon de livraison', 'bon livraison', 'bons de livraison', 'bons livraison',
     ];
 
     const filteredModules = modules.filter((moduleTitle: ModuleTittle) => {
