@@ -136,8 +136,8 @@
   margin-left: -12px;
 }
 
-.col-xl-3, .col-sm-6 { padding-left: 12px; padding-right: 12px; }
-.col-xl-3 { flex: 0 0 25%; max-width: 25%; }
+.col-xl-6, .col-sm-6 { padding-left: 12px; padding-right: 12px; }
+.col-xl-6 { flex: 0 0 50%; max-width: 50%; }
 .col-sm-6 { flex: 0 0 50%; max-width: 50%; }
 .col-md-5 { flex: 0 0 41.666%; max-width: 41.666%; padding-left: 12px; padding-right: 12px; }
 .col-md-4 { flex: 0 0 33.333%; max-width: 33.333%; padding-left: 12px; padding-right: 12px; }
@@ -165,26 +165,28 @@
   }
 
   .kpi-body {
-    padding: 24px;
+    padding: 28px 32px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
   }
 
   .kpi-number {
-    font-size: 36px;
+    font-size: 48px;
     font-weight: 800;
     color: #fff;
     line-height: 1;
-    margin-bottom: 6px;
-    letter-spacing: -1px;
+    margin-bottom: 8px;
+    letter-spacing: -1.5px;
   }
 
   .kpi-label {
     color: rgba(255, 255, 255, 0.85);
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .kpi-trend {
@@ -193,63 +195,53 @@
     gap: 4px;
     background: rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.9);
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 12px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
 
-    i { font-size: 11px; }
+    i { font-size: 12px; }
   }
 
   .kpi-icon-wrap {
-    width: 60px;
-    height: 60px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 
-    i { font-size: 26px; color: rgba(255, 255, 255, 0.9); }
+    i { font-size: 32px; color: rgba(255, 255, 255, 0.9); }
   }
 
   .kpi-footer {
-    padding: 10px 24px;
-    background: rgba(0, 0, 0, 0.12);
-    color: rgba(255, 255, 255, 0.8);
+    padding: 12px 32px;
+    background: rgba(0, 0, 0, 0.15);
+    color: rgba(255, 255, 255, 0.75);
     font-size: 12px;
     font-weight: 600;
+    letter-spacing: 0.3px;
     transition: background 0.2s;
 
-    &:hover { background: rgba(0, 0, 0, 0.2); }
+    &:hover { background: rgba(0, 0, 0, 0.25); }
   }
 
-  &.kpi-blue {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8c 100%);
-    box-shadow: 0 8px 32px rgba(30, 58, 95, 0.35);
+  &.kpi-navy {
+    background: linear-gradient(135deg, #0f2040 0%, #1e3a6e 50%, #2a5298 100%);
+    box-shadow: 0 8px 32px rgba(15, 32, 64, 0.4), 0 2px 8px rgba(42, 82, 152, 0.2);
   }
 
-  &.kpi-teal {
-    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.35);
-  }
-
-  &.kpi-green {
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.35);
-  }
-
-  &.kpi-amber {
-    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
-    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.35);
+  &.kpi-slate {
+    background: linear-gradient(135deg, #164e63 0%, #155e75 50%, #0e7490 100%);
+    box-shadow: 0 8px 32px rgba(22, 78, 99, 0.4), 0 2px 8px rgba(14, 116, 144, 0.2);
   }
 }
 
 .kpi-delay-1 { animation-delay: 0.1s; }
 .kpi-delay-2 { animation-delay: 0.2s; }
-.kpi-delay-3 { animation-delay: 0.3s; }
-.kpi-delay-4 { animation-delay: 0.4s; }
 
 // ============================================================
 // Filter Card
@@ -691,12 +683,8 @@
 // ============================================================
 // Responsive
 // ============================================================
-@media (max-width: 1200px) {
-  .col-xl-3 { flex: 0 0 50%; max-width: 50%; }
-}
-
 @media (max-width: 768px) {
-  .col-xl-3, .col-sm-6 { flex: 0 0 100%; max-width: 100%; }
+  .col-xl-6, .col-sm-6 { flex: 0 0 100%; max-width: 100%; }
   .col-md-5, .col-md-4, .col-md-3 { flex: 0 0 100%; max-width: 100%; }
 
   .four-hero-header {
@@ -712,7 +700,7 @@
     }
   }
 
-  .kpi-card .kpi-number { font-size: 28px; }
+  .kpi-card .kpi-number { font-size: 36px; }
   .filter-card .filter-body { padding: 16px; }
   .four-table { th, td { padding: 10px 12px; } }
 }
