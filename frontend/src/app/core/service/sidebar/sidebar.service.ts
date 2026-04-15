@@ -158,18 +158,30 @@ generateSidebarData(modules: ModuleTittle[]) {
       'gestion Article Achat': 'shopping-bag',
       'gestion Article Vente': 'shopping-cart',
       'gestion Stock': 'box',
+      'Stock': 'box',
       'Commande Achat': 'file-text',
       'Commande Vente': 'file-text',
       'Facture Achat': 'credit-card',
       'Facture Vente': 'credit-card',
       'Liste Document': 'folder',
       'Liste Depense': 'dollar-sign',
+      'Users': 'user',
+      'users': 'user',
+      'Utilisateurs': 'user',
+      'gestion Utilisateur': 'user',
+      'gestion Utilisateurs': 'user',
+      'gestion Users': 'user',
+      'Entreprise': 'briefcase',
+      'entreprise': 'briefcase',
+      'gestion Entreprise': 'briefcase',
+      'Gestion Entreprise': 'briefcase',
     };
 
     // Module sections to exclude entirely from the sidebar
     // Comparisons are case-insensitive (toLowerCase), so only one case variant is needed
     const excludedModuleTitles = [
       'gestion module', 'gestion departement', 'departement', 'departemen',
+      'bon de reception', 'bon reception',
     ];
 
     // Sous-module links to exclude from the sidebar
@@ -190,22 +202,33 @@ generateSidebarData(modules: ModuleTittle[]) {
     const excludedSousModuleTitles = excludedItemTitles;
     const excludedModuleItemTitles = excludedItemTitles;
 
-    const filteredModules = modules.filter((moduleTitle: ModuleTittle) =>
-      !excludedModuleTitles.some(excluded =>
-        moduleTitle.moduleTittle?.toLowerCase().trim() === excluded.toLowerCase().trim()
-      )
-    );
+    // Keywords for partial-match exclusion (used at section, module, and sous-module levels)
+    const excludedKeywords = ['departement', 'departemen', 'bon de reception', 'bon reception'];
+
+    const filteredModules = modules.filter((moduleTitle: ModuleTittle) => {
+      const title = moduleTitle.moduleTittle?.toLowerCase().trim() ?? '';
+      // Exclude sections by exact match
+      if (excludedModuleTitles.some(excluded => title === excluded.toLowerCase().trim())) {
+        return false;
+      }
+      // Also exclude sections containing these keywords (partial match)
+      if (excludedKeywords.some(kw => title.includes(kw))) {
+        return false;
+      }
+      return true;
+    });
 
     const data = filteredModules.map((moduleTitle: ModuleTittle) => {
       let activeModules: Module[];
 
       if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
         // ADMIN and SUPER_ADMIN see all modules (not filtered by status)
-        activeModules = moduleTitle.modules.filter((mod: Module) =>
-          !excludedModuleItemTitles.some(excluded =>
-            mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
-          )
-        );
+        activeModules = moduleTitle.modules.filter((mod: Module) => {
+          const t = mod.title?.toLowerCase().trim() ?? '';
+          if (excludedModuleItemTitles.some(excluded => t === excluded.toLowerCase().trim())) return false;
+          if (excludedKeywords.some(kw => t.includes(kw))) return false;
+          return true;
+        });
       } else {
         // EMPLOYEE: show only the 4 allowed sections (Articles Achat, Articles Vente, Clients, Fournisseur)
         // Filter by section title keywords rather than by DB permission IDs (which may be unset)
@@ -216,11 +239,12 @@ generateSidebarData(modules: ModuleTittle[]) {
         if (!isSectionAllowed) {
           activeModules = [];
         } else {
-          activeModules = moduleTitle.modules.filter((mod: Module) =>
-            !excludedModuleItemTitles.some(excluded =>
-              mod.title?.toLowerCase().trim() === excluded.toLowerCase().trim()
-            )
-          );
+          activeModules = moduleTitle.modules.filter((mod: Module) => {
+            const t = mod.title?.toLowerCase().trim() ?? '';
+            if (excludedModuleItemTitles.some(excluded => t === excluded.toLowerCase().trim())) return false;
+            if (excludedKeywords.some(kw => t.includes(kw))) return false;
+            return true;
+          });
         }
       }
 
@@ -231,12 +255,13 @@ generateSidebarData(modules: ModuleTittle[]) {
         hasSubRoute: activeModules.some((mod: Module) => mod.sousModules.length > 0),
         showSubRoute: true,
         menu: activeModules.map((mod: Module) => {
-          const filteredSousModules = mod.sousModules.filter((sous: SousModule) =>
-            !(sous.link && excludedSousModuleLinks.includes(sous.link.trim())) &&
-            !excludedSousModuleTitles.some(excluded =>
-              sous.titreSousModule?.toLowerCase().trim() === excluded.toLowerCase().trim()
-            )
-          );
+          const filteredSousModules = mod.sousModules.filter((sous: SousModule) => {
+            const sousTitle = sous.titreSousModule?.toLowerCase().trim() ?? '';
+            if (sous.link && excludedSousModuleLinks.includes(sous.link.trim())) return false;
+            if (excludedSousModuleTitles.some(excluded => sousTitle === excluded.toLowerCase().trim())) return false;
+            if (excludedKeywords.some(kw => sousTitle.includes(kw))) return false;
+            return true;
+          });
           return {
             menuValue: menuValueMap[mod.title] || mod.title,
             hasSubRoute: filteredSousModules.length > 0,

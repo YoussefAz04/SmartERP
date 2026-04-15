@@ -16,7 +16,9 @@ $text-light: #a0aec0;
 #sidebar {
   .sidebar-inner {
     width: 100%;
+    height: 100%;
     padding: 12px 0;
+    overflow: hidden;
   }
 }
 
