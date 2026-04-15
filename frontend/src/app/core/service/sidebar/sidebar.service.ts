@@ -167,23 +167,24 @@ generateSidebarData(modules: ModuleTittle[]) {
     };
 
     // Module sections to exclude entirely from the sidebar
+    // Comparisons are case-insensitive (toLowerCase), so only one case variant is needed
     const excludedModuleTitles = [
-      'gestion Module', 'gestion departement', 'Departement', 'Departemen',
-      'gestion Departement',
+      'gestion module', 'gestion departement', 'departement', 'departemen',
     ];
 
     // Sous-module links to exclude from the sidebar
     const excludedSousModuleLinks = ['achat/listBonReception', 'vente/listBonLivraison'];
 
     // Shared list of titles to exclude at both the Module and SousModule levels
-    // 'Departemen' is kept intentionally as a DB misspelling variant of 'Departement'
+    // All values are lowercase — comparisons use toLowerCase().trim()
+    // 'departemen' is kept intentionally as a DB misspelling variant of 'departement'
     const excludedItemTitles = [
-      'Bon Reception', 'Bon de reception', 'Bon de Reception', 'Bon De Reception',
-      'Bon Livraison', 'Bon livraison', 'Bon de livraison', 'Bon de Livraison', 'Bon De Livraison',
-      'Categorie Depense',
-      'Select Zone',
-      'Departement', 'Departemen', 'departement',
-      'Module titre', 'Module', 'Sous Module',
+      'bon reception', 'bon de reception',
+      'bon livraison', 'bon de livraison',
+      'categorie depense',
+      'select zone',
+      'departement', 'departemen',
+      'module titre', 'module', 'sous module',
     ];
 
     const excludedSousModuleTitles = excludedItemTitles;
