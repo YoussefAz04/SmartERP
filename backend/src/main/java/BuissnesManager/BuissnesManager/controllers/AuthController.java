@@ -91,7 +91,7 @@ public class AuthController {
             User newUser = new User();
             newUser.setUsername(request.getUsername());
             newUser.setEmail(request.getEmail());
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+            newUser.setPassword(request.getPassword());
             newUser.setEnabled(true);
 
             // Assign enterprise if provided
