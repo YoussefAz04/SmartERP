@@ -25,4 +25,18 @@ export class ComparisonMetricsComponent {
     const max = Math.max(current, previous, 1);
     return Math.min((previous / max) * 100, 100);
   }
+
+  getMarginPercent(): number {
+    if (!this.comparison?.ytdVsLastYear?.current || this.comparison.ytdVsLastYear.current === 0) return 0;
+    const salesYtd = this.comparison.ytdVsLastYear.current;
+    const margin = this.comparison.grossMarginYtd ?? 0;
+    return Math.round((margin / salesYtd) * 1000) / 10;
+  }
+
+  getMarginClass(): string {
+    const pct = this.getMarginPercent();
+    if (pct >= 30) return 'text-success';
+    if (pct >= 15) return 'text-warning';
+    return 'text-danger';
+  }
 }

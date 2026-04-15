@@ -242,8 +242,9 @@ export class AiDashboardComponent implements OnInit {
       case 'BONNE_PERFORMANCE':
         this.router.navigate([routes.articleAchatList]);
         break;
-      case 'SAISONNALITE':
-        this.router.navigate([routes.stockList]);
+      case 'LIVRAISON_RETARD':
+      case 'LIVRAISON_OK':
+        this.router.navigate([routes.commandeAchatList]);
         break;
       case 'DONNEES_INSUFFISANTES':
         this.router.navigate([routes.addCommandeAchat]);

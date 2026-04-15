@@ -39,4 +39,7 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
 
     @Query("SELECT lc.articleVente.nom, COALESCE(SUM(lc.quantite), 0), COALESCE(SUM(lc.montantTTC), 0) FROM LigneCommandeVente lc WHERE lc.commandeVente.entreprise.id = :entrepriseId AND lc.articleVente IS NOT NULL GROUP BY lc.articleVente.id, lc.articleVente.nom ORDER BY SUM(lc.quantite) DESC")
     List<Object[]> getTopProducts(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COUNT(c) FROM CommandeVente c WHERE c.entreprise.id = :entrepriseId AND c.dateCommande BETWEEN :debut AND :fin")
+    Long getSalesOrderCountInPeriod(@Param("entrepriseId") Long entrepriseId, @Param("debut") LocalDate debut, @Param("fin") LocalDate fin);
 }

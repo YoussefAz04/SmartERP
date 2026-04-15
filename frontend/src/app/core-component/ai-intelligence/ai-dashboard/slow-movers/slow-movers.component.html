@@ -1,0 +1,36 @@
+<div class="slow-movers-panel" *ngIf="slowMovers.length; else noData">
+  <div class="summary-bar">
+    <span class="summary-item">
+      <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+      {{ slowMovers.length }} article(s) à rotation lente
+    </span>
+    <span class="summary-item" *ngIf="productsDetails?.totalStockValue">
+      <i class="fas fa-warehouse text-muted me-1"></i>
+      Valeur stock total: <strong>{{ formatCurrency(productsDetails!.totalStockValue) }} TND</strong>
+    </span>
+  </div>
+
+  <div class="slow-mover-list">
+    <div class="slow-mover-row" *ngFor="let item of slowMovers; let i = index">
+      <div class="item-rank">{{ i + 1 }}</div>
+      <div class="item-name">{{ item.name }}</div>
+      <div class="item-qty">
+        <span class="qty-badge" [ngClass]="getRiskClass(item.value)">
+          {{ item.value | number:'1.0-0' }} vendu(s)
+        </span>
+      </div>
+      <div class="item-risk-label">
+        <span class="risk-tag" [ngClass]="getRiskClass(item.value)">
+          {{ getRiskLabel(item.value) }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #noData>
+  <div class="no-data">
+    <i class="fas fa-check-circle text-success me-2"></i>
+    Aucun article à rotation lente détecté
+  </div>
+</ng-template>

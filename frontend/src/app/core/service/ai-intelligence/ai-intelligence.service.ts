@@ -97,6 +97,25 @@ export interface PeriodComparison {
 export interface ComparisonMetrics {
   mtdVsLtd: PeriodComparison;
   ytdVsLastYear: PeriodComparison;
+  purchaseYtd?: PeriodComparison;
+  grossMarginYtd?: number;
+  salesOrderCountYtd?: number;
+  purchaseOrderCountYtd?: number;
+}
+
+export interface SupplierStatusCount {
+  status: string;
+  count: number;
+}
+
+export interface SupplierPerformance {
+  supplierId: number;
+  supplierName: string;
+  orderCount: number;
+  totalSpend: number;
+  deliveryRate: number;
+  rating: number;
+  statusBreakdown: SupplierStatusCount[];
 }
 
 export interface NameValue {
@@ -155,6 +174,7 @@ export interface AiDashboard {
   kpiSummary: KpiSummary;
   comparison?: ComparisonMetrics;
   kpiDetails?: KpiDetails;
+  supplierPerformance?: SupplierPerformance[];
 }
 
 @Injectable({

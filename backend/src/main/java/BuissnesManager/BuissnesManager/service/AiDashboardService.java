@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.dto.AiDashboardDto;
 import BuissnesManager.BuissnesManager.dto.ForecastDto;
 import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
+import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AiDashboardService {
@@ -28,6 +31,9 @@ public class AiDashboardService {
     private CommandeVenteRepository commandeVenteRepository;
 
     @Autowired
+    private CommandeAchatRepository commandeAchatRepository;
+
+    @Autowired
     private StockRepository stockRepository;
 
     public AiDashboardDto getAiDashboard(Long entrepriseId) {
@@ -42,6 +48,7 @@ public class AiDashboardService {
         dashboard.setKpiSummary(buildKpiSummary(entrepriseId));
         dashboard.setComparison(buildComparisonMetrics(entrepriseId));
         dashboard.setKpiDetails(buildKpiDetails(entrepriseId, productIntelligence, forecast));
+        dashboard.setSupplierPerformance(buildSupplierPerformanceMetrics(entrepriseId));
 
         return dashboard;
     }
@@ -127,6 +134,24 @@ public class AiDashboardService {
         lastYear = lastYear != null ? lastYear : 0.0;
 
         comparison.setYtdVsLastYear(buildPeriodComparison(ytd, lastYear));
+
+        // Purchase YTD vs last year same period
+        Double purchaseYtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, ytdStart, today);
+        Double purchaseLastYear = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
+        purchaseYtd = purchaseYtd != null ? purchaseYtd : 0.0;
+        purchaseLastYear = purchaseLastYear != null ? purchaseLastYear : 0.0;
+        comparison.setPurchaseYtd(buildPeriodComparison(purchaseYtd, purchaseLastYear));
+
+        // Gross margin YTD = sales YTD - purchase YTD
+        double grossMargin = ytd - purchaseYtd;
+        comparison.setGrossMarginYtd(Math.round(grossMargin * 100.0) / 100.0);
+
+        // Order counts YTD
+        Long salesOrderCount = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, ytdStart, today);
+        comparison.setSalesOrderCountYtd(salesOrderCount != null ? salesOrderCount : 0L);
+
+        Long purchaseOrderCount = commandeAchatRepository.getPurchaseOrderCountInPeriod(entrepriseId, ytdStart, today);
+        comparison.setPurchaseOrderCountYtd(purchaseOrderCount != null ? purchaseOrderCount : 0L);
 
         return comparison;
     }
@@ -237,5 +262,50 @@ public class AiDashboardService {
         details.setForecast(forecastDetails);
 
         return details;
+    }
+
+    private List<AiDashboardDto.SupplierPerformanceDto> buildSupplierPerformanceMetrics(Long entrepriseId) {
+        List<AiDashboardDto.SupplierPerformanceDto> result = new ArrayList<>();
+
+        List<Object[]> supplierRows = commandeAchatRepository.getSupplierMetrics(entrepriseId);
+        List<Object[]> statusRows = commandeAchatRepository.getSupplierStatusBreakdown(entrepriseId);
+
+        // Build status breakdown map: supplierId -> list of StatusCountDto
+        Map<Long, List<AiDashboardDto.StatusCountDto>> statusMap = new HashMap<>();
+        for (Object[] row : statusRows) {
+            Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
+            String status = row[1] != null ? row[1].toString() : "INCONNU";
+            Long count = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+            if (supplierId != null) {
+                statusMap.computeIfAbsent(supplierId, k -> new ArrayList<>())
+                         .add(new AiDashboardDto.StatusCountDto(status, count, null));
+            }
+        }
+
+        int limit = 0;
+        for (Object[] row : supplierRows) {
+            if (limit >= 10) break;
+            Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
+            String nom = row[1] != null ? row[1].toString() : "";
+            String prenom = row[2] != null ? row[2].toString().trim() : "";
+            String supplierName = prenom.isEmpty() ? nom : nom + " " + prenom;
+            Long orderCount = row[3] != null ? ((Number) row[3]).longValue() : 0L;
+            Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+            Double deliveryRate = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
+            Double rating = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0;
+
+            AiDashboardDto.SupplierPerformanceDto dto = new AiDashboardDto.SupplierPerformanceDto();
+            dto.setSupplierId(supplierId);
+            dto.setSupplierName(supplierName.trim());
+            dto.setOrderCount(orderCount);
+            dto.setTotalSpend(Math.round(totalSpend * 100.0) / 100.0);
+            dto.setDeliveryRate(deliveryRate);
+            dto.setRating(rating);
+            dto.setStatusBreakdown(statusMap.getOrDefault(supplierId, new ArrayList<>()));
+            result.add(dto);
+            limit++;
+        }
+
+        return result;
     }
 }

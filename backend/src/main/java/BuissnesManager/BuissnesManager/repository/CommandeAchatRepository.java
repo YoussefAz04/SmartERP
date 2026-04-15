@@ -33,4 +33,19 @@ public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Lo
 
     @Query("SELECT FUNCTION('MONTH', c.dateCommande), COALESCE(SUM(c.montantTTC), 0) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND FUNCTION('YEAR', c.dateCommande) = :year GROUP BY FUNCTION('MONTH', c.dateCommande) ORDER BY FUNCTION('MONTH', c.dateCommande)")
     List<Object[]> getMonthlyPurchases(@Param("entrepriseId") Long entrepriseId, @Param("year") int year);
+
+    @Query("SELECT c.fournisseur.id, c.fournisseur.nom, COALESCE(c.fournisseur.prenom, ''), COUNT(c), COALESCE(SUM(c.montantTTC), 0), COALESCE(c.fournisseur.tauxLivraison, 0), COALESCE(c.fournisseur.notation, 0) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL GROUP BY c.fournisseur.id, c.fournisseur.nom, c.fournisseur.prenom, c.fournisseur.tauxLivraison, c.fournisseur.notation ORDER BY SUM(c.montantTTC) DESC")
+    List<Object[]> getSupplierMetrics(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT c.fournisseur.id, c.statut, COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL GROUP BY c.fournisseur.id, c.statut")
+    List<Object[]> getSupplierStatusBreakdown(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.dateCommande BETWEEN :debut AND :fin")
+    Long getPurchaseOrderCountInPeriod(@Param("entrepriseId") Long entrepriseId, @Param("debut") LocalDate debut, @Param("fin") LocalDate fin);
+
+    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.statut NOT IN ('LIVREE', 'ANNULEE') AND c.dateLivraisonPrevue < :today")
+    Long getOverdueOrdersCount(@Param("entrepriseId") Long entrepriseId, @Param("today") LocalDate today);
+
+    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.statut NOT IN ('ANNULEE', 'LIVREE')")
+    Long getActiveOrdersCount(@Param("entrepriseId") Long entrepriseId);
 }
