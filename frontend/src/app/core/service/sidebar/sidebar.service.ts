@@ -202,6 +202,9 @@ generateSidebarData(modules: ModuleTittle[]) {
     const excludedSousModuleTitles = excludedItemTitles;
     const excludedModuleItemTitles = excludedItemTitles;
 
+    // Keywords for partial-match exclusion (used at section, module, and sous-module levels)
+    const excludedKeywords = ['departement', 'departemen', 'bon de reception', 'bon reception'];
+
     const filteredModules = modules.filter((moduleTitle: ModuleTittle) => {
       const title = moduleTitle.moduleTittle?.toLowerCase().trim() ?? '';
       // Exclude sections by exact match
@@ -209,7 +212,6 @@ generateSidebarData(modules: ModuleTittle[]) {
         return false;
       }
       // Also exclude sections containing these keywords (partial match)
-      const excludedKeywords = ['departement', 'departemen', 'bon de reception', 'bon reception'];
       if (excludedKeywords.some(kw => title.includes(kw))) {
         return false;
       }
@@ -224,7 +226,7 @@ generateSidebarData(modules: ModuleTittle[]) {
         activeModules = moduleTitle.modules.filter((mod: Module) => {
           const t = mod.title?.toLowerCase().trim() ?? '';
           if (excludedModuleItemTitles.some(excluded => t === excluded.toLowerCase().trim())) return false;
-          if (['departement', 'departemen', 'bon de reception', 'bon reception'].some(kw => t.includes(kw))) return false;
+          if (excludedKeywords.some(kw => t.includes(kw))) return false;
           return true;
         });
       } else {
@@ -240,7 +242,7 @@ generateSidebarData(modules: ModuleTittle[]) {
           activeModules = moduleTitle.modules.filter((mod: Module) => {
             const t = mod.title?.toLowerCase().trim() ?? '';
             if (excludedModuleItemTitles.some(excluded => t === excluded.toLowerCase().trim())) return false;
-            if (['departement', 'departemen', 'bon de reception', 'bon reception'].some(kw => t.includes(kw))) return false;
+            if (excludedKeywords.some(kw => t.includes(kw))) return false;
             return true;
           });
         }
@@ -257,7 +259,7 @@ generateSidebarData(modules: ModuleTittle[]) {
             const sousTitle = sous.titreSousModule?.toLowerCase().trim() ?? '';
             if (sous.link && excludedSousModuleLinks.includes(sous.link.trim())) return false;
             if (excludedSousModuleTitles.some(excluded => sousTitle === excluded.toLowerCase().trim())) return false;
-            if (['departement', 'departemen', 'bon de reception', 'bon reception'].some(kw => sousTitle.includes(kw))) return false;
+            if (excludedKeywords.some(kw => sousTitle.includes(kw))) return false;
             return true;
           });
           return {
