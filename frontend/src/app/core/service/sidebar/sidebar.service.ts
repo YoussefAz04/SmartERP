@@ -118,6 +118,10 @@ generateSidebarData(modules: ModuleTittle[]) {
     const userRole = this.getUserRole();
     const permittedModuleIds = this.getUserPermissionModuleIds();
 
+    // Strips accents and lowercases a string for accent-insensitive comparisons
+    const normalize = (s: string) =>
+      s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
     // titleMap: maps ModuleTittle.moduleTittle (section-level DB names) to display labels
     const titleMap: { [key: string]: string } = {
       'Gestion Article achat': "Les Articles d'Achats",
@@ -148,47 +152,54 @@ generateSidebarData(modules: ModuleTittle[]) {
       'Commande Vente': 'Commandes Vente',
     };
 
-    // iconMap: maps Module.title to feather icon names for visual variety
+    // iconMap: maps normalized Module.title to feather icon names for visual variety
+    // Keys are pre-normalized (no accents, lowercase) — lookup uses normalize()
     const iconMap: { [key: string]: string } = {
-      'Liste Article': 'package',
-      'gestion de Client': 'users',
-      'gestion de Categorie Client': 'tag',
-      'gestion de Fournisseur': 'truck',
-      'gestion de Categorie Fournisseur': 'tag',
-      'gestion Article Achat': 'shopping-bag',
-      'gestion Article Vente': 'shopping-cart',
-      'gestion Stock': 'box',
-      'Stock': 'box',
-      'Commande Achat': 'file-text',
-      'Commande Vente': 'file-text',
-      'Facture Achat': 'credit-card',
-      'Facture Vente': 'credit-card',
-      'Liste Document': 'folder',
-      'Liste Depense': 'dollar-sign',
-      'Users': 'user',
-      'users': 'user',
-      'Utilisateurs': 'user',
-      'gestion Utilisateur': 'user',
-      'gestion Utilisateurs': 'user',
-      'gestion Users': 'user',
-      'Entreprise': 'briefcase',
+      'liste article': 'package',
+      'gestion de client': 'users',
+      'gestion de categorie client': 'tag',
+      'gestion de fournisseur': 'truck',
+      'gestion de categorie fournisseur': 'tag',
+      'gestion article achat': 'shopping-bag',
+      'gestion article vente': 'shopping-cart',
+      'gestion stock': 'box',
+      'stock': 'box',
+      'commande achat': 'file-text',
+      'commande vente': 'file-text',
+      'facture achat': 'credit-card',
+      'facture vente': 'credit-card',
+      'liste document': 'folder',
+      'liste depense': 'dollar-sign',
+      'users': 'users',
+      'utilisateurs': 'users',
+      'gestion utilisateur': 'users',
+      'gestion utilisateurs': 'users',
+      'gestion users': 'users',
+      'gestion des utilisateurs': 'users',
       'entreprise': 'briefcase',
-      'gestion Entreprise': 'briefcase',
-      'Gestion Entreprise': 'briefcase',
+      'gestion entreprise': 'briefcase',
+      'commande': 'file-text',
+      'facture': 'credit-card',
+      'depense': 'dollar-sign',
+      'document': 'folder',
+      'fournisseur': 'truck',
+      'client': 'user',
+      'article': 'package',
     };
 
     // Module sections to exclude entirely from the sidebar
-    // Comparisons are case-insensitive (toLowerCase), so only one case variant is needed
+    // Comparisons use normalize() (accent-insensitive, case-insensitive)
     const excludedModuleTitles = [
       'gestion module', 'gestion departement', 'departement', 'departemen',
       'bon de reception', 'bon reception',
+      'bon de livraison', 'bon livraison',
     ];
 
     // Sous-module links to exclude from the sidebar
     const excludedSousModuleLinks = ['achat/listBonReception', 'vente/listBonLivraison'];
 
     // Shared list of titles to exclude at both the Module and SousModule levels
-    // All values are lowercase — comparisons use toLowerCase().trim()
+    // All values are pre-normalized — comparisons use normalize()
     // 'departemen' is kept intentionally as a DB misspelling variant of 'departement'
     const excludedItemTitles = [
       'bon reception', 'bon de reception',
@@ -203,16 +214,21 @@ generateSidebarData(modules: ModuleTittle[]) {
     const excludedModuleItemTitles = excludedItemTitles;
 
     // Keywords for partial-match exclusion (used at section, module, and sous-module levels)
-    const excludedKeywords = ['departement', 'departemen', 'bon de reception', 'bon reception'];
+    // All values are pre-normalized — comparisons use normalize()
+    const excludedKeywords = [
+      'departement', 'departemen',
+      'bon de reception', 'bon reception',
+      'bon de livraison', 'bon livraison',
+    ];
 
     const filteredModules = modules.filter((moduleTitle: ModuleTittle) => {
-      const title = moduleTitle.moduleTittle?.toLowerCase().trim() ?? '';
-      // Exclude sections by exact match
-      if (excludedModuleTitles.some(excluded => title === excluded.toLowerCase().trim())) {
+      const title = normalize(moduleTitle.moduleTittle ?? '');
+      // Exclude sections by exact match (accent-insensitive)
+      if (excludedModuleTitles.some(excluded => title === normalize(excluded))) {
         return false;
       }
-      // Also exclude sections containing these keywords (partial match)
-      if (excludedKeywords.some(kw => title.includes(kw))) {
+      // Also exclude sections containing these keywords (partial match, accent-insensitive)
+      if (excludedKeywords.some(kw => title.includes(normalize(kw)))) {
         return false;
       }
       return true;
@@ -224,25 +240,25 @@ generateSidebarData(modules: ModuleTittle[]) {
       if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
         // ADMIN and SUPER_ADMIN see all modules (not filtered by status)
         activeModules = moduleTitle.modules.filter((mod: Module) => {
-          const t = mod.title?.toLowerCase().trim() ?? '';
-          if (excludedModuleItemTitles.some(excluded => t === excluded.toLowerCase().trim())) return false;
-          if (excludedKeywords.some(kw => t.includes(kw))) return false;
+          const t = normalize(mod.title ?? '');
+          if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
+          if (excludedKeywords.some(kw => t.includes(normalize(kw)))) return false;
           return true;
         });
       } else {
         // EMPLOYEE: show only the 4 allowed sections (Articles Achat, Articles Vente, Clients, Fournisseur)
         // Filter by section title keywords rather than by DB permission IDs (which may be unset)
         const employeeAllowedSectionKeywords = ['article achat', 'article vente', 'client', 'fournisseur'];
-        const sectionTitle = moduleTitle.moduleTittle?.toLowerCase().trim() ?? '';
+        const sectionTitle = normalize(moduleTitle.moduleTittle ?? '');
         const isSectionAllowed = employeeAllowedSectionKeywords.some(kw => sectionTitle.includes(kw));
 
         if (!isSectionAllowed) {
           activeModules = [];
         } else {
           activeModules = moduleTitle.modules.filter((mod: Module) => {
-            const t = mod.title?.toLowerCase().trim() ?? '';
-            if (excludedModuleItemTitles.some(excluded => t === excluded.toLowerCase().trim())) return false;
-            if (excludedKeywords.some(kw => t.includes(kw))) return false;
+            const t = normalize(mod.title ?? '');
+            if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
+            if (excludedKeywords.some(kw => t.includes(normalize(kw)))) return false;
             return true;
           });
         }
@@ -256,17 +272,17 @@ generateSidebarData(modules: ModuleTittle[]) {
         showSubRoute: true,
         menu: activeModules.map((mod: Module) => {
           const filteredSousModules = mod.sousModules.filter((sous: SousModule) => {
-            const sousTitle = sous.titreSousModule?.toLowerCase().trim() ?? '';
+            const sousTitle = normalize(sous.titreSousModule ?? '');
             if (sous.link && excludedSousModuleLinks.includes(sous.link.trim())) return false;
-            if (excludedSousModuleTitles.some(excluded => sousTitle === excluded.toLowerCase().trim())) return false;
-            if (excludedKeywords.some(kw => sousTitle.includes(kw))) return false;
+            if (excludedSousModuleTitles.some(excluded => sousTitle === normalize(excluded))) return false;
+            if (excludedKeywords.some(kw => sousTitle.includes(normalize(kw)))) return false;
             return true;
           });
           return {
             menuValue: menuValueMap[mod.title] || mod.title,
             hasSubRoute: filteredSousModules.length > 0,
             showSubRoute: true,
-            icon: iconMap[mod.title] || 'grid',
+            icon: iconMap[normalize(mod.title ?? '')] || 'grid',
             base1: 'managementEntreprise',
             subMenus: filteredSousModules.map((sous: SousModule) => ({
               menuValue: sous.titreSousModule,
