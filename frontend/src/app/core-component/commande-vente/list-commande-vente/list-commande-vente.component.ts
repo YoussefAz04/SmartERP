@@ -20,6 +20,7 @@ export class ListCommandeVenteComponent implements OnInit {
   selectedStatut = '';
   lastGeneratedFacture: any = null;
   showFactureModal = false;
+  errorMessage = '';
 
   statuts = ['BROUILLON', 'EN_ATTENTE', 'CONFIRMEE', 'LIVREE', 'ANNULEE'];
 
@@ -34,6 +35,7 @@ export class ListCommandeVenteComponent implements OnInit {
 
   loadCommandes(): void {
     this.isLoading = true;
+    this.errorMessage = '';
     this.commandeVenteService.getAllCommandes().subscribe({
       next: (data) => {
         this.commandes = data;
@@ -41,7 +43,8 @@ export class ListCommandeVenteComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erreur lors du chargement:', err);
+        console.error('❌ Erreur lors du chargement:', err);
+        this.errorMessage = 'Erreur lors du chargement des commandes';
         this.isLoading = false;
       }
     });
@@ -67,6 +70,7 @@ export class ListCommandeVenteComponent implements OnInit {
 
   validerCommande(id: number): void {
     if (!confirm('Valider cette commande ? Une facture vente sera automatiquement générée.')) return;
+    this.isLoading = true;
     this.commandeVenteService.validerCommande(id).subscribe({
       next: (facture) => {
         this.lastGeneratedFacture = facture;
@@ -75,21 +79,25 @@ export class ListCommandeVenteComponent implements OnInit {
         alert('✅ Commande validée ! Facture vente générée : ' + facture.referance);
       },
       error: (err) => {
-        console.error('Erreur validation:', err);
-        alert('❌ Erreur lors de la validation.');
+        this.isLoading = false;
+        console.error('❌ Erreur validation:', err);
+        const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la validation';
+        alert('❌ Erreur lors de la validation:\n\n' + errorMessage);
       }
     });
   }
 
   livrerCommande(id: number): void {
     if (!confirm('Marquer cette commande comme livrée ? Le stock sera automatiquement décrémenté.')) return;
+    this.isLoading = true;
     this.commandeVenteService.livrerCommande(id).subscribe({
       next: (bon) => {
         this.loadCommandes();
         alert('✅ Commande livrée ! Bon de livraison créé : ' + bon.reference + '. Le stock a été mis à jour.');
       },
       error: (err) => {
-        console.error('Erreur livraison:', err);
+        this.isLoading = false;
+        console.error('❌ Erreur livraison:', err);
         const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la livraison';
         alert('❌ Erreur lors de la livraison:\n\n' + errorMessage);
       }
@@ -104,8 +112,9 @@ export class ListCommandeVenteComponent implements OnInit {
         alert('✅ Commande annulée.');
       },
       error: (err) => {
-        console.error('Erreur annulation:', err);
-        alert('❌ Erreur lors de l\'annulation.');
+        console.error('❌ Erreur annulation:', err);
+        const errorMessage = err?.error?.message || 'Erreur lors de l\'annulation';
+        alert('❌ ' + errorMessage);
       }
     });
   }
@@ -118,20 +127,55 @@ export class ListCommandeVenteComponent implements OnInit {
         alert('✅ Commande supprimée.');
       },
       error: (err) => {
-        console.error('Erreur suppression:', err);
-        alert('❌ Erreur lors de la suppression.');
+        console.error('❌ Erreur suppression:', err);
+        const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
+        alert('❌ ' + errorMessage);
       }
     });
   }
 
+  canEditOrValidate(statut?: string): boolean {
+    return statut !== 'CONFIRMEE' && statut !== 'LIVREE' && statut !== 'ANNULEE';
+  }
+
+  canDeliver(statut?: string): boolean {
+    return statut === 'CONFIRMEE';
+  }
+
+  canCancel(statut?: string): boolean {
+    return statut !== 'LIVREE' && statut !== 'ANNULEE';
+  }
+
+  getStatutClass(statut?: string): string {
+    switch (statut) {
+      case 'BROUILLON':  return 'status-brouillon';
+      case 'EN_ATTENTE': return 'status-en-attente';
+      case 'CONFIRMEE':  return 'status-confirmee';
+      case 'LIVREE':     return 'status-livree';
+      case 'ANNULEE':    return 'status-annulee';
+      default:           return 'status-default';
+    }
+  }
+
+  getStatutLabel(statut?: string): string {
+    switch (statut) {
+      case 'BROUILLON':  return 'Brouillon';
+      case 'EN_ATTENTE': return 'En attente';
+      case 'CONFIRMEE':  return 'Confirmée';
+      case 'LIVREE':     return 'Livrée';
+      case 'ANNULEE':    return 'Annulée';
+      default:           return statut || '-';
+    }
+  }
+
   getStatutBadgeClass(statut?: string): string {
     switch (statut) {
-      case 'CONFIRMEE': return 'badge bg-success';
-      case 'LIVREE': return 'badge bg-primary';
-      case 'ANNULEE': return 'badge bg-danger';
+      case 'CONFIRMEE':  return 'badge bg-success';
+      case 'LIVREE':     return 'badge bg-primary';
+      case 'ANNULEE':    return 'badge bg-danger';
       case 'EN_ATTENTE': return 'badge bg-warning text-dark';
-      case 'BROUILLON': return 'badge bg-secondary';
-      default: return 'badge bg-secondary';
+      case 'BROUILLON':  return 'badge bg-secondary';
+      default:           return 'badge bg-secondary';
     }
   }
 
