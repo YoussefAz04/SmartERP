@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { StockService } from '../../../core/service/stock/stock.service';
@@ -13,15 +13,20 @@ import { StockMouvement } from '../../../model/stock-mouvement.model';
   templateUrl: './list-stock-dashboard.component.html',
   styleUrl: './list-stock-dashboard.component.scss'
 })
-export class ListStockDashboardComponent implements OnInit {
+export class ListStockDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   stocks: Stock[] = [];
   movements: StockMouvement[] = [];
   isLoading = false;
+  contentReady = false;
 
   totalItems = 0;
   totalAvailable = 0;
   lowStockCount = 0;
   lowStockItems: Stock[] = [];
+
+  @ViewChildren('animateOnScroll') animatedElements!: QueryList<ElementRef>;
+
+  private observer!: IntersectionObserver;
 
   constructor(
     private stockService: StockService,
@@ -33,17 +38,50 @@ export class ListStockDashboardComponent implements OnInit {
     this.loadData();
   }
 
+  ngAfterViewInit(): void {
+    this.setupScrollObserver();
+  }
+
+  private setupScrollObserver(): void {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).classList.add('is-visible');
+            this.observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    this.animatedElements?.forEach((el) => {
+      this.observer.observe(el.nativeElement);
+    });
+
+    this.animatedElements?.changes.subscribe(() => {
+      this.animatedElements.forEach((el) => {
+        if (!el.nativeElement.classList.contains('is-visible')) {
+          this.observer.observe(el.nativeElement);
+        }
+      });
+    });
+  }
+
   loadData(): void {
     this.isLoading = true;
+    this.contentReady = false;
     this.stockService.getAllStocks().subscribe({
       next: (data) => {
         this.stocks = data;
         this.calculateMetrics();
         this.isLoading = false;
+        setTimeout(() => this.contentReady = true, 50);
       },
       error: (err) => {
         console.error('Erreur chargement stocks:', err);
         this.isLoading = false;
+        this.contentReady = true;
       }
     });
 
@@ -101,5 +139,9 @@ export class ListStockDashboardComponent implements OnInit {
 
   navigateTo(path: string): void {
     this.router.navigate([path]);
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
   }
 }
