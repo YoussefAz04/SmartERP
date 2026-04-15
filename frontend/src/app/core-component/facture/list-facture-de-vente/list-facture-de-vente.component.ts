@@ -426,8 +426,66 @@ export class ListFactureDeVenteComponent implements OnInit{
 
   getPaidCount(): number {
     return this.filteredList.filter(f => 
-      f.statut?.toUpperCase() === 'PAYÉ' || f.statut?.toUpperCase() === 'PAYE' || f.statut?.toUpperCase() === 'PAID'
+      f.statut?.toUpperCase() === 'PAYÉ' || f.statut?.toUpperCase() === 'PAYE' || f.statut?.toUpperCase() === 'PAYEE' || f.statut?.toUpperCase() === 'PAID'
     ).length;
+  }
+
+  changeStatus(facture: FactureVente, newStatus: string) {
+    const statusLabels: Record<string, string> = {
+      'PAYEE': 'Payée',
+      'PARTIELLEMENT_PAYEE': 'Partiellement Payée',
+      'ANNULEE': 'Annulée',
+      'EN_ATTENTE': 'En Attente'
+    };
+
+    Swal.fire({
+      title: 'Changer le statut',
+      text: `Voulez-vous changer le statut de cette facture en "${statusLabels[newStatus] || newStatus}" ?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0ea5e9',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Oui, changer',
+      cancelButtonText: 'Annuler',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedFacture = { ...facture, statut: newStatus };
+        this.factureService.updateFacture(facture.id!, updatedFacture).subscribe({
+          next: () => {
+            facture.statut = newStatus;
+            this.applyFiltersAndSort();
+            Swal.fire({
+              icon: 'success',
+              title: 'Statut mis à jour !',
+              text: `Le statut a été changé en "${statusLabels[newStatus] || newStatus}".`,
+              confirmButtonColor: '#0ea5e9',
+              timer: 2000,
+              timerProgressBar: true
+            });
+          },
+          error: () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Erreur lors de la mise à jour du statut.',
+              confirmButtonColor: '#0ea5e9'
+            });
+          }
+        });
+      }
+    });
+  }
+
+  statusMenuOpen: number | null = null;
+
+  toggleStatusMenu(factureId: number | undefined) {
+    if (factureId === undefined) return;
+    this.statusMenuOpen = this.statusMenuOpen === factureId ? null : factureId;
+  }
+
+  closeStatusMenu() {
+    this.statusMenuOpen = null;
   }
 
   getUserAuthData(){
