@@ -2,14 +2,14 @@
 // Factures d'Achat – Modern Premium Design
 // =============================================
 
-// Color palette – warm amber/orange theme
-$primary: #f59e0b;
-$primary-dark: #d97706;
-$primary-light: #fef3c7;
+// Color palette – professional indigo/blue theme
+$primary: #2563eb;
+$primary-dark: #1d4ed8;
+$primary-light: #dbeafe;
 $accent: #8b5cf6;
 $accent-dark: #7c3aed;
-$gradient-start: #f59e0b;
-$gradient-end: #ef4444;
+$gradient-start: #2563eb;
+$gradient-end: #7c3aed;
 $text-dark: #1e293b;
 $text-medium: #475569;
 $text-light: #94a3b8;
@@ -215,20 +215,24 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.04);
     }
 
     &.stat-total .stat-icon {
-      background: #fef3c7;
-      color: #d97706;
-    }
-    &.stat-amount .stat-icon {
-      background: #fee2e2;
-      color: #dc2626;
-    }
-    &.stat-ht .stat-icon {
       background: #dbeafe;
       color: #2563eb;
     }
-    &.stat-pending .stat-icon {
+    &.stat-amount .stat-icon {
       background: #ede9fe;
       color: #7c3aed;
+    }
+    &.stat-ht .stat-icon {
+      background: #d1fae5;
+      color: #059669;
+    }
+    &.stat-pending .stat-icon {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    &.stat-paid .stat-icon {
+      background: #d1fae5;
+      color: #059669;
     }
   }
 }
@@ -517,8 +521,8 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.04);
 
       &.reference-cell {
         .badge-ref {
-          background: linear-gradient(135deg, $primary-light, #fde68a);
-          color: #92400e;
+          background: linear-gradient(135deg, $primary-light, #c7d2fe);
+          color: #3730a3;
           padding: 0.35rem 0.75rem;
           border-radius: 8px;
           font-weight: 700;
@@ -532,7 +536,7 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.04);
         color: $text-medium;
 
         &.highlight {
-          color: #dc2626;
+          color: #1d4ed8;
           font-size: 0.95rem;
 
           strong {
@@ -553,21 +557,48 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.04);
       }
 
       &.status-cell {
+        .status-wrapper {
+          position: relative;
+          display: inline-block;
+        }
+
         .status-badge {
           padding: 0.35rem 0.75rem;
           border-radius: 20px;
           font-weight: 700;
           font-size: 0.75rem;
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
           white-space: nowrap;
           text-transform: uppercase;
           letter-spacing: 0.3px;
+          cursor: pointer;
+          transition: all 0.2s ease;
 
+          &:hover {
+            filter: brightness(0.95);
+            transform: scale(1.02);
+          }
+
+          .status-arrow {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            transition: transform 0.2s;
+          }
+
+          &.status-payee,
           &.status-payé,
           &.status-paye,
           &.status-paid {
             background: #d1fae5;
             color: #065f46;
+          }
+
+          &.status-partiellement_payee,
+          &.status-partiellement-payee {
+            background: #dbeafe;
+            color: #1e40af;
           }
 
           &.status-en_attente,
@@ -577,6 +608,7 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.04);
             color: #92400e;
           }
 
+          &.status-annulee,
           &.status-annulé,
           &.status-annule,
           &.status-cancelled {
@@ -594,6 +626,59 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.04);
           &.status-default {
             background: #f1f5f9;
             color: $text-medium;
+          }
+        }
+
+        .status-dropdown {
+          position: absolute;
+          top: calc(100% + 4px);
+          left: 0;
+          z-index: 100;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+          padding: 0.4rem;
+          min-width: 200px;
+          animation: dropdownFadeIn 0.2s ease;
+
+          .status-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: left;
+
+            i {
+              font-size: 0.9rem;
+            }
+
+            &.status-opt-payee {
+              color: #065f46;
+              &:hover { background: #d1fae5; }
+            }
+
+            &.status-opt-partielle {
+              color: #1e40af;
+              &:hover { background: #dbeafe; }
+            }
+
+            &.status-opt-attente {
+              color: #92400e;
+              &:hover { background: #fef3c7; }
+            }
+
+            &.status-opt-annulee {
+              color: #991b1b;
+              &:hover { background: #fee2e2; }
+            }
           }
         }
       }
@@ -774,7 +859,16 @@ $card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.04);
   50% { transform: translateY(-15px) scale(1.05); }
 }
 
-// --- Responsive ---
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 @media (max-width: 1024px) {
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
