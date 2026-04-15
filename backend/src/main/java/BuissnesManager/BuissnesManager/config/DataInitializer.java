@@ -3,10 +3,12 @@ package BuissnesManager.BuissnesManager.config;
 import BuissnesManager.BuissnesManager.dto.UserRequest;
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
+import BuissnesManager.BuissnesManager.repository.UserRepo;
 import BuissnesManager.BuissnesManager.service.RoleService;
 import BuissnesManager.BuissnesManager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,6 +18,10 @@ public class DataInitializer implements CommandLineRunner {
     private UserService userService;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -37,5 +43,17 @@ public class DataInitializer implements CommandLineRunner {
         } catch (Exception e) {
             System.out.println("L'utilisateur admin existe déjà.");
         }
+
+        // Migrate plaintext passwords to BCrypt for any user whose stored
+        // password is not already a BCrypt hash (i.e. was created before BCrypt
+        // was configured as the encoder).
+        userRepo.findByUsername("admin").ifPresent(adminUser -> {
+            String stored = adminUser.getPassword();
+            if (stored != null && !stored.startsWith("$2a$") && !stored.startsWith("$2b$")) {
+                adminUser.setPassword(passwordEncoder.encode(stored));
+                userRepo.save(adminUser);
+                System.out.println("✅ Admin password migrated to BCrypt.");
+            }
+        });
     }
 }
