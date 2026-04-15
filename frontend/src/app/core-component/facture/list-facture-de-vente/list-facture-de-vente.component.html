@@ -1,24 +1,68 @@
-<!-- Modern Page Header -->
-<div class="modern-page-header">
-  <div class="header-content">
-    <div class="header-title">
-      <h1>Factures de Vente</h1>
-      <p class="subtitle">Gestion complète de vos factures de vente</p>
+<!-- Modern Page Header with Glassmorphism -->
+<div class="page-header-wrapper">
+  <div class="header-bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="modern-page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <div class="title-icon">
+          <i class="feather icon-file-text"></i>
+        </div>
+        <div>
+          <h1>Factures de Vente</h1>
+          <p class="subtitle">Gestion complète de vos factures de vente</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-header btn-refresh" 
+                (click)="getAllFactureAchat()" 
+                [disabled]="isLoading"
+                *ngIf="permissionVente?.create">
+          <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
+          <span>Actualiser</span>
+        </button>
+        <button class="btn-header btn-add" 
+                (click)="addFacture()"
+                *ngIf="permissionVente?.create">
+          <i class="feather icon-plus-circle"></i>
+          <span>Nouvelle Facture</span>
+        </button>
+      </div>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-primary btn-lg" 
-              (click)="getAllFactureAchat()" 
-              [disabled]="isLoading"
-              *ngIf="permissionVente?.create">
-        <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
-        Actualiser
-      </button>
-      <button class="btn btn-success btn-lg" 
-              (click)="addFacture()"
-              *ngIf="permissionVente?.create">
-        <i class="feather icon-plus-circle"></i>
-        Ajouter Facture
-      </button>
+  </div>
+</div>
+
+<!-- Stats Summary Cards -->
+<div class="stats-row" *ngIf="!isLoading">
+  <div class="stat-card stat-total">
+    <div class="stat-icon"><i class="feather icon-layers"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ filteredList.length }}</span>
+      <span class="stat-label">Total Factures</span>
+    </div>
+  </div>
+  <div class="stat-card stat-amount">
+    <div class="stat-icon"><i class="feather icon-dollar-sign"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ getTotalAmount() | number:'1.2-2' }} DT</span>
+      <span class="stat-label">Montant Total</span>
+    </div>
+  </div>
+  <div class="stat-card stat-pending">
+    <div class="stat-icon"><i class="feather icon-clock"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ getPendingCount() }}</span>
+      <span class="stat-label">En Attente</span>
+    </div>
+  </div>
+  <div class="stat-card stat-paid">
+    <div class="stat-icon"><i class="feather icon-check-circle"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ getPaidCount() }}</span>
+      <span class="stat-label">Payées</span>
     </div>
   </div>
 </div>
@@ -32,9 +76,13 @@
            [(ngModel)]="searchTerm" 
            (input)="onSearch(searchTerm)"
            class="search-input">
+    <button class="search-clear" *ngIf="searchTerm" (click)="searchTerm = ''; onSearch('')">
+      <i class="feather icon-x"></i>
+    </button>
   </div>
   
   <div class="filter-box">
+    <i class="feather icon-filter"></i>
     <select [(ngModel)]="clientFilter" 
             (change)="onClientFilterChange(clientFilter)"
             class="filter-select">
@@ -43,10 +91,9 @@
     </select>
   </div>
   
-  <div class="action-buttons">
-    <button class="btn btn-success" 
+  <div class="batch-actions" *ngIf="selectedFactures.size > 0">
+    <button class="btn-batch-export" 
             (click)="exportMultipleToPdf()" 
-            *ngIf="selectedFactures.size > 0"
             title="Exporter les factures sélectionnées">
       <i class="feather icon-download"></i>
       Exporter ({{ selectedFactures.size }})
@@ -57,15 +104,21 @@
 <!-- Factures Table -->
 <div class="modern-card">
   <div class="card-header-modern">
-    <h5 class="card-title">{{ filteredList.length }} Facture(s)</h5>
-    <span class="badge" [ngClass]="{'badge-info': filteredList.length > 0, 'badge-warning': filteredList.length === 0}">
+    <h5 class="card-title">
+      <i class="feather icon-list"></i>
+      {{ filteredList.length }} Facture(s)
+    </h5>
+    <span class="count-badge" [ngClass]="{'badge-info': filteredList.length > 0, 'badge-warning': filteredList.length === 0}">
       {{ filteredList.length }}
     </span>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
-    <div class="spinner"></div>
+    <div class="spinner-wrapper">
+      <div class="spinner"></div>
+      <div class="spinner-ring"></div>
+    </div>
     <p>Chargement des factures...</p>
   </div>
 
@@ -75,9 +128,12 @@
       <thead>
         <tr>
           <th class="checkbox-col">
-            <input type="checkbox" 
-                   [checked]="selectAll"
-                   (change)="toggleSelectAll($any($event.target).checked)">
+            <label class="custom-checkbox">
+              <input type="checkbox" 
+                     [checked]="selectAll"
+                     (change)="toggleSelectAll($any($event.target).checked)">
+              <span class="checkmark"></span>
+            </label>
           </th>
           <th (click)="onSort('dateAchat')" class="sortable" title="Cliquer pour trier">
             Date
@@ -121,22 +177,31 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let facture of filteredList" 
-            class="table-row" 
-            [class.selected]="isFactureSelected(facture.id)">
+        <tr *ngFor="let facture of filteredList; let i = index" 
+            class="table-row"
+            [class.selected]="isFactureSelected(facture.id)"
+            [style.animation-delay]="i * 0.04 + 's'">
           <td class="checkbox-col">
-            <input type="checkbox" 
-                   [checked]="isFactureSelected(facture.id)"
-                   (change)="toggleSelectFacture(facture.id)">
+            <label class="custom-checkbox">
+              <input type="checkbox" 
+                     [checked]="isFactureSelected(facture.id)"
+                     (change)="toggleSelectFacture(facture.id)">
+              <span class="checkmark"></span>
+            </label>
           </td>
-          <td class="date-cell">{{ facture.dateAchat }}</td>
+          <td class="date-cell">
+            <i class="feather icon-calendar"></i>
+            {{ facture.dateAchat }}
+          </td>
           <td class="reference-cell">
             <span class="badge-ref">{{ facture.referance }}</span>
           </td>
           <td class="amount-cell">
             <strong>{{ facture.montantTTC | number:'1.2-2' }} DT</strong>
           </td>
-          <td class="payment-cell">{{ facture.modePaiement }}</td>
+          <td class="payment-cell">
+            <span class="payment-badge">{{ facture.modePaiement }}</span>
+          </td>
           <td class="status-cell">
             <span class="status-badge" 
                   [ngClass]="getStatusClass(facture.statut)">
@@ -144,7 +209,10 @@
             </span>
           </td>
           <td class="client-cell">
-            <span class="client-name">{{ facture.client?.nom || 'Non assigné' }}</span>
+            <span class="client-name">
+              <i class="feather icon-user"></i>
+              {{ facture.client?.nom || 'Non assigné' }}
+            </span>
           </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
@@ -173,7 +241,7 @@
                       (click)="factureAssigne(facture.id)" 
                       title="Assigner client"
                       matTooltip="Assigner">
-                <i class="feather icon-user"></i>
+                <i class="feather icon-user-plus"></i>
               </button>
               <button class="btn-action delete" 
                       (click)="deleteFacture(facture.id)" 
@@ -190,9 +258,14 @@
         <tr *ngIf="filteredList.length === 0" class="empty-row">
           <td [attr.colspan]="8">
             <div class="empty-message">
-              <i class="feather icon-inbox"></i>
+              <div class="empty-icon-wrapper">
+                <i class="feather icon-inbox"></i>
+              </div>
               <p>Aucune facture trouvée</p>
               <small *ngIf="searchTerm">Essayez de modifier votre recherche</small>
+              <button class="btn-empty-action" (click)="addFacture()" *ngIf="!searchTerm && permissionVente?.create">
+                <i class="feather icon-plus"></i> Créer une facture
+              </button>
             </div>
           </td>
         </tr>
@@ -207,7 +280,7 @@
     <div class="modal-content modern-modal">
       <div class="modal-header border-0 custom-modal-header">
         <div class="page-title">
-          <h4>Assigner Client</h4>
+          <h4><i class="feather icon-user-plus"></i> Assigner Client</h4>
         </div>
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
