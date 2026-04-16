@@ -271,6 +271,19 @@ public class UserService {
         user.setEntreprise(entreprise);
         user.setEnabled(userDTO.isEnabled());
 
+        if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
+            List<Role> roles = new ArrayList<>();
+            for (String roleName : userDTO.getRoles()) {
+                String trimmed = roleName.trim();
+                if (!trimmed.isEmpty()) {
+                    Role role = roleRepo.findByName(trimmed)
+                            .orElseThrow(() -> new RuntimeException("Rôle non trouvé : " + trimmed));
+                    roles.add(role);
+                }
+            }
+            user.setRoles(roles);
+        }
+
         userRepository.save(user);
     }
 //    public List<User> getAllUsersNotAffectedToMember() {

@@ -44,8 +44,9 @@
             <!-- Roles -->
             <div class="mb-3">
               <label for="roles" class="form-label">Rôles</label>
-              <input type="text" id="roles" class="form-control" name="roles"
-                     [(ngModel)]="user!.roles" placeholder="Ex : ROLE_ADMIN, ROLE_USER">
+              <input type="text" id="roles" class="form-control" name="rolesString"
+                     [(ngModel)]="rolesString" placeholder="Ex : ADMIN, EMPLOYEE">
+              <small class="form-text text-muted">Séparez plusieurs rôles par une virgule (ex : ADMIN, EMPLOYEE)</small>
             </div>
 
             <!-- Entreprise -->
