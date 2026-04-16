@@ -1,911 +1,727 @@
 // ============================================
-// COLOR VARIABLES
+// USER MANAGEMENT - PREMIUM UI
+// Color System: Indigo primary, Orange accent, Green success
 // ============================================
-$primary-color: #FF9800;
-$primary-dark: #fb8c00;
-$secondary-color: #2c3e50;
-$text-primary: #333;
-$text-secondary: #666;
-$text-muted: #999;
-$success-color: #4CAF50;
-$danger-color: #f44336;
-$warning-color: #FFC107;
-$info-color: #2196F3;
-$purple-color: #9C27B0;
-$light-bg: #f5f7fa;
-$border-color: #e0e0e0;
-$border-light: #f0f0f0;
-$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
-$shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+$indigo:        #6366F1;
+$indigo-dark:   #4F46E5;
+$indigo-darker: #3730A3;
+$indigo-light:  #EEF2FF;
+$orange:        #F59E0B;
+$orange-dark:   #D97706;
+$orange-light:  #FEF3C7;
+$green:         #10B981;
+$green-dark:    #059669;
+$green-light:   #D1FAE5;
+$red:           #EF4444;
+$red-light:     #FEE2E2;
+$blue:          #3B82F6;
+$blue-light:    #DBEAFE;
+$purple:        #8B5CF6;
+$purple-dark:   #7C3AED;
+$purple-light:  #EDE9FE;
+
+$bg-page:    #F1F5F9;
+$bg-card:    #FFFFFF;
+$text-h:     #1E293B;
+$text-body:  #475569;
+$text-muted: #94A3B8;
+$border:     #E2E8F0;
+
+$shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+$shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
+$shadow-lg: 0 10px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.08);
+$shadow-xl: 0 20px 60px rgba(0,0,0,.15);
 
 // ============================================
 // PAGE HEADER
 // ============================================
-.page-header {
+.um-page-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
-  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 1.5rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  padding: 1.75rem 2rem;
+  background: linear-gradient(135deg, $indigo-darker 0%, $indigo 55%, $purple 100%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: umHeaderIn .5s cubic-bezier(.16,1,.3,1) both;
 
-  .add-item {
-    flex: 1;
-
-    .page-title {
-      h4 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: $secondary-color;
-        margin: 0;
-        letter-spacing: -0.5px;
-      }
-
-      h6 {
-        font-size: 0.95rem;
-        color: $text-muted;
-        margin: 0.5rem 0 0 0;
-        font-weight: 400;
-      }
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -5%;
+    width: 280px;
+    height: 280px;
+    background: rgba(white, .05);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
-  .table-top-head {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-    padding: 0;
-    margin: 0;
-
-    li {
-      a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        background-color: $light-bg;
-        border: 1px solid $border-color;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        text-decoration: none;
-
-        &:hover {
-          background-color: $primary-color;
-          border-color: $primary-color;
-          color: white;
-          transform: translateY(-2px);
-          box-shadow: $shadow-medium;
-        }
-
-        img {
-          width: 20px;
-          height: 20px;
-        }
-
-        i {
-          font-size: 1.1rem;
-          color: $text-secondary;
-        }
-      }
-    }
-  }
-
-  .page-btn {
-    .btn-added {
-      background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-      border: none;
-      color: white;
-      padding: 0.75rem 1.75rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      box-shadow: 0 2px 6px rgba($primary-color, 0.2);
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: $shadow-medium;
-        background: linear-gradient(135deg, $primary-dark 0%, $primary-color 100%);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
-
-      i {
-        font-size: 1.1rem;
-      }
-    }
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: 15%;
+    width: 180px;
+    height: 180px;
+    background: rgba(white, .04);
+    border-radius: 50%;
+    pointer-events: none;
   }
 }
 
-// ============================================
-// TABLE CARD
-// ============================================
-.table-list-card {
-  border: 1px solid $border-color;
-  border-radius: 12px;
-  box-shadow: $shadow-light;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease;
+.um-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.um-header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(white, .15);
+  border: 1px solid rgba(white, .2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+
+  i {
+    font-size: 1.5rem;
+    color: white;
+  }
+}
+
+.um-header-text {
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.3px;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: rgba(white, .75);
+    margin: 0.25rem 0 0;
+  }
+}
+
+.um-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.um-stats-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  background: rgba(white, .15);
+  border: 1px solid rgba(white, .25);
+  border-radius: 50px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+
+  i { font-size: 0.95rem; }
+}
+
+.um-btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  background: white;
+  color: $indigo-dark;
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+
+  i { font-size: 1rem; }
 
   &:hover {
-    box-shadow: $shadow-medium;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    color: $indigo-dark;
+    text-decoration: none;
   }
 
-  .card-body {
-    padding: 0;
-  }
+  &:active { transform: translateY(0); }
 }
 
 // ============================================
-// TABLE TOP (SEARCH & FILTER)
+// LIST CARD SHELL
 // ============================================
-.table-top {
+.um-list-card {
+  background: $bg-card;
+  border-radius: 18px;
+  border: 1.5px solid $border;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  animation: umFadeUp .4s .1s cubic-bezier(.16,1,.3,1) both;
+}
+
+// ============================================
+// TOOLBAR
+// ============================================
+.um-toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border-bottom: 1px solid $border-light;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1.5px solid $border;
   flex-wrap: wrap;
+}
 
-  .search-set {
-    flex: 1;
-    min-width: 250px;
+.um-search-box {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $bg-page;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  padding: 0 1rem;
+  transition: all .3s ease;
 
-    .search-input {
-      position: relative;
+  &:focus-within {
+    border-color: $indigo;
+    box-shadow: 0 0 0 3px rgba($indigo, .12);
+    background: white;
+  }
+}
 
-      .btn-searchset {
-        position: absolute;
-        right: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background: transparent;
-        border: none;
-        color: $text-muted;
-        cursor: pointer;
-        transition: color 0.3s ease;
-        padding: 0.5rem;
+.um-search-icon {
+  color: $text-muted;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  transition: color .3s;
 
-        &:hover {
-          color: $primary-color;
-        }
-      }
+  .um-search-box:focus-within & { color: $indigo; }
+}
 
-      input {
-        width: 100%;
-        border: 2px solid $border-color;
-        border-radius: 8px;
-        padding: 0.75rem 2.5rem 0.75rem 1rem;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        background-color: white;
+.um-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.75rem 0;
+  font-size: 0.9rem;
+  color: $text-h;
 
-        &:focus {
-          border-color: $primary-color;
-          outline: none;
-          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
-        }
+  &::placeholder { color: $text-muted; }
+}
 
-        &::placeholder {
-          color: $text-muted;
-        }
-      }
-    }
+.um-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.um-btn-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1rem;
+  background: $bg-page;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  color: $text-body;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .3s ease;
+
+  &:hover, &.active {
+    background: $indigo;
+    border-color: $indigo;
+    color: white;
   }
 
-  .search-path {
-    .btn-filter {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      background-color: $light-bg;
-      border: 1px solid $border-color;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      gap: 0.5rem;
+  i { font-size: 0.9rem; }
+}
 
-      &:hover {
-        background-color: $primary-color;
-        border-color: $primary-color;
-        color: white;
-      }
+.um-sort-select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $bg-page;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  padding: 0.5rem 0.9rem;
 
-      &.setclose {
-        background-color: $primary-color;
-        border-color: $primary-color;
-        color: white;
-      }
+  i { color: $text-muted; font-size: 0.95rem; }
 
-      i {
-        font-size: 1.1rem;
-      }
+  mat-select { font-size: 0.875rem; min-width: 110px; }
+}
 
-      span {
-        display: flex;
-        align-items: center;
+// ============================================
+// FILTER PANEL
+// ============================================
+.um-filter-panel {
+  background: $bg-page;
+  border-bottom: 1.5px solid $border;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all .35s cubic-bezier(.4,0,.2,1);
 
-        img {
-          width: 16px;
-          height: 16px;
-        }
-      }
-    }
+  &.open {
+    max-height: 200px;
+    opacity: 1;
+    padding: 1.25rem 1.5rem;
   }
+}
 
-  .form-sort {
+.um-filter-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.um-filter-field {
+  flex: 1;
+  min-width: 180px;
+
+  label {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    min-width: 220px;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $text-body;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 
-    i {
-      color: $text-muted;
-      font-size: 1.1rem;
-    }
-
-    mat-select {
-      width: 100%;
-      font-size: 0.95rem;
-
-      ::ng-deep {
-        .mat-mdc-select-trigger {
-          color: $secondary-color;
-          font-weight: 500;
-        }
-      }
-    }
-  }
-}
-
-// ============================================
-// FILTER SECTION
-// ============================================
-.filter-card {
-  margin: 0 1.5rem 1.5rem 1.5rem;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background-color: $light-bg;
-  border: 1px solid $border-color;
-  transition: all 0.3s ease;
-
-  &.d-none {
-    display: none !important;
+    i { font-size: 0.8rem; color: $indigo; }
   }
 
-  &.d-block {
-    display: block !important;
-  }
-
-  .card-body {
-    padding: 0;
-  }
-
-  .input-blocks {
-    position: relative;
-    margin-bottom: 1rem;
-
-    i {
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: $text-muted;
-      font-size: 1rem;
-    }
-
-    select,
-    mat-select {
-      padding-left: 2.75rem;
-      border-radius: 8px;
-      border: 2px solid $border-color;
-      transition: all 0.3s ease;
-      width: 100%;
-
-      &:focus {
-        border-color: $primary-color;
-        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
-      }
-    }
-  }
-
-  .btn-filters {
-    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
+  mat-select {
+    width: 100%;
+    border: 1.5px solid $border;
     border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+    background: white;
+  }
+}
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: $shadow-medium;
+.um-filter-actions { flex-shrink: 0; }
+
+.um-btn-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: linear-gradient(135deg, $indigo 0%, $indigo-dark 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all .3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($indigo, .35);
+  }
+}
+
+// ============================================
+// TABLE
+// ============================================
+.um-table-wrap {
+  overflow-x: auto;
+}
+
+.um-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+
+  thead tr {
+    background: linear-gradient(90deg, #F8FAFC 0%, $bg-page 100%);
+    border-bottom: 2px solid $border;
+
+    th {
+      padding: 1rem 1.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: $text-body;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+      border: none;
+      cursor: pointer;
+
+      &.um-th-actions { text-align: center; cursor: default; }
     }
+  }
 
-    i {
-      font-size: 1rem;
+  tbody {
+    .um-row {
+      border-bottom: 1px solid rgba($border, .7);
+      opacity: 0;
+      animation: umRowIn .4s cubic-bezier(.16,1,.3,1) forwards;
+      transition: background .2s ease;
+
+      &:last-child { border-bottom: none; }
+
+      &:hover {
+        background: linear-gradient(90deg, $indigo-light 0%, rgba($purple-light, .3) 100%);
+      }
+
+      td {
+        padding: 1rem 1.25rem;
+        vertical-align: middle;
+        border: none;
+      }
     }
   }
 }
 
 // ============================================
-// TABLE STYLING
+// USER CELL (avatar + name)
 // ============================================
-.table-responsive {
-  overflow-x: auto;
+.um-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
 
-  table {
-    margin-bottom: 0;
-    border-collapse: collapse;
+.um-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, $indigo 0%, $purple 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba($indigo, .3);
+  transition: all .3s ease;
 
-    thead {
-      background-color: $light-bg;
-      border-bottom: 2px solid $border-color;
+  .um-row:hover & {
+    transform: scale(1.08);
+    box-shadow: 0 5px 14px rgba($indigo, .4);
+  }
+}
 
-      th {
-        padding: 1.25rem;
-        font-weight: 700;
-        color: $secondary-color;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        white-space: nowrap;
-        border: none;
-        display: table-cell;
+.um-username {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: $text-h;
+}
 
-        &.col-header {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+// ============================================
+// EMAIL
+// ============================================
+.um-email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: $blue;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all .2s ease;
 
-          i {
-            font-size: 0.95rem;
-            opacity: 0.7;
-          }
-        }
-      }
-    }
+  i { font-size: 0.85rem; opacity: .7; }
 
-    tbody {
-      tr {
-        border-bottom: 1px solid $border-light;
-        transition: all 0.2s ease;
+  &:hover {
+    color: $indigo-dark;
+    text-decoration: underline;
+  }
+}
 
-        &:hover {
-          background-color: rgba($primary-color, 0.03);
-          box-shadow: inset 0 0 5px rgba($primary-color, 0.05);
-        }
+// ============================================
+// ROLE BADGES
+// ============================================
+.um-role-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
 
-        &.empty-state {
-          td {
-            padding: 3rem 1.25rem;
+.um-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  background: $indigo-light;
+  color: $indigo-dark;
+  border: 1px solid rgba($indigo, .2);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
 
-            i {
-              font-size: 2.5rem;
-              color: $text-muted;
-              opacity: 0.5;
-              margin-bottom: 1rem;
-            }
+.um-no-role {
+  color: $text-muted;
+  font-size: 0.875rem;
+}
 
-            p {
-              margin: 0;
-            }
-          }
-        }
+// ============================================
+// STATUS BADGE
+// ============================================
+.um-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1.5px solid transparent;
 
-        td {
-          padding: 1.25rem;
-          color: $text-primary;
-          font-size: 0.95rem;
-          vertical-align: middle;
-          border: none;
+  &.active {
+    background: $green-light;
+    color: $green-dark;
+    border-color: rgba($green, .25);
 
-          &.user-name-cell {
-            .user-name-wrapper {
-              display: flex;
-              align-items: center;
-              gap: 0.75rem;
-
-              .user-avatar {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 36px;
-                height: 36px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-                color: white;
-                font-weight: 700;
-                font-size: 0.85rem;
-              }
-
-              .user-name {
-                font-weight: 600;
-                color: $secondary-color;
-              }
-            }
-          }
-
-          &.phone-cell {
-            color: $text-secondary;
-
-            &:empty::after {
-              content: '-';
-              color: $text-muted;
-            }
-          }
-
-          &.email-cell {
-            color: $info-color;
-            word-break: break-word;
-          }
-
-          &.role-cell {
-            .role-badges {
-              display: flex;
-              flex-wrap: wrap;
-              gap: 0.5rem;
-              align-items: center;
-
-              .badge-role {
-                background-color: #e3f2fd;
-                color: $info-color;
-                padding: 0.35rem 0.75rem;
-                border-radius: 12px;
-                font-size: 0.8rem;
-                font-weight: 600;
-                white-space: nowrap;
-                border: 1px solid rgba($info-color, 0.3);
-              }
-
-              .role-separator {
-                color: $text-muted;
-              }
-            }
-          }
-
-          &.status-cell {
-            .badge {
-              display: inline-flex;
-              align-items: center;
-              gap: 0.5rem;
-              padding: 0.5rem 1rem;
-              border-radius: 20px;
-              font-size: 0.85rem;
-              font-weight: 600;
-              border: 1px solid transparent;
-
-              &.badge-success {
-                background-color: #e8f5e9;
-                color: $success-color;
-                border-color: rgba($success-color, 0.3);
-
-                i {
-                  font-size: 0.65rem;
-                }
-              }
-
-              &.badge-danger {
-                background-color: #ffebee;
-                color: $danger-color;
-                border-color: rgba($danger-color, 0.3);
-
-                i {
-                  font-size: 0.65rem;
-                }
-              }
-            }
-          }
-
-          &.action-cell {
-            text-align: center;
-          }
-        }
-      }
+    .um-status-dot {
+      background: $green;
+      animation: umPulse 2s infinite;
     }
   }
+
+  &.inactive {
+    background: rgba($text-muted, .1);
+    color: $text-muted;
+    border-color: rgba($text-muted, .2);
+
+    .um-status-dot { background: $text-muted; }
+  }
+}
+
+.um-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes umPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba($green, .4); }
+  50%       { box-shadow: 0 0 0 4px rgba($green, 0); }
 }
 
 // ============================================
 // ACTION BUTTONS
 // ============================================
-.action-buttons {
+.um-actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 0.4rem;
+}
 
-  .action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 1rem;
+.um-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.4,0,.2,1);
+  text-decoration: none;
 
-    i {
-      font-size: 1rem;
+  i { font-size: 0.9rem; }
+
+  &.um-action-assign {
+    color: $indigo;
+
+    &:hover {
+      background: $indigo-light;
+      border-color: rgba($indigo, .3);
+      transform: translateY(-1px);
+    }
+  }
+
+  &.um-action-view {
+    color: $purple;
+
+    &:hover {
+      background: $purple-light;
+      border-color: rgba($purple, .3);
+      transform: translateY(-1px);
+    }
+  }
+
+  &.um-action-delete {
+    color: $red;
+
+    &:hover:not(.loading) {
+      background: $red-light;
+      border-color: rgba($red, .3);
+      transform: translateY(-1px);
     }
 
-    &.action-shield {
-      color: $info-color;
-      background-color: transparent;
-
-      &:hover {
-        background-color: rgba($info-color, 0.1);
-        border-color: $info-color;
-      }
-
-      &:active {
-        background-color: rgba($info-color, 0.2);
-      }
+    &.loading {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
-    &.action-eye {
-      color: $purple-color;
-      background-color: transparent;
-
-      &:hover {
-        background-color: rgba($purple-color, 0.1);
-        border-color: $purple-color;
-      }
-
-      &:active {
-        background-color: rgba($purple-color, 0.2);
-      }
-    }
-
-    &.action-delete {
-      color: $danger-color;
-      background-color: transparent;
-
-      &:hover:not(.disabled) {
-        background-color: rgba($danger-color, 0.1);
-        border-color: $danger-color;
-      }
-
-      &:active:not(.disabled) {
-        background-color: rgba($danger-color, 0.2);
-      }
-
-      &.disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        pointer-events: none;
-      }
-
-      .spinner-border-sm {
-        width: 1rem;
-        height: 1rem;
-        border-width: 0.2em;
-      }
+    .spinner-border-sm {
+      width: 0.95rem;
+      height: 0.95rem;
+      border-width: 0.18em;
     }
   }
 }
 
 // ============================================
-// MODAL STYLING
+// EMPTY STATE
 // ============================================
-.modal-content {
-  border: none;
-  border-radius: 12px;
-  box-shadow: $shadow-medium;
+.um-empty-row td { padding: 0 !important; border: none !important; }
 
-  .custom-modal-header {
-    background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($primary-dark, 0.05) 100%);
-    border-bottom: 1px solid $border-color;
-    padding: 1.5rem;
+.um-empty-state {
+  text-align: center;
+  padding: 3.5rem 2rem;
+}
 
-    .page-title h4 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: $secondary-color;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+.um-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, $indigo-light 0%, $purple-light 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
 
-      i {
-        color: $primary-color;
-      }
-    }
-  }
+  i { font-size: 1.75rem; color: $indigo; opacity: .7; }
+}
 
-  .custom-modal-body {
-    padding: 2rem;
-  }
+.um-empty-state h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text-h;
+  margin: 0 0 0.4rem;
+}
 
-  .modal-footer-btn {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-
-    .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      &.btn-cancel {
-        background-color: $light-bg;
-        color: $secondary-color;
-        border: 1px solid $border-color;
-
-        &:hover {
-          background-color: #f0f0f0;
-        }
-      }
-
-      &.btn-submit {
-        background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-        color: white;
-        box-shadow: 0 2px 6px rgba($primary-color, 0.2);
-
-        &:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: $shadow-medium;
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-      }
-    }
-  }
+.um-empty-state p {
+  font-size: 0.875rem;
+  color: $text-muted;
+  margin: 0;
 }
 
 // ============================================
-// RESPONSIVE DESIGN
+// ANIMATIONS
 // ============================================
-@media (max-width: 992px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+@keyframes umHeaderIn {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  .table-top {
-    flex-direction: column;
-    align-items: stretch;
+@keyframes umFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-    .search-set {
-      min-width: 100%;
-    }
+@keyframes umRowIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 
-    .form-sort {
-      width: 100%;
-    }
-  }
-
-  .filter-card {
-    margin: 0 0 1.5rem 0;
-  }
+// ============================================
+// RESPONSIVE
+// ============================================
+@media (max-width: 1024px) {
+  .um-table .um-table-wrap { font-size: 0.875rem; }
 }
 
 @media (max-width: 768px) {
-  .page-header {
-    .table-top-head {
-      gap: 0.5rem;
+  .um-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+  }
 
-      li a {
-        width: 36px;
-        height: 36px;
-      }
-    }
+  .um-header-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
 
-    .page-btn {
+    .um-btn-add { justify-content: center; }
+  }
+
+  .um-toolbar {
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .um-search-box { min-width: 100%; }
+
+    .um-toolbar-actions {
       width: 100%;
-
-      .btn-added {
-        width: 100%;
-        justify-content: center;
-      }
+      justify-content: space-between;
     }
   }
 
-  .table-top {
-    padding: 1rem;
-    gap: 1rem;
-
-    .search-set {
-      min-width: 100%;
-    }
-
-    .form-sort {
-      width: 100%;
-    }
+  .um-table thead tr th {
+    padding: 0.75rem 0.75rem;
+    font-size: 0.7rem;
   }
 
-  .table-responsive {
-    font-size: 0.85rem;
-
-    table {
-      thead th {
-        padding: 0.75rem 0.5rem;
-        font-size: 0.75rem;
-
-        &.col-header {
-          flex-direction: column;
-
-          i {
-            display: none;
-          }
-        }
-      }
-
-      tbody td {
-        padding: 0.75rem 0.5rem;
-
-        &.user-name-cell .user-name-wrapper {
-          gap: 0.5rem;
-
-          .user-avatar {
-            width: 32px;
-            height: 32px;
-            font-size: 0.75rem;
-          }
-
-          .user-name {
-            font-size: 0.85rem;
-          }
-        }
-
-        &.role-cell .role-badges {
-          .badge-role {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-          }
-        }
-      }
-    }
+  .um-table tbody .um-row td {
+    padding: 0.75rem 0.75rem;
   }
 
-  .action-buttons {
-    gap: 0.5rem;
-
-    .action-btn {
-      width: 32px;
-      height: 32px;
-
-      i {
-        font-size: 0.9rem;
-      }
-    }
+  .um-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.8rem;
+    border-radius: 9px;
   }
 }
 
 @media (max-width: 576px) {
-  .page-header {
-    .page-title {
-      h4 {
-        font-size: 1.25rem;
-      }
-
-      h6 {
-        font-size: 0.85rem;
-      }
-    }
-
-    .table-top-head {
-      li a {
-        width: 32px;
-        height: 32px;
-
-        img,
-        i {
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-
-  .table-responsive {
-    font-size: 0.75rem;
-
-    table {
-      thead th {
-        padding: 0.5rem;
-        font-size: 0.65rem;
-      }
-
-      tbody td {
-        padding: 0.5rem;
-      }
-    }
-  }
-
-  .action-buttons {
-    .action-btn {
-      width: 28px;
-      height: 28px;
-
-      i {
-        font-size: 0.8rem;
-      }
-    }
-  }
-
-  .filter-card .input-blocks {
-    margin-bottom: 0.75rem;
-  }
+  .um-header-text h1 { font-size: 1.25rem; }
+  .um-stats-badge { display: none; }
+  .um-filter-panel.open { max-height: 320px; }
+  .um-filter-row { flex-direction: column; }
 }
 
 // ============================================
-// UTILITY CLASSES
+// UTILITY
 // ============================================
-.d-flex {
-  display: flex;
-}
-
-.align-items-center {
-  align-items: center;
-}
-
-.justify-content-center {
-  justify-content: center;
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-3 {
-  gap: 1rem;
-}
-
-.ms-auto {
-  margin-left: auto;
-}
-
-.me-2 {
-  margin-right: 0.5rem;
-}
-
-.mb-0 {
-  margin-bottom: 0;
-}
-
-.mb-3 {
-  margin-bottom: 1rem;
-}
-
-.p-0 {
-  padding: 0;
-}
-
-.py-5 {
-  padding: 3rem 0;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-muted {
-  color: $text-muted;
-}
+.d-flex { display: flex; }
+.align-items-center { align-items: center; }
+.ms-auto { margin-left: auto; }
+.me-2 { margin-right: 0.5rem; }
+.mb-0 { margin-bottom: 0; }
+.text-center { text-align: center; }
+.text-muted { color: $text-muted; }
