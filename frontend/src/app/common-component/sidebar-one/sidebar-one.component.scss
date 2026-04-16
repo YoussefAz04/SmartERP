@@ -243,6 +243,11 @@ $radius-md: 10px;
               color: $text-primary;
               font-weight: 600;
 
+              // Suppress the blue border-triangle from global _sidebar.scss nav-link.active::after
+              &::after {
+                content: none !important;
+              }
+
               &::before {
                 content: '';
                 position: absolute;
