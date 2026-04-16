@@ -1,12 +1,15 @@
-<!-- Hero Header -->
+<!-- Hero Header with integrated stats -->
 <div class="cat-hero-header">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
   <div class="hero-content">
-    <div>
+    <div class="hero-left">
       <span class="hero-badge">
         <i class="feather icon-layers"></i> Gestion des Catégories
       </span>
       <h1 class="hero-title">Catégories Client</h1>
-      <p class="hero-subtitle">{{ categories.length }} catégorie(s) enregistrée(s)</p>
+      <p class="hero-subtitle">Organisez vos clients par catégories</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadCategories()">
@@ -18,41 +21,34 @@
       </button>
     </div>
   </div>
-</div>
-
-<!-- KPI Cards -->
-<div class="row mb-4">
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-blue kpi-delay-1">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ categories.length }}</div>
-          <div class="kpi-label">Total Catégories</div>
-          <span class="kpi-trend"><i class="feather icon-list"></i> Registre</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-layers"></i>
-        </div>
+  <div class="hero-stats-bar">
+    <div class="hero-stat">
+      <div class="hero-stat-icon hero-stat-icon-indigo">
+        <i class="feather icon-layers"></i>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-list me-1"></i> Voir toutes les catégories
+      <div class="hero-stat-info">
+        <span class="hero-stat-value">{{ categories.length }}</span>
+        <span class="hero-stat-label">Total Catégories</span>
       </div>
     </div>
-  </div>
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-amber kpi-delay-2">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ mostUsedCategory }}</div>
-          <div class="kpi-label">Plus utilisée</div>
-          <span class="kpi-trend"><i class="feather icon-star"></i> Top</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-award"></i>
-        </div>
+    <div class="hero-stat-sep"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-icon hero-stat-icon-pink">
+        <i class="feather icon-award"></i>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-bar-chart-2 me-1"></i> Catégorie la plus populaire
+      <div class="hero-stat-info">
+        <span class="hero-stat-value hero-stat-value-sm">{{ mostUsedCategory }}</span>
+        <span class="hero-stat-label">Plus utilisée</span>
+      </div>
+    </div>
+    <div class="hero-stat-sep"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-icon hero-stat-icon-green">
+        <i class="feather icon-users"></i>
+      </div>
+      <div class="hero-stat-info">
+        <span class="hero-stat-value">{{ mostUsedCount }}</span>
+        <span class="hero-stat-label">Clients (top cat.)</span>
       </div>
     </div>
   </div>
@@ -69,10 +65,15 @@
   </div>
   <div class="panel-body">
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="empty-state">
-      <div class="loading-spinner"></div>
-      <p>Chargement des catégories...</p>
+    <!-- Skeleton Loading -->
+    <div *ngIf="isLoading" class="skeleton-wrapper">
+      <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+        <div class="skeleton skeleton-avatar"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text-sm"></div>
+        <div class="skeleton skeleton-badge"></div>
+        <div class="skeleton skeleton-actions"></div>
+      </div>
     </div>
 
     <!-- Table -->
@@ -87,7 +88,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let categorie of categories">
+          <tr *ngFor="let categorie of categories; let i = index" [style.animation-delay]="(i * 0.05) + 's'">
             <td>
               <div class="cat-name-cell">
                 <div class="cat-avatar">{{ (categorie.nom || '?').charAt(0).toUpperCase() }}</div>
