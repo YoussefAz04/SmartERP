@@ -20,7 +20,7 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
   errorMessage = '';
   rememberMe = false;
 
-  private counterTimers: ReturnType<typeof setInterval>[] = [];
+  private counterTimers: number[] = [];
   
   constructor(
     private router: Router, 
@@ -45,23 +45,32 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
     const elements = document.querySelectorAll<HTMLElement>('.stat-value[data-target]');
     elements.forEach(el => {
       const target = parseInt(el.getAttribute('data-target') || '0', 10);
-      const duration = 1800;
-      const step = target / (duration / 16);
-      let current = 0;
-      const timer = setInterval(() => {
-        current += step;
-        if (current >= target) {
-          current = target;
-          clearInterval(timer);
+      const duration = 2200;
+      const startTime = performance.now();
+
+      const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
+
+      let frameId = 0;
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutQuart(progress);
+        const current = Math.floor(easedProgress * target);
+
+        el.textContent = current.toLocaleString('fr-FR');
+
+        if (progress < 1) {
+          frameId = requestAnimationFrame(animate);
         }
-        el.textContent = Math.floor(current).toLocaleString();
-      }, 16);
-      this.counterTimers.push(timer);
+      };
+
+      frameId = requestAnimationFrame(animate);
+      this.counterTimers.push(frameId);
     });
   }
 
   ngOnDestroy(): void {
-    this.counterTimers.forEach(t => clearInterval(t));
+    this.counterTimers.forEach(id => cancelAnimationFrame(id));
   }
 
   responseLogin!: PermissionDto;
