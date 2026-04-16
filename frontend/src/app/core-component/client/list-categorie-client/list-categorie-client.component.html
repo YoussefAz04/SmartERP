@@ -9,7 +9,7 @@
         <i class="feather icon-layers"></i> Gestion des Catégories
       </span>
       <h1 class="hero-title">Catégories Client</h1>
-      <p class="hero-subtitle">Organisez vos clients par catégories</p>
+      <p class="hero-subtitle">Organisez vos clients par catégories avec une vue plus claire, sobre et professionnelle.</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadCategories()">
@@ -64,6 +64,12 @@
     </h5>
   </div>
   <div class="panel-body">
+    <div class="panel-toolbar" *ngIf="!isLoading && categories.length > 0">
+      <div class="panel-toolbar-copy">
+        <span class="panel-toolbar-label">Aperçu</span>
+        <p>{{ categories.length }} catégories configurées pour structurer votre portefeuille client.</p>
+      </div>
+    </div>
 
     <!-- Skeleton Loading -->
     <div *ngIf="isLoading" class="skeleton-wrapper">
@@ -92,18 +98,24 @@
             <td>
               <div class="cat-name-cell">
                 <div class="cat-avatar">{{ (categorie.nom || '?').charAt(0).toUpperCase() }}</div>
-                <strong>{{ categorie.nom }}</strong>
+                <div class="cat-name-content">
+                  <strong>{{ categorie.nom }}</strong>
+                  <span>Catégorie client</span>
+                </div>
               </div>
             </td>
             <td>
-              <span class="description-text" *ngIf="categorie.description">{{ categorie.description }}</span>
-              <span class="text-muted" *ngIf="!categorie.description">—</span>
+              <div class="description-stack">
+                <span class="description-label">Description</span>
+                <span class="description-text" *ngIf="categorie.description">{{ categorie.description }}</span>
+                <span class="description-text description-text-muted" *ngIf="!categorie.description">Aucune description</span>
+              </div>
             </td>
             <td>
-              <span class="count-badge" *ngIf="categorie.clients && categorie.clients.length > 0">
-                <i class="feather icon-users"></i> {{ categorie.clients.length }}
+              <span class="count-badge" [class.count-badge-empty]="!categorie.clients || categorie.clients.length === 0">
+                <i class="feather" [ngClass]="(categorie.clients && categorie.clients.length > 0) ? 'icon-users' : 'icon-minus'"></i>
+                {{ categorie.clients?.length || 0 }}
               </span>
-              <span class="text-muted" *ngIf="!categorie.clients || categorie.clients.length === 0">0</span>
             </td>
             <td>
               <div class="action-btns">
