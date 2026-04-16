@@ -34,7 +34,7 @@ $border-danger: #fed3d3;
 
     &:focus {
       border-color: $primary;
-      box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.15);
+      box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
       outline: none;
     }
 
@@ -169,7 +169,7 @@ $border-danger: #fed3d3;
 
     &:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255, 159, 67, 0.25);
+      box-shadow: 0 4px 12px rgba(79, 110, 247, 0.25);
     }
 
     &:active:not(:disabled) {

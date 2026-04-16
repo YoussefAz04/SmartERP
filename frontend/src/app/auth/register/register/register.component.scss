@@ -96,7 +96,7 @@
                 outline: none;
                 border-color: #4f6ef7;
                 background-color: white;
-                box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.1);
+                box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.1);
               }
 
               &.is-invalid {
@@ -183,7 +183,7 @@
             background: white;
             color: #4f6ef7;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 159, 67, 0.3);
+            box-shadow: 0 10px 25px rgba(79, 110, 247, 0.3);
           }
 
           &:active:not(:disabled) {
