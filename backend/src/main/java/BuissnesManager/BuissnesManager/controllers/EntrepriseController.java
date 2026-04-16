@@ -2,11 +2,14 @@ package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.entity.CaracteristiqueFactureEntreprise;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
+import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
+import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.EntrepriseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,12 @@ public class EntrepriseController {
 
     @Autowired
     private EntrepriseService entrepriseService;
+
+    @Autowired
+    private AuthorizationUtil authorizationUtil;
+
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @PostMapping("/create")
     public ResponseEntity<?> ajouterEntreprise(@RequestBody Entreprise entreprise) {
@@ -46,13 +55,40 @@ public class EntrepriseController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateEntreprise(@PathVariable Long id, @RequestBody Entreprise entrepriseDetails) {
+    public ResponseEntity<?> updateEntreprise(
+            @PathVariable Long id,
+            @RequestBody Entreprise entrepriseDetails,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
+            // ADMIN can only update their own enterprise
+            if (authorizationUtil.isAdmin()) {
+                Long tokenEnterpriseId = extractEnterpriseId(authHeader);
+                if (tokenEnterpriseId == null) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body("Invalid or missing authentication token");
+                }
+                if (!tokenEnterpriseId.equals(id)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body("ADMIN can only update their own enterprise");
+                }
+            }
             Entreprise updatedEntreprise = entrepriseService.updateEntreprise(id, entrepriseDetails);
             return ResponseEntity.ok(updatedEntreprise);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    private Long extractEnterpriseId(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+        try {
+            return jwtUtil.getEnterpriseIdFromToken(authHeader.substring(7));
+        } catch (Exception e) {
+            return null;
         }
     }
 
