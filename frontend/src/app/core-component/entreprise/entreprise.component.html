@@ -244,7 +244,7 @@
           <i class="feather icon-eye"></i> Lecture seule
         </span>
         <button type="button" class="action-btn-edit" (click)="editEntreprise(currentEntreprise.id)"
-                *ngIf="isAdmin && permissionEntreprise?.update" title="Modifier">
+                *ngIf="isAdmin" title="Modifier">
           <i class="feather icon-edit-2"></i> Modifier
         </button>
       </div>
