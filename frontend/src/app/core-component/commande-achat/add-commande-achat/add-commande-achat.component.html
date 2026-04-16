@@ -1,166 +1,231 @@
-<!-- Enterprise Selection Alert -->
-<div class="alert alert-info" *ngIf="!currentEntrepriseId && entreprises.length > 0">
-  <strong>⚠️ Sélectionnez une entreprise :</strong>
-  <div class="mt-2">
-    <select class="form-select" #enterpriseSelect (change)="changeEnterprise(+enterpriseSelect.value)">
-      <option value="">-- Choisir une entreprise --</option>
-      <option *ngFor="let e of entreprises" [value]="e.id">{{ e.nom }}</option>
-    </select>
-  </div>
-</div>
-
-<!-- Current Enterprise Display -->
-<div class="alert alert-success" *ngIf="currentEntrepriseId">
-  ✅ Entreprise sélectionnée: <strong>{{ selectedEntrepriseName }}</strong>
-</div>
-
-<!-- Page Header -->
-<div class="page-header">
-  <div class="page-title">
-    <h4>{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande Achat</h4>
-    <h6>{{ isEditMode ? 'Modifier la commande achat' : 'Créer une nouvelle commande achat' }}</h6>
-  </div>
-</div>
-
-<form [formGroup]="commandeForm" (ngSubmit)="onSubmit()">
-  <div class="card">
-    <div class="card-header">
-      <h5 class="card-title mb-0">Informations générales</h5>
+<div class="commande-add-wrapper">
+  <!-- Enterprise Selection Alert -->
+  <div class="enterprise-alert enterprise-alert--warning" *ngIf="!currentEntrepriseId && entreprises.length > 0">
+    <div class="enterprise-alert__icon">
+      <i class="feather icon-alert-triangle"></i>
     </div>
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Référence <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" formControlName="reference"
-                 [class.is-invalid]="isFieldInvalid('reference')" placeholder="CA-0001">
-          <div class="invalid-feedback">La référence est obligatoire.</div>
+    <div class="enterprise-alert__content">
+      <strong>Sélectionnez une entreprise</strong>
+      <select class="enterprise-select" #enterpriseSelect (change)="changeEnterprise(+enterpriseSelect.value)">
+        <option value="">-- Choisir une entreprise --</option>
+        <option *ngFor="let e of entreprises" [value]="e.id">{{ e.nom }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Current Enterprise Display -->
+  <div class="enterprise-alert enterprise-alert--success" *ngIf="currentEntrepriseId">
+    <div class="enterprise-alert__icon">
+      <i class="feather icon-check-circle"></i>
+    </div>
+    <div class="enterprise-alert__content">
+      Entreprise sélectionnée: <strong>{{ selectedEntrepriseName }}</strong>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-bg-accent"></div>
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="header-icon-wrap">
+          <i class="feather icon-shopping-cart"></i>
         </div>
-        <div class="col-md-4">
-          <label class="form-label">Date Commande <span class="text-danger">*</span></label>
-          <input type="date" class="form-control" formControlName="dateCommande"
-                 [class.is-invalid]="isFieldInvalid('dateCommande')">
-          <div class="invalid-feedback">La date est obligatoire.</div>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Date Livraison Prévue</label>
-          <input type="date" class="form-control" formControlName="dateLivraisonPrevue">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Fournisseur <span class="text-danger">*</span></label>
-          <select class="form-select" formControlName="fournisseurId">
-            <option value="">-- Sélectionner un fournisseur --</option>
-            <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Notes</label>
-          <textarea class="form-control" formControlName="note" rows="2"></textarea>
+        <div>
+          <h1 class="page-title">{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande Achat</h1>
+          <p class="page-subtitle">{{ isEditMode ? 'Modifier la commande achat existante' : 'Créer une nouvelle commande achat fournisseur' }}</p>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Lignes de commande -->
-  <div class="card mt-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="card-title mb-0">Articles (Lignes de commande)</h5>
-      <button type="button" class="btn btn-sm btn-primary" (click)="addLigne()">
-        <i class="feather icon-plus me-1"></i>Ajouter un article
+      <button type="button" class="btn-back" (click)="onCancel()">
+        <i class="feather icon-arrow-left"></i>
+        Retour
       </button>
     </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered" formArrayName="lignes">
-          <thead class="table-light">
-            <tr>
-              <th>Article Achat</th>
-              <th>Quantité</th>
-              <th>Prix Unit. HT</th>
-              <th>TVA (%)</th>
-              <th>Montant HT</th>
-              <th>Montant TTC</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let ligne of lignesArray.controls; let i = index" [formGroupName]="i">
-              <td>
-                <select class="form-select form-select-sm" formControlName="articleAchatId"
-                        (change)="onArticleChange(i)"
-                        [compareWith]="compareNumbers">
-                  <option [value]="null">-- Article --</option>
-                  <option *ngFor="let a of articles" [ngValue]="a.id">{{ a.nom }}</option>
-                </select>
-              </td>
-              <td>
-                <input type="number" class="form-control form-control-sm" formControlName="quantite"
-                       min="0.01" step="0.01" style="width: 80px"
-                       (change)="calculateLineAmount(i); calculateTotals()">
-              </td>
-              <td>
-                <input type="number" class="form-control form-control-sm" formControlName="prixUnitaireHT"
-                       min="0" step="0.01" style="width: 100px"
-                       (change)="calculateLineAmount(i); calculateTotals()">
-              </td>
-              <td>
-                <input type="number" class="form-control form-control-sm" formControlName="tva"
-                       min="0" max="100" step="0.1" style="width: 70px"
-                       (change)="calculateLineAmount(i); calculateTotals()">
-              </td>
-              <td>
-                <input type="number" class="form-control form-control-sm bg-light" formControlName="montantHT"
-                       readonly style="width: 100px">
-              </td>
-              <td>
-                <input type="number" class="form-control form-control-sm bg-light" formControlName="montantTTC"
-                       readonly style="width: 110px">
-              </td>
-              <td>
-                <button type="button" class="btn btn-sm btn-danger" (click)="removeLigne(i)">
-                  <i class="feather icon-trash-2"></i>
-                </button>
-              </td>
-            </tr>
-            <tr *ngIf="lignesArray.length === 0">
-              <td colspan="7" class="text-center text-muted py-3">
-                Aucun article ajouté. Cliquez sur "Ajouter un article" pour commencer.
-              </td>
-            </tr>
-          </tbody>
-          <tfoot *ngIf="lignesArray.length > 0" class="table-light">
-            <tr>
-              <td colspan="4" class="text-end fw-bold">Totaux :</td>
-              <td><strong>{{ totalHT | number:'1.2-2' }}</strong></td>
-              <td><strong>{{ totalTTC | number:'1.2-2' }}</strong></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td colspan="4" class="text-end">Montant TVA :</td>
-              <td colspan="2"><strong>{{ totalTVA | number:'1.2-2' }}</strong></td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
+  </div>
+
+  <form [formGroup]="commandeForm" (ngSubmit)="onSubmit()">
+    <!-- General Information Card -->
+    <div class="form-card section-animate">
+      <div class="card-header-bar"></div>
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon info">
+            <i class="feather icon-file-text"></i>
+          </div>
+          <div class="section-text">
+            <h3 class="section-title">Informations Générales</h3>
+            <p class="section-subtitle">Renseignez les détails principaux de la commande</p>
+          </div>
+          <span class="section-step">ÉTAPE 1</span>
+        </div>
+
+        <div class="fields-grid three-cols">
+          <div class="field-group">
+            <label class="field-label required">Référence</label>
+            <div class="input-wrapper" [class.invalid]="isFieldInvalid('reference')">
+              <span class="input-icon"><i class="feather icon-hash"></i></span>
+              <input type="text" class="field-input" formControlName="reference" placeholder="CA-0001">
+            </div>
+            <div class="field-error" *ngIf="isFieldInvalid('reference')">
+              <i class="feather icon-alert-circle"></i> La référence est obligatoire
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label required">Date Commande</label>
+            <div class="input-wrapper" [class.invalid]="isFieldInvalid('dateCommande')">
+              <span class="input-icon"><i class="feather icon-calendar"></i></span>
+              <input type="date" class="field-input" formControlName="dateCommande">
+            </div>
+            <div class="field-error" *ngIf="isFieldInvalid('dateCommande')">
+              <i class="feather icon-alert-circle"></i> La date est obligatoire
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Date Livraison Prévue</label>
+            <div class="input-wrapper">
+              <span class="input-icon"><i class="feather icon-truck"></i></span>
+              <input type="date" class="field-input" formControlName="dateLivraisonPrevue">
+            </div>
+          </div>
+        </div>
+
+        <div class="fields-grid two-cols" style="margin-top: 16px;">
+          <div class="field-group">
+            <label class="field-label required">Fournisseur</label>
+            <div class="select-wrapper">
+              <span class="select-icon"><i class="feather icon-users"></i></span>
+              <select class="field-select" formControlName="fournisseurId">
+                <option value="">-- Sélectionner un fournisseur --</option>
+                <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
+              </select>
+              <span class="select-chevron"><i class="feather icon-chevron-down"></i></span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Notes</label>
+            <textarea class="field-textarea" formControlName="note" rows="2" placeholder="Ajouter des notes..."></textarea>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+
+    <!-- Articles Card -->
+    <div class="form-card section-animate" style="animation-delay: .1s;">
+      <div class="card-header-bar articles"></div>
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon articles">
+            <i class="feather icon-package"></i>
+          </div>
+          <div class="section-text">
+            <h3 class="section-title">Articles (Lignes de Commande)</h3>
+            <p class="section-subtitle">Ajoutez les articles à commander</p>
+          </div>
+          <span class="section-step">ÉTAPE 2</span>
+          <button type="button" class="btn-add-article" (click)="addLigne()">
+            <i class="feather icon-plus"></i>
+            Ajouter un article
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="modern-table" formArrayName="lignes">
+            <thead>
+              <tr>
+                <th>Article Achat</th>
+                <th>Quantité</th>
+                <th>Prix Unit. HT</th>
+                <th>TVA (%)</th>
+                <th class="amount-col">Montant HT</th>
+                <th class="amount-col">Montant TTC</th>
+                <th class="actions-col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ligne of lignesArray.controls; let i = index" [formGroupName]="i" class="table-row">
+                <td>
+                  <select class="table-select" formControlName="articleAchatId"
+                          (change)="onArticleChange(i)"
+                          [compareWith]="compareNumbers">
+                    <option [value]="null">-- Article --</option>
+                    <option *ngFor="let a of articles" [ngValue]="a.id">{{ a.nom }}</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="number" class="table-input" formControlName="quantite"
+                         min="0.01" step="0.01"
+                         (change)="calculateLineAmount(i); calculateTotals()">
+                </td>
+                <td>
+                  <input type="number" class="table-input" formControlName="prixUnitaireHT"
+                         min="0" step="0.01"
+                         (change)="calculateLineAmount(i); calculateTotals()">
+                </td>
+                <td>
+                  <input type="number" class="table-input compact" formControlName="tva"
+                         min="0" max="100" step="0.1"
+                         (change)="calculateLineAmount(i); calculateTotals()">
+                </td>
+                <td class="amount-cell">
+                  <input type="number" class="table-input readonly" formControlName="montantHT" readonly>
+                </td>
+                <td class="amount-cell highlight">
+                  <input type="number" class="table-input readonly" formControlName="montantTTC" readonly>
+                </td>
+                <td class="actions-cell">
+                  <button type="button" class="btn-delete" (click)="removeLigne(i)">
+                    <i class="feather icon-trash-2"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="lignesArray.length === 0" class="empty-row">
+                <td colspan="7">
+                  <div class="empty-state">
+                    <i class="feather icon-inbox"></i>
+                    <p>Aucun article ajouté</p>
+                    <span>Cliquez sur "Ajouter un article" pour commencer</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot *ngIf="lignesArray.length > 0">
+              <tr class="totals-row">
+                <td colspan="4" class="totals-label">Totaux :</td>
+                <td class="totals-value">{{ totalHT | number:'1.2-2' }}</td>
+                <td class="totals-value highlight">{{ totalTTC | number:'1.2-2' }}</td>
+                <td></td>
+              </tr>
+              <tr class="totals-row sub">
+                <td colspan="4" class="totals-label">Montant TVA :</td>
+                <td colspan="2" class="totals-value">{{ totalTVA | number:'1.2-2' }}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
 
     <!-- Error Message -->
-  <div class="alert alert-danger mt-3" *ngIf="errorMessage">
-    {{ errorMessage }}
-  </div>
+    <div class="error-alert" *ngIf="errorMessage">
+      <i class="feather icon-alert-octagon"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
 
-  <!-- Actions -->
-  <div class="card mt-4">
-    <div class="card-body d-flex gap-2 justify-content-end">
-      <button type="button" class="btn btn-secondary" (click)="onCancel()">
-        <i class="feather icon-x me-1"></i>Annuler
+    <!-- Actions -->
+    <div class="form-actions section-animate" style="animation-delay: .2s;">
+      <button type="button" class="btn-cancel" (click)="onCancel()">
+        <i class="feather icon-x"></i>
+        Annuler
       </button>
-      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
-        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-        <i *ngIf="!isLoading" class="feather icon-save me-1"></i>
+      <button type="submit" class="btn-submit" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="btn-spinner"></span>
+        <i *ngIf="!isLoading" class="feather icon-save"></i>
         {{ isEditMode ? 'Enregistrer les modifications' : 'Créer la commande' }}
       </button>
     </div>
-  </div>
-</form>
+  </form>
+</div>
