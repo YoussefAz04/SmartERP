@@ -19,6 +19,7 @@ export class DetaisUsersComponent implements OnInit {
   isLoading = true;
   userId!: number;
   isSubmitting = false;
+  rolesString: string = '';
   
   permissionUsers: PermissionDto = {
     create: false,
@@ -45,6 +46,7 @@ export class DetaisUsersComponent implements OnInit {
     this.userService.getUserById(this.userId).subscribe({
       next: (data) => {
         this.user = data;
+        this.rolesString = data.roles?.join(', ') ?? '';
         this.isLoading = false;
       },
       error: (err: any) => {
@@ -67,6 +69,11 @@ export class DetaisUsersComponent implements OnInit {
     }
 
     this.isSubmitting = true;
+
+    this.user.roles = this.rolesString
+      .split(',')
+      .map(r => r.trim())
+      .filter(r => r.length > 0);
 
     this.userService.updateUser(this.userId, this.user).subscribe({
       next: (response: any) => {
