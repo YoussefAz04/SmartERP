@@ -1321,7 +1321,7 @@ ALTER TABLE [dbo].[ligne_commande_vente] CHECK CONSTRAINT [FK_lcv_commande_vente
 GO
 
 ALTER TABLE [dbo].[ligne_commande_vente] WITH CHECK
-    ADD CONSTRAINT [FK_lcv_article] FOREIGN KEY ([article_id]) REFERENCES [dbo].[article] ([id])
+    ADD CONSTRAINT [FK_lcv_article] FOREIGN KEY ([article_id]) REFERENCES [dbo].[article_vente] ([id])
 GO
 ALTER TABLE [dbo].[ligne_commande_vente] CHECK CONSTRAINT [FK_lcv_article]
 GO
