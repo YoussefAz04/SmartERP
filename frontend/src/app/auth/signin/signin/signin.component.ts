@@ -45,18 +45,27 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
     const elements = document.querySelectorAll<HTMLElement>('.stat-value[data-target]');
     elements.forEach(el => {
       const target = parseInt(el.getAttribute('data-target') || '0', 10);
-      const duration = 1800;
-      const step = target / (duration / 16);
-      let current = 0;
-      const timer = setInterval(() => {
-        current += step;
-        if (current >= target) {
-          current = target;
-          clearInterval(timer);
+      const duration = 2200;
+      const startTime = performance.now();
+
+      const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutQuart(progress);
+        const current = Math.floor(easedProgress * target);
+
+        el.textContent = current.toLocaleString('fr-FR');
+
+        if (progress < 1) {
+          const frameId = requestAnimationFrame(animate);
+          // Store cleanup reference
+          this.counterTimers.push(frameId as unknown as ReturnType<typeof setInterval>);
         }
-        el.textContent = Math.floor(current).toLocaleString();
-      }, 16);
-      this.counterTimers.push(timer);
+      };
+
+      requestAnimationFrame(animate);
     });
   }
 
