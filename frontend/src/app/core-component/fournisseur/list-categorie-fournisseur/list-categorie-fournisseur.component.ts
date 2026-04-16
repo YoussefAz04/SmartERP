@@ -30,6 +30,14 @@ export class ListCategorieFournisseurComponent implements OnInit {
     return name.length > truncateLength ? name.substring(0, truncateLength) + '…' : name;
   }
 
+  get mostUsedCount(): number {
+    if (!this.categories.length) return 0;
+    const sorted = [...this.categories].sort(
+      (a, b) => (b.fournisseurs?.length || 0) - (a.fournisseurs?.length || 0)
+    );
+    return sorted[0]?.fournisseurs?.length || 0;
+  }
+
   constructor(
     private fournisseurService: FournisseurService,
     router: Router
