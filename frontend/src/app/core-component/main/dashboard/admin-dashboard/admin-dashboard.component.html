@@ -295,7 +295,7 @@
                 <span class="ref-id">#{{ cmd.id }}</span>
               </td>
               <td class="text-muted">{{ cmd.client?.nom || '—' }}</td>
-              <td><strong>{{ (cmd.montantTTC || 0) | number:'1.2-2' }} DA</strong></td>
+              <td><strong>{{ (cmd.montantTTC || 0) | number:'1.2-2' }} TND</strong></td>
               <td class="text-muted">{{ cmd.dateCommande | date:'dd/MM/yyyy' }}</td>
               <td>
                 <span class="status-badge" [ngClass]="getCommandeStatusClass(cmd.statut)">
@@ -309,4 +309,3 @@
     </div>
   </div>
 </section>
-

@@ -1,193 +1,282 @@
 // ============================================================
-// ADMIN DASHBOARD – Ultra-Modern Glassmorphism + Animation
+// ADMIN DASHBOARD – Ultra-Premium Glassmorphism + Animations
 // ============================================================
 
-// ── Variables ──────────────────────────────────────────────
-$blue:     #3B82F6;
-$orange:   #FF9F43;
-$green:    #10B981;
+// ── Premium Color Palette ──────────────────────────────────
+$indigo:   #6366F1;
+$pink:     #EC4899;
+$emerald:  #10B981;
+$amber:    #F59E0B;
 $red:      #EF4444;
-$dark:     #1A2942;
-$card-bg:  rgba(255,255,255,0.95);
-$card-blur: blur(10px);
-$border:   rgba(200,200,200,0.2);
-$shadow:   0 4px 12px rgba(0,0,0,0.08);
-$shadow-h: 0 8px 24px rgba(0,0,0,0.12);
-$radius:   12px;
-$text:     #111827;
-$muted:    #6B7280;
+$slate:    #1E293B;
+$dark:     #0F172A;
+$card-bg:  rgba(255,255,255,0.98);
+$card-blur: blur(16px);
+$border:   rgba(200,200,220,0.25);
+$shadow:   0 8px 24px rgba(0,0,0,0.1);
+$shadow-h: 0 20px 48px rgba(0,0,0,0.15);
+$radius:   14px;
+$text:     #0F172A;
+$muted:    #64748B;
 
-// ── Page fade-in animation ──────────────────────────────────
+// ── Premium Gradient Backgrounds ──────────────────────────
+$grad-indigo-pink: linear-gradient(135deg, $indigo 0%, $pink 100%);
+$grad-emerald-cyan: linear-gradient(135deg, $emerald 0%, #06B6D4 100%);
+$grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
+
+// ── Page Entrance Animation ────────────────────────────────
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 .fade-in {
-  animation: fadeInUp 0.45s ease both;
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-// ── Row stagger animation ───────────────────────────────────
-@keyframes rowIn {
-  from { opacity: 0; transform: translateX(-10px); }
-  to   { opacity: 1; transform: translateX(0); }
+// ── Row Stagger Animation ──────��──────────────────────────
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
+
 .row-anim {
-  animation: rowIn 0.35s ease both;
+  animation: slideInLeft 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-// ── Skeleton shimmer ────────────────────────────────────────
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
+// ── Skeleton Shimmer Animation ────────────────────────────
+@keyframes shimmerPulse {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }
+
 .skel {
   display: inline-block;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #e8edf5 25%, #f5f7fa 50%, #e8edf5 75%);
-  background-size: 800px 100%;
-  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(226, 232, 240, 0.6) 0%,
+    rgba(241, 245, 249, 0.8) 50%,
+    rgba(226, 232, 240, 0.6) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmerPulse 2s infinite;
 
   &--num {
-    width: 60px;
-    height: 36px;
+    width: 72px;
+    height: 42px;
     vertical-align: middle;
+    border-radius: 8px;
   }
 
   &--row {
     display: block;
-    height: 42px;
+    height: 48px;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     border-radius: 8px;
   }
 }
-.skel-rows { padding: 4px 0; }
 
-// ── Dashboard Header ────────────────────────────────────────
+.skel-rows {
+  padding: 8px 0;
+}
+
+// ── Dashboard Header ───────────────────────────────────────
 .db-header {
-  background: linear-gradient(135deg, $dark 0%, #243b55 60%, #2c3e50 100%);
+  background: linear-gradient(135deg, $dark 0%, $slate 50%, #2D3E5F 100%);
   border-radius: $radius;
-  padding: 26px 30px;
-  margin-bottom: 24px;
+  padding: 32px 40px;
+  margin-bottom: 32px;
   box-shadow: $shadow;
+  position: relative;
+  overflow: hidden;
+
+  // Gradient accent line
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: $grad-indigo-pink;
+  }
 
   &__inner {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 16px;
   }
 
   &__title {
     margin: 0;
-    font-size: 32px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: -0.5px;
+    font-size: 40px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #E0E7FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.8px;
   }
 
   &__sub {
-    margin: 5px 0 0;
-    font-size: 14px;
-    color: rgba(255,255,255,0.70);
-    strong { color: rgba(255,255,255,0.92); }
+    margin: 8px 0 0;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+
+    strong {
+      color: rgba(255, 255, 255, 0.98);
+      font-weight: 700;
+    }
   }
 
   .enterprise-tag {
     display: inline-block;
-    margin-left: 8px;
-    padding: 2px 10px;
+    margin-left: 12px;
+    padding: 4px 14px;
     border-radius: 99px;
-    font-size: 11px;
-    font-weight: 600;
-    background: rgba($orange, 0.25);
-    color: lighten($orange, 20%);
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba($amber, 0.2);
+    color: lighten($amber, 15%);
+    border: 1px solid rgba($amber, 0.5);
     vertical-align: middle;
-    border: 1px solid rgba($orange, 0.4);
+    backdrop-filter: blur(8px);
   }
 
   .meta-badge {
-    padding: 7px 16px;
-    border-radius: 8px;
+    padding: 8px 20px;
+    border-radius: 10px;
     font-size: 13px;
-    font-weight: 500;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.88);
-    backdrop-filter: blur(4px);
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
   }
 }
 
-// ── Section wrapper ─────────────────────────────────────────
+// ── Section Wrapper ─��──────────────────────────────────────
 .db-section {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
-// ── Stats Grid ──────────────────────────────────────────────
+// ── Stats Grid ─────────────────────────────────────────────
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
 
-  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 580px) { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-// ── Stat Card ───────────────────────────────────────────────
+// ── Stat Card – Premium ────────────────────────────────────
 .stat-card {
   position: relative;
   background: $card-bg;
   backdrop-filter: $card-blur;
   border-radius: $radius;
-  padding: 24px 22px 18px;
+  padding: 28px 26px 22px;
   box-shadow: $shadow;
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 
-  // Gradient border via pseudo-element
+  // Animated gradient border (left side accent)
   &::before {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: $radius;
-    padding: 1px;
-    background: linear-gradient(135deg, $orange, $blue);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: $radius 0 0 $radius;
+    background: $indigo;
+    opacity: 0.8;
+    transform: scaleY(0);
+    transform-origin: top;
+    animation: scaleInY 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
   }
 
   // Colored top accent
   &::after {
     content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 3px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
     border-radius: $radius $radius 0 0;
+    background: $grad-indigo-pink;
   }
 
-  &--blue::after   { background: $blue; }
-  &--orange::after { background: $orange; }
-  &--green::after  { background: $green; }
+  &--blue::after {
+    background: linear-gradient(90deg, $indigo 0%, #3B82F6 100%);
+  }
+
+  &--orange::after {
+    background: $grad-amber-orange;
+  }
+
+  &--green::after {
+    background: $grad-emerald-cyan;
+  }
 
   &:hover {
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-8px) scale(1.03);
     box-shadow: $shadow-h;
+
+    .stat-card__icon {
+      transform: rotate(8deg) scale(1.15);
+    }
+
+    .stat-card__link {
+      gap: 10px;
+    }
   }
 
-  // Ripple container
+  // Ripple effect
   .ripple {
     position: absolute;
     border-radius: 50%;
-    background: rgba($blue, 0.18);
+    background: rgba($indigo, 0.25);
     transform: scale(0);
-    animation: rippleOut 0.6s linear;
+    animation: rippleExpand 0.8s cubic-bezier(0, 0, 0.2, 1);
     pointer-events: none;
   }
 
@@ -195,19 +284,27 @@ $muted:    #6B7280;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    font-size: 22px;
-    transition: transform 0.3s ease;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    font-size: 24px;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    .stat-card--blue &   { background: rgba($blue,0.10);   color: $blue; }
-    .stat-card--orange & { background: rgba($orange,0.12); color: $orange; }
-    .stat-card--green &  { background: rgba($green,0.10);  color: $green; }
-  }
+    .stat-card--blue & {
+      background: linear-gradient(135deg, rgba($indigo, 0.15), rgba($indigo, 0.08));
+      color: $indigo;
+    }
 
-  &:hover &__icon {
-    transform: rotate(5deg) scale(1.08);
+    .stat-card--orange & {
+      background: linear-gradient(135deg, rgba($amber, 0.15), rgba($amber, 0.08));
+      color: $amber;
+    }
+
+    .stat-card--green & {
+      background: linear-gradient(135deg, rgba($emerald, 0.15), rgba($emerald, 0.08));
+      color: $emerald;
+    }
   }
 
   &__body {
@@ -215,42 +312,67 @@ $muted:    #6B7280;
   }
 
   &__value {
-    font-size: 40px;
-    font-weight: 800;
+    font-size: 48px;
+    font-weight: 900;
     color: $text;
-    line-height: 1.1;
+    line-height: 1;
+    letter-spacing: -1px;
   }
 
   &__label {
-    font-size: 13px;
+    font-size: 14px;
     color: $muted;
-    font-weight: 500;
-    margin-top: 4px;
+    font-weight: 600;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   &__link {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin-top: 16px;
-    font-size: 12px;
-    font-weight: 600;
+    margin-top: 18px;
+    font-size: 13px;
+    font-weight: 700;
     text-decoration: none;
-    transition: gap 0.2s ease, opacity 0.2s;
+    transition: all 0.3s ease;
 
-    .stat-card--blue &   { color: $blue; }
-    .stat-card--orange & { color: $orange; }
-    .stat-card--green &  { color: $green; }
+    .stat-card--blue & {
+      color: $indigo;
+    }
 
-    &:hover { gap: 8px; opacity: 0.85; }
+    .stat-card--orange & {
+      color: $amber;
+    }
+
+    .stat-card--green & {
+      color: $emerald;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
 }
 
-@keyframes rippleOut {
-  to { transform: scale(4); opacity: 0; }
+@keyframes scaleInY {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
 
-// ── Generic Card ────────────────────────────────────────────
+@keyframes rippleExpand {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+// ── Generic Card ───────────────────────────────────────────
 .db-card {
   background: $card-bg;
   backdrop-filter: $card-blur;
@@ -258,30 +380,40 @@ $muted:    #6B7280;
   border-radius: $radius;
   box-shadow: $shadow;
   overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: $shadow-h;
+    border-color: rgba(99, 102, 241, 0.2);
+  }
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 22px;
+    padding: 20px 26px;
     border-bottom: 1px solid $border;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(243, 244, 246, 0.4) 0%, rgba(249, 250, 251, 0.2) 100%);
   }
 
   &__title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 15px;
+    gap: 10px;
+    font-size: 16px;
     font-weight: 700;
     color: $text;
 
-    i { font-size: 16px; color: $blue; }
+    i {
+      font-size: 18px;
+      color: $indigo;
+    }
   }
 
   &__body {
-    padding: 16px 22px;
+    padding: 20px 26px;
   }
 }
 
@@ -289,245 +421,389 @@ $muted:    #6B7280;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  color: $blue;
+  font-size: 13px;
+  font-weight: 700;
+  color: $indigo;
   text-decoration: none;
-  transition: gap 0.2s ease, opacity 0.2s;
-  &:hover { gap: 8px; opacity: 0.80; }
+  transition: all 0.3s ease;
+
+  &:hover {
+    gap: 10px;
+    opacity: 0.8;
+  }
 }
 
-// ── Modern Table ─────────────────────────────────────────────
-.table-wrap { overflow-x: auto; }
+// ── Modern Table ───────────────────────────────────────────
+.table-wrap {
+  overflow-x: auto;
+}
 
 .modern-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 14px;
 
   thead tr {
-    background: rgba($dark,0.03);
+    background: linear-gradient(90deg, rgba(243, 244, 246, 0.6) 0%, rgba(249, 250, 251, 0.3) 100%);
   }
 
   th {
-    padding: 10px 14px;
+    padding: 14px 16px;
     text-align: left;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     color: $muted;
     white-space: nowrap;
   }
 
   td {
-    padding: 12px 14px;
+    padding: 14px 16px;
     color: $text;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
 
   tbody tr {
-    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 
     &:hover {
-      background: rgba($blue, 0.04);
+      background: linear-gradient(90deg, rgba($indigo, 0.05) 0%, rgba($indigo, 0.02) 100%);
+      box-shadow: inset 0 0 8px rgba($indigo, 0.08);
     }
 
-    &:last-child td { border-bottom: none; }
+    &:last-child td {
+      border-bottom: none;
+    }
   }
 
-  .col-action { width: 80px; text-align: center; }
+  .col-action {
+    width: 90px;
+    text-align: center;
+  }
 }
 
-.text-muted { color: $muted !important; }
+.text-muted {
+  color: $muted !important;
+}
 
-// ── Avatar cell ──────────────────────────────────────────────
+// ── Avatar Cell ────────────────────────────────────────────
 .avatar-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
+
 .avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  background: rgba($blue,0.12);
-  color: $blue;
-  font-weight: 700;
-  font-size: 13px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba($indigo, 0.15), rgba($indigo, 0.08));
+  color: $indigo;
+  font-weight: 800;
+  font-size: 14px;
   flex-shrink: 0;
+  transition: all 0.3s ease;
 
   &--orange {
-    background: rgba($orange,0.12);
-    color: $orange;
+    background: linear-gradient(135deg, rgba($amber, 0.15), rgba($amber, 0.08));
+    color: $amber;
+  }
+
+  &:hover {
+    transform: scale(1.1);
   }
 }
 
-// ── Action buttons ───────────────────────────────────────────
-.action-btns { display: flex; justify-content: center; gap: 6px; }
+// ── Action Buttons ────────────────────────────────────────
+.action-btns {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
 
 .btn-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px; height: 28px;
-  border-radius: 7px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   border: none;
   cursor: pointer;
-  transition: background 0.18s ease, transform 0.18s ease;
-  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-size: 15px;
 
-  &:hover { transform: scale(1.12); }
+  &:hover {
+    transform: scale(1.15) rotate(3deg);
+  }
 
   &.btn-view {
-    background: rgba($blue,0.10);
-    color: $blue;
-    &:hover { background: rgba($blue,0.20); }
+    background: linear-gradient(135deg, rgba($indigo, 0.12), rgba($indigo, 0.06));
+    color: $indigo;
+
+    &:hover {
+      background: linear-gradient(135deg, rgba($indigo, 0.22), rgba($indigo, 0.12));
+    }
   }
 }
 
-// ── Article name ─────────────────────────────────────────────
+// ── Article Name ───────────────────────────────────────────
 .article-name {
-  font-weight: 600;
+  font-weight: 700;
   color: $text;
 }
 
-// ── Progress bar ─────────────────────────────────────────────
+// ── Progress Bar ───────────────────────────────────────────
 .progress-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 120px;
+  gap: 10px;
+  min-width: 140px;
 }
+
 .progress-qty {
-  font-weight: 700;
-  font-size: 13px;
-  min-width: 30px;
+  font-weight: 800;
+  font-size: 14px;
+  min-width: 35px;
   text-align: right;
+  color: $text;
 }
+
 .progress-bar-wrap {
   flex: 1;
-  height: 6px;
-  background: rgba(0,0,0,0.07);
+  height: 8px;
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 99px;
   overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 }
+
 .progress-bar-fill {
   height: 100%;
   border-radius: 99px;
-  transition: width 0.8s ease;
-  background: $green;
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: $grad-emerald-cyan;
+  animation: progressGrow 1s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  &.fill--green  { background: $green; }
-  &.fill--orange { background: $orange; }
-  &.fill--red    { background: $red; }
+  &.fill--green {
+    background: $grad-emerald-cyan;
+  }
+
+  &.fill--orange {
+    background: $grad-amber-orange;
+  }
+
+  &.fill--red {
+    background: linear-gradient(90deg, $red 0%, #DC2626 100%);
+  }
 }
 
-// ── Status badges ────────────────────────────────────────────
+@keyframes progressGrow {
+  from {
+    width: 0;
+  }
+}
+
+// ── Status Badges ─────────────────────────────────────────
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
+  padding: 5px 12px;
   border-radius: 99px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   white-space: nowrap;
+  transition: all 0.3s ease;
 
-  &.badge--in-stock   { background: rgba($green,0.12);  color: darken($green,6%); }
-  &.badge--low-stock  { background: rgba($orange,0.12); color: darken($orange,8%); }
-  &.badge--out-of-stock { background: rgba($red,0.12);  color: darken($red,6%); }
+  &.badge--in-stock {
+    background: linear-gradient(135deg, rgba($emerald, 0.15), rgba($emerald, 0.08));
+    color: darken($emerald, 8%);
+  }
 
-  &.badge-done      { background: rgba($green,0.12);  color: darken($green,6%); }
-  &.badge-pending   { background: rgba($orange,0.12); color: darken($orange,8%); }
-  &.badge-cancelled { background: rgba($red,0.12);    color: darken($red,6%); }
+  &.badge--low-stock {
+    background: linear-gradient(135deg, rgba($amber, 0.15), rgba($amber, 0.08));
+    color: darken($amber, 10%);
+  }
+
+  &.badge--out-of-stock {
+    background: linear-gradient(135deg, rgba($red, 0.15), rgba($red, 0.08));
+    color: darken($red, 8%);
+  }
+
+  &.badge-done {
+    background: linear-gradient(135deg, rgba($emerald, 0.15), rgba($emerald, 0.08));
+    color: darken($emerald, 8%);
+  }
+
+  &.badge-pending {
+    background: linear-gradient(135deg, rgba($amber, 0.15), rgba($amber, 0.08));
+    color: darken($amber, 10%);
+    animation: badgePulse 2.5s ease infinite;
+  }
+
+  &.badge-cancelled {
+    background: linear-gradient(135deg, rgba($red, 0.15), rgba($red, 0.08));
+    color: darken($red, 8%);
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
-// ── Ref ID ──────────────────────────────────────────────────
-.ref-id {
-  font-weight: 700;
-  color: $blue;
-}
-
-// ── Status badge pulse animation ─────────────────────────────
 @keyframes badgePulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
 }
 
-.status-badge.badge-pending {
-  animation: badgePulse 2s ease infinite;
+// ── Reference ID ───────────────────────────────────────────
+.ref-id {
+  font-weight: 800;
+  color: $indigo;
+  font-family: 'Courier New', monospace;
 }
 
-// ── Progress bar animate-in ───────────────────────────────────
-@keyframes barGrow {
-  from { width: 0; }
-}
-.progress-bar-fill {
-  animation: barGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-// ── Empty state ──────────────────────────────────────────────
+// ── Empty State ────────────────────────────────────────────
 .empty-state {
-  padding: 28px 0;
+  padding: 48px 24px;
   text-align: center;
   color: $muted;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-
-  i { font-size: 28px; opacity: 0.35; }
-}
-
-// ── Error state ───────────────────────────────────────────────
-.error-state {
-  padding: 24px 0;
-  text-align: center;
-  color: $red;
-  font-size: 13px;
+  font-size: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 
-  i { font-size: 26px; opacity: 0.70; }
+  i {
+    font-size: 36px;
+    opacity: 0.35;
+  }
+}
+
+// ── Error State ────────────────────────────────────────────
+.error-state {
+  padding: 32px 24px;
+  text-align: center;
+  color: $red;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  i {
+    font-size: 32px;
+    opacity: 0.75;
+  }
 }
 
 .btn-retry {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 16px;
-  border-radius: 8px;
-  border: 1px solid rgba($red, 0.4);
-  background: rgba($red, 0.08);
-  color: darken($red, 5%);
-  font-size: 12px;
-  font-weight: 600;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 9px;
+  border: 1.5px solid rgba($red, 0.4);
+  background: linear-gradient(135deg, rgba($red, 0.1), rgba($red, 0.05));
+  color: darken($red, 6%);
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: all 0.3s ease;
 
   &:hover {
-    background: rgba($red, 0.16);
+    background: linear-gradient(135deg, rgba($red, 0.18), rgba($red, 0.1));
     border-color: rgba($red, 0.6);
+    transform: scale(1.05);
   }
 }
 
-// ── Responsive ───────────────────────────────────────────────
+// ── Responsive Design ──────────────────────────────────────
 @media (max-width: 768px) {
   .db-header {
-    padding: 18px 16px;
-    &__title { font-size: 20px; }
+    padding: 24px 20px;
+
+    &__title {
+      font-size: 28px;
+    }
+
+    &__inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .stats-grid {
+    gap: 16px;
+  }
+
+  .stat-card {
+    padding: 20px 18px 16px;
+
+    &__value {
+      font-size: 36px;
+    }
   }
 
   .db-card {
-    &__header { padding: 14px 16px; }
-    &__body   { padding: 12px 16px; }
+    &__header {
+      padding: 16px 18px;
+    }
+
+    &__body {
+      padding: 16px 18px;
+    }
   }
 
   .modern-table th,
-  .modern-table td { padding: 9px 10px; }
+  .modern-table td {
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+
+  .modern-table th {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .db-header {
+    padding: 18px 14px;
+
+    &__title {
+      font-size: 24px;
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    &__value {
+      font-size: 32px;
+    }
+
+    &__label {
+      font-size: 13px;
+    }
+  }
+
+  .db-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .view-all-link {
+    align-self: flex-start;
+  }
 }

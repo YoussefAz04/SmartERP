@@ -253,4 +253,3 @@ export class AdminDashboardComponent implements OnInit {
     setTimeout(() => this.router.navigate([path]), 120);
   }
 }
-
