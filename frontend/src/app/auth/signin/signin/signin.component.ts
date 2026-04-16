@@ -20,7 +20,7 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
   errorMessage = '';
   rememberMe = false;
 
-  private counterTimers: ReturnType<typeof setInterval>[] = [];
+  private counterTimers: number[] = [];
   
   constructor(
     private router: Router, 
@@ -50,6 +50,7 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
 
+      let frameId = 0;
       const animate = (currentTime: number) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
@@ -59,18 +60,17 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
         el.textContent = current.toLocaleString('fr-FR');
 
         if (progress < 1) {
-          const frameId = requestAnimationFrame(animate);
-          // Store cleanup reference
-          this.counterTimers.push(frameId as unknown as ReturnType<typeof setInterval>);
+          frameId = requestAnimationFrame(animate);
         }
       };
 
-      requestAnimationFrame(animate);
+      frameId = requestAnimationFrame(animate);
+      this.counterTimers.push(frameId);
     });
   }
 
   ngOnDestroy(): void {
-    this.counterTimers.forEach(t => clearInterval(t));
+    this.counterTimers.forEach(id => cancelAnimationFrame(id));
   }
 
   responseLogin!: PermissionDto;
