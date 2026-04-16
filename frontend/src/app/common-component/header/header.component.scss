@@ -11,7 +11,6 @@ $text-secondary: #6b7280;
 $text-light: #9ca3af;
 $accent-blue: #4f46e5;
 $accent-indigo: #6366f1;
-$accent-orange: #4f46e5;
 $danger: #ef4444;
 $success: #10b981;
 
@@ -195,7 +194,7 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   font-size: 9px;
   font-weight: 800;
   color: $white;
-  background: linear-gradient(135deg, $accent-blue 0%, $accent-orange 100%);
+  background: linear-gradient(135deg, $accent-blue 0%, $accent-indigo 100%);
   padding: 2px 6px;
   border-radius: 4px;
   letter-spacing: 0.5px;
@@ -392,8 +391,8 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   &.badge-commande {
-    background: rgba($accent-orange, 0.12);
-    color: $accent-orange;
+    background: rgba($accent-indigo, 0.12);
+    color: $accent-indigo;
   }
 
   &.badge-fournisseur {
