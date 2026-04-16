@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.dto.StockMouvementDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,15 @@ public class StockMouvementService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
     public List<StockMouvement> getAllMouvements() {
-        return stockMouvementRepo.findAll();
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return stockMouvementRepo.findAll();
+        }
+        return stockMouvementRepo.findByEntrepriseId(entrepriseId);
     }
 
     public Optional<StockMouvement> getMouvementById(Long id) {
@@ -31,15 +39,27 @@ public class StockMouvementService {
     }
 
     public List<StockMouvement> getMouvementsByStock(Long stockId) {
-        return stockMouvementRepo.findByStockId(stockId);
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return stockMouvementRepo.findByStockId(stockId);
+        }
+        return stockMouvementRepo.findByStockIdAndEntrepriseId(stockId, entrepriseId);
     }
 
     public List<StockMouvement> getMouvementsByType(TypeMouvement type) {
-        return stockMouvementRepo.findByTypeMouvement(type);
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return stockMouvementRepo.findByTypeMouvement(type);
+        }
+        return stockMouvementRepo.findByTypeMouvementAndEntrepriseId(type, entrepriseId);
     }
 
     public List<StockMouvement> getMouvementsByUser(Long utilisateurId) {
-        return stockMouvementRepo.findByUtilisateurId(utilisateurId);
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            return stockMouvementRepo.findByUtilisateurId(utilisateurId);
+        }
+        return stockMouvementRepo.findByUtilisateurIdAndEntrepriseId(utilisateurId, entrepriseId);
     }
 
     public StockMouvement createMouvement(StockMouvementDto dto) {
