@@ -470,7 +470,7 @@ li.active {
   min-width: 16px;
   width: 16px;
   height: 16px;
-  margin-right: 10px;
+  margin-right: 0;
 }
 
 .NgxEditor {
@@ -569,6 +569,9 @@ mat-option.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
 .sidebar-inner.slimscroll {
   background: #ffffff;
   border-right: 1px solid transparent;
+  height: calc(100vh - 66px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 a:hover {
@@ -1064,7 +1067,7 @@ i.filter-icon {
   min-width: 16px;
   width: 16px;
   height: 16px;
-  margin-right: 10px;
+  margin-right: 0;
 }
 
 .bank-settings .btn-list.active i,
@@ -2165,6 +2168,6 @@ body .mini-sidebar .sidebar .sidebar-menu>ul>li.submenu-open ul li a {
 }
 @media (min-width: 991.98px) {
   .mini-sidebar.expand-menu .sidebar .sidebar-menu ul li i {
-    margin-right: 5px;
+    margin-right: 0;
   }
 }
