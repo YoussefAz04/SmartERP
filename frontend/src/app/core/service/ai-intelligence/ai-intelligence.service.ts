@@ -90,7 +90,8 @@ export interface PeriodComparison {
   current: number;
   previous: number;
   change: number;
-  changePercent: number;
+  /** `null` means the previous period was 0 (so %-change is undefined → the UI should show a "NEW" badge). */
+  changePercent: number | null;
   trend: 'up' | 'down' | 'stable';
 }
 

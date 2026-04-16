@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ComparisonMetrics } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
+import { ComparisonMetrics, PeriodComparison } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
 
 @Component({
   selector: 'app-comparison-metrics',
@@ -9,26 +9,31 @@ import { ComparisonMetrics } from 'src/app/core/service/ai-intelligence/ai-intel
 export class ComparisonMetricsComponent {
   @Input() comparison!: ComparisonMetrics;
 
-  formatCurrency(value: number): string {
-    if (!value) return '0';
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + 'M';
-    if (value >= 1_000) return (value / 1_000).toFixed(1) + 'k';
+  /** Format a currency value, keeping the sign for negatives and the 2-decimal precision for small ones. */
+  formatCurrency(value: number | null | undefined): string {
+    if (value === null || value === undefined || Number.isNaN(value)) return '0';
+    const abs = Math.abs(value);
+    const sign = value < 0 ? '-' : '';
+    if (abs >= 1_000_000) return sign + (abs / 1_000_000).toFixed(1) + 'M';
+    if (abs >= 1_000) return sign + (abs / 1_000).toFixed(1) + 'k';
     return value.toFixed(2);
   }
 
+  /** Width of the "current" bar (0‒100 %) – uses absolute values so negative margins still render a bar. */
   getProgressWidth(current: number, previous: number): number {
-    const max = Math.max(current, previous, 1);
-    return Math.min((current / max) * 100, 100);
+    const max = Math.max(Math.abs(current), Math.abs(previous), 1);
+    return Math.min((Math.abs(current) / max) * 100, 100);
   }
 
   getPreviousProgressWidth(current: number, previous: number): number {
-    const max = Math.max(current, previous, 1);
-    return Math.min((previous / max) * 100, 100);
+    const max = Math.max(Math.abs(current), Math.abs(previous), 1);
+    return Math.min((Math.abs(previous) / max) * 100, 100);
   }
 
+  /** Gross margin percentage = margin / sales. */
   getMarginPercent(): number {
-    if (!this.comparison?.ytdVsLastYear?.current || this.comparison.ytdVsLastYear.current === 0) return 0;
-    const salesYtd = this.comparison.ytdVsLastYear.current;
+    const salesYtd = this.comparison?.ytdVsLastYear?.current ?? 0;
+    if (!salesYtd) return 0;
     const margin = this.comparison.grossMarginYtd ?? 0;
     return Math.round((margin / salesYtd) * 1000) / 10;
   }
@@ -37,6 +42,7 @@ export class ComparisonMetricsComponent {
     const pct = this.getMarginPercent();
     if (pct >= 30) return 'text-success';
     if (pct >= 15) return 'text-warning';
+    if (pct >= 0) return 'text-muted';
     return 'text-danger';
   }
 
@@ -45,5 +51,35 @@ export class ComparisonMetricsComponent {
     if (current > 0) return 'text-success';
     if (current === 0) return 'text-muted';
     return 'text-danger';
+  }
+
+  /** True when the previous period had no activity – we display a "NOUV." badge instead of 0 %. */
+  isNew(p: PeriodComparison | null | undefined): boolean {
+    return !!p && (p.changePercent === null || p.changePercent === undefined) && p.current !== 0;
+  }
+
+  /** Build a human-readable change label, e.g. "+12.4 %" or "NOUV." when there is no previous. */
+  changeLabel(p: PeriodComparison | null | undefined): string {
+    if (!p) return '—';
+    if (this.isNew(p)) return 'NOUV.';
+    const v = p.changePercent ?? 0;
+    const sign = v >= 0 ? '+' : '';
+    return `${sign}${v.toFixed(1)}%`;
+  }
+
+  /** CSS class for a trend badge – "new" gets the positive colour but a distinct label. */
+  badgeClass(p: PeriodComparison | null | undefined, invert = false): string {
+    if (!p) return 'badge-stable';
+    if (this.isNew(p)) {
+      const newTrend = p.current >= 0 ? 'up' : 'down';
+      return this.trendToBadgeClass(newTrend, invert);
+    }
+    return this.trendToBadgeClass(p.trend, invert);
+  }
+
+  private trendToBadgeClass(trend: 'up' | 'down' | 'stable', invert: boolean): string {
+    if (trend === 'up') return invert ? 'badge-down' : 'badge-up';
+    if (trend === 'down') return invert ? 'badge-up' : 'badge-down';
+    return 'badge-stable';
   }
 }

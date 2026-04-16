@@ -135,15 +135,20 @@ public class AiDashboardService {
 
         comparison.setYtdVsLastYear(buildPeriodComparison(ytd, lastYear));
 
-        // Purchase YTD vs last year same period
+        // Purchase YTD vs last year same period (money spent buying inventory)
         Double purchaseYtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, ytdStart, today);
         Double purchaseLastYear = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
         purchaseYtd = purchaseYtd != null ? purchaseYtd : 0.0;
         purchaseLastYear = purchaseLastYear != null ? purchaseLastYear : 0.0;
         comparison.setPurchaseYtd(buildPeriodComparison(purchaseYtd, purchaseLastYear));
 
-        // Gross margin YTD = sales YTD - purchase YTD
-        double grossMargin = ytd - purchaseYtd;
+        // Gross margin YTD = sales YTD - COGS YTD (cost of items actually sold),
+        // NOT sales - total purchases (which would incorrectly count stock build-up as a loss).
+        Double cogsYtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, ytdStart, today);
+        Double cogsLastYear = commandeVenteRepository.getCOGSInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
+        cogsYtd = cogsYtd != null ? cogsYtd : 0.0;
+        cogsLastYear = cogsLastYear != null ? cogsLastYear : 0.0;
+        double grossMargin = ytd - cogsYtd;
         comparison.setGrossMarginYtd(Math.round(grossMargin * 100.0) / 100.0);
 
         // Order counts YTD
@@ -162,11 +167,15 @@ public class AiDashboardService {
         purchaseLtd = purchaseLtd != null ? purchaseLtd : 0.0;
         comparison.setPurchaseMtdVsLtd(buildPeriodComparison(purchaseMtd, purchaseLtd));
 
-        // Gross margin MTD vs LTD = (sales - purchases) for each period
-        comparison.setMarginMtdVsLtd(buildPeriodComparison(mtd - purchaseMtd, ltd - purchaseLtd));
+        // Gross margin MTD vs LTD = sales - COGS for each period
+        Double cogsMtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, mtdStart, mtdEnd);
+        Double cogsLtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
+        cogsMtd = cogsMtd != null ? cogsMtd : 0.0;
+        cogsLtd = cogsLtd != null ? cogsLtd : 0.0;
+        comparison.setMarginMtdVsLtd(buildPeriodComparison(mtd - cogsMtd, ltd - cogsLtd));
 
-        // Gross margin YTD vs last year same period
-        comparison.setMarginYtdVsLastYear(buildPeriodComparison(ytd - purchaseYtd, lastYear - purchaseLastYear));
+        // Gross margin YTD vs last year same period (sales - COGS)
+        comparison.setMarginYtdVsLastYear(buildPeriodComparison(ytd - cogsYtd, lastYear - cogsLastYear));
 
         // Sales order count MTD vs LTD
         Long orderCountMtd = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, mtdStart, mtdEnd);
@@ -192,14 +201,28 @@ public class AiDashboardService {
         dto.setPrevious(Math.round(previous * 100.0) / 100.0);
         double change = current - previous;
         dto.setChange(Math.round(change * 100.0) / 100.0);
-        double changePercent = previous > 0 ? Math.round((change / previous) * 1000.0) / 10.0 : 0.0;
-        dto.setChangePercent(changePercent);
-        if (changePercent > 1.0) {
-            dto.setTrend("up");
-        } else if (changePercent < -1.0) {
-            dto.setTrend("down");
+
+        if (previous == 0.0) {
+            // Starting from nothing: a %-change is mathematically undefined. Expose it as
+            // null so the UI can render a dedicated "NOUV." badge instead of a misleading 0%.
+            dto.setChangePercent(null);
+            if (current > 0) {
+                dto.setTrend("up");
+            } else if (current < 0) {
+                dto.setTrend("down");
+            } else {
+                dto.setTrend("stable");
+            }
         } else {
-            dto.setTrend("stable");
+            double changePercent = Math.round((change / Math.abs(previous)) * 1000.0) / 10.0;
+            dto.setChangePercent(changePercent);
+            if (changePercent > 1.0) {
+                dto.setTrend("up");
+            } else if (changePercent < -1.0) {
+                dto.setTrend("down");
+            } else {
+                dto.setTrend("stable");
+            }
         }
         return dto;
     }
