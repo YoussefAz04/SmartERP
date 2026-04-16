@@ -1,40 +1,65 @@
 <div class="sidebar" id="sidebar" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')">
   <div class="sidebar-inner slimscroll">
-    <ng-scrollbar>
-      <div id="sidebar-menu" class="sidebar-menu">
-        <ul>
-          @for (mainTittle of side_bar_data; track mainTittle) {
-          <li class="submenu-open">
-            <h6 class="submenu-hdr">
-              <span class="hdr-text">{{ mainTittle.tittle }}</span>
-            </h6>
-            <ul>
-              @for (menu of mainTittle?.menu; track menu) {
-                @if (menu?.hasSubRoute === false) {
-                  <li routerLinkActive="active" class="nav-item">
-                    <a class="nav-link" [routerLink]="menu?.route">
-                      <span class="nav-icon-wrap">
-                        <i class="feather" [class]="'icon-' + menu.icon"></i>
-                      </span>
-                      <span class="nav-label">{{ menu?.menuValue }}</span>
-                    </a>
-                  </li>
-                }
-                @if (menu.hasSubRoute === true) {
-                  <li class="submenu nav-item">
-                    <a class="nav-link" href="javascript:void(0)" (click)="expandSubMenus(menu)"
-                      [ngClass]="{ 'subdrop': menu.showSubRoute === true }"
-                      [class.active]="base === menu.base1 || base === menu.base || page === menu.page">
-                      <span class="nav-icon-wrap">
-                        <i class="feather" [class]="'icon-' + menu.icon"></i>
-                      </span>
-                      <span class="nav-label">{{ menu.menuValue }}</span>
-                      <span class="menu-arrow">
-                        <i class="feather icon-chevron-down arrow-icon"></i>
-                      </span>
-                    </a>
-                    <ul [ngClass]="menu.showSubRoute === true ? 'd-block' : 'd-none'" class="submenu-list">
-                      @for (subMenus of menu.subMenus; track subMenus) {
+    <div id="sidebar-menu" class="sidebar-menu">
+      <ul>
+        @for (mainTittle of side_bar_data; track mainTittle) {
+        <li class="submenu-open">
+          <h6 class="submenu-hdr">
+            <span class="hdr-text">{{ mainTittle.tittle }}</span>
+          </h6>
+          <ul>
+            @for (menu of mainTittle?.menu; track menu) {
+              @if (menu?.hasSubRoute === false) {
+                <li routerLinkActive="active" class="nav-item">
+                  <a class="nav-link" [routerLink]="menu?.route">
+                    <span class="nav-icon-wrap">
+                      <i class="feather" [class]="'icon-' + menu.icon"></i>
+                    </span>
+                    <span class="nav-label">{{ menu?.menuValue }}</span>
+                  </a>
+                </li>
+              }
+              @if (menu.hasSubRoute === true) {
+                <li class="submenu nav-item">
+                  <a class="nav-link" href="javascript:void(0)" (click)="expandSubMenus(menu)"
+                    [ngClass]="{ 'subdrop': menu.showSubRoute === true }"
+                    [class.active]="base === menu.base1 || base === menu.base || page === menu.page">
+                    <span class="nav-icon-wrap">
+                      <i class="feather" [class]="'icon-' + menu.icon"></i>
+                    </span>
+                    <span class="nav-label">{{ menu.menuValue }}</span>
+                    <span class="menu-arrow">
+                      <i class="feather icon-chevron-down arrow-icon"></i>
+                    </span>
+                  </a>
+                  <ul [ngClass]="menu.showSubRoute === true ? 'd-block' : 'd-none'" class="submenu-list">
+                    @for (subMenus of menu.subMenus; track subMenus) {
+                      <li class="submenu-item">
+                        <a [routerLink]="subMenus.route" routerLinkActive="active" class="submenu-link">
+                          <span class="submenu-dot"></span>
+                          <span>{{ subMenus.menuValue }}</span>
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </li>
+              }
+              @if (menu.hasSubRouteTwo === true) {
+                <li class="submenu nav-item">
+                  <a class="nav-link" href="javascript:void(0);" (click)="openMenu(menu)"
+                    [ngClass]="{'subdrop' : openMenuItem === menu}"
+                    [class.active]="base === menu.base">
+                    <span class="nav-icon-wrap">
+                      <i class="feather" [class]="'icon-' + menu.icon"></i>
+                    </span>
+                    <span class="nav-label">{{ menu.menuValue }}</span>
+                    <span class="menu-arrow">
+                      <i class="feather icon-chevron-down arrow-icon"></i>
+                    </span>
+                  </a>
+                  <ul [ngClass]="openMenuItem === menu ? 'd-block' : 'd-none'" class="submenu-list">
+                    @for (subMenus of menu.subMenus; track subMenus) {
+                      @if (subMenus.customSubmenuTwo === false) {
                         <li class="submenu-item">
                           <a [routerLink]="subMenus.route" routerLinkActive="active" class="submenu-link">
                             <span class="submenu-dot"></span>
@@ -42,65 +67,38 @@
                           </a>
                         </li>
                       }
-                    </ul>
-                  </li>
-                }
-                @if (menu.hasSubRouteTwo === true) {
-                  <li class="submenu nav-item">
-                    <a class="nav-link" href="javascript:void(0);" (click)="openMenu(menu)"
-                      [ngClass]="{'subdrop' : openMenuItem === menu}"
-                      [class.active]="base === menu.base">
-                      <span class="nav-icon-wrap">
-                        <i class="feather" [class]="'icon-' + menu.icon"></i>
-                      </span>
-                      <span class="nav-label">{{ menu.menuValue }}</span>
-                      <span class="menu-arrow">
-                        <i class="feather icon-chevron-down arrow-icon"></i>
-                      </span>
-                    </a>
-                    <ul [ngClass]="openMenuItem === menu ? 'd-block' : 'd-none'" class="submenu-list">
-                      @for (subMenus of menu.subMenus; track subMenus) {
-                        @if (subMenus.customSubmenuTwo === false) {
-                          <li class="submenu-item">
-                            <a [routerLink]="subMenus.route" routerLinkActive="active" class="submenu-link">
-                              <span class="submenu-dot"></span>
-                              <span>{{ subMenus.menuValue }}</span>
-                            </a>
-                          </li>
-                        }
-                        @if (subMenus.customSubmenuTwo === true) {
-                          <li class="submenu submenu-two nav-item">
-                            <a class="submenu-link" href="javascript:void(0);"
-                              [class.active]="page === subMenus.page1 || page === subMenus.page2 || page === subMenus.page3 || page === subMenus.page4 || page === subMenus.page5 || page === subMenus.page6 || page === subMenus.page7 || page === subMenus.page8"
-                              (click)="openSubmenuOne(subMenus)" [ngClass]="{'subdrop' : openSubmenuOneItem === subMenus}">
-                              <span class="submenu-dot"></span>
-                              <span>{{ subMenus.menuValue }}</span>
-                              <span class="menu-arrow">
-                                <i class="feather icon-chevron-right arrow-icon-sm"></i>
-                              </span>
-                            </a>
-                            <ul [ngClass]="openSubmenuOneItem === subMenus ? 'd-block' : 'd-none'" class="submenu-list">
-                              @for (subMenuTwo of subMenus.subMenusTwo; track subMenuTwo) {
-                                <li class="submenu-item">
-                                  <a [routerLink]="subMenuTwo.route" routerLinkActive="active" class="submenu-link">
-                                    <span class="submenu-dot"></span>
-                                    <span>{{ subMenuTwo.menuValue }}</span>
-                                  </a>
-                                </li>
-                              }
-                            </ul>
-                          </li>
-                        }
+                      @if (subMenus.customSubmenuTwo === true) {
+                        <li class="submenu submenu-two nav-item">
+                          <a class="submenu-link" href="javascript:void(0);"
+                            [class.active]="page === subMenus.page1 || page === subMenus.page2 || page === subMenus.page3 || page === subMenus.page4 || page === subMenus.page5 || page === subMenus.page6 || page === subMenus.page7 || page === subMenus.page8"
+                            (click)="openSubmenuOne(subMenus)" [ngClass]="{'subdrop' : openSubmenuOneItem === subMenus}">
+                            <span class="submenu-dot"></span>
+                            <span>{{ subMenus.menuValue }}</span>
+                            <span class="menu-arrow">
+                              <i class="feather icon-chevron-right arrow-icon-sm"></i>
+                            </span>
+                          </a>
+                          <ul [ngClass]="openSubmenuOneItem === subMenus ? 'd-block' : 'd-none'" class="submenu-list">
+                            @for (subMenuTwo of subMenus.subMenusTwo; track subMenuTwo) {
+                              <li class="submenu-item">
+                                <a [routerLink]="subMenuTwo.route" routerLinkActive="active" class="submenu-link">
+                                  <span class="submenu-dot"></span>
+                                  <span>{{ subMenuTwo.menuValue }}</span>
+                                </a>
+                              </li>
+                            }
+                          </ul>
+                        </li>
                       }
-                    </ul>
-                  </li>
-                }
+                    }
+                  </ul>
+                </li>
               }
-            </ul>
-          </li>
-          }
-        </ul>
-      </div>
-    </ng-scrollbar>
+            }
+          </ul>
+        </li>
+        }
+      </ul>
+    </div>
   </div>
 </div>

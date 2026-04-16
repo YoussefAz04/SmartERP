@@ -2,12 +2,10 @@
 // VARIABLES — Modern ERP Sidebar Theme
 // ============================================
 $sidebar-bg:       #ffffff;
-$sidebar-bg-end:   #fafbfc;
 $section-divider:  #edf2f7;
 
 $accent:           #4f6ef7;
-$accent-dark:      #3b5bdb;
-$accent-light:     rgba(79, 110, 247, 0.08);
+$accent-light:     rgba(79, 110, 247, 0.07);
 $accent-glow:      rgba(79, 110, 247, 0.18);
 $accent-gradient:  linear-gradient(135deg, #4f6ef7 0%, #6c8cff 100%);
 
@@ -18,35 +16,55 @@ $text-muted:       #a0aec0;
 $icon-default:     #a0aec0;
 $icon-active:      #4f6ef7;
 
-$hover-bg:         rgba(79, 110, 247, 0.05);
-$active-bg:        rgba(79, 110, 247, 0.08);
-$active-border:    #4f6ef7;
+$hover-bg:         rgba(79, 110, 247, 0.04);
+$active-bg:        rgba(79, 110, 247, 0.07);
 
-$transition-fast:  0.2s cubic-bezier(0.4, 0, 0.2, 1);
-$transition:       0.28s cubic-bezier(0.4, 0, 0.2, 1);
-$transition-slow:  0.35s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast:  0.18s cubic-bezier(0.4, 0, 0.2, 1);
+$transition:       0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-$radius-sm: 6px;
+$radius-sm: 8px;
 $radius-md: 10px;
 
 // ============================================
-// SIDEBAR BASE
+// SIDEBAR BASE — fix scrolling
 // ============================================
 .sidebar#sidebar,
 .sidebar {
   background: $sidebar-bg;
   border-right: 1px solid $section-divider;
-  box-shadow: 1px 0 12px rgba(0, 0, 0, 0.04);
-  transition: width $transition-slow;
+  box-shadow: 1px 0 8px rgba(0, 0, 0, 0.03);
+  transition: width $transition;
+  display: flex;
+  flex-direction: column;
 }
 
 #sidebar {
   .sidebar-inner {
     width: 100%;
-    height: 100%;
-    padding: 8px 0 24px;
+    flex: 1 1 0;
+    min-height: 0;          // critical for flex child scroll
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 0 20px;
     background: transparent;
-    overflow: hidden;
+
+    // Thin custom scrollbar
+    scrollbar-width: thin;
+    scrollbar-color: rgba($accent, 0.18) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($accent, 0.18);
+      border-radius: 4px;
+      &:hover {
+        background: rgba($accent, 0.35);
+      }
+    }
   }
 }
 
@@ -67,32 +85,31 @@ $radius-md: 10px;
       padding: 0;
 
       & + li.submenu-open {
-        margin-top: 8px;
-        padding-top: 8px;
+        margin-top: 4px;
+        padding-top: 4px;
 
         &::before {
           content: '';
           display: block;
           height: 1px;
           background: $section-divider;
-          margin: 0 20px 8px;
+          margin: 0 18px 6px;
         }
       }
 
       .submenu-hdr {
         display: flex;
         align-items: center;
-        font-size: 10.5px;
+        font-size: 10px;
         font-weight: 700;
         text-transform: uppercase;
         color: $text-muted;
-        letter-spacing: 1.6px;
-        padding: 16px 20px 8px;
+        letter-spacing: 1.5px;
+        padding: 14px 18px 6px;
         margin: 0;
         cursor: default;
         user-select: none;
-        opacity: 0.85;
-        transition: opacity $transition-fast;
+        opacity: 0.8;
 
         .hdr-text {
           position: relative;
@@ -105,7 +122,7 @@ $radius-md: 10px;
       // =========================================
       > ul {
         list-style: none;
-        padding: 2px 12px;
+        padding: 2px 10px;
         margin: 0;
         display: flex;
         flex-direction: column;
@@ -119,7 +136,7 @@ $radius-md: 10px;
           a.nav-link {
             display: flex;
             align-items: center;
-            padding: 9px 12px;
+            padding: 8px 10px;
             font-size: 13.5px;
             font-weight: 500;
             color: $text-secondary;
@@ -127,13 +144,14 @@ $radius-md: 10px;
             cursor: pointer;
             background: transparent;
             border-radius: $radius-md;
+            border: 1px solid transparent;
             transition:
               background $transition-fast,
               color $transition-fast,
-              box-shadow $transition-fast,
-              transform $transition-fast;
+              border-color $transition-fast,
+              box-shadow $transition-fast;
             position: relative;
-            gap: 11px;
+            gap: 10px;
             outline: none;
 
             // ---- Icon wrap ----
@@ -141,8 +159,8 @@ $radius-md: 10px;
               display: flex;
               align-items: center;
               justify-content: center;
-              width: 34px;
-              height: 34px;
+              width: 32px;
+              height: 32px;
               border-radius: $radius-sm;
               background: transparent;
               flex-shrink: 0;
@@ -177,12 +195,12 @@ $radius-md: 10px;
               align-items: center;
               justify-content: center;
               flex-shrink: 0;
-              opacity: 0.4;
+              opacity: 0.35;
               transition: opacity $transition-fast, transform $transition;
 
               // Suppress duplicate arrow from global _sidebar.scss ::before
               &::before {
-                content: none;
+                content: none !important;
               }
 
               .arrow-icon {
@@ -203,18 +221,19 @@ $radius-md: 10px;
             // ---- HOVER ----
             &:hover {
               background: $hover-bg;
+              border-color: rgba($accent, 0.08);
               color: $text-primary;
 
               .nav-icon-wrap {
                 background: $accent-light;
                 i {
                   color: $accent;
-                  transform: scale(1.06);
+                  transform: scale(1.08);
                 }
               }
 
               .nav-label { color: $text-primary; }
-              .menu-arrow { opacity: 0.7; }
+              .menu-arrow { opacity: 0.6; }
               .arrow-icon { color: $accent; }
             }
 
@@ -222,6 +241,7 @@ $radius-md: 10px;
             &.active,
             &.active-link {
               background: $active-bg;
+              border-color: rgba($accent, 0.10);
               color: $text-primary;
               font-weight: 600;
 
@@ -232,16 +252,14 @@ $radius-md: 10px;
                 top: 50%;
                 transform: translateY(-50%);
                 width: 3px;
-                height: 20px;
+                height: 18px;
                 background: $accent-gradient;
                 border-radius: 0 3px 3px 0;
               }
 
               .nav-icon-wrap {
                 background: $accent-light;
-                i {
-                  color: $icon-active;
-                }
+                i { color: $icon-active; }
               }
 
               .nav-label { color: $text-primary; }
@@ -252,6 +270,7 @@ $radius-md: 10px;
             // ---- EXPANDED (subdrop) ----
             &.subdrop {
               background: $hover-bg;
+              border-color: rgba($accent, 0.06);
               color: $text-primary;
 
               .nav-icon-wrap {
@@ -275,7 +294,7 @@ $radius-md: 10px;
           &.submenu {
             .submenu-list {
               list-style: none;
-              padding: 2px 0 4px 0;
+              padding: 2px 0 2px 0;
               margin: 0;
               overflow: hidden;
 
@@ -283,7 +302,7 @@ $radius-md: 10px;
                 display: flex !important;
                 flex-direction: column;
                 gap: 0;
-                animation: submenuExpand $transition-slow forwards;
+                animation: submenuExpand 0.25s ease forwards;
               }
 
               &.d-none {
@@ -298,7 +317,7 @@ $radius-md: 10px;
                   display: flex;
                   align-items: center;
                   gap: 10px;
-                  padding: 7px 12px 7px 24px;
+                  padding: 6px 10px 6px 22px;
                   font-size: 13px;
                   font-weight: 400;
                   color: $text-secondary;
@@ -331,7 +350,7 @@ $radius-md: 10px;
                   &:hover {
                     background: $hover-bg;
                     color: $text-primary;
-                    padding-left: 28px;
+                    padding-left: 26px;
 
                     .submenu-dot {
                       background: $accent;
@@ -351,7 +370,7 @@ $radius-md: 10px;
                       top: 50%;
                       transform: translateY(-50%);
                       width: 3px;
-                      height: 16px;
+                      height: 14px;
                       background: $accent-gradient;
                       border-radius: 0 3px 3px 0;
                     }
@@ -359,7 +378,7 @@ $radius-md: 10px;
                     .submenu-dot {
                       background: $accent;
                       box-shadow: 0 0 6px $accent-glow;
-                      transform: scale(1.4);
+                      transform: scale(1.3);
                     }
                   }
                 }
@@ -387,7 +406,7 @@ $radius-md: 10px;
 @keyframes submenuExpand {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
@@ -414,12 +433,13 @@ $radius-md: 10px;
 
   #sidebar-menu ul li a.nav-link {
     justify-content: center !important;
-    padding: 10px 6px !important;
+    padding: 8px 6px !important;
     gap: 0 !important;
+    border-color: transparent !important;
   }
 
   .submenu-hdr {
-    padding: 10px 0 4px !important;
+    padding: 8px 0 4px !important;
     justify-content: center;
     .hdr-text {
       display: none !important;
@@ -427,7 +447,7 @@ $radius-md: 10px;
     &::after {
       content: '';
       display: block;
-      width: 20px;
+      width: 18px;
       height: 2px;
       background: $section-divider;
       border-radius: 1px;
@@ -436,7 +456,7 @@ $radius-md: 10px;
   }
 
   #sidebar-menu > ul > li.submenu-open > ul {
-    padding: 4px 6px !important;
+    padding: 2px 6px !important;
   }
 
   li.submenu-open + li.submenu-open {
@@ -453,13 +473,13 @@ $radius-md: 10px;
   #sidebar-menu ul li a .nav-label {
     display: block !important;
     opacity: 1;
-    animation: fadeInLabel 0.25s ease forwards;
+    animation: fadeInLabel 0.2s ease forwards;
   }
 
   #sidebar-menu ul li a.nav-link {
     justify-content: flex-start !important;
-    padding: 9px 12px !important;
-    gap: 11px !important;
+    padding: 8px 10px !important;
+    gap: 10px !important;
   }
 
   #sidebar-menu ul li a .nav-icon-wrap {
@@ -468,7 +488,7 @@ $radius-md: 10px;
   }
 
   .submenu-hdr {
-    padding: 16px 20px 8px !important;
+    padding: 14px 18px 6px !important;
     &::after { display: none; }
     .hdr-text {
       display: block !important;
@@ -477,7 +497,7 @@ $radius-md: 10px;
   }
 
   #sidebar-menu > ul > li.submenu-open > ul {
-    padding: 2px 12px !important;
+    padding: 2px 10px !important;
   }
 }
 
@@ -493,62 +513,9 @@ $radius-md: 10px;
 }
 
 // ============================================
-// SCROLLBAR STYLING
-// ============================================
-.sidebar-inner,
-#sidebar-menu {
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba($accent, 0.2);
-    border-radius: 4px;
-
-    &:hover {
-      background: rgba($accent, 0.4);
-    }
-  }
-}
-
-// ============================================
 // RESPONSIVE DESIGN
 // ============================================
 @media (max-width: 1024px) {
-  #sidebar-menu ul li.submenu-open {
-    .submenu-hdr {
-      padding: 14px 16px 6px;
-      font-size: 10px;
-    }
-
-    > ul {
-      padding: 2px 10px;
-
-      li.nav-item a.nav-link {
-        padding: 8px 10px;
-        font-size: 13px;
-        gap: 10px;
-
-        .nav-icon-wrap {
-          width: 32px;
-          height: 32px;
-          i { font-size: 16px; }
-        }
-      }
-
-      li.nav-item.submenu .submenu-list .submenu-item .submenu-link {
-        padding: 7px 10px 7px 20px;
-        font-size: 12.5px;
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
   #sidebar-menu ul li.submenu-open {
     .submenu-hdr {
       padding: 12px 14px 5px;
@@ -559,52 +526,50 @@ $radius-md: 10px;
       padding: 2px 8px;
 
       li.nav-item a.nav-link {
-        padding: 8px 9px;
-        font-size: 12.5px;
+        padding: 7px 9px;
+        font-size: 13px;
         gap: 9px;
 
         .nav-icon-wrap {
           width: 30px;
           height: 30px;
-          i { font-size: 15px; }
+          i { font-size: 16px; }
         }
       }
 
       li.nav-item.submenu .submenu-list .submenu-item .submenu-link {
-        padding: 7px 9px 7px 18px;
-        font-size: 12px;
+        padding: 6px 9px 6px 20px;
+        font-size: 12.5px;
       }
     }
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   #sidebar-menu ul li.submenu-open {
     .submenu-hdr {
-      padding: 10px 12px 5px;
+      padding: 10px 12px 4px;
       font-size: 9px;
-      letter-spacing: 1px;
     }
 
     > ul {
       padding: 2px 6px;
-      gap: 0;
 
       li.nav-item a.nav-link {
         padding: 7px 8px;
-        font-size: 12px;
+        font-size: 12.5px;
         gap: 8px;
 
         .nav-icon-wrap {
           width: 28px;
           height: 28px;
-          i { font-size: 14px; }
+          i { font-size: 15px; }
         }
       }
 
       li.nav-item.submenu .submenu-list .submenu-item .submenu-link {
-        padding: 6px 8px 6px 16px;
-        font-size: 11.5px;
+        padding: 6px 8px 6px 18px;
+        font-size: 12px;
       }
     }
   }
