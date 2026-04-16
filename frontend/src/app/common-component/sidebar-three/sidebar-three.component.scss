@@ -1,8 +1,8 @@
 // ============================================
 // VARIABLES
 // ============================================
-$primary: #ff9f43;
-$primary-dark: #ff8c1a;
+$primary: #4f6ef7;
+$primary-dark: #3B59D5;
 $secondary: #1a202c;
 $light-bg: #f8fafc;
 $border: #e2e8f0;
@@ -108,7 +108,7 @@ $text-light: #a0aec0;
 
             // HOVER STATE
             &:hover {
-              background: linear-gradient(90deg, rgba(255, 159, 67, 0.08) 0%, transparent 100%);
+              background: linear-gradient(90deg, rgba(79, 110, 247, 0.08) 0%, transparent 100%);
               color: $primary;
               border-left-color: $primary;
               padding-left: 22px;
@@ -126,7 +126,7 @@ $text-light: #a0aec0;
             // ACTIVE STATE
             &.active,
             &.sub-active.active {
-              background: linear-gradient(90deg, rgba(255, 159, 67, 0.15) 0%, transparent 100%);
+              background: linear-gradient(90deg, rgba(79, 110, 247, 0.15) 0%, transparent 100%);
               color: $primary;
               border-left-color: $primary;
               font-weight: 700;
@@ -142,7 +142,7 @@ $text-light: #a0aec0;
 
             // EXPANDED STATE
             &.subdrop {
-              background: linear-gradient(90deg, rgba(255, 159, 67, 0.1) 0%, transparent 100%);
+              background: linear-gradient(90deg, rgba(79, 110, 247, 0.1) 0%, transparent 100%);
               color: $primary;
               border-left-color: $primary;
 
@@ -194,14 +194,14 @@ $text-light: #a0aec0;
                   transition: all 0.3s ease;
 
                   &:hover {
-                    background: linear-gradient(90deg, rgba(255, 159, 67, 0.1) 0%, transparent 100%);
+                    background: linear-gradient(90deg, rgba(79, 110, 247, 0.1) 0%, transparent 100%);
                     color: $primary;
                     border-left-color: $primary;
                     padding-left: 50px;
                   }
 
                   &.active {
-                    background: linear-gradient(90deg, rgba(255, 159, 67, 0.12) 0%, transparent 100%);
+                    background: linear-gradient(90deg, rgba(79, 110, 247, 0.12) 0%, transparent 100%);
                     color: $primary;
                     border-left-color: $primary;
                     font-weight: 600;

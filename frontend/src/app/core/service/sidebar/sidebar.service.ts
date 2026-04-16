@@ -288,7 +288,7 @@ generateSidebarData(modules: ModuleTittle[]) {
           return {
             menuValue: menuValueMap[mod.title] || mod.title,
             hasSubRoute: filteredSousModules.length > 0,
-            showSubRoute: true,
+            showSubRoute: false,
             icon: iconMap[normalize(mod.title ?? '')] || 'grid',
             base1: 'managementEntreprise',
             subMenus: filteredSousModules.map((sous: SousModule) => ({
