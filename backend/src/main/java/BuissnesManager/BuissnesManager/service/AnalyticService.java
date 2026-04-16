@@ -139,29 +139,23 @@ public class AnalyticService {
     }
 
     private List<ProductIntelligenceDto.CategoryPerformanceDto> computeCategoryPerformance(Long entrepriseId) {
-        // Query category performance from ligne_commande_vente via article category
-        List<Object[]> rawData = commandeVenteRepository.getTopProducts(entrepriseId);
-        // TODO: Replace first-character grouping with a dedicated JPQL query joining article.categorieArticle
-        // once a direct category-revenue aggregation query is available in CommandeVenteRepository.
-        Map<String, Double[]> catMap = new HashMap<>();
+        // Use a dedicated query that joins through articleVente -> articleAchat -> categorieArticle
+        // so we report real category revenue instead of grouping on the first letter of the product name.
+        List<Object[]> rawData = commandeVenteRepository.getCategoryPerformance(entrepriseId);
+
+        double totalRev = 0.0;
+        List<ProductIntelligenceDto.CategoryPerformanceDto> result = new ArrayList<>();
         for (Object[] row : rawData) {
-            String name = row[0] != null ? row[0].toString() : "Autre";
-            Long qty = row[1] != null ? ((Number) row[1]).longValue() : 0L;
-            Double rev = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
-            String cat = name.length() > 0 ? name.substring(0, 1).toUpperCase() + "..." : "Autre";
-            catMap.merge(cat, new Double[]{rev, qty.doubleValue()}, (a, b) -> new Double[]{a[0] + b[0], a[1] + b[1]});
+            String name = row[0] != null ? row[0].toString() : "Non catégorisé";
+            Double rev = row[1] != null ? ((Number) row[1]).doubleValue() : 0.0;
+            Long qty = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+            result.add(new ProductIntelligenceDto.CategoryPerformanceDto(name, rev, qty));
+            totalRev += rev;
         }
 
-        double totalRev = catMap.values().stream().mapToDouble(v -> v[0]).sum();
-        List<ProductIntelligenceDto.CategoryPerformanceDto> result = new ArrayList<>();
-        for (Map.Entry<String, Double[]> entry : catMap.entrySet()) {
-            ProductIntelligenceDto.CategoryPerformanceDto cat = new ProductIntelligenceDto.CategoryPerformanceDto(
-                entry.getKey(), entry.getValue()[0], entry.getValue()[1].longValue()
-            );
-            cat.setRevenueShare(totalRev > 0 ? Math.round((entry.getValue()[0] / totalRev) * 1000.0) / 10.0 : 0.0);
-            result.add(cat);
+        for (ProductIntelligenceDto.CategoryPerformanceDto cat : result) {
+            cat.setRevenueShare(totalRev > 0 ? Math.round((cat.getRevenue() / totalRev) * 1000.0) / 10.0 : 0.0);
         }
-        result.sort((a, b) -> Double.compare(b.getRevenue(), a.getRevenue()));
         return result.subList(0, Math.min(5, result.size()));
     }
 

@@ -42,4 +42,34 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
 
     @Query("SELECT COUNT(c) FROM CommandeVente c WHERE c.entreprise.id = :entrepriseId AND c.dateCommande BETWEEN :debut AND :fin")
     Long getSalesOrderCountInPeriod(@Param("entrepriseId") Long entrepriseId, @Param("debut") LocalDate debut, @Param("fin") LocalDate fin);
+
+    /**
+     * Cost Of Goods Sold (COGS) for a given enterprise and period.
+     * Sums quantity * purchase-price of every sold line, so the resulting "gross margin"
+     * (sales - COGS) reflects the real margin on items that were actually delivered,
+     * not the naive "sales - all purchases" (which treats stock build-up as a loss).
+     */
+    @Query("SELECT COALESCE(SUM(lc.quantite * COALESCE(lc.articleVente.articleAchat.prixAchat, 0)), 0) " +
+           "FROM LigneCommandeVente lc " +
+           "WHERE lc.commandeVente.entreprise.id = :entrepriseId " +
+           "AND lc.commandeVente.dateCommande BETWEEN :debut AND :fin")
+    Double getCOGSInPeriod(@Param("entrepriseId") Long entrepriseId,
+                           @Param("debut") LocalDate debut,
+                           @Param("fin") LocalDate fin);
+
+    /**
+     * Revenue, quantity sold and line count grouped by real article category
+     * (joined through articleVente -> articleAchat -> categorieArticle).
+     */
+    @Query("SELECT COALESCE(c.nom, 'Non catégorisé'), " +
+           "COALESCE(SUM(lc.montantTTC), 0), " +
+           "COALESCE(SUM(lc.quantite), 0) " +
+           "FROM LigneCommandeVente lc " +
+           "LEFT JOIN lc.articleVente av " +
+           "LEFT JOIN av.articleAchat aa " +
+           "LEFT JOIN aa.categorieArticle c " +
+           "WHERE lc.commandeVente.entreprise.id = :entrepriseId " +
+           "GROUP BY c.nom " +
+           "ORDER BY SUM(lc.montantTTC) DESC")
+    List<Object[]> getCategoryPerformance(@Param("entrepriseId") Long entrepriseId);
 }

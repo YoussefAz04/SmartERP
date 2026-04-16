@@ -4,7 +4,7 @@
   </h2>
   <div class="comparison-grid" *ngIf="comparison">
 
-    <!-- MTD vs LTD -->
+    <!-- ═══════════════  MTD vs LTD  ═══════════════ -->
     <div class="comparison-card">
       <div class="comparison-header">
         <div class="comparison-title">
@@ -14,14 +14,14 @@
         <span class="period-badge">MTD vs LTD</span>
       </div>
 
-      <!-- Sales Revenue MTD -->
       <div class="comparison-body">
+        <!-- Sales MTD -->
         <div class="metric-group">
           <div class="metric-label-row">
             <span class="metric-cat"><i class="fas fa-arrow-up text-success me-1"></i>Ventes</span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.mtdVsLtd.trend === 'up' ? 'badge-up' : comparison.mtdVsLtd.trend === 'down' ? 'badge-down' : 'badge-stable'">
-              {{ comparison.mtdVsLtd.changePercent >= 0 ? '+' : '' }}{{ comparison.mtdVsLtd.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.mtdVsLtd)"
+                  [class.badge-new]="isNew(comparison.mtdVsLtd)">
+              {{ changeLabel(comparison.mtdVsLtd) }}
             </span>
           </div>
           <div class="period-row">
@@ -48,13 +48,13 @@
           </div>
         </div>
 
-        <!-- Purchase MTD vs LTD -->
+        <!-- Purchases MTD -->
         <div class="metric-group" *ngIf="comparison.purchaseMtdVsLtd">
           <div class="metric-label-row">
             <span class="metric-cat"><i class="fas fa-arrow-down text-danger me-1"></i>Achats</span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.purchaseMtdVsLtd.trend === 'up' ? 'badge-down' : comparison.purchaseMtdVsLtd.trend === 'down' ? 'badge-up' : 'badge-stable'">
-              {{ comparison.purchaseMtdVsLtd.changePercent >= 0 ? '+' : '' }}{{ comparison.purchaseMtdVsLtd.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.purchaseMtdVsLtd, true)"
+                  [class.badge-new]="isNew(comparison.purchaseMtdVsLtd)">
+              {{ changeLabel(comparison.purchaseMtdVsLtd) }}
             </span>
           </div>
           <div class="period-row">
@@ -81,24 +81,24 @@
           </div>
         </div>
 
-        <!-- MTD KPI summary row: margin + order count -->
+        <!-- Summary KPIs -->
         <div class="ytd-kpi-row">
           <div class="ytd-kpi" *ngIf="comparison.marginMtdVsLtd">
             <span class="ytd-kpi-label">Marge Brute MTD</span>
             <span class="ytd-kpi-value" [ngClass]="getMtdMarginClass()">
               {{ formatCurrency(comparison.marginMtdVsLtd.current) }} TND
             </span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.marginMtdVsLtd.trend === 'up' ? 'badge-up' : comparison.marginMtdVsLtd.trend === 'down' ? 'badge-down' : 'badge-stable'">
-              {{ comparison.marginMtdVsLtd.changePercent >= 0 ? '+' : '' }}{{ comparison.marginMtdVsLtd.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.marginMtdVsLtd)"
+                  [class.badge-new]="isNew(comparison.marginMtdVsLtd)">
+              {{ changeLabel(comparison.marginMtdVsLtd) }}
             </span>
           </div>
           <div class="ytd-kpi" *ngIf="comparison.orderCountMtdVsLtd">
             <span class="ytd-kpi-label">Cmdes MTD</span>
             <span class="ytd-kpi-value text-primary">{{ comparison.orderCountMtdVsLtd.current | number:'1.0-0' }}</span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.orderCountMtdVsLtd.trend === 'up' ? 'badge-up' : comparison.orderCountMtdVsLtd.trend === 'down' ? 'badge-down' : 'badge-stable'">
-              {{ comparison.orderCountMtdVsLtd.changePercent >= 0 ? '+' : '' }}{{ comparison.orderCountMtdVsLtd.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.orderCountMtdVsLtd)"
+                  [class.badge-new]="isNew(comparison.orderCountMtdVsLtd)">
+              {{ changeLabel(comparison.orderCountMtdVsLtd) }}
             </span>
           </div>
         </div>
@@ -106,13 +106,15 @@
 
       <div class="comparison-footer">
         <div class="change-indicator"
-             [ngClass]="comparison.mtdVsLtd.trend === 'up' ? 'change-up' : comparison.mtdVsLtd.trend === 'down' ? 'change-down' : 'change-stable'">
+             [ngClass]="isNew(comparison.mtdVsLtd) ? 'change-new'
+                        : comparison.mtdVsLtd.trend === 'up' ? 'change-up'
+                        : comparison.mtdVsLtd.trend === 'down' ? 'change-down' : 'change-stable'">
           <i class="fas"
-             [ngClass]="comparison.mtdVsLtd.trend === 'up' ? 'fa-arrow-trend-up' : comparison.mtdVsLtd.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'">
+             [ngClass]="isNew(comparison.mtdVsLtd) ? 'fa-sparkles'
+                        : comparison.mtdVsLtd.trend === 'up' ? 'fa-arrow-trend-up'
+                        : comparison.mtdVsLtd.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'">
           </i>
-          <span>
-            {{ comparison.mtdVsLtd.changePercent >= 0 ? '+' : '' }}{{ comparison.mtdVsLtd.changePercent | number:'1.1-1' }}%
-          </span>
+          <span>{{ changeLabel(comparison.mtdVsLtd) }}</span>
         </div>
         <span class="change-amount"
               [ngClass]="comparison.mtdVsLtd.change >= 0 ? 'text-success' : 'text-danger'">
@@ -121,7 +123,7 @@
       </div>
     </div>
 
-    <!-- Multi-Dimension YTD -->
+    <!-- ═══════════════  YTD Multi-Dim  ═══════════════ -->
     <div class="comparison-card">
       <div class="comparison-header">
         <div class="comparison-title">
@@ -131,14 +133,14 @@
         <span class="period-badge">YTD Multi-Dim</span>
       </div>
 
-      <!-- Revenue YTD vs Last Year -->
       <div class="comparison-body">
+        <!-- Sales YTD -->
         <div class="metric-group">
           <div class="metric-label-row">
             <span class="metric-cat"><i class="fas fa-arrow-up text-success me-1"></i>Ventes YTD</span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.ytdVsLastYear.trend === 'up' ? 'badge-up' : comparison.ytdVsLastYear.trend === 'down' ? 'badge-down' : 'badge-stable'">
-              {{ comparison.ytdVsLastYear.changePercent >= 0 ? '+' : '' }}{{ comparison.ytdVsLastYear.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.ytdVsLastYear)"
+                  [class.badge-new]="isNew(comparison.ytdVsLastYear)">
+              {{ changeLabel(comparison.ytdVsLastYear) }}
             </span>
           </div>
           <div class="period-row">
@@ -165,13 +167,13 @@
           </div>
         </div>
 
-        <!-- Purchase YTD vs Last Year -->
+        <!-- Purchases YTD -->
         <div class="metric-group" *ngIf="comparison.purchaseYtd">
           <div class="metric-label-row">
             <span class="metric-cat"><i class="fas fa-arrow-down text-danger me-1"></i>Achats YTD</span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.purchaseYtd.trend === 'up' ? 'badge-down' : comparison.purchaseYtd.trend === 'down' ? 'badge-up' : 'badge-stable'">
-              {{ comparison.purchaseYtd.changePercent >= 0 ? '+' : '' }}{{ comparison.purchaseYtd.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.purchaseYtd, true)"
+                  [class.badge-new]="isNew(comparison.purchaseYtd)">
+              {{ changeLabel(comparison.purchaseYtd) }}
             </span>
           </div>
           <div class="period-row">
@@ -198,13 +200,13 @@
           </div>
         </div>
 
-        <!-- Margin YTD vs Last Year (new full comparison) -->
+        <!-- Margin YTD -->
         <div class="metric-group" *ngIf="comparison.marginYtdVsLastYear">
           <div class="metric-label-row">
             <span class="metric-cat"><i class="fas fa-percentage text-info me-1"></i>Marge YTD</span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.marginYtdVsLastYear.trend === 'up' ? 'badge-up' : comparison.marginYtdVsLastYear.trend === 'down' ? 'badge-down' : 'badge-stable'">
-              {{ comparison.marginYtdVsLastYear.changePercent >= 0 ? '+' : '' }}{{ comparison.marginYtdVsLastYear.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.marginYtdVsLastYear)"
+                  [class.badge-new]="isNew(comparison.marginYtdVsLastYear)">
+              {{ changeLabel(comparison.marginYtdVsLastYear) }}
             </span>
           </div>
           <div class="period-row">
@@ -215,7 +217,9 @@
               </span>
             </div>
             <div class="progress-track">
-              <div class="progress-bar current-bar"
+              <div class="progress-bar"
+                   [class.current-bar]="comparison.marginYtdVsLastYear.current >= 0"
+                   [class.negative-bar]="comparison.marginYtdVsLastYear.current < 0"
                    [style.width.%]="getProgressWidth(comparison.marginYtdVsLastYear.current, comparison.marginYtdVsLastYear.previous)">
               </div>
             </div>
@@ -233,7 +237,7 @@
           </div>
         </div>
 
-        <!-- KPI Summary Row -->
+        <!-- Summary KPIs -->
         <div class="ytd-kpi-row">
           <div class="ytd-kpi">
             <span class="ytd-kpi-label">Marge Brute YTD</span>
@@ -245,9 +249,9 @@
           <div class="ytd-kpi" *ngIf="comparison.orderCountYtdVsLastYear">
             <span class="ytd-kpi-label">Cmdes YTD</span>
             <span class="ytd-kpi-value text-primary">{{ comparison.orderCountYtdVsLastYear.current | number:'1.0-0' }}</span>
-            <span class="metric-trend-badge"
-                  [ngClass]="comparison.orderCountYtdVsLastYear.trend === 'up' ? 'badge-up' : comparison.orderCountYtdVsLastYear.trend === 'down' ? 'badge-down' : 'badge-stable'">
-              {{ comparison.orderCountYtdVsLastYear.changePercent >= 0 ? '+' : '' }}{{ comparison.orderCountYtdVsLastYear.changePercent | number:'1.1-1' }}%
+            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.orderCountYtdVsLastYear)"
+                  [class.badge-new]="isNew(comparison.orderCountYtdVsLastYear)">
+              {{ changeLabel(comparison.orderCountYtdVsLastYear) }}
             </span>
           </div>
           <div class="ytd-kpi" *ngIf="!comparison.orderCountYtdVsLastYear">
