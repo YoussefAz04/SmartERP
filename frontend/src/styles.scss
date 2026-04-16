@@ -572,6 +572,8 @@ mat-option.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
   height: calc(100vh - 66px);
   overflow-y: auto;
   overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 a:hover {
