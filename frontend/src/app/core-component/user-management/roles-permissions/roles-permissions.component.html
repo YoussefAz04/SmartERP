@@ -33,7 +33,9 @@
       placeholder="Search roles by name..."
       class="rp-search-input"
     />
-    <span class="rp-search-kbd">⌘K</span>
+    <span class="rp-search-hint">
+      <i class="feather icon-search rp-hint-icon"></i>
+    </span>
   </div>
   <div class="rp-toolbar-actions">
     <button class="rp-btn-filter" (click)="openFilter()" [class.active]="filter">
@@ -63,8 +65,8 @@
       </mat-select>
     </div>
     <div class="rp-filter-field">
-      <label><i class="feather icon-calendar"></i> Created Date</label>
-      <input type="date" class="rp-date-input" placeholder="Choose Date">
+      <label for="rp-date-filter" class="rp-date-label"><i class="feather icon-calendar"></i> Created Date</label>
+      <input id="rp-date-filter" type="date" class="rp-date-input" aria-label="Filter by created date">
     </div>
     <div class="rp-filter-actions">
       <button class="rp-btn-apply">

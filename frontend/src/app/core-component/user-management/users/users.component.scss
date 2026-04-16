@@ -3,20 +3,23 @@
 // Color System: Indigo primary, Orange accent, Green success
 // ============================================
 
-$indigo:       #6366F1;
-$indigo-dark:  #4F46E5;
-$indigo-light: #EEF2FF;
-$orange:       #F59E0B;
-$orange-dark:  #D97706;
-$orange-light: #FEF3C7;
-$green:        #10B981;
-$green-light:  #D1FAE5;
-$red:          #EF4444;
-$red-light:    #FEE2E2;
-$blue:         #3B82F6;
-$blue-light:   #DBEAFE;
-$purple:       #8B5CF6;
-$purple-light: #EDE9FE;
+$indigo:        #6366F1;
+$indigo-dark:   #4F46E5;
+$indigo-darker: #3730A3;
+$indigo-light:  #EEF2FF;
+$orange:        #F59E0B;
+$orange-dark:   #D97706;
+$orange-light:  #FEF3C7;
+$green:         #10B981;
+$green-dark:    #059669;
+$green-light:   #D1FAE5;
+$red:           #EF4444;
+$red-light:     #FEE2E2;
+$blue:          #3B82F6;
+$blue-light:    #DBEAFE;
+$purple:        #8B5CF6;
+$purple-dark:   #7C3AED;
+$purple-light:  #EDE9FE;
 
 $bg-page:    #F1F5F9;
 $bg-card:    #FFFFFF;
@@ -41,7 +44,7 @@ $shadow-xl: 0 20px 60px rgba(0,0,0,.15);
   margin-bottom: 1.75rem;
   flex-wrap: wrap;
   padding: 1.75rem 2rem;
-  background: linear-gradient(135deg, darken($indigo-dark, 5%) 0%, $indigo 55%, $purple 100%);
+  background: linear-gradient(135deg, $indigo-darker 0%, $indigo 55%, $purple 100%);
   border-radius: 20px;
   position: relative;
   overflow: hidden;
@@ -503,7 +506,7 @@ $shadow-xl: 0 20px 60px rgba(0,0,0,.15);
 
   &.active {
     background: $green-light;
-    color: darken($green, 10%);
+    color: $green-dark;
     border-color: rgba($green, .25);
 
     .um-status-dot {
