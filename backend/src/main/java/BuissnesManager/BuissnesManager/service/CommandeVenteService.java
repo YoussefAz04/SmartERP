@@ -242,11 +242,12 @@ public class CommandeVenteService {
             facture.setCommandeVente(null);
             factureDeVenteRepository.save(facture);
         });
-        // Nullify commandeVente reference on associated FactureVente before deleting commande
-        factureVenteRepository.findFirstByCommandeVenteId(id).ifPresent(facture -> {
+        // Nullify commandeVente reference on associated FactureVente records before deleting commande
+        List<FactureVente> factures = factureVenteRepository.findAllByCommandeVenteId(id);
+        for (FactureVente facture : factures) {
             facture.setCommandeVente(null);
             factureVenteRepository.save(facture);
-        });
+        }
         // Nullify commandeVente reference on associated BonLivraison before deleting commande
         List<BonLivraison> bons = bonLivraisonRepository.findByCommandeVenteId(id);
         for (BonLivraison bon : bons) {

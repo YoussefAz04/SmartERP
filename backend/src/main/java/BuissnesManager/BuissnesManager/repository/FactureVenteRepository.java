@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface FactureVenteRepository extends JpaRepository<FactureVente, Long> {
     Optional<FactureVente> findFirstByCommandeVenteId(Long commandeVenteId);
+    List<FactureVente> findAllByCommandeVenteId(Long commandeVenteId);
     List<FactureVente> findByEntrepriseId(Long entrepriseId);
     List<FactureVente> findByClientId(Long clientId);
     List<FactureVente> findByStatut(String statut);
