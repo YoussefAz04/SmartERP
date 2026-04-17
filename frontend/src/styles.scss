@@ -2196,9 +2196,7 @@ body {
 }
 
 body {
-  background: #f6f8fc;
   background: var(--ui-bg-soft, #f6f8fc);
-  color: #1f2937;
   color: var(--ui-text, #1f2937);
 }
 
@@ -2207,9 +2205,7 @@ body {
 }
 
 :where(.card, .modern-card, .db-card, .modal-content) {
-  border: 1px solid #e7ecf3;
   border: 1px solid var(--ui-border, #e7ecf3);
-  border-radius: 16px;
   border-radius: var(--ui-radius-lg, 16px);
   box-shadow: var(--ui-shadow-sm);
   transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
@@ -2229,7 +2225,6 @@ body {
 }
 
 :where(input.form-control, select.form-control, textarea.form-control, .search-input, .filter-select) {
-  border-radius: 12px;
   border-radius: var(--ui-radius-md, 12px);
   border-color: #d6dfec;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
