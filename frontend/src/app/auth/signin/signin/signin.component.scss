@@ -167,6 +167,26 @@
       }
     }
 
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin-bottom: 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(167, 139, 250, 0.45);
+      background: rgba(139, 92, 246, 0.14);
+      color: #ddd6fe;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+
+      i {
+        font-size: 11px;
+        color: #c4b5fd;
+      }
+    }
+
     h1 {
       font-size: 38px;
       font-weight: 800;
@@ -202,9 +222,9 @@
   }
 
   .stat-card {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 16px;
     padding: 22px 20px;
     display: flex;
@@ -215,8 +235,8 @@
 
     &:hover {
       transform: translateY(-3px);
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(199, 210, 254, 0.42);
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
     }
 
