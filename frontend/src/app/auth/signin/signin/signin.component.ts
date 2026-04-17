@@ -44,7 +44,8 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
   private animateCounters(): void {
     const elements = document.querySelectorAll<HTMLElement>('.stat-value[data-target]');
     elements.forEach(el => {
-      const target = parseInt(el.getAttribute('data-target') || '0', 10);
+      const target = parseFloat(el.getAttribute('data-target') || '0');
+      const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
       const duration = 2200;
       const startTime = performance.now();
 
@@ -55,9 +56,15 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const easedProgress = easeOutQuart(progress);
-        const current = Math.floor(easedProgress * target);
+        const rawValue = easedProgress * target;
+        const current = decimals > 0
+          ? Number(rawValue.toFixed(decimals))
+          : Math.floor(rawValue);
 
-        el.textContent = current.toLocaleString('fr-FR');
+        el.textContent = current.toLocaleString('fr-FR', {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+        });
 
         if (progress < 1) {
           frameId = requestAnimationFrame(animate);
