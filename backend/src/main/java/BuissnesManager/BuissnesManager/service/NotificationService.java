@@ -20,6 +20,30 @@ public class NotificationService {
     private NotificationRepository notificationRepository;
 
     @Transactional
+    public void createArticleAddedNotification(Article article, Entreprise entreprise) {
+        if (article == null || entreprise == null) {
+            return;
+        }
+        String articleName = article.getNom() != null ? article.getNom() : ("Article #" + article.getId());
+        String message = String.format("NOUVEL ARTICLE: '%s' a été ajouté au catalogue.", articleName);
+        createNotification(NotificationType.ARTICLE_AJOUTE, message, null, null, null, article, entreprise);
+    }
+
+    @Transactional
+    public void createStockAddedNotification(Stock stock, Article article, Entreprise entreprise, BigDecimal quantiteAjoutee) {
+        if (stock == null || article == null || entreprise == null) {
+            return;
+        }
+        BigDecimal addedQty = quantiteAjoutee != null ? quantiteAjoutee : BigDecimal.ZERO;
+        if (addedQty.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+        String articleName = article.getNom() != null ? article.getNom() : ("Article #" + article.getId());
+        String message = String.format("STOCK AJOUTÉ: +%s pour l'article '%s'.", addedQty.stripTrailingZeros().toPlainString(), articleName);
+        createNotification(NotificationType.STOCK_AJOUTE, message, addedQty, stock.getSeuilMinimum(), stock, article, entreprise);
+    }
+
+    @Transactional
     public void createLowStockNotification(Stock stock, Article article, Entreprise entreprise, BigDecimal quantiteActuelle) {
         NotificationType type;
         String message;
@@ -41,18 +65,29 @@ public class NotificationService {
             return;
         }
 
+        createNotification(type, message, quantiteActuelle, stock.getSeuilMinimum(), stock, article, entreprise);
+        logger.info("Low stock notification created: {} - {}", type, article.getNom());
+    }
+
+    private void createNotification(
+            NotificationType type,
+            String message,
+            BigDecimal quantiteActuelle,
+            BigDecimal seuilMinimum,
+            Stock stock,
+            Article article,
+            Entreprise entreprise
+    ) {
         Notification notification = new Notification();
         notification.setType(type);
         notification.setStatut(NotificationStatus.NOUVEAU);
         notification.setMessage(message);
         notification.setQuantiteActuelle(quantiteActuelle);
-        notification.setSeuilMinimum(stock.getSeuilMinimum());
+        notification.setSeuilMinimum(seuilMinimum);
         notification.setStock(stock);
         notification.setArticle(article);
         notification.setEntreprise(entreprise);
-
         notificationRepository.save(notification);
-        logger.info("Low stock notification created: {} - {}", type, article.getNom());
     }
 
     @Transactional

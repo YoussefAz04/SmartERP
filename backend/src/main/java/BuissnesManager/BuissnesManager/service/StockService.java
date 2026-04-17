@@ -20,6 +20,8 @@ public class StockService {
     private ArticleRepository articleRepository;
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
+    @Autowired
+    private NotificationService notificationService;
 
     // ✅ Helper method to convert any number to BigDecimal
     private BigDecimal toBigDecimal(Object value) {
@@ -43,8 +45,18 @@ public class StockService {
             Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé: " + dto.getArticleAchatId()));
             stock.setArticleAchat(articleAchat);
+            stock.setEntreprise(articleAchat.getEntreprise());
         }
-        return stockRepository.save(stock);
+        Stock saved = stockRepository.save(stock);
+        if (saved.getArticleAchat() != null && saved.getEntreprise() != null) {
+            notificationService.createStockAddedNotification(
+                    saved,
+                    saved.getArticleAchat(),
+                    saved.getEntreprise(),
+                    saved.getQuantiteDisponible()
+            );
+        }
+        return saved;
     }
 
     public List<Stock> getAllStocks() {
@@ -66,6 +78,7 @@ public class StockService {
     public Stock updateStock(Long id, StockDto dto) {
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Stock non trouvé avec id: " + id));
+        BigDecimal previousDisponible = stock.getQuantiteDisponible() != null ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
         if (dto.getQuantiteEntree() != null) stock.setQuantiteEntree(toBigDecimal(dto.getQuantiteEntree()));
         if (dto.getQuantiteDisponible() != null) stock.setQuantiteDisponible(toBigDecimal(dto.getQuantiteDisponible()));
         if (dto.getQuantiteReserve() != null) stock.setQuantiteReserve(toBigDecimal(dto.getQuantiteReserve()));
@@ -76,8 +89,21 @@ public class StockService {
             Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé"));
             stock.setArticleAchat(articleAchat);
+            stock.setEntreprise(articleAchat.getEntreprise());
         }
-        return stockRepository.save(stock);
+        Stock saved = stockRepository.save(stock);
+
+        BigDecimal currentDisponible = saved.getQuantiteDisponible() != null ? saved.getQuantiteDisponible() : BigDecimal.ZERO;
+        BigDecimal addedQuantity = currentDisponible.subtract(previousDisponible);
+        if (addedQuantity.compareTo(BigDecimal.ZERO) > 0 && saved.getArticleAchat() != null && saved.getEntreprise() != null) {
+            notificationService.createStockAddedNotification(
+                    saved,
+                    saved.getArticleAchat(),
+                    saved.getEntreprise(),
+                    addedQuantity
+            );
+        }
+        return saved;
     }
 
     public void deleteStock(Long id) {
