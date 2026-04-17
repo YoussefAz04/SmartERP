@@ -23,29 +23,26 @@
 
   <!-- Page Header -->
   <div class="page-header">
-    <div class="header-bg-accent"></div>
-    <div class="header-inner">
-      <a routerLink="/article-achat/listArticleAchat" class="btn-back" aria-label="Retour à la liste">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-        Retour
-      </a>
-      <div class="header-center">
-        <div class="header-icon-wrap">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-          </svg>
-        </div>
-        <h1 class="page-title">Nouvel Article Achat</h1>
-        <nav class="breadcrumb-nav" aria-label="breadcrumb">
-          <a routerLink="/dashboard">Dashboard</a>
-          <span class="sep" aria-hidden="true">›</span>
-          <a routerLink="/article-achat/listArticleAchat">Articles Achat</a>
-          <span class="sep" aria-hidden="true">›</span>
-          <span class="current" aria-current="page">Ajouter</span>
-        </nav>
+    <div class="row">
+      <div class="col">
+        <h3 class="page-title">
+          <span class="title-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+            </svg>
+          </span>
+          Nouvel Article Achat
+        </h3>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a routerLink="/dashboard">Dashboard</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a routerLink="/article-achat/listArticleAchat">Articles Achat</a>
+          </li>
+          <li class="breadcrumb-item active">Ajouter</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -325,4 +322,3 @@
   </div>
 
 </div>
-
