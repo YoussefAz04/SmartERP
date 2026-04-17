@@ -19,6 +19,27 @@
     </div>
   </div>
 
+  <div class="ai-quick-insights" *ngIf="dashboard && !loading">
+    <div class="insight-pill">
+      <span class="pill-label">Qualité IA</span>
+      <span class="pill-value">{{ aiQualityScore }}%</span>
+    </div>
+    <div class="insight-pill">
+      <span class="pill-label">Confiance prévision</span>
+      <span class="pill-value" [ngClass]="confidenceLevelClass">
+        {{ dashboard.forecast.confidenceScore | number:'1.0-0' }}% · {{ confidenceLevelLabel }}
+      </span>
+    </div>
+    <div class="insight-pill">
+      <span class="pill-label">Recommandations prioritaires</span>
+      <span class="pill-value">{{ criticalRecs.length + highRecs.length }}</span>
+    </div>
+    <div class="insight-pill">
+      <span class="pill-label">Recommandations totales</span>
+      <span class="pill-value">{{ dashboard.recommendations.length }}</span>
+    </div>
+  </div>
+
   <!-- Loading -->
   <div *ngIf="loading" class="ai-loading">
     <div class="ai-spinner">
@@ -259,9 +280,17 @@
 
     <!-- Strategic Recommendations -->
     <div class="recommendations-section" *ngIf="dashboard.recommendations?.length">
-      <h2 class="section-title">
-        <i class="fas fa-lightbulb me-2"></i>Recommandations Stratégiques
-      </h2>
+      <div class="section-title-row">
+        <h2 class="section-title">
+          <i class="fas fa-lightbulb me-2"></i>Recommandations Stratégiques
+        </h2>
+        <div class="rec-summary-chips">
+          <span class="rec-chip rec-chip-critical">Critique: {{ criticalRecs.length }}</span>
+          <span class="rec-chip rec-chip-high">Haute: {{ highRecs.length }}</span>
+          <span class="rec-chip rec-chip-medium">Moyenne: {{ mediumRecs.length }}</span>
+          <span class="rec-chip rec-chip-info">Info: {{ infoRecs.length }}</span>
+        </div>
+      </div>
       <div class="recs-grid">
         <div class="rec-card" *ngFor="let rec of dashboard.recommendations"
              [ngClass]="'rec-' + rec.priority">

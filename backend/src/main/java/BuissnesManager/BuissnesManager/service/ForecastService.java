@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ForecastService {
@@ -24,6 +22,8 @@ public class ForecastService {
     };
 
     private static final double ALPHA = 0.3; // Exponential smoothing factor
+    private static final double MIN_SEASONAL_FACTOR = -0.35;
+    private static final double MAX_SEASONAL_FACTOR = 0.35;
 
     public ForecastDto generateForecast(Long entrepriseId) {
         int currentYear = LocalDate.now().getYear();
@@ -34,6 +34,7 @@ public class ForecastService {
         List<Object[]> prevYearData = commandeVenteRepository.getMonthlySales(entrepriseId, currentYear - 1);
 
         double[] currentValues = buildMonthArray(currentYearData);
+        int observedCurrentMonths = Math.min(currentMonth, 12);
         double[] prevValues = buildMonthArray(prevYearData);
 
         boolean hasPrevYear = false;
@@ -46,7 +47,9 @@ public class ForecastService {
         if (hasPrevYear) {
             for (double v : prevValues) historicalSeries.add(v);
         }
-        for (double v : currentValues) historicalSeries.add(v);
+        for (int i = 0; i < observedCurrentMonths; i++) {
+            historicalSeries.add(currentValues[i]);
+        }
 
         // Apply exponential smoothing to generate smoothed series
         List<Double> smoothed = exponentialSmoothing(historicalSeries, ALPHA);
@@ -119,7 +122,8 @@ public class ForecastService {
         // Confidence score: blend data-density with in-sample fit quality so a
         // steady series scores higher than an erratic one, capped at 95%.
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
-        double density = Math.min(1.0, nonZeroMonths / 12.0);
+        double expectedMonths = hasPrevYear ? 24.0 : Math.max(6.0, observedCurrentMonths);
+        double density = Math.min(1.0, nonZeroMonths / expectedMonths);
         double fit = computeInSampleFitScore(historicalSeries, smoothed);
         double confidence = Math.min(95.0, (0.6 * density + 0.4 * fit) * 100.0);
 
@@ -210,21 +214,18 @@ public class ForecastService {
     }
 
     private double getSeasonalFactor(int monthIndex, double[] prevValues) {
-        double avgPrev = 0.0;
-        for (double v : prevValues) avgPrev += v;
-        avgPrev /= 12.0;
+        double avgPrev = computeAverageNonZero(prevValues);
         if (avgPrev == 0) return 0.0;
-        return (prevValues[monthIndex] - avgPrev) / avgPrev;
+        double rawFactor = (prevValues[monthIndex] - avgPrev) / avgPrev;
+        return clamp(rawFactor, MIN_SEASONAL_FACTOR, MAX_SEASONAL_FACTOR);
     }
 
     private List<ForecastDto.SeasonalityDto> computeSeasonality(double[] prevValues, double[] currentValues) {
         List<ForecastDto.SeasonalityDto> result = new ArrayList<>();
-        double avgPrev = 0.0;
-        for (double v : prevValues) avgPrev += v;
-        avgPrev /= 12.0;
+        double avgPrev = computeAverageNonZero(prevValues);
 
         for (int m = 0; m < 12; m++) {
-            double idx = avgPrev > 0 ? prevValues[m] / avgPrev : 1.0;
+            double idx = avgPrev > 0 && prevValues[m] > 0 ? prevValues[m] / avgPrev : 1.0;
             String trend;
             if (idx > 1.1) {
                 trend = "HAUTE";
@@ -236,6 +237,22 @@ public class ForecastService {
             result.add(new ForecastDto.SeasonalityDto(MONTH_NAMES_FR[m], Math.round(idx * 100.0) / 100.0, trend));
         }
         return result;
+    }
+
+    private double computeAverageNonZero(double[] values) {
+        double sum = 0.0;
+        int count = 0;
+        for (double value : values) {
+            if (value > 0) {
+                sum += value;
+                count++;
+            }
+        }
+        return count > 0 ? sum / count : 0.0;
+    }
+
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     private double computeStdDev(List<Double> data) {
