@@ -49,6 +49,8 @@ export type DonutChartOptions = {
   styleUrl: './ai-dashboard.component.scss',
 })
 export class AiDashboardComponent implements OnInit {
+  private static readonly CRITICAL_RECOMMENDATION_PENALTY = 15;
+
   public dashboard: AiDashboard | null = null;
   public loading = true;
   public error = false;
@@ -229,7 +231,7 @@ export class AiDashboardComponent implements OnInit {
     const confidence = this.dashboard?.forecast?.confidenceScore ?? 0;
     const recommendationCount = this.dashboard?.recommendations?.length ?? 0;
     const criticalRatio = recommendationCount > 0 ? this.criticalRecs.length / recommendationCount : 0;
-    const quality = confidence - (criticalRatio * 15);
+    const quality = confidence - (criticalRatio * AiDashboardComponent.CRITICAL_RECOMMENDATION_PENALTY);
     return Math.max(0, Math.min(100, Math.round(quality)));
   }
 

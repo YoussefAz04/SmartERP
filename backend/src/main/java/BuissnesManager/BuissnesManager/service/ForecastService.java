@@ -22,6 +22,8 @@ public class ForecastService {
     };
 
     private static final double ALPHA = 0.3; // Exponential smoothing factor
+    private static final double MIN_SEASONAL_FACTOR = -0.35;
+    private static final double MAX_SEASONAL_FACTOR = 0.35;
 
     public ForecastDto generateForecast(Long entrepriseId) {
         int currentYear = LocalDate.now().getYear();
@@ -215,7 +217,7 @@ public class ForecastService {
         double avgPrev = computeAverageNonZero(prevValues);
         if (avgPrev == 0) return 0.0;
         double rawFactor = (prevValues[monthIndex] - avgPrev) / avgPrev;
-        return clamp(rawFactor, -0.35, 0.35);
+        return clamp(rawFactor, MIN_SEASONAL_FACTOR, MAX_SEASONAL_FACTOR);
     }
 
     private List<ForecastDto.SeasonalityDto> computeSeasonality(double[] prevValues, double[] currentValues) {
