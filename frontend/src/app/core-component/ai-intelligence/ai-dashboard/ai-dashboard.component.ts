@@ -209,6 +209,30 @@ export class AiDashboardComponent implements OnInit {
     return g >= 0 ? 'text-success' : 'text-danger';
   }
 
+  get confidenceLevelLabel(): string {
+    const score = this.dashboard?.forecast?.confidenceScore ?? 0;
+    if (score >= 80) return 'Très élevée';
+    if (score >= 65) return 'Élevée';
+    if (score >= 45) return 'Moyenne';
+    return 'À renforcer';
+  }
+
+  get confidenceLevelClass(): string {
+    const score = this.dashboard?.forecast?.confidenceScore ?? 0;
+    if (score >= 80) return 'quality-strong';
+    if (score >= 65) return 'quality-good';
+    if (score >= 45) return 'quality-medium';
+    return 'quality-low';
+  }
+
+  get aiQualityScore(): number {
+    const confidence = this.dashboard?.forecast?.confidenceScore ?? 0;
+    const recommendationCount = this.dashboard?.recommendations?.length ?? 0;
+    const criticalRatio = recommendationCount > 0 ? this.criticalRecs.length / recommendationCount : 0;
+    const quality = confidence - (criticalRatio * 15);
+    return Math.max(0, Math.min(100, Math.round(quality)));
+  }
+
   formatCurrency(value: number): string {
     if (!value) return '0';
     if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + 'M';
