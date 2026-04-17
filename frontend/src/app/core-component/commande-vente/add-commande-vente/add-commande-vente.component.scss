@@ -50,96 +50,79 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
 
 // ─── Page Header ─────────────────────────────────────────────────────────────
 .page-header {
-  position: relative;
-  background: linear-gradient(135deg, $emerald-600 0%, $teal-700 100%);
-  border-radius: $radius-xl;
   margin-bottom: 24px;
-  overflow: hidden;
-  box-shadow: 0 8px 28px rgba($emerald-600, .3);
+  padding-bottom: 16px;
+  border-bottom: 1px solid $slate-200;
 
-  .header-bg-accent {
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 220px;
-    height: 220px;
-    background: radial-gradient(circle, rgba(255,255,255,.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .header-inner {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 28px 28px;
-  }
-
-  .header-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 8px;
-  }
-
-  .header-icon-wrap {
-    width: 56px;
-    height: 56px;
-    border-radius: $radius-lg;
-    background: rgba(255,255,255,.2);
-    border: 2px solid rgba(255,255,255,.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    flex-shrink: 0;
-    animation: iconPulse 3s ease-in-out infinite;
-
-    i { font-size: 24px; }
-  }
-
-  .page-title {
-    font-size: 1.4rem;
+  h3.page-title {
+    font-size: 1.32rem;
     font-weight: 700;
-    color: #fff;
-    margin: 0;
-    letter-spacing: -.02em;
-  }
-
-  .page-subtitle {
-    font-size: .85rem;
-    color: rgba(255,255,255,.75);
-    margin: 0;
-    max-width: 400px;
-  }
-
-  .btn-back {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: inline-flex;
+    color: $slate-900;
+    margin: 0 0 8px;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 9px 20px;
-    border-radius: $radius-sm;
-    background: rgba(255,255,255,.15);
-    border: 1.5px solid rgba(255,255,255,.3);
-    color: rgba(255,255,255,.9);
-    font-size: .82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: $transition;
-    backdrop-filter: blur(4px);
-    font-family: inherit;
-    z-index: 2;
+    gap: 10px;
 
-    &:hover {
-      background: rgba(255,255,255,.25);
-      border-color: rgba(255,255,255,.5);
+    .title-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, $emerald-600, $teal-700);
+      border-radius: $radius-sm;
       color: #fff;
-      transform: translateX(-2px);
+      flex-shrink: 0;
+    }
+  }
+
+  .breadcrumb {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: .75rem;
+
+    .breadcrumb-item {
+      color: $slate-500;
+
+      a {
+        color: $emerald-600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: $transition-fast;
+
+        &:hover {
+          color: $teal-700;
+          text-decoration: underline;
+        }
+      }
+
+      &.active { color: $slate-500; }
+
+      &:not(:last-child)::after {
+        content: "›";
+        margin-left: 6px;
+        color: $slate-300;
+        font-size: .9rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    h3.page-title {
+      font-size: 1.08rem;
+      gap: 6px;
+
+      .title-icon {
+        width: 34px;
+        height: 34px;
+      }
     }
   }
 }

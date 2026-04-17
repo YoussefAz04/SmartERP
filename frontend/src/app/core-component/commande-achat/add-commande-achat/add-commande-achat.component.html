@@ -25,18 +25,21 @@
 
   <!-- Page Header -->
   <div class="page-header">
-    <div class="header-bg-accent"></div>
-    <div class="header-inner">
-      <button type="button" class="btn-back" (click)="onCancel()">
-        <i class="feather icon-arrow-left"></i>
-        Retour
-      </button>
-      <div class="header-center">
-        <div class="header-icon-wrap">
-          <i class="feather icon-shopping-cart"></i>
-        </div>
-        <h1 class="page-title">{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande Achat</h1>
-        <p class="page-subtitle">{{ isEditMode ? 'Modifier la commande achat existante' : 'Créer une nouvelle commande achat fournisseur' }}</p>
+    <div class="row">
+      <div class="col">
+        <h3 class="page-title">
+          <span class="title-icon"><i class="feather icon-shopping-cart"></i></span>
+          {{ isEditMode ? 'Modifier Commande Achat' : 'Nouvelle Commande Achat' }}
+        </h3>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a routerLink="/commande-achat/list">Commandes Achat</a>
+          </li>
+          <li class="breadcrumb-item active">{{ isEditMode ? 'Modifier' : 'Ajouter' }}</li>
+        </ul>
       </div>
     </div>
   </div>
