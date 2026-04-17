@@ -61,7 +61,7 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
      * Revenue, quantity sold and line count grouped by real article category
      * (joined through articleVente -> articleAchat -> categorieArticle).
      */
-    @Query("SELECT COALESCE(c.nom, 'Non catégorisé'), " +
+    @Query("SELECT COALESCE(c.libelle, 'Non catégorisé'), " +
            "COALESCE(SUM(lc.montantTTC), 0), " +
            "COALESCE(SUM(lc.quantite), 0) " +
            "FROM LigneCommandeVente lc " +
@@ -69,7 +69,7 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
            "LEFT JOIN av.articleAchat aa " +
            "LEFT JOIN aa.categorieArticle c " +
            "WHERE lc.commandeVente.entreprise.id = :entrepriseId " +
-           "GROUP BY c.nom " +
+           "GROUP BY c.libelle " +
            "ORDER BY SUM(lc.montantTTC) DESC")
     List<Object[]> getCategoryPerformance(@Param("entrepriseId") Long entrepriseId);
 }
