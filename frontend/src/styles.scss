@@ -2196,8 +2196,10 @@ body {
 }
 
 body {
-  background: var(--ui-bg-soft);
-  color: var(--ui-text);
+  background: #f6f8fc;
+  background: var(--ui-bg-soft, #f6f8fc);
+  color: #1f2937;
+  color: var(--ui-text, #1f2937);
 }
 
 .page-wrapper .content {
@@ -2205,8 +2207,10 @@ body {
 }
 
 :where(.card, .modern-card, .db-card, .modal-content) {
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-lg);
+  border: 1px solid #e7ecf3;
+  border: 1px solid var(--ui-border, #e7ecf3);
+  border-radius: 16px;
+  border-radius: var(--ui-radius-lg, 16px);
   box-shadow: var(--ui-shadow-sm);
   transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
@@ -2225,7 +2229,8 @@ body {
 }
 
 :where(input.form-control, select.form-control, textarea.form-control, .search-input, .filter-select) {
-  border-radius: var(--ui-radius-md);
+  border-radius: 12px;
+  border-radius: var(--ui-radius-md, 12px);
   border-color: #d6dfec;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
@@ -2238,7 +2243,7 @@ body {
 mat-form-field .mdc-text-field--outlined .mdc-notched-outline__leading,
 mat-form-field .mdc-text-field--outlined .mdc-notched-outline__trailing,
 mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
-  border-color: #d6dfec !important;
+  border-color: #d6dfec;
 }
 
 :where(.btn, .btn-submit, .btn-cancel, .btn-header-action):not(.btn-action):not(.btn-icon):not(.icon-btn) {
@@ -2268,8 +2273,7 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
   background: rgba(79, 110, 247, 0.04);
 }
 
-.main-wrapper.dark,
-.dark.main-wrapper {
+.main-wrapper.dark {
   --ui-bg-soft: #141432;
   --ui-surface: #1d1d42;
   --ui-border: #2f3557;
