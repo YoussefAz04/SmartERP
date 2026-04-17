@@ -176,11 +176,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   loadNotifications(): void {
-    const currentUser = this.getCurrentUser();
-    if (!currentUser?.entrepriseId) return;
+    const entrepriseId = this.getCurrentEnterpriseId();
+    if (!entrepriseId) return;
 
     this.isLoadingNotifications = true;
-    this.headerService.getNotifications(currentUser.entrepriseId).subscribe({
+    this.headerService.getNotifications(entrepriseId).subscribe({
       next: (data) => {
         this.notifications = Array.isArray(data) ? data : [];
         this.unreadCount = this.notifications.filter(n => n.statut === 'NOUVEAU').length;
@@ -205,10 +205,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   markAllRead(): void {
-    const currentUser = this.getCurrentUser();
-    if (!currentUser?.entrepriseId) return;
+    const entrepriseId = this.getCurrentEnterpriseId();
+    if (!entrepriseId) return;
 
-    this.headerService.markAllNotificationsRead(currentUser.entrepriseId).subscribe({
+    this.headerService.markAllNotificationsRead(entrepriseId).subscribe({
       next: () => {
         this.notifications.forEach(n => n.statut = 'VU');
         this.unreadCount = 0;
@@ -256,6 +256,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
         .toUpperCase()
         .slice(0, 2);
     }
+  }
+
+  private getCurrentEnterpriseId(): number | null {
+    const currentUser = this.getCurrentUser();
+    const fromUser = currentUser?.entrepriseId ?? currentUser?.enterpriseId ?? currentUser?.entreprise?.id;
+    if (fromUser !== null && fromUser !== undefined && !Number.isNaN(Number(fromUser))) {
+      return Number(fromUser);
+    }
+
+    const fromStorage = localStorage.getItem('entrepriseId') ?? localStorage.getItem('enterpriseId');
+    if (fromStorage !== null && fromStorage !== undefined && !Number.isNaN(Number(fromStorage))) {
+      return Number(fromStorage);
+    }
+
+    return null;
   }
 
   // ===== OTHER METHODS =====

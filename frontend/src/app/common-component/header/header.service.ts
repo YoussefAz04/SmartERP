@@ -27,15 +27,29 @@ export class HeaderService {
 
   constructor(private http: HttpClient) {}
 
-  private getEntrepriseId(): number | null {
+  private getCurrentUser(): any | null {
     const item = localStorage.getItem('myLSkey');
     if (!item) return null;
     try {
-      const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-      return user.entrepriseId || null;
+      return JSON.parse(decodeURIComponent(escape(atob(item))));
     } catch {
       return null;
     }
+  }
+
+  private getEntrepriseId(): number | null {
+    const user = this.getCurrentUser();
+    const fromUser = user?.entrepriseId ?? user?.enterpriseId ?? user?.entreprise?.id;
+    if (fromUser !== null && fromUser !== undefined && !Number.isNaN(Number(fromUser))) {
+      return Number(fromUser);
+    }
+
+    const fromStorage = localStorage.getItem('entrepriseId') ?? localStorage.getItem('enterpriseId');
+    if (fromStorage !== null && fromStorage !== undefined && !Number.isNaN(Number(fromStorage))) {
+      return Number(fromStorage);
+    }
+
+    return null;
   }
 
   searchGlobal(query: string): Observable<SearchResult[]> {
