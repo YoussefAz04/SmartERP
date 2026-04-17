@@ -33,13 +33,13 @@ public class CommandeVente {
 
     private String statut;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "montant_ht", precision = 15, scale = 2)
     private BigDecimal montantHT;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "montant_tva", precision = 15, scale = 2)
     private BigDecimal montantTVA;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "montant_ttc", precision = 15, scale = 2)
     private BigDecimal montantTTC;
 
     private String note;
