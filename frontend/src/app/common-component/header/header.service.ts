@@ -37,17 +37,22 @@ export class HeaderService {
     }
   }
 
-  private getEntrepriseId(): number | null {
+  private toValidEnterpriseId(value: unknown): number | null {
+    if (value === null || value === undefined) return null;
+    const parsed = Number(value);
+    return Number.isNaN(parsed) || parsed <= 0 ? null : parsed;
+  }
+
+  public getEntrepriseId(): number | null {
     const user = this.getCurrentUser();
-    const fromUser = user?.entrepriseId ?? user?.enterpriseId ?? user?.entreprise?.id;
-    if (fromUser !== null && fromUser !== undefined && !Number.isNaN(Number(fromUser))) {
-      return Number(fromUser);
-    }
+    const fromUser = this.toValidEnterpriseId(
+      user?.entrepriseId ?? user?.enterpriseId ?? user?.entreprise?.id
+    );
+    if (fromUser !== null) return fromUser;
 
     const fromStorage = localStorage.getItem('entrepriseId') ?? localStorage.getItem('enterpriseId');
-    if (fromStorage !== null && fromStorage !== undefined && !Number.isNaN(Number(fromStorage))) {
-      return Number(fromStorage);
-    }
+    const fromStorageId = this.toValidEnterpriseId(fromStorage);
+    if (fromStorageId !== null) return fromStorageId;
 
     return null;
   }

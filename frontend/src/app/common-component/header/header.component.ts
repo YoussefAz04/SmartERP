@@ -176,7 +176,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   loadNotifications(): void {
-    const entrepriseId = this.getCurrentEnterpriseId();
+    const entrepriseId = this.headerService.getEntrepriseId();
     if (!entrepriseId) return;
 
     this.isLoadingNotifications = true;
@@ -205,7 +205,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   markAllRead(): void {
-    const entrepriseId = this.getCurrentEnterpriseId();
+    const entrepriseId = this.headerService.getEntrepriseId();
     if (!entrepriseId) return;
 
     this.headerService.markAllNotificationsRead(entrepriseId).subscribe({
@@ -256,21 +256,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         .toUpperCase()
         .slice(0, 2);
     }
-  }
-
-  private getCurrentEnterpriseId(): number | null {
-    const currentUser = this.getCurrentUser();
-    const fromUser = currentUser?.entrepriseId ?? currentUser?.entreprise?.id;
-    if (fromUser !== null && fromUser !== undefined && !Number.isNaN(Number(fromUser))) {
-      return Number(fromUser);
-    }
-
-    const fromStorage = localStorage.getItem('entrepriseId') ?? localStorage.getItem('enterpriseId');
-    if (fromStorage !== null && fromStorage !== undefined && !Number.isNaN(Number(fromStorage))) {
-      return Number(fromStorage);
-    }
-
-    return null;
   }
 
   // ===== OTHER METHODS =====
