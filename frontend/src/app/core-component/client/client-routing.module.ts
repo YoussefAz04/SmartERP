@@ -22,7 +22,7 @@ const routes: Routes = [
     path: 'addClient',
     component: AddClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
   },{
     path: 'addCategorieClient',
     component: AddCategorieClientComponent,
