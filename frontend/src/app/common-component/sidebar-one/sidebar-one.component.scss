@@ -28,6 +28,9 @@ $radius-md: 10px;
 // ============================================
 // SIDEBAR BASE
 // ============================================
+// The outer .sidebar is position: fixed (top: 66px; bottom: 0;) from the
+// global layout stylesheet. We turn it into a flex column container and
+// clip its own overflow so that ONLY the inner scroll area scrolls.
 .sidebar#sidebar,
 .sidebar {
   background: $sidebar-bg;
@@ -36,44 +39,47 @@ $radius-md: 10px;
   transition: width $transition;
   display: flex;
   flex-direction: column;
+  overflow: hidden; // prevent the outer element from ever scrolling
 }
 
 #sidebar {
   .sidebar-inner {
     width: 100%;
-    flex: 1 1 0;
+    // Explicit height as a safe fallback — matches the fixed top offset (66px)
+    // from the global sidebar rules. Combined with flex:1 this guarantees the
+    // scroll container always has a concrete height, even when some ancestor
+    // styles drop the flex sizing.
+    height: calc(100vh - 66px);
+    max-height: calc(100vh - 66px);
+    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 4px 0 20px;
+    // Extra bottom padding so the last section (e.g. "Tableau de Bord IA")
+    // is never clipped by the viewport edge and stays fully reachable.
+    padding: 4px 0 40px;
     background: transparent;
-    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; // prevent scroll chaining to the page
 
-    // Thin scrollbar — appears on hover only
+    // Always-visible thin scrollbar — keeps scroll affordance discoverable
+    // and avoids the "can't scroll down" confusion reported by users.
     scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-
-    &:hover {
-      scrollbar-color: rgba($accent, 0.15) transparent;
-    }
+    scrollbar-color: rgba($accent, 0.2) transparent;
 
     &::-webkit-scrollbar {
-      width: 4px;
+      width: 6px;
     }
     &::-webkit-scrollbar-track {
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: transparent;
+      background: rgba($accent, 0.2);
       border-radius: 4px;
       transition: background 0.3s ease;
     }
     &:hover::-webkit-scrollbar-thumb {
-      background: rgba($accent, 0.15);
-      &:hover {
-        background: rgba($accent, 0.3);
-      }
+      background: rgba($accent, 0.4);
     }
   }
 }
@@ -82,6 +88,21 @@ $radius-md: 10px;
 // SIDEBAR MENU
 // ============================================
 #sidebar-menu {
+  // Neutralize global _sidebar.scss effects that leak into our nav-links
+  // (blue left border, hover padding-left shift, gradient backgrounds).
+  // These caused content to "jump" while hovering during scroll and painted
+  // stray blue indicators on every item.
+  ul li.submenu-open ul li a,
+  ul li.submenu-open ul li.nav-item a.nav-link {
+    border-left: 0 !important;
+    padding-left: inherit;
+  }
+
+  // Cancel global divider border that is painted under every section
+  ul li.submenu-open > ul {
+    border-bottom: 0 !important;
+  }
+
   ul {
     list-style: none;
     padding: 0;
@@ -146,7 +167,7 @@ $radius-md: 10px;
           a.nav-link {
             display: flex;
             align-items: center;
-            padding: 8px 10px;
+            padding: 8px 10px !important;
             font-size: 13.5px;
             font-weight: 500;
             color: $text-secondary;
@@ -155,6 +176,7 @@ $radius-md: 10px;
             background: transparent;
             border-radius: $radius-md;
             border: 1px solid transparent;
+            border-left: 0 !important;
             transition:
               background $transition-fast,
               color $transition-fast,
@@ -223,8 +245,10 @@ $radius-md: 10px;
 
             // ---- HOVER ----
             &:hover {
-              background: $hover-bg;
+              background: $hover-bg !important;
               color: $text-primary;
+              padding: 8px 10px !important; // cancel global padding-left shift
+              border-left: 0 !important;
 
               .nav-icon-wrap {
                 background: $accent-light;
@@ -239,7 +263,7 @@ $radius-md: 10px;
             // ---- ACTIVE (router) ----
             &.active,
             &.active-link {
-              background: $active-bg;
+              background: $active-bg !important;
               color: $text-primary;
               font-weight: 600;
 
@@ -319,11 +343,12 @@ $radius-md: 10px;
                   display: flex;
                   align-items: center;
                   gap: 10px;
-                  padding: 6px 10px 6px 22px;
+                  padding: 6px 10px 6px 22px !important;
                   font-size: 13px;
                   font-weight: 400;
                   color: $text-secondary;
                   border-radius: $radius-sm;
+                  border-left: 0 !important;
                   transition:
                     background $transition-fast,
                     color $transition-fast;
@@ -348,8 +373,10 @@ $radius-md: 10px;
                   }
 
                   &:hover {
-                    background: $hover-bg;
+                    background: $hover-bg !important;
                     color: $text-primary;
+                    padding: 6px 10px 6px 22px !important; // cancel global shift
+                    border-left: 0 !important;
 
                     .submenu-dot {
                       background: $accent;
@@ -358,9 +385,10 @@ $radius-md: 10px;
                   }
 
                   &.active {
-                    background: $active-bg;
+                    background: $active-bg !important;
                     color: $text-primary;
                     font-weight: 600;
+                    border-left: 0 !important;
 
                     &::before {
                       content: '';
