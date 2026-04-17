@@ -402,12 +402,9 @@ public class CommandeAchatService {
             recalculateInvoiceAmounts(savedFacture, savedLignes);
         }
 
-        // ✅ AUTO-INCREMENT STOCK AND MARK AS RECEIVED
-        stockAutomationService.incrementStockFromReception(id, commande.getReference());
-        commande.setStatut("RECUE");
-        commandeAchatRepository.save(commande);
-
-        logger.info("✅ Order validated, invoice updated/created and stock updated - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
+        // ✅ Stock is NOT touched at confirmation. It will be incremented
+        // only when the order is physically received via recevoirCommande().
+        logger.info("✅ Order confirmed and invoice created - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
         return savedFacture;
     }
 

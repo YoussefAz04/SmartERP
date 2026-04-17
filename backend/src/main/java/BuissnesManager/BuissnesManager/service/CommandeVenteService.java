@@ -309,14 +309,10 @@ public class CommandeVenteService {
         }
 
         // ✅ Update stock: move reserved quantity to sold (quantite_reserve → quantite_vendue)
-        try {
-            stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
-            logger.info("✅ Stock updated on sale confirmation for commande {}", id);
-        } catch (RuntimeException e) {
-            logger.warn("⚠️ Could not update stock for commande {}: {}", id, e.getMessage());
-        }
+        // is handled at delivery (livrerCommande), not at confirmation.
+        // At confirmation, the order is still "reserved" in stock terms.
 
-        logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={}", 
+        logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={}",
             id, savedFacture.getId(), totalHT, totalTVA, totalTTC);
         
         return savedFacture;
@@ -355,9 +351,6 @@ public class CommandeVenteService {
             throw new RuntimeException("Cette commande a déjà été livrée");
         }
 
-        // Stock was already updated when the commande was confirmed (validerCommande)
-        boolean stockAlreadyUpdated = "CONFIRMEE".equals(commande.getStatut());
-
         commande.setStatut("LIVREE");
         commandeVenteRepository.save(commande);
 
@@ -369,11 +362,11 @@ public class CommandeVenteService {
         bon.setEntreprise(commande.getEntreprise());
         BonLivraison savedBon = bonLivraisonRepository.save(bon);
 
-        if (!stockAlreadyUpdated) {
-            // Only decrement stock if not already done at validation step
-            stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
-        }
+        // ✅ Move stock from reserved → sold at the actual physical delivery
+        stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
 
+        logger.info("✅ Commande {} delivered, BonLivraison {} created and stock decremented",
+                id, savedBon.getId());
         return savedBon;
     }
 
