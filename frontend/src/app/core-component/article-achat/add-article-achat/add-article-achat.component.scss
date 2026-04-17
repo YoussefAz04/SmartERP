@@ -160,6 +160,9 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
       a {
         color: $teal-600;
         text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
         transition: $transition-fast;
 
         &:hover {
