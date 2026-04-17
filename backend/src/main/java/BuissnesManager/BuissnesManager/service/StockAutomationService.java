@@ -59,6 +59,11 @@ public class StockAutomationService {
             stock.setQuantiteEntree(ancienneEntree.add(quantite));
             stockRepository.save(stock);
 
+            Entreprise entreprise = stock.getEntreprise() != null ? stock.getEntreprise() : article.getEntreprise();
+            if (entreprise != null) {
+                notificationService.createStockAddedNotification(stock, article, entreprise, quantite);
+            }
+
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.ENTREE);
             mouvement.setQuantite((int) Math.round(quantite.doubleValue()));

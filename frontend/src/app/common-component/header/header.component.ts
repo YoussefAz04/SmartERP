@@ -260,6 +260,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // ===== OTHER METHODS =====
   getResultRoute(result: SearchResult): string[] {
+    if (result.route?.length) {
+      return result.route;
+    }
+
     switch (result.type) {
       case 'Client':
         return ['/client/editClient', String(result.id)];
@@ -268,9 +272,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       case 'Fournisseur':
         return ['/fournisseur/editFournisseur', String(result.id)];
       case 'Commande':
-        return ['/commande-achat/edit', String(result.id)];
+        return ['/commande-vente/edit', String(result.id)];
       default:
-        return ['/'];
+        return [routes.adminDashboard];
     }
   }
 

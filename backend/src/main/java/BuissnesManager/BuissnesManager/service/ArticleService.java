@@ -26,6 +26,8 @@ public class ArticleService {
     private StockRepository stockRepository;
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
+    @Autowired
+    private NotificationService notificationService;
 
     public Article createArticle(ArticleDto dto) {
         Article article = new Article();
@@ -59,12 +61,15 @@ public class ArticleService {
         if (stockRepository.findFirstByArticleAchatId(saved.getId()).isEmpty()) {
             Stock stock = new Stock();
             stock.setArticleAchat(saved);
+            stock.setEntreprise(saved.getEntreprise());
             stock.setQuantiteDisponible(BigDecimal.ZERO);
             stock.setQuantiteEntree(BigDecimal.ZERO);
             stock.setQuantiteReserve(BigDecimal.ZERO);
             stock.setQuantiteVendue(BigDecimal.ZERO);
             stockRepository.save(stock);
         }
+
+        notificationService.createArticleAddedNotification(saved, saved.getEntreprise());
 
         return saved;
     }
