@@ -1,4 +1,4 @@
-<div class="sidebar" id="sidebar" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')">
+<div class="sidebar" id="sidebar" (mouseenter)="miniSideBarMouseHover('over')" (mouseleave)="miniSideBarMouseHover('out')">
   <div class="sidebar-inner slimscroll">
     <div id="sidebar-menu" class="sidebar-menu">
       <ul>
@@ -10,9 +10,9 @@
           <ul>
             @for (menu of mainTittle?.menu; track menu) {
               @if (menu?.hasSubRoute === false) {
-                <li routerLinkActive="active" class="nav-item">
+                <li class="nav-item">
                   <a class="nav-link" [routerLink]="menu?.route" routerLinkActive="active"
-                    [routerLinkActiveOptions]="{exact: false}">
+                    [routerLinkActiveOptions]="{ exact: true }">
                     <span class="nav-icon-wrap">
                       <i class="feather" [class]="'icon-' + menu.icon"></i>
                     </span>
@@ -36,7 +36,7 @@
                   <ul [ngClass]="menu.showSubRoute === true ? 'd-block' : 'd-none'" class="submenu-list">
                     @for (subMenus of menu.subMenus; track subMenus) {
                       <li class="submenu-item">
-                        <a [routerLink]="subMenus.route" routerLinkActive="active" class="submenu-link">
+                        <a [routerLink]="subMenus.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="submenu-link">
                           <span class="submenu-dot"></span>
                           <span>{{ subMenus.menuValue }}</span>
                         </a>
@@ -62,7 +62,7 @@
                     @for (subMenus of menu.subMenus; track subMenus) {
                       @if (subMenus.customSubmenuTwo === false) {
                         <li class="submenu-item">
-                          <a [routerLink]="subMenus.route" routerLinkActive="active" class="submenu-link">
+                          <a [routerLink]="subMenus.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="submenu-link">
                             <span class="submenu-dot"></span>
                             <span>{{ subMenus.menuValue }}</span>
                           </a>
@@ -82,7 +82,7 @@
                           <ul [ngClass]="openSubmenuOneItem === subMenus ? 'd-block' : 'd-none'" class="submenu-list">
                             @for (subMenuTwo of subMenus.subMenusTwo; track subMenuTwo) {
                               <li class="submenu-item">
-                                <a [routerLink]="subMenuTwo.route" routerLinkActive="active" class="submenu-link">
+                                <a [routerLink]="subMenuTwo.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="submenu-link">
                                   <span class="submenu-dot"></span>
                                   <span>{{ subMenuTwo.menuValue }}</span>
                                 </a>
