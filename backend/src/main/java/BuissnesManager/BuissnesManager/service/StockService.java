@@ -44,6 +44,9 @@ public class StockService {
         if (dto.getArticleAchatId() != null) {
             Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé: " + dto.getArticleAchatId()));
+            if (articleAchat.getEntreprise() == null) {
+                throw new RuntimeException("Impossible de créer un stock: l'article n'est lié à aucune entreprise");
+            }
             stock.setArticleAchat(articleAchat);
             stock.setEntreprise(articleAchat.getEntreprise());
         }
@@ -88,6 +91,9 @@ public class StockService {
         if (dto.getArticleAchatId() != null) {
             Article articleAchat = articleRepository.findById(dto.getArticleAchatId())
                     .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé"));
+            if (articleAchat.getEntreprise() == null) {
+                throw new RuntimeException("Impossible de mettre à jour le stock: l'article n'est lié à aucune entreprise");
+            }
             stock.setArticleAchat(articleAchat);
             stock.setEntreprise(articleAchat.getEntreprise());
         }
