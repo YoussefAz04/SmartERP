@@ -2173,3 +2173,143 @@ body .mini-sidebar .sidebar .sidebar-menu>ul>li.submenu-open ul li a {
     margin-right: 0;
   }
 }
+
+// ============================================
+// FINAL UI POLISH (GLOBAL)
+// ============================================
+:root {
+  --ui-bg-soft: #f6f8fc;
+  --ui-surface: #ffffff;
+  --ui-border: #e7ecf3;
+  --ui-text: #1f2937;
+  --ui-muted: #6b7280;
+  --ui-primary: #4f6ef7;
+  --ui-primary-rgb: 79, 110, 247;
+  --ui-shadow-rgb: 15, 23, 42;
+  --ui-focus-ring: rgba(var(--ui-primary-rgb), 0.14);
+  --ui-row-hover: rgba(var(--ui-primary-rgb), 0.04);
+  --ui-border-hover: #d7dfeb;
+  --ui-form-border: #d6dfec;
+  --ui-table-header-bg: #f8faff;
+  --ui-table-header-text: #374151;
+  --ui-table-header-border: #dce5f0;
+  --ui-shadow-sm: 0 2px 8px rgba(var(--ui-shadow-rgb), 0.04);
+  --ui-shadow-md: 0 10px 30px rgba(var(--ui-shadow-rgb), 0.08);
+  --ui-radius-md: 12px;
+  --ui-radius-lg: 16px;
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--ui-bg-soft, #f6f8fc);
+  color: var(--ui-text, #1f2937);
+}
+
+.page-wrapper .content {
+  padding: 20px 22px 26px;
+}
+
+:where(.card, .modern-card, .db-card, .modal-content) {
+  border: 1px solid var(--ui-border, #e7ecf3);
+  border-radius: var(--ui-radius-lg, 16px);
+  box-shadow: var(--ui-shadow-sm);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+:where(.card, .modern-card, .db-card):hover {
+  border-color: var(--ui-border-hover);
+  box-shadow: var(--ui-shadow-md);
+}
+
+:where(.page-header, .modern-page-header, .db-header) {
+  margin-bottom: 18px;
+}
+
+:where(.page-header h1, .modern-page-header h1, .db-header__title) {
+  letter-spacing: -0.01em;
+}
+
+:where(input.form-control, select.form-control, textarea.form-control, .search-input, .filter-select) {
+  border-radius: var(--ui-radius-md, 12px);
+  border-color: var(--ui-form-border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+:where(input.form-control, select.form-control, textarea.form-control, .search-input, .filter-select):focus {
+  border-color: var(--ui-primary);
+  box-shadow: 0 0 0 3px var(--ui-focus-ring);
+}
+
+mat-form-field .mdc-text-field--outlined .mdc-notched-outline__leading,
+mat-form-field .mdc-text-field--outlined .mdc-notched-outline__trailing,
+mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
+  border-color: var(--ui-form-border);
+}
+
+:where(.btn, .btn-submit, .btn-cancel, .btn-header-action):not(.btn-action):not(.btn-icon):not(.icon-btn) {
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+:where(.btn, .btn-submit, .btn-cancel, .btn-header-action):not(.btn-action):not(.btn-icon):not(.icon-btn):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(var(--ui-shadow-rgb), 0.12);
+}
+
+:where(.modern-table, .table) thead th {
+  background: var(--ui-table-header-bg);
+  color: var(--ui-table-header-text);
+  font-weight: 600;
+  border-bottom-color: var(--ui-table-header-border);
+}
+
+:where(.modern-table, .table) tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+:where(.modern-table, .table) tbody tr:hover {
+  background: var(--ui-row-hover);
+}
+
+.main-wrapper.dark,
+.dark {
+  --ui-bg-soft: #141432;
+  --ui-surface: #1d1d42;
+  --ui-border: #2f3557;
+  --ui-text: #e5e7eb;
+  --ui-muted: #a0aec0;
+  --ui-primary-rgb: 99, 102, 241;
+  --ui-shadow-rgb: 7, 10, 24;
+  --ui-focus-ring: rgba(var(--ui-primary-rgb), 0.2);
+  --ui-row-hover: rgba(var(--ui-primary-rgb), 0.12);
+  --ui-border-hover: #3a4168;
+  --ui-form-border: #384069;
+  --ui-table-header-bg: rgba(47, 53, 87, 0.45);
+  --ui-table-header-text: #dce3f1;
+  --ui-table-header-border: #384069;
+}
+
+.dark .page-wrapper .content {
+  background: transparent;
+}
+
+.dark :where(.card, .modern-card, .db-card, .modal-content) {
+  border-color: var(--ui-border);
+  box-shadow: 0 8px 24px rgba(var(--ui-shadow-rgb), 0.35);
+}
+
+.dark :where(.modern-table, .table) tbody tr:hover {
+  background: var(--ui-row-hover);
+}
+
+@media (max-width: 991.98px) {
+  .page-wrapper .content {
+    padding: 16px 14px 22px;
+  }
+}
