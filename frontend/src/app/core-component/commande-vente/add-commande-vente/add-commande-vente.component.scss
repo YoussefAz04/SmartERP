@@ -71,23 +71,23 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
     position: relative;
     z-index: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 24px 28px;
+    padding: 32px 28px 28px;
   }
 
-  .header-left {
+  .header-center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
+    text-align: center;
+    gap: 8px;
   }
 
   .header-icon-wrap {
-    width: 52px;
-    height: 52px;
-    border-radius: $radius;
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-lg;
     background: rgba(255,255,255,.2);
     border: 2px solid rgba(255,255,255,.35);
     display: flex;
@@ -97,14 +97,14 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
     flex-shrink: 0;
     animation: iconPulse 3s ease-in-out infinite;
 
-    i { font-size: 22px; }
+    i { font-size: 24px; }
   }
 
   .page-title {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #fff;
-    margin: 0 0 4px;
+    margin: 0;
     letter-spacing: -.02em;
   }
 
@@ -112,9 +112,13 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
     font-size: .85rem;
     color: rgba(255,255,255,.75);
     margin: 0;
+    max-width: 400px;
   }
 
   .btn-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -129,6 +133,7 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
     transition: $transition;
     backdrop-filter: blur(4px);
     font-family: inherit;
+    z-index: 2;
 
     &:hover {
       background: rgba(255,255,255,.25);

@@ -3,19 +3,17 @@
   <div class="page-header">
     <div class="header-bg-accent"></div>
     <div class="header-inner">
-      <div class="header-left">
-        <div class="header-icon-wrap">
-          <i class="feather icon-shopping-bag"></i>
-        </div>
-        <div>
-          <h1 class="page-title">{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande Vente</h1>
-          <p class="page-subtitle">{{ isEditMode ? 'Modifier la commande vente existante' : 'Créer une nouvelle commande vente client' }}</p>
-        </div>
-      </div>
       <button type="button" class="btn-back" (click)="onCancel()">
         <i class="feather icon-arrow-left"></i>
         Retour
       </button>
+      <div class="header-center">
+        <div class="header-icon-wrap">
+          <i class="feather icon-shopping-bag"></i>
+        </div>
+        <h1 class="page-title">{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Commande Vente</h1>
+        <p class="page-subtitle">{{ isEditMode ? 'Modifier la commande vente existante' : 'Créer une nouvelle commande vente client' }}</p>
+      </div>
     </div>
   </div>
 
