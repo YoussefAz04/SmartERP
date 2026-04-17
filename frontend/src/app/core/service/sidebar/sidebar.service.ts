@@ -253,9 +253,17 @@ generateSidebarData(modules: ModuleTittle[]) {
           return true;
         });
       } else {
-        // EMPLOYEE: show only the 4 allowed sections (Articles Achat, Articles Vente, Clients, Fournisseur)
-        // Filter by section title keywords rather than by DB permission IDs (which may be unset)
-        const employeeAllowedSectionKeywords = ['article achat', 'article vente', 'client', 'fournisseur'];
+        // EMPLOYEE: show allowed sections (Articles Achat/Vente view-only, Clients,
+        // Fournisseurs, Stock, Commandes Achat/Vente, Factures Achat/Vente, Entreprise).
+        // Filter by section title keywords rather than by DB permission IDs (which may be unset).
+        const employeeAllowedSectionKeywords = [
+          'article achat', 'article vente',
+          'client', 'fournisseur',
+          'stock',
+          'achat', 'vente',
+          'comptabilite', 'facture',
+          'entreprise',
+        ];
         const sectionTitle = normalize(moduleTitle.moduleTittle ?? '');
         const isSectionAllowed = employeeAllowedSectionKeywords.some(kw => sectionTitle.includes(kw));
 

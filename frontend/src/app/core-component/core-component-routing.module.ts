@@ -89,7 +89,7 @@ const routes: Routes = [
       }, {
         path: 'facture',
         canActivate: [RoleGuard],
-        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
         loadChildren: () =>
           import('./facture/facture.module').then(
             (m) => m.FactureModule
@@ -152,7 +152,7 @@ const routes: Routes = [
       {
         path: 'stock',
         canActivate: [RoleGuard],
-        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
         loadChildren: () =>
           import('./stock/stock.module').then((m) => m.StockModule),
       },

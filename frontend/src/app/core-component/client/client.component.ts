@@ -152,12 +152,12 @@ export class ClientComponent implements OnInit, AfterViewInit {
         const isEmployee = roles.includes('EMPLOYEE');
         const canByRole = isSuperAdmin || isAdmin;
 
-        // EMPLOYEE always has read-only access regardless of DB permissions
+        // EMPLOYEE can create clients but cannot edit or delete
         if (isEmployee && !canByRole) {
-          this.canCreateClient = false;
+          this.canCreateClient = true;
           this.canEditClient = false;
           this.canDeleteClient = false;
-          this.permissionClient = { create: false, view: true, update: false, delete: false, moduleTitle: 'gestion de Client' } as PermissionDto;
+          this.permissionClient = { create: true, view: true, update: false, delete: false, moduleTitle: 'gestion de Client' } as PermissionDto;
           this.cdr.detectChanges();
           return;
         }
