@@ -80,12 +80,10 @@ export class SidebarOneComponent implements OnInit {
     this.page = splitVal[2];
   }
 
-  public miniSideBarMouseHover(position: string): void {
-    const shouldExpand = position === 'over';
-    if (this.isHoverExpanded === shouldExpand) {
+  public miniSideBarMouseHover(shouldExpand: boolean): void {
+    if (this.sidebar.expandSideBar.value === shouldExpand) {
       return;
     }
-    this.isHoverExpanded = shouldExpand;
     this.sidebar.expandSideBar.next(shouldExpand);
   }
 
@@ -107,7 +105,6 @@ export class SidebarOneComponent implements OnInit {
   multiLevel1 = false;
   multiLevel2 = false;
   multiLevel3 = false;
-  private isHoverExpanded = false;
 
   openMenu(menu: MenuItem): void {
     if (this.openMenuItem === menu) {
