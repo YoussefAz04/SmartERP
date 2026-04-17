@@ -36,23 +36,39 @@ public class ForecastService {
         double[] currentValues = buildMonthArray(currentYearData);
         double[] prevValues = buildMonthArray(prevYearData);
 
-        // Combine both years for historical series
+        boolean hasPrevYear = false;
+        for (double v : prevValues) if (v > 0) { hasPrevYear = true; break; }
+
+        // Combine both years for historical series (skip the empty prev-year block when
+        // there's no history yet — otherwise the 12 leading zeros bias exponential
+        // smoothing toward zero and the forecast collapses to a flat line).
         List<Double> historicalSeries = new ArrayList<>();
-        for (double v : prevValues) historicalSeries.add(v);
+        if (hasPrevYear) {
+            for (double v : prevValues) historicalSeries.add(v);
+        }
         for (double v : currentValues) historicalSeries.add(v);
 
         // Apply exponential smoothing to generate smoothed series
         List<Double> smoothed = exponentialSmoothing(historicalSeries, ALPHA);
 
+        // Precompute a linear trend on the observed (non-zero tail of the) current year
+        // so that when no prev-year data is available we can still project forward
+        // instead of repeating the last smoothed value for six months.
+        double[] trend = computeLinearTrend(currentValues, currentMonth);
+        double trendSlope = trend[0];
+        double trendIntercept = trend[1];
+        int observedMonths = (int) trend[2];
+
         // Build forecast points (historical + future 6 months)
         List<ForecastDto.ForecastPointDto> forecastPoints = new ArrayList<>();
 
         // Historical points (current year only, up to current month)
+        int historyOffset = hasPrevYear ? 12 : 0;
         for (int m = 1; m <= Math.min(currentMonth, 12); m++) {
             double actual = currentValues[m - 1];
-            // Smoothed index with prev-year offset; fall back gracefully if data is sparse
-            int smoothedIdx = 11 + m;
-            double smoothedVal = smoothedIdx < smoothed.size() ? smoothed.get(smoothedIdx) : actual;
+            int smoothedIdx = historyOffset + m - 1;
+            double smoothedVal = smoothedIdx >= 0 && smoothedIdx < smoothed.size()
+                ? smoothed.get(smoothedIdx) : actual;
             forecastPoints.add(new ForecastDto.ForecastPointDto(
                 MONTH_NAMES_FR[m - 1], actual, smoothedVal,
                 smoothedVal * 1.15, smoothedVal * 0.85
@@ -64,7 +80,18 @@ public class ForecastService {
         double stdDev = computeStdDev(historicalSeries);
         for (int i = 1; i <= 6; i++) {
             int futureMonth = (currentMonth + i - 1) % 12;
-            double forecastValue = lastSmoothed * (1 + getSeasonalFactor(futureMonth, prevValues));
+            double forecastValue;
+            if (hasPrevYear) {
+                // Seasonal scaling from previous year
+                forecastValue = lastSmoothed * (1 + getSeasonalFactor(futureMonth, prevValues));
+            } else if (observedMonths >= 2 && trendSlope != 0.0) {
+                // No prior year – project the fitted trend line forward
+                double x = currentMonth + i; // 1-indexed month position
+                forecastValue = trendIntercept + trendSlope * x;
+            } else {
+                // Fallback: repeat the last smoothed value
+                forecastValue = lastSmoothed;
+            }
             forecastValue = Math.max(0, forecastValue);
             forecastPoints.add(new ForecastDto.ForecastPointDto(
                 MONTH_NAMES_FR[futureMonth] + "+", null, forecastValue,
@@ -72,8 +99,9 @@ public class ForecastService {
             ));
         }
 
-        // Compute seasonality indices
-        List<ForecastDto.SeasonalityDto> seasonality = computeSeasonality(prevValues, currentValues);
+        // Compute seasonality indices (prefer prev year, fall back to current year)
+        List<ForecastDto.SeasonalityDto> seasonality = computeSeasonality(
+                hasPrevYear ? prevValues : currentValues, currentValues);
 
         // Summary forecasts
         double predictedNextMonth = forecastPoints.size() > currentMonth
@@ -88,9 +116,12 @@ public class ForecastService {
             .mapToDouble(p -> p.getForecast() != null ? p.getForecast() : 0.0)
             .sum();
 
-        // Confidence score based on data availability
+        // Confidence score: blend data-density with in-sample fit quality so a
+        // steady series scores higher than an erratic one, capped at 95%.
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
-        double confidence = Math.min(95, (nonZeroMonths / 24.0) * 100);
+        double density = Math.min(1.0, nonZeroMonths / 12.0);
+        double fit = computeInSampleFitScore(historicalSeries, smoothed);
+        double confidence = Math.min(95.0, (0.6 * density + 0.4 * fit) * 100.0);
 
         ForecastDto dto = new ForecastDto();
         dto.setForecastPoints(forecastPoints);
@@ -98,10 +129,59 @@ public class ForecastService {
         dto.setPredictedNext3Months(Math.round(predictedNext3Months * 100.0) / 100.0);
         dto.setPredictedNext6Months(Math.round(predictedNext6Months * 100.0) / 100.0);
         dto.setConfidenceScore(Math.round(confidence * 10.0) / 10.0);
-        dto.setMethodology("Lissage Exponentiel Simple (α=" + ALPHA + ")");
+        String method = hasPrevYear
+            ? "Lissage Exponentiel Simple (α=" + ALPHA + ") + Saisonnalité N-1"
+            : "Lissage Exponentiel + Régression Linéaire (données N uniquement)";
+        dto.setMethodology(method);
         dto.setSeasonality(seasonality);
 
         return dto;
+    }
+
+    /**
+     * Ordinary-least-squares linear regression over months that have real observations.
+     * Returns [slope, intercept, observedCount] with x = month index (1..currentMonth).
+     */
+    private double[] computeLinearTrend(double[] values, int currentMonth) {
+        int n = 0;
+        double sumX = 0, sumY = 0, sumXX = 0, sumXY = 0;
+        int limit = Math.min(currentMonth, values.length);
+        for (int m = 1; m <= limit; m++) {
+            double y = values[m - 1];
+            if (y <= 0) continue; // ignore empty months so the slope reflects active business
+            n++;
+            sumX += m;
+            sumY += y;
+            sumXX += (double) m * m;
+            sumXY += m * y;
+        }
+        if (n < 2) return new double[]{0.0, 0.0, n};
+        double denom = n * sumXX - sumX * sumX;
+        if (denom == 0.0) return new double[]{0.0, sumY / n, n};
+        double slope = (n * sumXY - sumX * sumY) / denom;
+        double intercept = (sumY - slope * sumX) / n;
+        return new double[]{slope, intercept, n};
+    }
+
+    /**
+     * Normalised in-sample fit score in [0, 1] based on MAPE of the smoothed series
+     * against the historical actuals (only non-zero observations count).
+     */
+    private double computeInSampleFitScore(List<Double> actuals, List<Double> fitted) {
+        if (actuals.isEmpty() || fitted.isEmpty()) return 0.0;
+        double totalErr = 0.0;
+        int n = 0;
+        int size = Math.min(actuals.size(), fitted.size());
+        for (int i = 0; i < size; i++) {
+            double a = actuals.get(i);
+            if (a <= 0) continue;
+            double f = fitted.get(i);
+            totalErr += Math.min(1.0, Math.abs(a - f) / a);
+            n++;
+        }
+        if (n == 0) return 0.0;
+        double mape = totalErr / n;
+        return Math.max(0.0, 1.0 - mape);
     }
 
     private double[] buildMonthArray(List<Object[]> rawData) {

@@ -88,29 +88,56 @@ public class RecommendationService {
             ));
         }
 
-        // 4. Purchase optimization
+        // 4. Purchase optimization – use true gross margin (sales - COGS) so that
+        //    inventory build-up isn't mistaken for a loss, and factor in the
+        //    realized margin this year when sales history is substantial.
         Double totalPurchases = commandeAchatRepository.getTotalPurchases(entrepriseId);
-        if (totalSales != null && totalPurchases != null && totalSales > 0 && totalPurchases > 0) {
-            double margin = ((totalSales - totalPurchases) / totalSales) * 100;
+        Double cogsAllTime = commandeVenteRepository.getCOGSInPeriod(
+                entrepriseId, LocalDate.of(1970, 1, 1), now);
+        double cogs = cogsAllTime != null ? cogsAllTime : 0.0;
+        if (totalSales != null && totalSales > 0 && cogs > 0) {
+            double margin = ((totalSales - cogs) / totalSales) * 100.0;
+            double marginRounded = Math.round(margin * 10) / 10.0;
             if (margin < 20.0) {
                 recommendations.add(new RecommendationDto(
                     "MARGE_FAIBLE",
                     "Amélioration de la Marge Commerciale",
-                    "Votre marge commerciale est de " + Math.round(margin * 10) / 10.0 + "%. Négociez de meilleures conditions avec vos fournisseurs ou réévaluez vos prix de vente.",
+                    "Votre marge commerciale brute est de " + marginRounded + "%. Négociez de meilleures conditions avec vos fournisseurs ou réévaluez vos prix de vente.",
                     "HAUTE",
                     "fa-percentage",
                     "Analyser Achats"
+                ));
+            } else if (margin < 35.0) {
+                recommendations.add(new RecommendationDto(
+                    "MARGE_CORRECTE",
+                    "Marge Commerciale Acceptable",
+                    "Votre marge commerciale brute de " + marginRounded + "% est correcte. Un objectif >35% sécuriserait davantage vos résultats.",
+                    "INFO",
+                    "fa-percentage",
+                    "Voir Détails"
                 ));
             } else {
                 recommendations.add(new RecommendationDto(
                     "BONNE_PERFORMANCE",
                     "Excellente Marge Commerciale",
-                    "Votre marge commerciale de " + Math.round(margin * 10) / 10.0 + "% est saine. Continuez à surveiller les coûts d'approvisionnement.",
+                    "Votre marge commerciale brute de " + marginRounded + "% est saine. Continuez à surveiller les coûts d'approvisionnement.",
                     "INFO",
                     "fa-thumbs-up",
                     "Voir Détails"
                 ));
             }
+        } else if (totalSales != null && totalPurchases != null && totalSales > 0 && totalPurchases > 0) {
+            // Fallback when we can't compute COGS (e.g. articles without prix_achat):
+            // at least surface a purchases-vs-sales ratio so the user has feedback.
+            double ratio = (totalPurchases / totalSales) * 100.0;
+            recommendations.add(new RecommendationDto(
+                "RATIO_ACHATS",
+                "Ratio Achats/Ventes",
+                "Vos achats représentent " + Math.round(ratio * 10) / 10.0 + "% de vos ventes. Renseignez le prix d'achat de vos articles pour obtenir une marge commerciale précise.",
+                "INFO",
+                "fa-balance-scale",
+                "Voir Détails"
+            ));
         }
 
         // 5. Data-driven delivery quality recommendation
