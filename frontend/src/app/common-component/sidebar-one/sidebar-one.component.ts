@@ -80,12 +80,11 @@ export class SidebarOneComponent implements OnInit {
     this.page = splitVal[2];
   }
 
-  public miniSideBarMouseHover(position: string): void {
-    if (position == 'over') {
-      this.sidebar.expandSideBar.next(true);
-    } else {
-      this.sidebar.expandSideBar.next(false);
+  public miniSideBarMouseHover(shouldExpand: boolean): void {
+    if (this.sidebar.expandSideBar.value === shouldExpand) {
+      return;
     }
+    this.sidebar.expandSideBar.next(shouldExpand);
   }
 
   expandSubMenus(menu: MenuItem): void {
