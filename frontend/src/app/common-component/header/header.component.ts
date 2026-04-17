@@ -260,7 +260,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private getCurrentEnterpriseId(): number | null {
     const currentUser = this.getCurrentUser();
-    const fromUser = currentUser?.entrepriseId ?? currentUser?.enterpriseId ?? currentUser?.entreprise?.id;
+    const fromUser = currentUser?.entrepriseId ?? currentUser?.entreprise?.id;
     if (fromUser !== null && fromUser !== undefined && !Number.isNaN(Number(fromUser))) {
       return Number(fromUser);
     }

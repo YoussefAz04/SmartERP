@@ -30,8 +30,10 @@ export class ErrorPagesComponent {
     this.settings.themeMode.subscribe((res: string) => {
       if (res == 'dark_mode') {
         this.renderer.addClass(document.body, 'dark-select');
+        this.renderer.addClass(document.body, 'dark-mode');
       } else {
         this.renderer.removeClass(document.body, 'dark-select');
+        this.renderer.removeClass(document.body, 'dark-mode');
       }
     });
     this.getRoutes(this.Router);
