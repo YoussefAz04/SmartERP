@@ -37,7 +37,23 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
     @Query("SELECT c.client.nom, COALESCE(SUM(c.montantTTC), 0), COUNT(c) FROM CommandeVente c WHERE c.entreprise.id = :entrepriseId AND c.client IS NOT NULL GROUP BY c.client.id, c.client.nom ORDER BY SUM(c.montantTTC) DESC")
     List<Object[]> getTopCustomers(@Param("entrepriseId") Long entrepriseId);
 
-    @Query("SELECT lc.articleVente.nom, COALESCE(SUM(lc.quantite), 0), COALESCE(SUM(lc.montantTTC), 0) FROM LigneCommandeVente lc WHERE lc.commandeVente.entreprise.id = :entrepriseId AND lc.articleVente IS NOT NULL GROUP BY lc.articleVente.id, lc.articleVente.nom ORDER BY SUM(lc.quantite) DESC")
+    /**
+     * Top-selling products aggregated by ArticleVente.
+     *
+     * The seed data only populates the underlying Article (articleAchat) with a name –
+     * ArticleVente.nom can legitimately be NULL for records created before the entity
+     * gained a `nom` column. We therefore COALESCE over articleVente.nom, the linked
+     * articleAchat.nom, and finally a synthetic fallback so every product row gets a
+     * distinguishable, human-readable label in the AI dashboard.
+     */
+    @Query("SELECT COALESCE(NULLIF(lc.articleVente.nom, ''), NULLIF(lc.articleVente.articleAchat.nom, ''), CONCAT('Produit #', lc.articleVente.id)), " +
+           "COALESCE(SUM(lc.quantite), 0), " +
+           "COALESCE(SUM(lc.montantTTC), 0) " +
+           "FROM LigneCommandeVente lc " +
+           "WHERE lc.commandeVente.entreprise.id = :entrepriseId " +
+           "AND lc.articleVente IS NOT NULL " +
+           "GROUP BY lc.articleVente.id, lc.articleVente.nom, lc.articleVente.articleAchat.nom " +
+           "ORDER BY SUM(lc.quantite) DESC")
     List<Object[]> getTopProducts(@Param("entrepriseId") Long entrepriseId);
 
     @Query("SELECT COUNT(c) FROM CommandeVente c WHERE c.entreprise.id = :entrepriseId AND c.dateCommande BETWEEN :debut AND :fin")
@@ -60,8 +76,11 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
     /**
      * Revenue, quantity sold and line count grouped by real article category
      * (joined through articleVente -> articleAchat -> categorieArticle).
+     *
+     * The seed inserted categorie_article rows against a legacy `nom` column so
+     * `libelle` may be NULL – fall back to `code` or a default label.
      */
-    @Query("SELECT COALESCE(c.libelle, 'Non catégorisé'), " +
+    @Query("SELECT COALESCE(NULLIF(c.libelle, ''), NULLIF(c.code, ''), 'Non catégorisé'), " +
            "COALESCE(SUM(lc.montantTTC), 0), " +
            "COALESCE(SUM(lc.quantite), 0) " +
            "FROM LigneCommandeVente lc " +
@@ -69,7 +88,7 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
            "LEFT JOIN av.articleAchat aa " +
            "LEFT JOIN aa.categorieArticle c " +
            "WHERE lc.commandeVente.entreprise.id = :entrepriseId " +
-           "GROUP BY c.libelle " +
+           "GROUP BY c.id, c.libelle, c.code " +
            "ORDER BY SUM(lc.montantTTC) DESC")
     List<Object[]> getCategoryPerformance(@Param("entrepriseId") Long entrepriseId);
 }

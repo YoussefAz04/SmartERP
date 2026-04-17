@@ -81,7 +81,16 @@ public class AiDashboardService {
 
         Long totalOrders = commandeVenteRepository.getTotalSalesOrders(entrepriseId);
         kpi.setTotalOrders(totalOrders != null ? totalOrders : 0L);
-        kpi.setOrderGrowth(0.0); // Simplified – would need date-filtered counts
+
+        // Order growth: # of orders this year vs last year
+        Long ordersCurrentYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startCurrentYear, endCurrentYear);
+        Long ordersPrevYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startPrevYear, endPrevYear);
+        long ocy = ordersCurrentYear != null ? ordersCurrentYear : 0L;
+        long opy = ordersPrevYear != null ? ordersPrevYear : 0L;
+        double orderGrowth = opy > 0
+            ? Math.round(((ocy - opy) / (double) opy) * 1000.0) / 10.0
+            : 0.0;
+        kpi.setOrderGrowth(orderGrowth);
 
         Long totalSKUs = stockRepository.getTotalSKUs(entrepriseId);
         kpi.setTotalProducts(totalSKUs != null ? totalSKUs : 0L);
@@ -95,8 +104,18 @@ public class AiDashboardService {
             kpi.setAvgOrderValue(0.0);
         }
 
-        // Profit margin estimate (revenue vs purchases proxy)
-        kpi.setProfitMargin(0.0); // Populated in recommendations service context
+        // Profit margin: (revenue - COGS) / revenue. Uses the same "cost of goods sold"
+        // logic as the YTD gross-margin comparison so we don't treat inventory build-up
+        // as a loss. All-time window so it matches totalRevenue.
+        Double cogsAllTime = commandeVenteRepository.getCOGSInPeriod(
+                entrepriseId, LocalDate.of(1970, 1, 1), LocalDate.now());
+        cogsAllTime = cogsAllTime != null ? cogsAllTime : 0.0;
+        if (totalRevenue > 0) {
+            double profitMargin = ((totalRevenue - cogsAllTime) / totalRevenue) * 100.0;
+            kpi.setProfitMargin(Math.round(profitMargin * 10.0) / 10.0);
+        } else {
+            kpi.setProfitMargin(0.0);
+        }
 
         return kpi;
     }
