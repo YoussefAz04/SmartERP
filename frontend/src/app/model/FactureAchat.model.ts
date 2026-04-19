@@ -27,4 +27,15 @@ export interface FactureAchat {
   cheminFichier?: string;
 
   detaisFactureAchat?: DetaisFactureAchat;
+
+  fournisseur?: {
+    id?: number;
+    nom?: string;
+  };
+
+  commandeAchat?: {
+    id?: number;
+    reference?: string;
+    statut?: string;
+  };
 }

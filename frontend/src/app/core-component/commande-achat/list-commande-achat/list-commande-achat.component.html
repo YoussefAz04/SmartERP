@@ -116,32 +116,40 @@
           </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
-              <!-- Validate button - Show if not in final state -->
-              <button *ngIf="commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE'"
+              <!-- Validate button - Show if EN_ATTENTE (not yet confirmed) -->
+              <button *ngIf="commande.statut === 'EN_ATTENTE'"
                       class="btn-action validate"
                       (click)="validerCommande(commande.id!)"
-                      title="Valider et générer facture">
+                      title="Confirmer et générer facture">
                 <i class="feather icon-check-circle"></i>
               </button>
 
+              <!-- Receive button - Show if CONFIRMEE (confirmed but not yet received) -->
+              <button *ngIf="commande.statut === 'CONFIRMEE'"
+                      class="btn-action receive"
+                      (click)="recevoirCommande(commande.id!)"
+                      title="Marquer comme reçue (met à jour le stock)">
+                <i class="feather icon-package"></i>
+              </button>
+
+              <!-- View Facture button - Show if confirmed or received -->
+              <button *ngIf="commande.statut === 'CONFIRMEE' || commande.statut === 'RECUE'"
+                      class="btn-action invoice"
+                      (click)="viewFacture(commande.id!)"
+                      title="Voir la facture générée">
+                <i class="feather icon-file-text"></i>
+              </button>
+
               <!-- Edit button - Show if not in final state -->
-              <button *ngIf="commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE'"
+              <button *ngIf="commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE' && commande.statut !== 'CONFIRMEE'"
                       class="btn-action edit"
                       (click)="editCommande(commande.id!)"
                       title="Modifier">
                 <i class="feather icon-edit-2"></i>
               </button>
 
-              <!-- Set to En Attente button - Show always except if already EN_ATTENTE -->
-              <button *ngIf="commande.statut !== 'EN_ATTENTE'"
-                      class="btn-action pending"
-                      (click)="setEnAttente(commande.id!)"
-                      title="Passer à En Attente">
-                <i class="feather icon-clock"></i>
-              </button>
-
-              <!-- Cancel button - Show if not already cancelled -->
-              <button *ngIf="commande.statut !== 'ANNULEE'"
+              <!-- Cancel button - Show if not already cancelled or in final state -->
+              <button *ngIf="commande.statut !== 'ANNULEE' && commande.statut !== 'RECUE'"
                       class="btn-action cancel"
                       (click)="annulerCommande(commande.id!)"
                       title="Annuler la commande">

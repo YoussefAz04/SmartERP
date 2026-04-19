@@ -30,4 +30,10 @@ export interface FactureVente {
   detaisFactureDeVente?: DetaisFactureVente;
 
   client ?: Client ;
+
+  commandeVente?: {
+    id?: number;
+    reference?: string;
+    statut?: string;
+  };
 }

@@ -164,6 +164,7 @@
           </th>
           <th>Mode Paiement</th>
           <th class="status-col">Statut</th>
+          <th>Commande</th>
           <th (click)="onSort('client')" class="sortable" title="Cliquer pour trier">
             Client
             <i class="feather icon-chevron-up" 
@@ -234,6 +235,16 @@
               </div>
             </div>
           </td>
+          <td class="commande-cell">
+            <a *ngIf="facture.commandeVente?.reference"
+               class="commande-link"
+               [routerLink]="['/commande-vente/list']"
+               [title]="'Voir la commande ' + facture.commandeVente?.reference">
+              <i class="feather icon-shopping-bag"></i>
+              {{ facture.commandeVente?.reference }}
+            </a>
+            <span *ngIf="!facture.commandeVente?.reference" class="no-commande">—</span>
+          </td>
           <td class="client-cell">
             <span class="client-name">
               <i class="feather icon-user"></i>
@@ -282,7 +293,7 @@
           </td>
         </tr>
         <tr *ngIf="filteredList.length === 0" class="empty-row">
-          <td [attr.colspan]="8">
+          <td [attr.colspan]="9">
             <div class="empty-message">
               <div class="empty-icon-wrapper">
                 <i class="feather icon-inbox"></i>

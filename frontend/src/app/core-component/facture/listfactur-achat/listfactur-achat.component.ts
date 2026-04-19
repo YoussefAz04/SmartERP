@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import {FactureAchat} from "../../../model/FactureAchat.model";
 import {FactureService} from "../../../core/service/facture/facture.service";
 import {MatTooltip} from "@angular/material/tooltip";
 import {DecimalPipe, NgForOf, NgIf, CommonModule} from "@angular/common";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {ResponseDto} from "../../../model/reponseDto.model";
 import {PermissionDto} from "../../../model/permissionDto.model";
 import {FormsModule} from "@angular/forms";
@@ -20,7 +20,8 @@ import Swal from 'sweetalert2';
     NgForOf,
     NgIf,
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './listfactur-achat.component.html',
   styleUrl: './listfactur-achat.component.scss'
@@ -386,6 +387,14 @@ export class ListfacturAchatComponent implements OnInit{
 
   closeStatusMenu() {
     this.statusMenuOpen = null;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.status-cell')) {
+      this.closeStatusMenu();
+    }
   }
 
   getUserAuthData(){

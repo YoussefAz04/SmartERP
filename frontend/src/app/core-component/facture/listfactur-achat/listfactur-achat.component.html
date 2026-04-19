@@ -147,6 +147,7 @@
           <th>Montant TVA</th>
           <th>Mode Paiement</th>
           <th class="status-col">Statut</th>
+          <th>Commande</th>
           <th class="actions-col">Actions</th>
         </tr>
       </thead>
@@ -209,6 +210,16 @@
               </div>
             </div>
           </td>
+          <td class="commande-cell">
+            <a *ngIf="facture.commandeAchat?.reference"
+               class="commande-link"
+               [routerLink]="['/commande-achat/list']"
+               [title]="'Voir la commande ' + facture.commandeAchat?.reference">
+              <i class="feather icon-shopping-cart"></i>
+              {{ facture.commandeAchat?.reference }}
+            </a>
+            <span *ngIf="!facture.commandeAchat?.reference" class="no-commande">—</span>
+          </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
               <button class="btn-action view" 
@@ -250,7 +261,7 @@
           </td>
         </tr>
         <tr *ngIf="filteredList.length === 0" class="empty-row">
-          <td [attr.colspan]="9">
+          <td [attr.colspan]="10">
             <div class="empty-message">
               <div class="empty-icon-wrapper">
                 <i class="feather icon-inbox"></i>

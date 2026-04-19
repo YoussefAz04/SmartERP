@@ -116,30 +116,47 @@
           </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
+              <!-- Validate button - Show if BROUILLON or EN_ATTENTE -->
               <button *ngIf="canEditOrValidate(commande.statut)"
                       class="btn-action validate"
                       (click)="validerCommande(commande.id!)"
-                      title="Valider et générer facture">
+                      title="Confirmer et générer facture">
                 <i class="feather icon-check-circle"></i>
               </button>
+
+              <!-- Edit button - Show if not confirmed/delivered/cancelled -->
               <button *ngIf="canEditOrValidate(commande.statut)"
                       class="btn-action edit"
                       (click)="editCommande(commande.id!)"
                       title="Modifier">
                 <i class="feather icon-edit-2"></i>
               </button>
+
+              <!-- Deliver button - Show if CONFIRMEE -->
               <button *ngIf="canDeliver(commande.statut)"
                       class="btn-action deliver"
                       (click)="livrerCommande(commande.id!)"
-                      title="Livrer la commande">
+                      title="Livrer la commande (met à jour le stock)">
                 <i class="feather icon-truck"></i>
               </button>
+
+              <!-- View Facture button - Show if confirmed or delivered -->
+              <button *ngIf="commande.statut === 'CONFIRMEE' || commande.statut === 'LIVREE'"
+                      class="btn-action invoice"
+                      (click)="viewFacture(commande.id!)"
+                      title="Voir la facture générée">
+                <i class="feather icon-file-text"></i>
+              </button>
+
+              <!-- Cancel button -->
               <button *ngIf="canCancel(commande.statut)"
                       class="btn-action cancel"
                       (click)="annulerCommande(commande.id!)"
                       title="Annuler la commande">
                 <i class="feather icon-x-circle"></i>
               </button>
+
+              <!-- Delete button -->
               <button class="btn-action delete"
                       (click)="deleteCommande(commande.id!)"
                       title="Supprimer">

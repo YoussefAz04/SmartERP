@@ -187,4 +187,8 @@ export class ListCommandeVenteComponent implements OnInit {
     this.showFactureModal = false;
     this.lastGeneratedFacture = null;
   }
+
+  viewFacture(commandeId: number): void {
+    this.router.navigate(['/facture/listFactureVente']);
+  }
 }
