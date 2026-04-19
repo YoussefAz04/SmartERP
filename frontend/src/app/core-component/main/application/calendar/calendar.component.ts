@@ -23,6 +23,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {Validators} from "ngx-editor";
 import {ResponseDto} from "../../../../model/reponseDto.model";
 import {PermissionDto} from "../../../../model/permissionDto.model";
+import { NotificationService } from '../../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-calendar',
@@ -50,13 +51,11 @@ export class CalendarComponent implements OnInit, OnDestroy {
   };
    permissionEvenement!: PermissionDto;
 
-  constructor(
-    private evenementService: EvenementService,
+  constructor(private evenementService: EvenementService,
     private changeDetector: ChangeDetectorRef,
     private dialog: MatDialog,
     private fb: FormBuilder,
-
-  ) {}
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.initializeCalendar();
@@ -202,12 +201,14 @@ export class CalendarComponent implements OnInit, OnDestroy {
       ? `\nCatégorie: ${clickInfo.event.extendedProps['categoryTitle']}`
       : '';
 
-    if (confirm(`Supprimer l'événement '${clickInfo.event.title}' ?${categoryInfo}`)) {
-      const id = clickInfo.event.id;
-      if (id) {
-        this.deleteEvent(+id);
+    this.notification.confirm(`Supprimer l'événement '${clickInfo.event.title}' ?${categoryInfo}`).then(ok => {
+      if (ok) {
+        const id = clickInfo.event.id;
+        if (id) {
+          this.deleteEvent(+id);
+        }
       }
-    }
+    });
   }
 
   handleLoading(isLoading: boolean): void {
@@ -221,7 +222,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         catchError(error => {
           console.error('Erreur création événement:', error);
-          alert('Erreur lors de la création');
+          this.notification.error('Erreur lors de la création');
           return of(null);
         })
       )
@@ -236,7 +237,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         catchError(error => {
           console.error('Error deleting event:', error);
-          alert('Erreur lors de la suppression de l\'événement');
+          this.notification.error('Erreur lors de la suppression de l\'événement');
           return of(null);
         })
       )

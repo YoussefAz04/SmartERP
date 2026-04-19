@@ -8,6 +8,7 @@ import {FormsModule} from "@angular/forms";
 import {MatTooltip} from "@angular/material/tooltip";
 import {PermissionDto} from "../../model/permissionDto.model";
 import {ResponseDto} from "../../model/reponseDto.model";
+import { NotificationService } from '../../shared/notification/notification.service';
 
 
 @Component({
@@ -57,10 +58,9 @@ export class EntrepriseComponent implements OnInit{
 
   resetFilters(): void { this.searchTerm = ''; }
 
-  constructor(
-    private entrepriseService: EntrepriseService,
-    private router: Router
-  ) {}
+  constructor(private entrepriseService: EntrepriseService,
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.getUserAuthData();
@@ -157,22 +157,24 @@ export class EntrepriseComponent implements OnInit{
 
   deleteEntreprise(id: number | undefined): void {
     if (!id) {
-      alert("ID entreprise invalide");
+      this.notification.error("ID entreprise invalide");
       return;
     }
 
-    if (confirm("Voulez-vous vraiment supprimer cette entreprise ?")) {
-      this.entrepriseService.deleteEntreprise(id).subscribe({
-        next: () => {
-          alert("Entreprise supprimée avec succès !");
-          this.loadEntreprises();
-        },
-        error: (err) => {
-          console.error('❌ Error deleting entreprise:', err);
-          alert("Erreur : impossible de supprimer l'entreprise.");
-        }
-      });
-    }
+    this.notification.confirm("Voulez-vous vraiment supprimer cette entreprise ?").then(ok => {
+      if (ok) {
+        this.entrepriseService.deleteEntreprise(id).subscribe({
+          next: () => {
+            this.notification.success("Entreprise supprimée avec succès !");
+            this.loadEntreprises();
+          },
+          error: (err) => {
+            console.error('❌ Error deleting entreprise:', err);
+            this.notification.error("Erreur : impossible de supprimer l'entreprise.");
+          }
+        });
+      }
+    });
   }
 
   addEntreprise(): void {

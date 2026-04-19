@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ArticleAchatService } from '../../core/service/article-achat/article-achat.service';
 import { ArticleAchat } from '../../model/article-achat.model';
 import { ResponseDto } from '../../model/reponseDto.model';
+import { NotificationService } from '../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-article-achat',
@@ -34,11 +35,10 @@ export class ArticleAchatComponent implements OnInit {
   selectedIds: Set<number> = new Set();
   allSelected = false;
 
-  constructor(
-    private articleAchatService: ArticleAchatService,
+  constructor(private articleAchatService: ArticleAchatService,
     private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadRolePermissions();
@@ -222,35 +222,37 @@ export class ArticleAchatComponent implements OnInit {
 
   bulkDelete(): void {
     if (!this.selectedIds.size) return;
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${this.selectedIds.size} article(s)?`)) return;
+    this.notification.confirm(`Êtes-vous sûr de vouloir supprimer ${this.selectedIds.size} article(s)?`).then(ok => {
+      if (!ok) return;
 
-    const ids = [...this.selectedIds];
-    let completed = 0;
-    this.isLoading = true;
-    ids.forEach(id => {
-      this.articleAchatService.deleteArticleAchat(id).subscribe({
-        next: () => {
-          this.articleAchatList = this.articleAchatList.filter(a => a.id !== id);
-          this.selectedIds.delete(id);
-          completed++;
-          if (completed === ids.length) {
-            this.applyFilters();
-            this.isLoading = false;
-            alert(`✓ ${ids.length} article(s) supprimé(s) avec succès`);
+      const ids = [...this.selectedIds];
+      let completed = 0;
+      this.isLoading = true;
+      ids.forEach(id => {
+        this.articleAchatService.deleteArticleAchat(id).subscribe({
+          next: () => {
+            this.articleAchatList = this.articleAchatList.filter(a => a.id !== id);
+            this.selectedIds.delete(id);
+            completed++;
+            if (completed === ids.length) {
+              this.applyFilters();
+              this.isLoading = false;
+              this.notification.success(`✓ ${ids.length} article(s) supprimé(s) avec succès`);
+            }
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression:', err);
+            const message = err?.error && typeof err.error === 'string'
+              ? err.error
+              : 'Erreur lors de la suppression de l\'article ' + id;
+            this.notification.error('✗ ' + message);
+            completed++;
+            if (completed === ids.length) {
+              this.applyFilters();
+              this.isLoading = false;
+            }
           }
-        },
-        error: (err) => {
-          console.error('Erreur lors de la suppression:', err);
-          const message = err?.error && typeof err.error === 'string'
-            ? err.error
-            : 'Erreur lors de la suppression de l\'article ' + id;
-          alert('✗ ' + message);
-          completed++;
-          if (completed === ids.length) {
-            this.applyFilters();
-            this.isLoading = false;
-          }
-        }
+        });
       });
     });
   }
@@ -268,7 +270,7 @@ export class ArticleAchatComponent implements OnInit {
 
   deleteArticle(id: number | undefined): void {
     if (!id) return;
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet article?')) return;
+    this.notification.confirm('Êtes-vous sûr de vouloir supprimer cet article?').then(ok => { if (!ok) return;
 
     this.isLoading = true;
     this.articleAchatService.deleteArticleAchat(id).subscribe({
@@ -276,16 +278,17 @@ export class ArticleAchatComponent implements OnInit {
         this.articleAchatList = this.articleAchatList.filter(a => a.id !== id);
         this.applyFilters();
         this.isLoading = false;
-        alert('✓ Article supprimé avec succès');
+        this.notification.success('✓ Article supprimé avec succès');
       },
       error: (err) => {
         console.error('Erreur lors de la suppression:', err);
         const message = err?.error && typeof err.error === 'string'
           ? err.error
           : 'Erreur lors de la suppression de l\'article';
-        alert('✗ ' + message);
+        this.notification.error('✗ ' + message);
         this.isLoading = false;
       }
+      });
     });
   }
 

@@ -7,6 +7,7 @@ import { FormsModule } from "@angular/forms";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { catchError, finalize } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { NotificationService } from '../../shared/notification/notification.service';
 
 interface SelectedZone {
   id: string;
@@ -91,7 +92,8 @@ export class DocumentationComponent implements AfterViewInit {
   showResults = false;
   showFileUpload = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    private notification: NotificationService) {}
 
   ngAfterViewInit() {
     // Add keyboard event listener to document
@@ -111,7 +113,7 @@ export class DocumentationComponent implements AfterViewInit {
       this.clearAllZones();
       this.showFileUpload = false;
     } else {
-      alert('Veuillez sélectionner un fichier PDF valide.');
+      this.notification.warning('Veuillez sélectionner un fichier PDF valide.');
     }
   }
 
@@ -223,11 +225,13 @@ export class DocumentationComponent implements AfterViewInit {
   clearAllZones() {
     if (this.selectedZones.length === 0) return;
 
-    if (confirm('Êtes-vous sûr de vouloir supprimer toutes les zones ?')) {
-      this.selectedZones = [];
-      this.extractionResults = [];
-      this.showResults = false;
-    }
+    this.notification.confirm('Êtes-vous sûr de vouloir supprimer toutes les zones ?').then(ok => {
+      if (ok) {
+        this.selectedZones = [];
+        this.extractionResults = [];
+        this.showResults = false;
+      }
+    });
   }
 
   getZoneStyle(zone: SelectedZone) {
@@ -248,12 +252,12 @@ export class DocumentationComponent implements AfterViewInit {
   // Backend communication
   sendZonesToBackend() {
     if (!this.selectedPdfFile && !this.pdfSrc.startsWith('blob:')) {
-      alert('Veuillez d\'abord sélectionner un fichier PDF.');
+      this.notification.warning('Veuillez d\'abord sélectionner un fichier PDF.');
       return;
     }
 
     if (this.selectedZones.length === 0) {
-      alert('Veuillez d\'abord sélectionner au moins une zone.');
+      this.notification.warning('Veuillez d\'abord sélectionner au moins une zone.');
       return;
     }
 
@@ -296,7 +300,7 @@ export class DocumentationComponent implements AfterViewInit {
             errorMessage = 'Erreur serveur lors du traitement du PDF.';
           }
 
-          alert(errorMessage);
+          this.notification.error(errorMessage);
           return throwError(() => error);
         }),
         finalize(() => {
@@ -324,7 +328,7 @@ export class DocumentationComponent implements AfterViewInit {
       })
       .catch(error => {
         console.error('Erreur lors du chargement du PDF par défaut:', error);
-        alert('Erreur lors du chargement du fichier PDF.');
+        this.notification.error('Erreur lors du chargement du fichier PDF.');
         this.isProcessing = false;
       });
   }
@@ -439,7 +443,7 @@ export class DocumentationComponent implements AfterViewInit {
   // Export/Import functionality
   exportZones() {
     if (this.selectedZones.length === 0) {
-      alert('Aucune zone à exporter.');
+      this.notification.show('Aucune zone à exporter.');
       return;
     }
 
@@ -465,15 +469,15 @@ export class DocumentationComponent implements AfterViewInit {
             this.selectedZones = zones;
             console.log('Zones importées avec succès');
           } else {
-            alert('Format de fichier invalide.');
+            this.notification.error('Format de fichier invalide.');
           }
         } catch (error) {
-          alert('Erreur lors de la lecture du fichier JSON.');
+          this.notification.error('Erreur lors de la lecture du fichier JSON.');
         }
       };
       reader.readAsText(file);
     } else {
-      alert('Veuillez sélectionner un fichier JSON valide.');
+      this.notification.warning('Veuillez sélectionner un fichier JSON valide.');
     }
   }
 

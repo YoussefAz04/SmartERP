@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { Fournisseur } from '../../../model/fournisseur.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-edit-article-achat',
@@ -20,13 +21,12 @@ export class EditArticleAchatComponent implements OnInit {
   submitted = false;
   articleId!: number;
 
-  constructor(
-    private articleAchatService: ArticleAchatService,
+  constructor(private articleAchatService: ArticleAchatService,
     private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.articleId = Number(this.route.snapshot.paramMap.get('id'));
@@ -105,17 +105,17 @@ export class EditArticleAchatComponent implements OnInit {
       this.articleAchatService.updateArticleAchat(this.articleId, articleData).subscribe({
         next: () => {
           this.isLoading = false;
-          alert('✓ Article mis à jour avec succès!');
+          this.notification.success('✓ Article mis à jour avec succès!');
           this.router.navigate(['/article-achat/listArticleAchat']);
         },
         error: (err: any) => {
           this.isLoading = false;
           const errorMsg = err.error?.message || err.message || 'Impossible de mettre à jour l\'article';
-          alert('✗ Erreur: ' + errorMsg);
+          this.notification.error('✗ Erreur: ' + errorMsg);
         }
       });
     } else {
-      alert('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
     }
   }
 }

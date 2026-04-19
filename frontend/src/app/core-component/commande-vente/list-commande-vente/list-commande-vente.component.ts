@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommandeVenteService } from '../../../core/service/commande-vente/commande-vente.service';
 import { CommandeVente } from '../../../model/commande-vente.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-list-commande-vente',
@@ -24,10 +25,9 @@ export class ListCommandeVenteComponent implements OnInit {
 
   statuts = ['BROUILLON', 'EN_ATTENTE', 'CONFIRMEE', 'LIVREE', 'ANNULEE'];
 
-  constructor(
-    private commandeVenteService: CommandeVenteService,
-    private router: Router
-  ) {}
+  constructor(private commandeVenteService: CommandeVenteService,
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadCommandes();
@@ -69,68 +69,72 @@ export class ListCommandeVenteComponent implements OnInit {
   }
 
   validerCommande(id: number): void {
-    if (!confirm('Valider cette commande ? Une facture vente sera automatiquement générée.')) return;
+    this.notification.confirm('Valider cette commande ? Une facture vente sera automatiquement générée.').then(ok => { if (!ok) return;
     this.isLoading = true;
     this.commandeVenteService.validerCommande(id).subscribe({
       next: (facture) => {
         this.lastGeneratedFacture = facture;
         this.showFactureModal = true;
         this.loadCommandes();
-        alert('✅ Commande validée ! Facture vente générée : ' + facture.referance);
+        this.notification.success('✅ Commande validée ! Facture vente générée : ' + facture.referance);
       },
       error: (err) => {
         this.isLoading = false;
         console.error('❌ Erreur validation:', err);
         const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la validation';
-        alert('❌ Erreur lors de la validation:\n\n' + errorMessage);
+        this.notification.error('❌ Erreur lors de la validation:\n\n' + errorMessage);
       }
+      });
     });
   }
 
   livrerCommande(id: number): void {
-    if (!confirm('Marquer cette commande comme livrée ? Le stock sera automatiquement décrémenté.')) return;
+    this.notification.confirm('Marquer cette commande comme livrée ? Le stock sera automatiquement décrémenté.').then(ok => { if (!ok) return;
     this.isLoading = true;
     this.commandeVenteService.livrerCommande(id).subscribe({
       next: (bon) => {
         this.loadCommandes();
-        alert('✅ Commande livrée ! Bon de livraison créé : ' + bon.reference + '. Le stock a été mis à jour.');
+        this.notification.success('✅ Commande livrée ! Bon de livraison créé : ' + bon.reference + '. Le stock a été mis à jour.');
       },
       error: (err) => {
         this.isLoading = false;
         console.error('❌ Erreur livraison:', err);
         const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la livraison';
-        alert('❌ Erreur lors de la livraison:\n\n' + errorMessage);
+        this.notification.error('❌ Erreur lors de la livraison:\n\n' + errorMessage);
       }
+      });
     });
   }
 
   annulerCommande(id: number): void {
-    if (!confirm('Annuler cette commande ?')) return;
+    this.notification.confirm('Annuler cette commande ?').then(ok => { if (!ok) return;
     this.commandeVenteService.annulerCommande(id).subscribe({
       next: () => {
         this.loadCommandes();
-        alert('✅ Commande annulée.');
+        this.notification.success('✅ Commande annulée.');
       },
       error: (err) => {
         console.error('❌ Erreur annulation:', err);
         const errorMessage = err?.error?.message || 'Erreur lors de l\'annulation';
-        alert('❌ ' + errorMessage);
+        this.notification.error('❌ ' + errorMessage);
       }
+      });
     });
   }
 
   deleteCommande(id: number): void {
-    if (!confirm('Supprimer cette commande ?')) return;
+    this.notification.confirm('Supprimer cette commande ?').then(ok => { if (!ok) return;
     this.commandeVenteService.deleteCommande(id).subscribe({
       next: () => {
         this.loadCommandes();
-        alert('✅ Commande supprimée.');
+        this.notification.success('✅ Commande supprimée.');
       },
       error: (err) => {
         console.error('❌ Erreur suppression:', err);
         const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
-        alert('❌ ' + errorMessage);
+        this.notification.error('❌ ' + errorMessage);
       }
+      });
     });
   }
 

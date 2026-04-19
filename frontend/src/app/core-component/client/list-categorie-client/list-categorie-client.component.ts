@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ClientService } from '../../../core/service/client/client.service';
 import { CategorieClient } from '../../../model/categorieClient.model';
 import { routes } from '../../../core/helpers/routes';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-list-categorie-client',
@@ -38,10 +39,9 @@ export class ListCategorieClientComponent implements OnInit {
     )[0];
   }
 
-  constructor(
-    private clientService: ClientService,
-    router: Router
-  ) {
+  constructor(private clientService: ClientService,
+    router: Router,
+    private notification: NotificationService) {
     this.router = router;
   }
 
@@ -58,7 +58,7 @@ export class ListCategorieClientComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erreur lors du chargement:', err);
-        alert('Erreur lors du chargement des catégories');
+        this.notification.error('Erreur lors du chargement des catégories');
         this.isLoading = false;
       }
     });
@@ -68,32 +68,34 @@ export class ListCategorieClientComponent implements OnInit {
     if (id) {
       this.router.navigate(['/client/editCategorieClient', id]);
     } else {
-      alert('ID invalide');
+      this.notification.error('ID invalide');
     }
   }
 
   deleteCategorie(id: number | undefined): void {
     if (!id) {
-      alert('ID invalide');
+      this.notification.error('ID invalide');
       return;
     }
 
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie?')) {
-      return;
-    }
-
-    this.isLoading = true;
-    this.clientService.deleteCategorie(id).subscribe({
-      next: (response: any) => {
-        alert('✓ Catégorie supprimée avec succès');
-        this.loadCategories();
-        this.isLoading = false;
-      },
-      error: (err: any) => {
-        console.error('Erreur lors de la suppression:', err);
-        alert('Erreur lors de la suppression');
-        this.isLoading = false;
+    this.notification.confirm('Êtes-vous sûr de vouloir supprimer cette catégorie?').then(ok => {
+      if (!ok) {
+        return;
       }
+
+      this.isLoading = true;
+      this.clientService.deleteCategorie(id).subscribe({
+        next: (response: any) => {
+          this.notification.success('✓ Catégorie supprimée avec succès');
+          this.loadCategories();
+          this.isLoading = false;
+        },
+        error: (err: any) => {
+          console.error('Erreur lors de la suppression:', err);
+          this.notification.error('Erreur lors de la suppression');
+          this.isLoading = false;
+        }
+      });
     });
   }
 }

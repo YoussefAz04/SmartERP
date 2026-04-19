@@ -7,6 +7,7 @@ import { ArticleVenteService } from '../../../core/service/article-vente/article
 import { ClientService } from '../../../core/service/client/client.service';
 import { ArticleVente } from '../../../model/article-vente.model';
 import { Client } from '../../../model/client.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-commande-vente',
@@ -25,14 +26,13 @@ export class AddCommandeVenteComponent implements OnInit {
   commandeId: number | null = null;
   currentEntrepriseId: number | null = null;
 
-  constructor(
-    private commandeVenteService: CommandeVenteService,
+  constructor(private commandeVenteService: CommandeVenteService,
     private articleVenteService: ArticleVenteService,
     private clientService: ClientService,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -245,17 +245,17 @@ export class AddCommandeVenteComponent implements OnInit {
       request.subscribe({
         next: () => {
           this.isLoading = false;
-          alert(this.isEditMode ? '✅ Commande modifiée avec succès!' : '✅ Commande créée avec succès!');
+          this.notification.success(this.isEditMode ? '✅ Commande modifiée avec succès!' : '✅ Commande créée avec succès!');
           this.router.navigate(['/commande-vente/list']);
         },
         error: (err: any) => {
           this.isLoading = false;
           console.error('❌ Error creating commande vente:', err);
-          alert('❌ Erreur: ' + this.extractErrorMessage(err));
+          this.notification.error('❌ Erreur: ' + this.extractErrorMessage(err));
         }
       });
     } else {
-      alert('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
     }
   }
 }

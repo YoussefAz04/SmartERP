@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommandeAchatService } from '../../../core/service/commande-achat/commande-achat.service';
 import { CommandeAchat } from '../../../model/commande-achat.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-list-commande-achat',
@@ -26,7 +27,8 @@ export class ListCommandeAchatComponent implements OnInit {
 
   constructor(
     private commandeAchatService: CommandeAchatService,
-    private router: Router
+    private router: Router,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -69,123 +71,129 @@ export class ListCommandeAchatComponent implements OnInit {
   }
 
   validerCommande(id: number): void {
-    if (!confirm('Valider cette commande ? Une facture achat sera automatiquement générée et le stock mis à jour.')) {
-      return;
-    }
+    this.notification.confirm('Valider cette commande ? Une facture achat sera automatiquement générée et le stock mis à jour.').then(ok => {
+      if (!ok) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
+      this.isLoading = true;
+      this.errorMessage = '';
 
-    this.commandeAchatService.validerCommande(id).subscribe({
-      next: (facture) => {
-        this.lastGeneratedFacture = facture;
-        this.showFactureModal = true;
-        this.loadCommandes();
-        console.log('✅ Commande validée ! Facture achat générée:', facture);
-        alert('✅ Commande validée ! Facture achat générée : ' + facture.referance + '. Le stock a été mis à jour.');
-      },
-      error: (err) => {
-        this.isLoading = false;
-        console.error('❌ Erreur validation:', err);
-        
-        const errorMessage = err?.error?.message || 
-                           err?.message || 
-                           'Erreur lors de la validation';
-        
-        this.errorMessage = errorMessage;
-        console.error('Message d\'erreur détaillé:', errorMessage);
-        alert('❌ Erreur lors de la validation:\n\n' + errorMessage);
-      }
+      this.commandeAchatService.validerCommande(id).subscribe({
+        next: (facture) => {
+          this.lastGeneratedFacture = facture;
+          this.showFactureModal = true;
+          this.loadCommandes();
+          console.log('✅ Commande validée ! Facture achat générée:', facture);
+          this.notification.success('✅ Commande validée ! Facture achat générée : ' + facture.referance + '. Le stock a été mis à jour.');
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('❌ Erreur validation:', err);
+          
+          const errorMessage = err?.error?.message || 
+                             err?.message || 
+                             'Erreur lors de la validation';
+          
+          this.errorMessage = errorMessage;
+          console.error('Message d\'erreur détaillé:', errorMessage);
+          this.notification.error('❌ Erreur lors de la validation:\n\n' + errorMessage);
+        }
+      });
     });
   }
 
   recevoirCommande(id: number): void {
-    if (!confirm('Marquer cette commande comme reçue ? Le stock sera automatiquement mis à jour.')) {
-      return;
-    }
+    this.notification.confirm('Marquer cette commande comme reçue ? Le stock sera automatiquement mis à jour.').then(ok => {
+      if (!ok) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
+      this.isLoading = true;
+      this.errorMessage = '';
 
-    this.commandeAchatService.recevoirCommande(id).subscribe({
-      next: (bon) => {
-        this.loadCommandes();
-        this.isLoading = false;
-        alert('✅ Commande reçue ! Bon de réception créé : ' + bon.reference + '. Le stock a été mis à jour.');
-      },
-      error: (err) => {
-        this.isLoading = false;
-        const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la réception';
-        this.errorMessage = errorMessage;
-        alert('❌ Erreur lors de la réception:\n\n' + errorMessage);
-      }
+      this.commandeAchatService.recevoirCommande(id).subscribe({
+        next: (bon) => {
+          this.loadCommandes();
+          this.isLoading = false;
+          this.notification.success('✅ Commande reçue ! Bon de réception créé : ' + bon.reference + '. Le stock a été mis à jour.');
+        },
+        error: (err) => {
+          this.isLoading = false;
+          const errorMessage = err?.error?.message || err?.message || 'Erreur lors de la réception';
+          this.errorMessage = errorMessage;
+          this.notification.error('❌ Erreur lors de la réception:\n\n' + errorMessage);
+        }
+      });
     });
   }
 
   // ✅ NEW: Set status to EN_ATTENTE
   setEnAttente(id: number): void {
-    if (!confirm('Passer cette commande à "En Attente" ?')) return;
-    
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.notification.confirm('Passer cette commande à "En Attente" ?').then(ok => {
+      if (!ok) return;
+      
+      this.isLoading = true;
+      this.errorMessage = '';
 
-    this.commandeAchatService.changeStatutToEnAttente(id).subscribe({
-      next: () => {
-        this.loadCommandes();
-        this.isLoading = false;
-        alert('✅ Statut changé en "En Attente".');
-      },
-      error: (err) => {
-        this.isLoading = false;
-        console.error('❌ Erreur changement de statut:', err);
-        const errorMessage = err?.error?.message || 'Erreur lors du changement de statut';
-        this.errorMessage = errorMessage;
-        alert('❌ ' + errorMessage);
-      }
+      this.commandeAchatService.changeStatutToEnAttente(id).subscribe({
+        next: () => {
+          this.loadCommandes();
+          this.isLoading = false;
+          this.notification.success('✅ Statut changé en "En Attente".');
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('❌ Erreur changement de statut:', err);
+          const errorMessage = err?.error?.message || 'Erreur lors du changement de statut';
+          this.errorMessage = errorMessage;
+          this.notification.error('❌ ' + errorMessage);
+        }
+      });
     });
   }
 
   annulerCommande(id: number): void {
-    if (!confirm('Annuler cette commande ?')) return;
-    
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.notification.confirm('Annuler cette commande ?').then(ok => {
+      if (!ok) return;
+      
+      this.isLoading = true;
+      this.errorMessage = '';
 
-    this.commandeAchatService.annulerCommande(id).subscribe({
-      next: () => {
-        this.loadCommandes();
-        this.isLoading = false;
-        alert('✅ Commande annulée.');
-      },
-      error: (err) => {
-        this.isLoading = false;
-        console.error('❌ Erreur annulation:', err);
-        const errorMessage = err?.error?.message || 'Erreur lors de l\'annulation';
-        this.errorMessage = errorMessage;
-        alert('❌ ' + errorMessage);
-      }
+      this.commandeAchatService.annulerCommande(id).subscribe({
+        next: () => {
+          this.loadCommandes();
+          this.isLoading = false;
+          this.notification.success('✅ Commande annulée.');
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('❌ Erreur annulation:', err);
+          const errorMessage = err?.error?.message || 'Erreur lors de l\'annulation';
+          this.errorMessage = errorMessage;
+          this.notification.error('❌ ' + errorMessage);
+        }
+      });
     });
   }
 
   deleteCommande(id: number): void {
-    if (!confirm('Supprimer cette commande ?')) return;
-    
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.notification.confirm('Supprimer cette commande ?').then(ok => {
+      if (!ok) return;
+      
+      this.isLoading = true;
+      this.errorMessage = '';
 
-    this.commandeAchatService.deleteCommande(id).subscribe({
-      next: () => {
-        this.loadCommandes();
-        this.isLoading = false;
-        alert('✅ Commande supprimée.');
-      },
-      error: (err) => {
-        this.isLoading = false;
-        console.error('❌ Erreur suppression:', err);
-        const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
-        this.errorMessage = errorMessage;
-        alert('❌ ' + errorMessage);
-      }
+      this.commandeAchatService.deleteCommande(id).subscribe({
+        next: () => {
+          this.loadCommandes();
+          this.isLoading = false;
+          this.notification.success('✅ Commande supprimée.');
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('❌ Erreur suppression:', err);
+          const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
+          this.errorMessage = errorMessage;
+          this.notification.error('❌ ' + errorMessage);
+        }
+      });
     });
   }
 

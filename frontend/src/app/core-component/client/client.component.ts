@@ -7,6 +7,7 @@ import { NgForOf, NgIf, CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ResponseDto } from "../../model/reponseDto.model";
 import { PermissionDto } from "../../model/permissionDto.model";
+import { NotificationService } from '../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-client',
@@ -57,7 +58,8 @@ export class ClientComponent implements OnInit, AfterViewInit {
     moduleTitle: ''
   } as PermissionDto;
 
-  constructor(private Clientservise: ClientService, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private Clientservise: ClientService, private router: Router, private cdr: ChangeDetectorRef,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.getUserAuthData();
@@ -77,7 +79,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Error loading clients:', err);
-        alert('Erreur lors du chargement des clients');
+        this.notification.error('Erreur lors du chargement des clients');
       }
     });
   }
@@ -91,48 +93,48 @@ export class ClientComponent implements OnInit, AfterViewInit {
       console.log('Viewing client:', id);
       this.router.navigate(['/client/viewClient', id]);
     } else {
-      alert('ID client invalide');
+      this.notification.error('ID client invalide');
     }
   }
 
   deleteClient(id: number | undefined): void {
     if (!id) {
-      alert('ID client invalide');
+      this.notification.error('ID client invalide');
       return;
     }
 
     // Show confirmation dialog
-    const confirmed = confirm('Êtes-vous sûr de vouloir supprimer ce client ?');
-    
-    if (confirmed) {
-      this.isDeleting = true;
-      console.log('Suppression du client:', id);
+    this.notification.confirm('Êtes-vous sûr de vouloir supprimer ce client ?').then(confirmed => {
+      if (confirmed) {
+        this.isDeleting = true;
+        console.log('Suppression du client:', id);
 
-      this.Clientservise.deleteClient(id).subscribe({
-        next: (response) => {
-          console.log('Client supprimé:', response);
-          
-          // Remove from list
-          this.clientList = this.clientList.filter(c => c.id !== id);
-          this.isDeleting = false;
-          
-          // Show success message
-          alert('✓ Client supprimé avec succès');
-          
-          // Reload to ensure sync
-          this.loadClients();
-        },
-        error: (err) => {
-          this.isDeleting = false;
-          console.error('Erreur lors de la suppression:', err);
-          
-          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
-          alert('✗ Erreur: ' + errorMsg);
-        }
-      });
-    } else {
-      console.log('Suppression annulée');
-    }
+        this.Clientservise.deleteClient(id).subscribe({
+          next: (response) => {
+            console.log('Client supprimé:', response);
+            
+            // Remove from list
+            this.clientList = this.clientList.filter(c => c.id !== id);
+            this.isDeleting = false;
+            
+            // Show success message
+            this.notification.success('✓ Client supprimé avec succès');
+            
+            // Reload to ensure sync
+            this.loadClients();
+          },
+          error: (err) => {
+            this.isDeleting = false;
+            console.error('Erreur lors de la suppression:', err);
+            
+            const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+            this.notification.error('✗ Erreur: ' + errorMsg);
+          }
+        });
+      } else {
+        console.log('Suppression annulée');
+      }
+    });
   }
 
   getUserAuthData(): void {
@@ -206,7 +208,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
     if (id) {
       this.router.navigate(['/client/editClient', id]);
     } else {
-      alert('ID client invalide');
+      this.notification.error('ID client invalide');
     }
   }
 }

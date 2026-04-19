@@ -6,6 +6,7 @@ import { UserService } from '../../../auth/service/user/user.service';
 import { UserDTO } from '../../../model/userDTO.model';
 import { ResponseDto } from '../../../model/reponseDto.model';
 import { PermissionDto } from '../../../model/permissionDto.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-detais-users',
@@ -29,11 +30,10 @@ export class DetaisUsersComponent implements OnInit {
     moduleTitle: ''
   } as PermissionDto;
 
-  constructor(
-    private userService: UserService,
+  constructor(private userService: UserService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.userId = this.route.snapshot.params['id'];
@@ -51,7 +51,7 @@ export class DetaisUsersComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error loading user:', err);
-        alert('Erreur lors du chargement de l\'utilisateur');
+        this.notification.error('Erreur lors du chargement de l\'utilisateur');
         this.isLoading = false;
       }
     });
@@ -59,12 +59,12 @@ export class DetaisUsersComponent implements OnInit {
 
   onSubmit(): void {
     if (!this.user || !this.userId) {
-      alert('❌ Données utilisateur manquantes');
+      this.notification.error('❌ Données utilisateur manquantes');
       return;
     }
 
     if (this.isSubmitting) {
-      alert('Opération en cours...');
+      this.notification.info('Opération en cours...');
       return;
     }
 
@@ -78,13 +78,13 @@ export class DetaisUsersComponent implements OnInit {
     this.userService.updateUser(this.userId, this.user).subscribe({
       next: (response: any) => {
         this.isSubmitting = false;
-        alert('✓ Utilisateur mis à jour avec succès');
+        this.notification.success('✓ Utilisateur mis à jour avec succès');
         this.router.navigate(['/user-management/users']);
       },
       error: (err: any) => {
         this.isSubmitting = false;
         const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
-        alert('✗ Erreur lors de la mise à jour: ' + errorMsg);
+        this.notification.error('✗ Erreur lors de la mise à jour: ' + errorMsg);
       }
     });
   }

@@ -8,6 +8,7 @@ import { ModuleService } from '../../../core/service/Module/module.service';
 import { EntrepriseService } from '../../../core/service/entreprise/entreprise.service';
 import { Module } from '../../../model/module.model';
 import { Entreprise } from '../../../model/entreprise.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 interface CreateEmployeeRequest {
   username: string;
@@ -46,13 +47,12 @@ export class AddUserComponent implements OnInit {
   selectedEnterpriseInfo: EntrepriseListItem | null = null;
   enterprisesLoading = false;
 
-  constructor(
-    private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
     private userService: UserService,
     private moduleService: ModuleService,
     private entrepriseService: EntrepriseService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadSessionData();
@@ -145,17 +145,17 @@ export class AddUserComponent implements OnInit {
 
   onSubmitAddUser(): void {
     if (!this.addUserForm.valid) {
-      alert('Please fill all required fields');
+      this.notification.warning('Please fill all required fields');
       return;
     }
 
     if (this.isSuperAdmin && !this.selectedEnterpriseId) {
-      alert('❌ Please select an enterprise to assign the user to.');
+      this.notification.error('❌ Please select an enterprise to assign the user to.');
       return;
     }
 
     if (!this.isSuperAdmin && this.currentEnterpriseId === null) {
-      alert('❌ Enterprise context is missing. Please log out and log in again.');
+      this.notification.error('❌ Enterprise context is missing. Please log out and log in again.');
       return;
     }
 
@@ -174,13 +174,13 @@ export class AddUserComponent implements OnInit {
     this.userService.createEmployeeUser(request).subscribe({
       next: (response: any) => {
         console.log('Employee created successfully:', response);
-        alert('✓ Employee created successfully');
+        this.notification.success('✓ Employee created successfully');
         this.router.navigate(['/user-management/users']);
         this.isSubmitting = false;
       },
       error: (err: any) => {
         console.error('Error creating employee:', err);
-        alert('✗ Error: ' + (err.error?.message || err.error || err.message));
+        this.notification.error('✗ Error: ' + (err.error?.message || err.error || err.message));
         this.isSubmitting = false;
       }
     });

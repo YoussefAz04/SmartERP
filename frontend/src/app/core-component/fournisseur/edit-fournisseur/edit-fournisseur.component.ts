@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, NgForOf } from '@angular/common';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { CategorieFournisseur } from '../../../model/categorieFournisseur.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-edit-fournisseur',
@@ -20,12 +21,11 @@ export class EditFournisseurComponent implements OnInit {
   errorMessage = '';
   fournisseurId!: number;
 
-  constructor(
-    private fournisseurService: FournisseurService,
+  constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.fournisseurId = Number(this.route.snapshot.paramMap.get('id'));
@@ -108,18 +108,18 @@ export class EditFournisseurComponent implements OnInit {
         next: (data) => {
           console.log('Fournisseur mis à jour avec succès:', data);
           this.isLoading = false;
-          alert('✓ Fournisseur mis à jour avec succès!');
+          this.notification.success('✓ Fournisseur mis à jour avec succès!');
           this.router.navigate(['/fournisseur/listFournisseur']);
         },
         error: (err: any) => {
           this.isLoading = false;
           console.error('Erreur lors de la mise à jour:', err);
           const errorMsg = err.error?.message || err.message || 'Impossible de mettre à jour le fournisseur';
-          alert('✗ Erreur: ' + errorMsg);
+          this.notification.error('✗ Erreur: ' + errorMsg);
         }
       });
     } else {
-      alert('⚠ Veuillez remplir correctement tous les champs');
+      this.notification.warning('⚠ Veuillez remplir correctement tous les champs');
     }
   }
 }

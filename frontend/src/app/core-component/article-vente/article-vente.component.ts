@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ArticleVenteService } from '../../core/service/article-vente/article-vente.service';
 import { ArticleVente } from '../../model/article-vente.model';
 import { ResponseDto } from '../../model/reponseDto.model';
+import { NotificationService } from '../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-article-vente',
@@ -35,11 +36,10 @@ export class ArticleVenteComponent implements OnInit {
   selectedIds: Set<number> = new Set();
   allSelected = false;
 
-  constructor(
-    private articleVenteService: ArticleVenteService,
+  constructor(private articleVenteService: ArticleVenteService,
     private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadRolePermissions();
@@ -227,31 +227,33 @@ export class ArticleVenteComponent implements OnInit {
 
   bulkDelete(): void {
     if (!this.selectedIds.size) return;
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${this.selectedIds.size} article(s)?`)) return;
+    this.notification.confirm(`Êtes-vous sûr de vouloir supprimer ${this.selectedIds.size} article(s)?`).then(ok => {
+      if (!ok) return;
 
-    const ids = [...this.selectedIds];
-    let completed = 0;
-    this.isLoading = true;
-    ids.forEach(id => {
-      this.articleVenteService.deleteArticleVente(id).subscribe({
-        next: () => {
-          this.articleVenteList = this.articleVenteList.filter(a => a.id !== id);
-          this.selectedIds.delete(id);
-          completed++;
-          if (completed === ids.length) {
-            this.applyFilters();
-            this.isLoading = false;
-            alert(`✓ ${ids.length} article(s) supprimé(s) avec succès`);
+      const ids = [...this.selectedIds];
+      let completed = 0;
+      this.isLoading = true;
+      ids.forEach(id => {
+        this.articleVenteService.deleteArticleVente(id).subscribe({
+          next: () => {
+            this.articleVenteList = this.articleVenteList.filter(a => a.id !== id);
+            this.selectedIds.delete(id);
+            completed++;
+            if (completed === ids.length) {
+              this.applyFilters();
+              this.isLoading = false;
+              this.notification.success(`✓ ${ids.length} article(s) supprimé(s) avec succès`);
+            }
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression:', err);
+            completed++;
+            if (completed === ids.length) {
+              this.applyFilters();
+              this.isLoading = false;
+            }
           }
-        },
-        error: (err) => {
-          console.error('Erreur lors de la suppression:', err);
-          completed++;
-          if (completed === ids.length) {
-            this.applyFilters();
-            this.isLoading = false;
-          }
-        }
+        });
       });
     });
   }
@@ -269,7 +271,7 @@ export class ArticleVenteComponent implements OnInit {
 
   deleteArticle(id: number | undefined): void {
     if (!id) return;
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet article?')) return;
+    this.notification.confirm('Êtes-vous sûr de vouloir supprimer cet article?').then(ok => { if (!ok) return;
 
     this.isLoading = true;
     this.articleVenteService.deleteArticleVente(id).subscribe({
@@ -277,13 +279,14 @@ export class ArticleVenteComponent implements OnInit {
         this.articleVenteList = this.articleVenteList.filter(a => a.id !== id);
         this.applyFilters();
         this.isLoading = false;
-        alert('✓ Article supprimé avec succès');
+        this.notification.success('✓ Article supprimé avec succès');
       },
       error: (err) => {
         console.error('Erreur lors de la suppression:', err);
-        alert('✗ Erreur lors de la suppression');
+        this.notification.error('✗ Erreur lors de la suppression');
         this.isLoading = false;
       }
+      });
     });
   }
 

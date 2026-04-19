@@ -8,6 +8,7 @@ import {ResponseDto} from "../../../model/reponseDto.model";
 import {EntrepriseService} from "../entreprise/entreprise.service";
 import {Entreprise} from "../../../model/entreprise.model";
 import autoTable from "jspdf-autotable";
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class FactureDeVenteServiceService {
   private baseUrl = `${environment.apiUrl}/factures-vente`;
 
   constructor(private http: HttpClient,
-              private entrepriseService: EntrepriseService) {
+              private entrepriseService: EntrepriseService,
+    private notification: NotificationService) {
   }
 
   // Ajouter une facture
@@ -236,7 +238,7 @@ export class FactureDeVenteServiceService {
         formData.append("text", "Veuillez trouver ci-joint votre facture.");
 
         this.http.post(`${this.baseUrl}/send-facture`, formData).subscribe({
-          next: () => alert("Facture envoyée avec succès !"),
+          next: () => this.notification.success("Facture envoyée avec succès !"),
           error: (err) => console.error("Erreur envoi email:", err)
         });
       });
