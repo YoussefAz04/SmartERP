@@ -2,78 +2,106 @@
      DASHBOARD – Modern Glassmorphism Layout
      ==================================================== -->
 
-<!-- Header -->
-<div class="db-header fade-in">
-  <div class="db-header__inner">
-    <div>
-      <h1 class="db-header__title">Dashboard</h1>
-      <p class="db-header__sub">Bienvenue, <strong>{{ userName }}</strong>! 👋
-        <span *ngIf="entrepriseName" class="enterprise-tag">{{ entrepriseName }}</span>
-      </p>
-    </div>
-    <div class="db-header__meta">
-      <span class="meta-badge">{{ today | date: 'd MMMM yyyy' }}</span>
+<div class="dashboard-shell">
+  <!-- Header -->
+  <div class="db-header fade-in">
+    <div class="db-header__inner">
+      <div>
+        <p class="db-header__eyebrow">Vue d'ensemble</p>
+        <h1 class="db-header__title">Dashboard</h1>
+        <p class="db-header__sub">Bienvenue, <strong>{{ userName }}</strong>! 👋
+          <span *ngIf="entrepriseName" class="enterprise-tag">{{ entrepriseName }}</span>
+        </p>
+      </div>
+      <div class="db-header__meta">
+        <span class="meta-badge">
+          <i class="feather icon-calendar"></i>
+          {{ today | date: 'EEEE d MMMM yyyy' }}
+        </span>
+        <span class="meta-pill">
+          <i class="feather icon-trending-up"></i>
+          Activité en direct
+        </span>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ── Section 1: Quick Stats ── -->
-<section class="db-section fade-in" style="animation-delay:0.05s">
-  <div class="stats-grid">
+  <section class="quick-actions fade-in" style="animation-delay:0.03s">
+    <a class="quick-action quick-action--indigo" routerLink="/client/addClient">
+      <i class="feather icon-user-plus"></i>
+      <span>Nouveau client</span>
+    </a>
+    <a class="quick-action quick-action--amber" routerLink="/fournisseur/addFournisseur">
+      <i class="feather icon-truck"></i>
+      <span>Nouveau fournisseur</span>
+    </a>
+    <a class="quick-action quick-action--emerald" routerLink="/article-achat/add">
+      <i class="feather icon-package"></i>
+      <span>Ajouter un article</span>
+    </a>
+    <a class="quick-action quick-action--slate" routerLink="/commande-vente/add">
+      <i class="feather icon-file-plus"></i>
+      <span>Nouvelle commande</span>
+    </a>
+  </section>
 
-    <!-- Clients Card -->
-    <div class="stat-card stat-card--blue" (click)="onStatCardClick($event, '/client/listClient')">
-      <div class="stat-card__icon">
-        <i class="feather icon-users"></i>
-      </div>
-      <div class="stat-card__body">
-        <div class="stat-card__value">
-          <ng-container *ngIf="statsLoaded; else skeleton">
-            <span [countUp]="stats.totalClients" [options]="countUpOptions">0</span>
-          </ng-container>
-          <ng-template #skeleton><span class="skel skel--num"></span></ng-template>
+  <!-- ── Section 1: Quick Stats ── -->
+  <section class="db-section fade-in" style="animation-delay:0.05s">
+    <div class="stats-grid">
+
+      <!-- Clients Card -->
+      <div class="stat-card stat-card--blue" (click)="onStatCardClick($event, '/client/listClient')">
+        <div class="stat-card__icon">
+          <i class="feather icon-users"></i>
         </div>
-        <div class="stat-card__label">Clients</div>
-      </div>
-      <a class="stat-card__link" routerLink="/client/listClient">Voir tout →</a>
-    </div>
-
-    <!-- Fournisseurs Card -->
-    <div class="stat-card stat-card--orange" (click)="onStatCardClick($event, '/fournisseur/listFournisseur')">
-      <div class="stat-card__icon">
-        <i class="feather icon-truck"></i>
-      </div>
-      <div class="stat-card__body">
-        <div class="stat-card__value">
-          <ng-container *ngIf="statsLoaded; else skelF">
-            <span [countUp]="stats.totalFournisseurs" [options]="countUpOptions">0</span>
-          </ng-container>
-          <ng-template #skelF><span class="skel skel--num"></span></ng-template>
+        <div class="stat-card__body">
+          <div class="stat-card__value">
+            <ng-container *ngIf="statsLoaded; else skeleton">
+              <span [countUp]="stats.totalClients" [options]="countUpOptions">0</span>
+            </ng-container>
+            <ng-template #skeleton><span class="skel skel--num"></span></ng-template>
+          </div>
+          <div class="stat-card__label">Clients</div>
         </div>
-        <div class="stat-card__label">Fournisseurs</div>
+        <a class="stat-card__link" routerLink="/client/listClient">Voir tout →</a>
       </div>
-      <a class="stat-card__link" routerLink="/fournisseur/listFournisseur">Voir tout →</a>
-    </div>
 
-    <!-- Articles Card -->
-    <div class="stat-card stat-card--green" (click)="onStatCardClick($event, '/article-achat/listArticleAchat')">
-      <div class="stat-card__icon">
-        <i class="feather icon-package"></i>
-      </div>
-      <div class="stat-card__body">
-        <div class="stat-card__value">
-          <ng-container *ngIf="statsLoaded; else skelA">
-            <span [countUp]="stats.totalArticles" [options]="countUpOptions">0</span>
-          </ng-container>
-          <ng-template #skelA><span class="skel skel--num"></span></ng-template>
+      <!-- Fournisseurs Card -->
+      <div class="stat-card stat-card--orange" (click)="onStatCardClick($event, '/fournisseur/listFournisseur')">
+        <div class="stat-card__icon">
+          <i class="feather icon-truck"></i>
         </div>
-        <div class="stat-card__label">Articles</div>
+        <div class="stat-card__body">
+          <div class="stat-card__value">
+            <ng-container *ngIf="statsLoaded; else skelF">
+              <span [countUp]="stats.totalFournisseurs" [options]="countUpOptions">0</span>
+            </ng-container>
+            <ng-template #skelF><span class="skel skel--num"></span></ng-template>
+          </div>
+          <div class="stat-card__label">Fournisseurs</div>
+        </div>
+        <a class="stat-card__link" routerLink="/fournisseur/listFournisseur">Voir tout →</a>
       </div>
-      <a class="stat-card__link" routerLink="/article-achat/listArticleAchat">Voir tout →</a>
-    </div>
 
-  </div>
-</section>
+      <!-- Articles Card -->
+      <div class="stat-card stat-card--green" (click)="onStatCardClick($event, '/article-achat/listArticleAchat')">
+        <div class="stat-card__icon">
+          <i class="feather icon-package"></i>
+        </div>
+        <div class="stat-card__body">
+          <div class="stat-card__value">
+            <ng-container *ngIf="statsLoaded; else skelA">
+              <span [countUp]="stats.totalArticles" [options]="countUpOptions">0</span>
+            </ng-container>
+            <ng-template #skelA><span class="skel skel--num"></span></ng-template>
+          </div>
+          <div class="stat-card__label">Articles</div>
+        </div>
+        <a class="stat-card__link" routerLink="/article-achat/listArticleAchat">Voir tout →</a>
+      </div>
+
+    </div>
+  </section>
 
 <!-- ── Section 2: Recent Clients ── -->
 <section class="db-section fade-in" style="animation-delay:0.1s">
@@ -131,6 +159,8 @@
     </div>
   </div>
 </section>
+
+</div>
 
 <!-- ── Section 3: Recent Fournisseurs ── -->
 <section class="db-section fade-in" style="animation-delay:0.15s">
