@@ -211,9 +211,26 @@ public class CommandeVenteService {
         return commandeVenteRepository.findById(id);
     }
 
+    private static final java.util.Set<String> VALID_STATUTS = java.util.Set.of(
+            "EN_ATTENTE", "CONFIRMEE", "LIVREE", "ANNULEE"
+    );
+
     public CommandeVente updateStatut(Long id, String statut) {
+        if (!VALID_STATUTS.contains(statut)) {
+            throw new RuntimeException("Statut invalide: " + statut + ". Statuts autorisés: " + VALID_STATUTS);
+        }
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
+
+        // Enforce valid transitions
+        String currentStatut = commande.getStatut();
+        if ("ANNULEE".equals(currentStatut) && !"EN_ATTENTE".equals(statut)) {
+            throw new RuntimeException("Une commande annulée ne peut pas être modifiée.");
+        }
+        if ("LIVREE".equals(currentStatut) && !"ANNULEE".equals(statut)) {
+            throw new RuntimeException("Une commande livrée ne peut être qu'annulée.");
+        }
+
         commande.setStatut(statut);
         return commandeVenteRepository.save(commande);
     }
@@ -224,7 +241,7 @@ public class CommandeVenteService {
         if (dto.getReference() != null) commande.setReference(dto.getReference());
         if (dto.getDateCommande() != null) commande.setDateCommande(dto.getDateCommande());
         if (dto.getDateLivraisonPrevue() != null) commande.setDateLivraisonPrevue(dto.getDateLivraisonPrevue());
-        if (dto.getStatut() != null) commande.setStatut(dto.getStatut());
+        // Status changes must go through updateStatut/validerCommande/annulerCommande/livrerCommande
         if (dto.getMontantHT() != null) commande.setMontantHT(dto.getMontantHT());
         if (dto.getMontantTVA() != null) commande.setMontantTVA(dto.getMontantTVA());
         if (dto.getMontantTTC() != null) commande.setMontantTTC(dto.getMontantTTC());
@@ -234,9 +251,19 @@ public class CommandeVenteService {
 
     @Transactional
     public void deleteCommande(Long id) {
-        if (!commandeVenteRepository.existsById(id)) {
-            throw new RuntimeException("CommandeVente non trouvée avec id: " + id);
+        CommandeVente commande = commandeVenteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
+
+        // Release stock reservations if the order has not been delivered
+        if (!"LIVREE".equals(commande.getStatut()) && !"ANNULEE".equals(commande.getStatut())) {
+            try {
+                stockAutomationService.annulerReservationStock(id, commande.getReference());
+                logger.info("✅ Stock reservations released for deleted commande {}", id);
+            } catch (RuntimeException e) {
+                logger.warn("⚠️ Could not fully release stock reservation for commande {}: {}", id, e.getMessage());
+            }
         }
+
         // Nullify commandeVente reference on associated FactureDeVente before deleting commande
         factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
             facture.setCommandeVente(null);
@@ -263,7 +290,14 @@ public class CommandeVenteService {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
-        // ✅ Change status to CONFIRMEE (valid for commande_vente table)
+        if ("CONFIRMEE".equals(commande.getStatut()) || "LIVREE".equals(commande.getStatut())) {
+            throw new RuntimeException("Cette commande a déjà été confirmée ou livrée.");
+        }
+        if ("ANNULEE".equals(commande.getStatut())) {
+            throw new RuntimeException("Impossible de confirmer une commande annulée.");
+        }
+
+        // ✅ Change status to CONFIRMEE
         commande.setStatut("CONFIRMEE");
         commandeVenteRepository.save(commande);
 
@@ -271,18 +305,18 @@ public class CommandeVenteService {
         List<LigneCommandeVente> lignesCommande = ligneCommandeVenteRepository.findByCommandeVenteId(id);
         
         Double totalHT = 0.0;
-        Double totalTVA = 0.0;
         Double totalTTC = 0.0;
         
         for (LigneCommandeVente ligne : lignesCommande) {
             BigDecimal ht = ligne.getMontantHT() != null ? ligne.getMontantHT() : BigDecimal.ZERO;
-            BigDecimal tva = ligne.getTva() != null ? ligne.getTva() : BigDecimal.ZERO;
             BigDecimal ttc = ligne.getMontantTTC() != null ? ligne.getMontantTTC() : BigDecimal.ZERO;
             
             totalHT += ht.doubleValue();
-            totalTVA += tva.doubleValue();
             totalTTC += ttc.doubleValue();
         }
+
+        // TVA is the difference between TTC and HT (not the sum of tax rates)
+        Double totalTVA = totalTTC - totalHT;
 
         // ✅ Update existing FactureDeVente if created at commande creation, otherwise create new
         FactureDeVente facture = factureDeVenteRepository.findByCommandeVenteId(id)
@@ -328,6 +362,13 @@ public class CommandeVenteService {
         commande.setStatut("ANNULEE");
         CommandeVente saved = commandeVenteRepository.save(commande);
 
+        // Cancel associated invoice
+        factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
+            facture.setStatut("ANNULEE");
+            factureDeVenteRepository.save(facture);
+            logger.info("✅ Associated FactureDeVente {} cancelled", facture.getId());
+        });
+
         // Release stock reservations if the order was not yet delivered
         if (!"LIVREE".equals(ancienStatut)) {
             try {
@@ -348,7 +389,10 @@ public class CommandeVenteService {
             throw new RuntimeException("Impossible de livrer une commande annulée.");
         }
         if ("LIVREE".equals(commande.getStatut())) {
-            throw new RuntimeException("Cette commande a déjà été livrée");
+            throw new RuntimeException("Cette commande a déjà été livrée.");
+        }
+        if (!"CONFIRMEE".equals(commande.getStatut())) {
+            throw new RuntimeException("La commande doit être confirmée avant d'être livrée. Statut actuel: " + commande.getStatut());
         }
 
         commande.setStatut("LIVREE");

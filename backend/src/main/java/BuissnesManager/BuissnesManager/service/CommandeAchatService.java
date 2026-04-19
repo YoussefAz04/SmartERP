@@ -320,7 +320,7 @@ public class CommandeAchatService {
         if (dto.getReference() != null) commande.setReference(dto.getReference());
         if (dto.getDateCommande() != null) commande.setDateCommande(dto.getDateCommande());
         if (dto.getDateLivraisonPrevue() != null) commande.setDateLivraisonPrevue(dto.getDateLivraisonPrevue());
-        if (dto.getStatut() != null) commande.setStatut(dto.getStatut());
+        // Status changes must go through updateStatut/validerCommande/annulerCommande/recevoirCommande
         if (dto.getMontantHT() != null) commande.setMontantHT(dto.getMontantHT());
         if (dto.getMontantTVA() != null) commande.setMontantTVA(dto.getMontantTVA());
         if (dto.getMontantTTC() != null) commande.setMontantTTC(dto.getMontantTTC());
@@ -335,10 +335,27 @@ public class CommandeAchatService {
         return commandeAchatRepository.save(commande);
     }
 
+    private static final java.util.Set<String> VALID_STATUTS = java.util.Set.of(
+            "EN_ATTENTE", "CONFIRMEE", "RECUE", "ANNULEE"
+    );
+
     @Transactional
     public CommandeAchat updateStatut(Long id, String statut) {
+        if (!VALID_STATUTS.contains(statut)) {
+            throw new RuntimeException("Statut invalide: " + statut + ". Statuts autorisés: " + VALID_STATUTS);
+        }
         CommandeAchat commande = commandeAchatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée: " + id));
+
+        // Enforce valid transitions
+        String currentStatut = commande.getStatut();
+        if ("ANNULEE".equals(currentStatut) && !"EN_ATTENTE".equals(statut)) {
+            throw new RuntimeException("Une commande annulée ne peut pas être modifiée.");
+        }
+        if ("RECUE".equals(currentStatut) && !"ANNULEE".equals(statut)) {
+            throw new RuntimeException("Une commande reçue ne peut être qu'annulée.");
+        }
+
         commande.setStatut(statut);
         return commandeAchatRepository.save(commande);
     }
@@ -443,6 +460,13 @@ public class CommandeAchatService {
         commande.setStatut("ANNULEE");
         CommandeAchat saved = commandeAchatRepository.save(commande);
 
+        // Cancel associated invoice
+        factureAchatRepository.findByCommandeAchatId(id).ifPresent(facture -> {
+            facture.setStatut("ANNULEE");
+            factureAchatRepository.save(facture);
+            logger.info("✅ Associated FactureAchat {} cancelled", facture.getId());
+        });
+
         // Reverse stock if the order was already received (stock was previously incremented)
         if ("RECUE".equals(ancienStatut)) {
             try {
@@ -466,6 +490,9 @@ public class CommandeAchatService {
         }
         if ("RECUE".equals(commande.getStatut())) {
             throw new RuntimeException("Cette commande a déjà été réceptionnée.");
+        }
+        if (!"CONFIRMEE".equals(commande.getStatut())) {
+            throw new RuntimeException("La commande doit être confirmée avant d'être réceptionnée. Statut actuel: " + commande.getStatut());
         }
 
         commande.setStatut("RECUE");
@@ -511,6 +538,12 @@ public class CommandeAchatService {
 
         if (!invoices.isEmpty()) {
             factureAchatRepository.deleteAll(invoices);
+        }
+
+        // ✅ DELETE BON RECEPTION records
+        List<BonReception> bons = bonReceptionRepository.findByCommandeAchatId(id);
+        if (!bons.isEmpty()) {
+            bonReceptionRepository.deleteAll(bons);
         }
 
         // ✅ DELETE ORDER LINES
