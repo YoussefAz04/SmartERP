@@ -4,6 +4,7 @@ import { FournisseurService } from '../../../core/service/fournisseur/fournisseu
 import { routes } from '../../../core/helpers/routes';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-categorie-fournisseur',
@@ -20,11 +21,10 @@ export class AddCategorieFournisseurComponent implements OnInit {
   categorieFournisseurForm!: FormGroup;
   isLoading = false;
 
-  constructor(
-    private fournisseurService: FournisseurService,
+  constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
-    private router: Router
-  ) {}
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -39,7 +39,7 @@ export class AddCategorieFournisseurComponent implements OnInit {
 
   createCategorieFournisseur(): void {
     if (!this.categorieFournisseurForm.valid) {
-      alert('Veuillez remplir correctement tous les champs');
+      this.notification.warning('Veuillez remplir correctement tous les champs');
       return;
     }
 
@@ -47,13 +47,13 @@ export class AddCategorieFournisseurComponent implements OnInit {
     this.fournisseurService.addCategorieFournisseur(this.categorieFournisseurForm.value).subscribe({
       next: (data: any) => {
         console.log('Catégorie ajoutée avec succès', data);
-        alert('✓ Catégorie ajoutée avec succès');
+        this.notification.success('✓ Catégorie ajoutée avec succès');
         this.router.navigate(['/fournisseur/listCategorieFournisseur']);
         this.isLoading = false;
       },
       error: (err: any) => {
         console.error('Erreur:', err);
-        alert('Erreur lors de l\'ajout: ' + (err.error?.message || err.message));
+        this.notification.error('Erreur lors de l\'ajout: ' + (err.error?.message || err.message));
         this.isLoading = false;
       }
     });

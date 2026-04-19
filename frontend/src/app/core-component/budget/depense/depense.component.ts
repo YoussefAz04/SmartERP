@@ -6,6 +6,7 @@ import {Depense} from "../../../model/depense.model";
 import {DepenseService} from "../../../core/service/depense/depense.service";
 import {ResponseDto} from "../../../model/reponseDto.model";
 import {PermissionDto} from "../../../model/permissionDto.model";
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-depense',
@@ -25,10 +26,9 @@ export class DepenseComponent implements OnInit {
   loading: boolean = false;
   permissionDepense!: PermissionDto;
 
-  constructor(
-    private depenseService: DepenseService,
-    protected router: Router
-  ) {}
+  constructor(private depenseService: DepenseService,
+    protected router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadDepenses();
@@ -63,10 +63,14 @@ export class DepenseComponent implements OnInit {
 
 
   deleteDepense(id: number | undefined): void {
-    if (id !== undefined && confirm("Voulez-vous vraiment supprimer cette dépense ?")) {
-      this.depenseService.deleteDepense(id).subscribe({
-        next: () => this.loadDepenses(),
-        error: (err) => console.error(err)
+    if (id !== undefined) {
+      this.notification.confirm("Voulez-vous vraiment supprimer cette dépense ?").then(ok => {
+        if (ok) {
+          this.depenseService.deleteDepense(id).subscribe({
+            next: () => this.loadDepenses(),
+            error: (err) => console.error(err)
+          });
+        }
       });
     }
   }

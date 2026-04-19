@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ArticleVenteService } from '../../../core/service/article-vente/article-vente.service';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { ArticleAchat } from '../../../model/article-achat.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-edit-article-vente',
@@ -22,13 +23,12 @@ export class EditArticleVenteComponent implements OnInit {
   selectedArticleAchatPrice: number | null = null;
   autoCalculated = false;
 
-  constructor(
-    private articleVenteService: ArticleVenteService,
+  constructor(private articleVenteService: ArticleVenteService,
     private articleAchatService: ArticleAchatService,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.articleId = Number(this.route.snapshot.paramMap.get('id'));
@@ -145,17 +145,17 @@ export class EditArticleVenteComponent implements OnInit {
       this.articleVenteService.updateArticleVente(this.articleId, articleData).subscribe({
         next: () => {
           this.isLoading = false;
-          alert('✓ Article mis à jour avec succès!');
+          this.notification.success('✓ Article mis à jour avec succès!');
           this.router.navigate(['/article-vente/listArticleVente']);
         },
         error: (err: any) => {
           this.isLoading = false;
           const errorMsg = err.error?.message || err.message || 'Impossible de mettre à jour l\'article';
-          alert('✗ Erreur: ' + errorMsg);
+          this.notification.error('✗ Erreur: ' + errorMsg);
         }
       });
     } else {
-      alert('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
     }
   }
 }

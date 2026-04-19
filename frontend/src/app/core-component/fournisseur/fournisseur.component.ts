@@ -7,6 +7,7 @@ import { NgForOf, NgIf, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ResponseDto } from '../../model/reponseDto.model';
 import { PermissionDto } from '../../model/permissionDto.model';
+import { NotificationService } from '../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-fournisseur',
@@ -70,7 +71,8 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
     moduleTitle: ''
   } as PermissionDto;
 
-  constructor(private fournisseurService: FournisseurService, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private fournisseurService: FournisseurService, private router: Router, private cdr: ChangeDetectorRef,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.getUserAuthData();
@@ -94,7 +96,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
       error: (err) => {
         this.isLoading = false;
         console.error('Error loading fournisseurs:', err);
-        alert('Erreur lors du chargement des fournisseurs');
+        this.notification.error('Erreur lors du chargement des fournisseurs');
       }
     });
   }
@@ -115,7 +117,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
       console.log('Viewing fournisseur:', id);
       this.router.navigate(['/fournisseur/viewFournisseur', id]);
     } else {
-      alert('ID fournisseur invalide');
+      this.notification.error('ID fournisseur invalide');
     }
   }
 
@@ -124,40 +126,40 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
       console.log('Editing fournisseur:', id);
       this.router.navigate(['/fournisseur/editFournisseur', id]);
     } else {
-      alert('ID fournisseur invalide');
+      this.notification.error('ID fournisseur invalide');
     }
   }
 
   deleteFournisseur(id: number | undefined): void {
     if (!id) {
-      alert('ID fournisseur invalide');
+      this.notification.error('ID fournisseur invalide');
       return;
     }
 
-    const confirmed = confirm('Êtes-vous sûr de vouloir supprimer ce fournisseur ?');
+    this.notification.confirm('Êtes-vous sûr de vouloir supprimer ce fournisseur ?').then(confirmed => {
+      if (confirmed) {
+        this.isDeleting = true;
+        console.log('Suppression du fournisseur:', id);
 
-    if (confirmed) {
-      this.isDeleting = true;
-      console.log('Suppression du fournisseur:', id);
-
-      this.fournisseurService.deleteFournisseur(id).subscribe({
-        next: (response) => {
-          console.log('Fournisseur supprimé:', response);
-          this.fournisseurList = this.fournisseurList.filter(f => f.id !== id);
-          this.isDeleting = false;
-          alert('✓ Fournisseur supprimé avec succès');
-          this.loadFournisseurs();
-        },
-        error: (err) => {
-          this.isDeleting = false;
-          console.error('Erreur lors de la suppression:', err);
-          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
-          alert('✗ Erreur: ' + errorMsg);
-        }
-      });
-    } else {
-      console.log('Suppression annulée');
-    }
+        this.fournisseurService.deleteFournisseur(id).subscribe({
+          next: (response) => {
+            console.log('Fournisseur supprimé:', response);
+            this.fournisseurList = this.fournisseurList.filter(f => f.id !== id);
+            this.isDeleting = false;
+            this.notification.success('✓ Fournisseur supprimé avec succès');
+            this.loadFournisseurs();
+          },
+          error: (err) => {
+            this.isDeleting = false;
+            console.error('Erreur lors de la suppression:', err);
+            const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+            this.notification.error('✗ Erreur: ' + errorMsg);
+          }
+        });
+      } else {
+        console.log('Suppression annulée');
+      }
+    });
   }
 
   getUserAuthData(): void {

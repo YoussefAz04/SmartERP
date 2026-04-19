@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-edit-categorie-fournisseur',
@@ -17,12 +18,11 @@ export class EditCategorieFournisseurComponent implements OnInit {
   errorMessage = '';
   categorieId!: number;
 
-  constructor(
-    private fournisseurService: FournisseurService,
+  constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.categorieId = Number(this.route.snapshot.paramMap.get('id'));
@@ -66,7 +66,7 @@ export class EditCategorieFournisseurComponent implements OnInit {
 
   onSubmit(): void {
     if (!this.categorieForm.valid) {
-      alert('Veuillez remplir correctement tous les champs');
+      this.notification.warning('Veuillez remplir correctement tous les champs');
       return;
     }
 
@@ -74,13 +74,13 @@ export class EditCategorieFournisseurComponent implements OnInit {
     this.fournisseurService.updateCategorieFournisseur(this.categorieId, this.categorieForm.value).subscribe({
       next: (data) => {
         console.log('Catégorie mise à jour avec succès', data);
-        alert('✓ Catégorie mise à jour avec succès');
+        this.notification.success('✓ Catégorie mise à jour avec succès');
         this.router.navigate(['/fournisseur/listCategorieFournisseur']);
         this.isLoading = false;
       },
       error: (err: any) => {
         console.error('Erreur lors de la mise à jour:', err);
-        alert('Erreur lors de la mise à jour: ' + (err.error?.message || err.message));
+        this.notification.error('Erreur lors de la mise à jour: ' + (err.error?.message || err.message));
         this.isLoading = false;
       }
     });

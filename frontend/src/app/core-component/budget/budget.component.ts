@@ -7,6 +7,7 @@ import {ResponseDto} from "../../model/reponseDto.model";
 import {PermissionDto} from "../../model/permissionDto.model";
 import {ProjetService} from "../../core/service/projet/projet.service";
 import {map, Observable} from "rxjs";
+import { NotificationService } from '../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-budget',
@@ -24,7 +25,8 @@ export class BudgetComponent implements OnInit{
    permissionBudget!: PermissionDto;
   constructor(private budgetService : BudgetService,
               protected router : Router,
-              private projetService : ProjetService) {
+              private projetService : ProjetService,
+    private notification: NotificationService) {
   }
   budgets : Budget[] = []
   loading: any;
@@ -46,11 +48,13 @@ export class BudgetComponent implements OnInit{
   }
 
   deleteBudget(id: number | undefined) {
-    if (confirm("Voulez-vous vraiment supprimer ce budget ?") && id) {
-      this.budgetService.deleteBudget(id).subscribe(() => {
-        this.loadBudgets();
-      });
-    }
+    this.notification.confirm("Voulez-vous vraiment supprimer ce budget ?").then(ok => {
+      if (ok && id) {
+        this.budgetService.deleteBudget(id).subscribe(() => {
+          this.loadBudgets();
+        });
+      }
+    });
   }
 
   loadBudgets() {

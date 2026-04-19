@@ -5,6 +5,7 @@ import { CategorieFournisseur } from '../../../model/categorieFournisseur.model'
 import { CommonModule, NgForOf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { routes } from '../../../core/helpers/routes';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-fournisseur',
@@ -24,11 +25,10 @@ export class AddFournisseurComponent implements OnInit {
   isLoading = false;
   submitted = false;
 
-  constructor(
-    private fournisseurService: FournisseurService,
+  constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
-    private router: Router
-  ) {}
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -81,18 +81,18 @@ export class AddFournisseurComponent implements OnInit {
         next: (data) => {
           console.log('Fournisseur ajouté avec succès:', data);
           this.isLoading = false;
-          alert('✓ Fournisseur ajouté avec succès!');
+          this.notification.success('✓ Fournisseur ajouté avec succès!');
           this.router.navigate(['/fournisseur/listFournisseur']);
         },
         error: (err: any) => {
           this.isLoading = false;
           console.error('Erreur:', err);
           const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter le fournisseur';
-          alert('✗ Erreur: ' + errorMsg);
+          this.notification.error('✗ Erreur: ' + errorMsg);
         }
       });
     } else {
-      alert('⚠ Veuillez remplir correctement tous les champs');
+      this.notification.warning('⚠ Veuillez remplir correctement tous les champs');
     }
   }
 

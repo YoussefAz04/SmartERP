@@ -6,6 +6,7 @@ import {Router, RouterLink} from "@angular/router";
 import {routes} from "../../../core/helpers/routes";
 import {EntrepriseService} from "../../../core/service/entreprise/entreprise.service";
 import {CommonModule} from "@angular/common";
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-entreprise',
@@ -26,11 +27,10 @@ export class AddEntrepriseComponent implements OnInit{
   protected readonly routes = routes;
   entrepriseFormGroup!: FormGroup;
 
-  constructor(
-    private entrepriseService: EntrepriseService,
+  constructor(private entrepriseService: EntrepriseService,
     private router: Router,
     private fb: FormBuilder,
-  ) {}
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -174,12 +174,12 @@ export class AddEntrepriseComponent implements OnInit{
       this.entrepriseService.ajouterEntreprise(this.entrepriseFormGroup.value).subscribe({
         next: (data) => {
           console.log("✅ Entreprise créée avec succès:", data);
-          alert('Entreprise créée avec succès!');
+          this.notification.success('Entreprise créée avec succès!');
           this.router.navigate(['/entreprise/listEntreprise']);
         },
         error: (err) => {
           console.error("❌ Erreur lors de la création:", err);
-          alert('Erreur lors de la création de l\'entreprise');
+          this.notification.error('Erreur lors de la création de l\'entreprise');
         }
       });
     } else {

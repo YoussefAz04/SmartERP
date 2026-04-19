@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ClientService } from '../../../core/service/client/client.service';
 import { Client } from '../../../model/client.model';
 import { CategorieClient } from '../../../model/categorieClient.model';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-edit-client',
@@ -19,12 +20,11 @@ export class EditClientComponent implements OnInit {
   clientId: number | null = null;
   isLoading = false;
 
-  constructor(
-    private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
     private clientService: ClientService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.clientId = Number(this.route.snapshot.paramMap.get('id'));
@@ -78,7 +78,7 @@ export class EditClientComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error loading client:', err);
-        alert('Erreur lors du chargement du client');
+        this.notification.error('Erreur lors du chargement du client');
         this.isLoading = false;
         this.router.navigate(['/client/listClient']);
       }
@@ -92,7 +92,7 @@ export class EditClientComponent implements OnInit {
 
   onSubmit(): void {
     if (!this.clientForm.valid) {
-      alert('Veuillez remplir correctement tous les champs');
+      this.notification.warning('Veuillez remplir correctement tous les champs');
       return;
     }
 
@@ -104,13 +104,13 @@ export class EditClientComponent implements OnInit {
       // UPDATE
       this.clientService.updateClient(this.clientId, formData).subscribe({
         next: (response: any) => {
-          alert('✓ Client modifié avec succès');
+          this.notification.success('✓ Client modifié avec succès');
           this.router.navigate(['/client/listClient']);
           this.isLoading = false;
         },
         error: (err: any) => {
           console.error('Error:', err);
-          alert('Erreur lors de la modification');
+          this.notification.error('Erreur lors de la modification');
           this.isLoading = false;
         }
       });
@@ -118,13 +118,13 @@ export class EditClientComponent implements OnInit {
       // ADD NEW
       this.clientService.addClient(formData, idCategorie).subscribe({
         next: (response: any) => {
-          alert('✓ Client ajouté avec succès');
+          this.notification.success('✓ Client ajouté avec succès');
           this.router.navigate(['/client/listClient']);
           this.isLoading = false;
         },
         error: (err: any) => {
           console.error('Error:', err);
-          alert('Erreur lors de l\'ajout');
+          this.notification.error('Erreur lors de l\'ajout');
           this.isLoading = false;
         }
       });

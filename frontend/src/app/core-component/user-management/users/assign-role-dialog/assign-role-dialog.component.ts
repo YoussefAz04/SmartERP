@@ -6,6 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Role } from '../../../../model/role.model';
+import { NotificationService } from '../../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-assign-role-dialog',
@@ -26,10 +27,9 @@ export class AssignRoleDialogComponent {
   userId: number;
   roles: Role[] = [];
 
-  constructor(
-    public dialogRef: MatDialogRef<AssignRoleDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
+  constructor(public dialogRef: MatDialogRef<AssignRoleDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private notification: NotificationService) {
     this.userId = data.userId;
     this.roles = data.roles || [];
     console.log('Dialog opened with roles:', this.roles);
@@ -37,7 +37,7 @@ export class AssignRoleDialogComponent {
 
   assignRole(): void {
     if (!this.selectedRoleId) {
-      alert('Veuillez sélectionner un rôle');
+      this.notification.warning('Veuillez sélectionner un rôle');
       return;
     }
     this.dialogRef.close({ roleId: this.selectedRoleId });

@@ -19,6 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CustomPaginationComponent } from '../custom-pagination/custom-pagination.component';
 import { AssignRoleDialogComponent } from './assign-role-dialog/assign-role-dialog.component';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-users',
@@ -72,13 +73,12 @@ export class UsersComponent implements OnInit {
   roles: Role[] = [];
   assignRoleForm!: FormGroup;
 
-  constructor(
-    private userService: UserService,
+  constructor(private userService: UserService,
     private router: Router,
     private roleService: RoleService,
     private fb: FormBuilder,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.getUserAuthData();
@@ -100,7 +100,7 @@ export class UsersComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erreur chargement utilisateurs', err);
-        alert('Erreur lors du chargement des utilisateurs');
+        this.notification.error('Erreur lors du chargement des utilisateurs');
       }
     });
   }
@@ -119,7 +119,7 @@ export class UsersComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error loading roles:', err);
-        alert('Erreur lors du chargement des rôles');
+        this.notification.error('Erreur lors du chargement des rôles');
       }
     });
   }
@@ -188,44 +188,44 @@ export class UsersComponent implements OnInit {
 
   deleteUser(userId: number): void {
     if (!userId) {
-      alert('❌ ID utilisateur invalide');
+      this.notification.error('❌ ID utilisateur invalide');
       return;
     }
 
     if (this.isDeleting) {
-      alert('Opération en cours...');
+      this.notification.info('Opération en cours...');
       return;
     }
 
-    const confirmed = confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.');
+    this.notification.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.').then(confirmed => {
+      if (confirmed) {
+        this.isDeleting = true;
+        this.deletingUserId = userId;
 
-    if (confirmed) {
-      this.isDeleting = true;
-      this.deletingUserId = userId;
+        this.userService.deleteUser(userId).subscribe({
+          next: (response: any) => {
+            console.log('User deleted successfully:', response);
 
-      this.userService.deleteUser(userId).subscribe({
-        next: (response: any) => {
-          console.log('User deleted successfully:', response);
+            this.allUsers = this.allUsers.filter(u => u.id !== userId);
+            this.tableData = this.tableData.filter(u => u.id !== userId);
 
-          this.allUsers = this.allUsers.filter(u => u.id !== userId);
-          this.tableData = this.tableData.filter(u => u.id !== userId);
+            this.isDeleting = false;
+            this.deletingUserId = null;
 
-          this.isDeleting = false;
-          this.deletingUserId = null;
+            this.notification.success('✓ Utilisateur supprimé avec succès');
+            this.loadUsers();
+          },
+          error: (err: any) => {
+            this.isDeleting = false;
+            this.deletingUserId = null;
 
-          alert('✓ Utilisateur supprimé avec succès');
-          this.loadUsers();
-        },
-        error: (err: any) => {
-          this.isDeleting = false;
-          this.deletingUserId = null;
-
-          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
-          console.error('Erreur suppression:', err);
-          alert('✗ Erreur lors de la suppression: ' + errorMsg);
-        }
-      });
-    }
+            const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+            console.error('Erreur suppression:', err);
+            this.notification.error('✗ Erreur lors de la suppression: ' + errorMsg);
+          }
+        });
+      }
+    });
   }
 
   togglePassword(index: number): void {
@@ -267,14 +267,14 @@ export class UsersComponent implements OnInit {
     this.roleService.assignRoleToUser(userId, roleId).subscribe({
       next: () => {
         console.log('Role assigned successfully');
-        alert('✓ Rôle assigné avec succès');
+        this.notification.success('✓ Rôle assigné avec succès');
         this.assignRoleForm.reset();
         this.loadUsers();
       },
       error: (err: any) => {
         console.error('Error assigning role:', err);
         const errorMsg = err.error?.message || 'Erreur inconnue';
-        alert('✗ Erreur lors de l\'assignation du rôle: ' + errorMsg);
+        this.notification.error('✗ Erreur lors de l\'assignation du rôle: ' + errorMsg);
       }
     });
   }

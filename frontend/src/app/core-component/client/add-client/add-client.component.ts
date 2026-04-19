@@ -6,6 +6,7 @@ import {CommonModule, NgForOf} from "@angular/common";
 import {PaginatorModule} from "primeng/paginator";
 import {routes} from "../../../core/helpers/routes";
 import {Router, RouterLink} from "@angular/router";
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-client',
@@ -26,11 +27,10 @@ export class AddClientComponent implements OnInit{
   isLoading = false;
   submitted = false;
 
-  constructor(
-    private clientService: ClientService,
+  constructor(private clientService: ClientService,
     private fb: FormBuilder,
-    private router: Router
-  ) {}
+    private router: Router,
+    private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadCategorie();
@@ -79,18 +79,18 @@ export class AddClientComponent implements OnInit{
         next: (data) => {
           console.log('Client ajouté avec succès:', data);
           this.isLoading = false;
-          alert('✓ Client ajouté avec succès!');
+          this.notification.success('✓ Client ajouté avec succès!');
           this.router.navigate(['/client/listClient']);
         },
         error: (err: any) => {
           this.isLoading = false;
           console.error('Erreur:', err);
           const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter le client';
-          alert('✗ Erreur: ' + errorMsg);
+          this.notification.error('✗ Erreur: ' + errorMsg);
         }
       });
     } else {
-      alert('⚠ Veuillez remplir correctement tous les champs');
+      this.notification.warning('⚠ Veuillez remplir correctement tous les champs');
     }
   }
 

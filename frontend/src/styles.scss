@@ -2313,3 +2313,162 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
     padding: 16px 14px 22px;
   }
 }
+
+/* =========================================================================
+   Modern notification styling (NotificationService toasts & confirm dialog)
+   ========================================================================= */
+.smart-toast.swal2-popup.swal2-toast {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 10px 14px;
+  padding: 14px 18px;
+  margin: 12px;
+  min-width: 320px;
+  max-width: 420px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #1f2937;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  position: relative;
+  font-family: inherit;
+}
+
+.smart-toast.swal2-popup.swal2-toast::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: #6366f1;
+}
+
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-success::before { background: #10b981; }
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-error::before   { background: #ef4444; }
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-warning::before { background: #f59e0b; }
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-info::before    { background: #3b82f6; }
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-question::before{ background: #8b5cf6; }
+
+.smart-toast.swal2-popup.swal2-toast .swal2-icon {
+  grid-row: 1 / span 2;
+  margin: 2px 0 0 0;
+  width: 32px;
+  height: 32px;
+  border-width: 2px;
+}
+
+.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content,
+.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-success-ring,
+.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-success-line-tip,
+.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-success-line-long,
+.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-x-mark-line-left,
+.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-x-mark-line-right {
+  font-size: 1.1em;
+}
+
+.smart-toast .smart-toast-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.smart-toast .smart-toast-body {
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #4b5563;
+  text-align: left;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.smart-toast .smart-toast-progress {
+  background: rgba(99, 102, 241, 0.6);
+}
+.smart-toast.swal2-icon-success .smart-toast-progress { background: rgba(16, 185, 129, 0.65); }
+.smart-toast.swal2-icon-error   .smart-toast-progress { background: rgba(239, 68, 68, 0.65); }
+.smart-toast.swal2-icon-warning .smart-toast-progress { background: rgba(245, 158, 11, 0.7); }
+.smart-toast.swal2-icon-info    .smart-toast-progress { background: rgba(59, 130, 246, 0.65); }
+
+/* Confirm dialog */
+.smart-dialog.swal2-popup {
+  border-radius: 18px;
+  padding: 28px 26px 22px;
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25);
+  font-family: inherit;
+}
+
+.smart-dialog .smart-dialog-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.smart-dialog .smart-dialog-body {
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.smart-dialog .smart-dialog-confirm,
+.smart-dialog .smart-dialog-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 9px 20px;
+  margin: 0 6px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.smart-dialog .smart-dialog-confirm {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.35);
+}
+.smart-dialog .smart-dialog-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
+}
+
+.smart-dialog .smart-dialog-cancel {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+.smart-dialog .smart-dialog-cancel:hover {
+  background: #e5e7eb;
+}
+
+/* Dark mode support */
+.dark .smart-toast.swal2-popup.swal2-toast {
+  background: #1f2937;
+  color: #f3f4f6;
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+.dark .smart-toast .smart-toast-title { color: #f9fafb; }
+.dark .smart-toast .smart-toast-body  { color: #d1d5db; }
+
+.dark .smart-dialog.swal2-popup {
+  background: #111827;
+  color: #f3f4f6;
+}
+.dark .smart-dialog .smart-dialog-title { color: #f9fafb; }
+.dark .smart-dialog .smart-dialog-body  { color: #d1d5db; }
+.dark .smart-dialog .smart-dialog-cancel {
+  background: #1f2937;
+  color: #e5e7eb;
+  border-color: #374151;
+}
+.dark .smart-dialog .smart-dialog-cancel:hover { background: #374151; }

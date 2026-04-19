@@ -6,6 +6,7 @@ import { CommandeAchatService } from '../../../core/service/commande-achat/comma
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { EntrepriseService } from '../../../core/service/entreprise/entreprise.service';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-commande-achat',
@@ -37,7 +38,8 @@ export class AddCommandeAchatComponent implements OnInit {
     private articleAchatService: ArticleAchatService,
     private entrepriseService: EntrepriseService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -415,7 +417,7 @@ export class AddCommandeAchatComponent implements OnInit {
     next: (response: any) => {
       console.log('✅✅✅ SUCCESS! Response:', response);
       this.isLoading = false;
-      alert('✅ Commande créée avec succès!');
+      this.notification.success('✅ Commande créée avec succès!');
       this.router.navigate(['/commande-achat/list']);
     },
     error: (err: any) => {
@@ -423,7 +425,7 @@ export class AddCommandeAchatComponent implements OnInit {
       this.isLoading = false;
       const errorMsg = err?.error?.message || err?.message || 'Erreur lors de la création';
       this.errorMessage = errorMsg;
-      alert('❌ ' + errorMsg);
+      this.notification.error('❌ ' + errorMsg);
     }
   });
 }

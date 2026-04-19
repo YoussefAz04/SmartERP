@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { PDFDocument } from 'pdf-lib';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 interface Zone {
   type: string;
@@ -64,7 +65,8 @@ export class PdfZoneSelectorComponent implements OnInit {
   // Nouvelles propriétés pour stocker les dimensions réelles des pages PDF
   private pageDimensions: { width: number, height: number }[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    private notification: NotificationService) {}
 
   ngOnInit() {
     console.log('PDF Zone Selector initialisé');
@@ -104,12 +106,12 @@ export class PdfZoneSelectorComponent implements OnInit {
 
       } catch (error) {
         console.error('Erreur lors du chargement du PDF:', error);
-        alert('Erreur lors du chargement du PDF. Veuillez vérifier le fichier.');
+        this.notification.error('Erreur lors du chargement du PDF. Veuillez vérifier le fichier.');
       } finally {
         this.isLoading = false;
       }
     } else {
-      alert('Veuillez sélectionner un fichier PDF valide');
+      this.notification.warning('Veuillez sélectionner un fichier PDF valide');
     }
   }
 
@@ -418,7 +420,7 @@ export class PdfZoneSelectorComponent implements OnInit {
 
   async saveZonesToBackend() {
     if (this.zones.length === 0) {
-      alert('Aucune zone à sauvegarder');
+      this.notification.show('Aucune zone à sauvegarder');
       return;
     }
 
@@ -427,10 +429,10 @@ export class PdfZoneSelectorComponent implements OnInit {
     try {
       const response = await this.http.post(`${environment.apiUrl}/api/zones/save-all`, this.zones).toPromise();
       console.log('Réponse du serveur:', response);
-      alert(`${this.zones.length} zone(s) enregistrée(s) avec succès dans la base de données.`);
+      this.notification.success(`${this.zones.length} zone(s) enregistrée(s) avec succès dans la base de données.`);
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des zones :', error);
-      alert('Échec de l\'enregistrement. Vérifiez que le serveur backend est démarré sur localhost:8020');
+      this.notification.error('Échec de l\'enregistrement. Vérifiez que le serveur backend est démarré sur localhost:8020');
     } finally {
       this.isLoading = false;
     }
@@ -438,7 +440,7 @@ export class PdfZoneSelectorComponent implements OnInit {
 
   async extractZonesContent() {
     if (this.zones.length === 0) {
-      alert('Aucune zone à extraire');
+      this.notification.show('Aucune zone à extraire');
       return;
     }
 
@@ -455,13 +457,13 @@ export class PdfZoneSelectorComponent implements OnInit {
       this.extractionResults = response.results || [];
 
       if (this.extractionResults.length > 0) {
-        alert(`Contenu extrait de ${this.extractionResults.length} zone(s)`);
+        this.notification.show(`Contenu extrait de ${this.extractionResults.length} zone(s)`);
         console.log('Résultats d\'extraction:', this.extractionResults);
       }
 
     } catch (error) {
       console.error('Erreur lors de l\'extraction :', error);
-      alert('Échec de l\'extraction. Vérifiez le serveur backend.');
+      this.notification.error('Échec de l\'extraction. Vérifiez le serveur backend.');
     } finally {
       this.isLoading = false;
     }
