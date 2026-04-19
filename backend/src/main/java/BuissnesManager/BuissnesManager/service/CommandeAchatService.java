@@ -349,11 +349,11 @@ public class CommandeAchatService {
 
         // Enforce valid transitions
         String currentStatut = commande.getStatut();
-        if ("ANNULEE".equals(currentStatut) && !"EN_ATTENTE".equals(statut)) {
+        if ("ANNULEE".equals(currentStatut)) {
             throw new RuntimeException("Une commande annulée ne peut pas être modifiée.");
         }
-        if ("RECUE".equals(currentStatut) && !"ANNULEE".equals(statut)) {
-            throw new RuntimeException("Une commande reçue ne peut être qu'annulée.");
+        if ("RECUE".equals(currentStatut)) {
+            throw new RuntimeException("Une commande reçue ne peut être modifiée que via l'annulation.");
         }
 
         commande.setStatut(statut);
