@@ -98,6 +98,13 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
   padding: 8px 0;
 }
 
+.dashboard-shell {
+  padding: 4px 0 12px;
+  background:
+    radial-gradient(circle at 8% 2%, rgba($indigo, 0.1), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba($emerald, 0.07), transparent 26%);
+}
+
 // ── Dashboard Header ───────────────────────────────────────
 .db-header {
   background: linear-gradient(135deg, $dark 0%, $slate 50%, #2D3E5F 100%);
@@ -150,6 +157,23 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
     }
   }
 
+  &__eyebrow {
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(224, 231, 255, 0.72);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
   .enterprise-tag {
     display: inline-block;
     margin-left: 12px;
@@ -165,6 +189,9 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
   }
 
   .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 8px 20px;
     border-radius: 10px;
     font-size: 13px;
@@ -180,11 +207,72 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
       border-color: rgba(255, 255, 255, 0.3);
     }
   }
+
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #a7f3d0;
+  }
 }
 
 // ── Section Wrapper ─��──────────────────────────────────────
 .db-section {
   margin-bottom: 32px;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(255, 255, 255, 0.82);
+  color: $text;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
+  transition: all 0.28s ease;
+
+  i {
+    font-size: 16px;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 26px rgba(15, 23, 42, 0.13);
+  }
+
+  &--indigo {
+    color: #4f46e5;
+  }
+
+  &--amber {
+    color: #d97706;
+  }
+
+  &--emerald {
+    color: #059669;
+  }
+
+  &--slate {
+    color: #334155;
+  }
 }
 
 // ── Stats Grid ─────────────────────────────────────────────
@@ -729,6 +817,12 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
 
 // ── Dark Mode Support ───────────────────────────────────────
 :host-context(.dark) {
+  .dashboard-shell {
+    background:
+      radial-gradient(circle at 10% 4%, rgba($indigo, 0.2), transparent 32%),
+      radial-gradient(circle at 100% 0%, rgba($emerald, 0.16), transparent 26%);
+  }
+
   .db-header {
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
   }
@@ -787,6 +881,13 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
       color: #fde68a;
     }
   }
+
+  .quick-action {
+    background: rgba(15, 23, 42, 0.76);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: #e2e8f0;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+  }
 }
 
 // ── Responsive Design ──────────────────────────────────────
@@ -802,6 +903,14 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
       flex-direction: column;
       align-items: flex-start;
     }
+
+    &__meta {
+      justify-content: flex-start;
+    }
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .stats-grid {
@@ -847,6 +956,10 @@ $grad-amber-orange: linear-gradient(135deg, $amber 0%, #F97316 100%);
   }
 
   .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
     grid-template-columns: 1fr;
   }
 
