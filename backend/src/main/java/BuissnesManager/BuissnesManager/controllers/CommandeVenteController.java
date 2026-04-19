@@ -94,9 +94,13 @@ public class CommandeVenteController {
         try {
             CommandeVente updated = commandeVenteService.updateCommande(id, dto);
             return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            logger.error("Error updating commande: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
         } catch (Exception e) {
             logger.error("Error updating commande: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorBody("Erreur lors de la mise à jour de la commande"));
         }
     }
 
@@ -104,10 +108,17 @@ public class CommandeVenteController {
     public ResponseEntity<?> deleteCommande(@PathVariable Long id) {
         try {
             commandeVenteService.deleteCommande(id);
-            return ResponseEntity.ok("Commande deleted successfully");
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "Commande deleted successfully");
+            body.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.ok(body);
+        } catch (RuntimeException e) {
+            logger.error("Error deleting commande: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
         } catch (Exception e) {
             logger.error("Error deleting commande: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorBody("Erreur lors de la suppression"));
         }
     }
 
@@ -121,9 +132,13 @@ public class CommandeVenteController {
             
             logger.info("? [VALIDATION] Invoice created successfully with ID: {}", facture.getId());
             return ResponseEntity.ok(facture);
+        } catch (RuntimeException e) {
+            logger.error("? [VALIDATION] Error during validation: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
         } catch (Exception e) {
             logger.error("? [VALIDATION] Error during validation: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorBody("Erreur lors de la validation de la commande"));
         }
     }
 
@@ -132,9 +147,13 @@ public class CommandeVenteController {
         try {
             CommandeVente commande = commandeVenteService.annulerCommande(id);
             return ResponseEntity.ok(commande);
+        } catch (RuntimeException e) {
+            logger.error("Error cancelling commande: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
         } catch (Exception e) {
             logger.error("Error cancelling commande: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorBody("Erreur lors de l'annulation"));
         }
     }
 
@@ -142,9 +161,20 @@ public class CommandeVenteController {
     public ResponseEntity<?> livrerCommande(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(commandeVenteService.livrerCommande(id));
+        } catch (RuntimeException e) {
+            logger.error("Error delivering commande: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
         } catch (Exception e) {
             logger.error("Error delivering commande: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errorBody("Erreur lors de la livraison"));
         }
+    }
+
+    private Map<String, Object> errorBody(String message) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", message);
+        body.put("timestamp", System.currentTimeMillis());
+        return body;
     }
 }
