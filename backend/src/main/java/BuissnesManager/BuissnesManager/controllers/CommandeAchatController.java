@@ -89,7 +89,7 @@ public class CommandeAchatController {
         } catch (Exception e) {
             logger.error("❌ Error creating commande: {}", e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", e.getMessage());
+            errorResponse.put("message", e.getMessage());
             errorResponse.put("details", e.getCause() != null ? e.getCause().getMessage() : "No details");
             errorResponse.put("timestamp", System.currentTimeMillis());
             return ResponseEntity.status(400).body(errorResponse);
