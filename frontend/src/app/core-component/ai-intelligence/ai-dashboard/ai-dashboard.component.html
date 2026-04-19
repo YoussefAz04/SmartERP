@@ -1,7 +1,13 @@
 <div class="ai-module-wrapper">
+  <div class="ai-ambient-bg" aria-hidden="true">
+    <span class="ambient-orb orb-primary"></span>
+    <span class="ambient-orb orb-secondary"></span>
+    <span class="ambient-grid"></span>
+  </div>
 
   <!-- Header -->
   <div class="ai-header">
+    <div class="ai-header-glow" aria-hidden="true"></div>
     <div class="ai-header-left">
       <div class="ai-badge">
         <i class="fas fa-brain"></i>
@@ -9,9 +15,31 @@
       </div>
       <h1>Tableau de Bord Analytique</h1>
       <p class="ai-subtitle">Analyses prédictives et recommandations stratégiques</p>
+      <div class="hero-highlights" *ngIf="dashboard && !loading">
+        <div class="hero-highlight">
+          <span class="hero-highlight-label">Meilleur mois</span>
+          <strong>{{ dashboard.salesAnalysis.bestMonth }}</strong>
+        </div>
+        <div class="hero-highlight">
+          <span class="hero-highlight-label">Fiabilité IA</span>
+          <strong>{{ dashboard.forecast.confidenceScore | number:'1.0-0' }}%</strong>
+        </div>
+        <div class="hero-highlight">
+          <span class="hero-highlight-label">Prévision</span>
+          <strong>{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} TND</strong>
+        </div>
+      </div>
     </div>
     <div class="ai-header-right">
-      <span class="date-chip">{{ today | date: 'd MMMM yyyy' }}</span>
+      <div class="header-status-card" *ngIf="dashboard && !loading">
+        <span class="status-label">Score analytique</span>
+        <strong>{{ aiQualityScore }}%</strong>
+        <small>Basé sur la confiance et les priorités</small>
+      </div>
+      <span class="date-chip">
+        <i class="far fa-calendar-alt"></i>
+        {{ today | date: 'd MMMM yyyy' }}
+      </span>
       <button class="btn-refresh" (click)="refresh()" [disabled]="isRefreshing">
         <i class="fas fa-sync-alt" [class.fa-spin]="isRefreshing"></i>
         Actualiser
@@ -21,22 +49,34 @@
 
   <div class="ai-quick-insights" *ngIf="dashboard && !loading">
     <div class="insight-pill">
-      <span class="pill-label">Qualité IA</span>
-      <span class="pill-value">{{ aiQualityScore }}%</span>
+      <div class="pill-icon"><i class="fas fa-sparkles"></i></div>
+      <div class="pill-content">
+        <span class="pill-label">Qualité IA</span>
+        <span class="pill-value">{{ aiQualityScore }}%</span>
+      </div>
     </div>
     <div class="insight-pill">
-      <span class="pill-label">Confiance prévision</span>
-      <span class="pill-value" [ngClass]="confidenceLevelClass">
-        {{ dashboard.forecast.confidenceScore | number:'1.0-0' }}% · {{ confidenceLevelLabel }}
-      </span>
+      <div class="pill-icon pill-icon-secondary"><i class="fas fa-chart-line"></i></div>
+      <div class="pill-content">
+        <span class="pill-label">Confiance prévision</span>
+        <span class="pill-value" [ngClass]="confidenceLevelClass">
+          {{ dashboard.forecast.confidenceScore | number:'1.0-0' }}% · {{ confidenceLevelLabel }}
+        </span>
+      </div>
     </div>
     <div class="insight-pill">
-      <span class="pill-label">Recommandations prioritaires</span>
-      <span class="pill-value">{{ criticalRecs.length + highRecs.length }}</span>
+      <div class="pill-icon pill-icon-warning"><i class="fas fa-bell"></i></div>
+      <div class="pill-content">
+        <span class="pill-label">Recommandations prioritaires</span>
+        <span class="pill-value">{{ criticalRecs.length + highRecs.length }}</span>
+      </div>
     </div>
     <div class="insight-pill">
-      <span class="pill-label">Recommandations totales</span>
-      <span class="pill-value">{{ dashboard.recommendations.length }}</span>
+      <div class="pill-icon pill-icon-success"><i class="fas fa-tasks"></i></div>
+      <div class="pill-content">
+        <span class="pill-label">Recommandations totales</span>
+        <span class="pill-value">{{ dashboard.recommendations.length }}</span>
+      </div>
     </div>
   </div>
 
