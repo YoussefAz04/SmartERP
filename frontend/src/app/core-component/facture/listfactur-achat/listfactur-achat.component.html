@@ -178,7 +178,7 @@
           <td class="payment-cell">
             <span class="payment-badge">{{ facture.modePaiement }}</span>
           </td>
-          <td class="status-cell">
+          <td class="status-cell" [class.menu-open]="statusMenuOpen === facture.id">
             <div class="status-wrapper">
               <span class="status-badge" [ngClass]="getStatusClass(facture.statut)"
                     (click)="toggleStatusMenu(facture.id)">
