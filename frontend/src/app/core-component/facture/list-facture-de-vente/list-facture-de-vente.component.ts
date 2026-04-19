@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import {Component, OnInit, HostListener} from '@angular/core';
+import {Router, RouterLink} from "@angular/router";
 import {FactureVente} from "../../../model/FactureDeVente.model";
 import {FactureDeVenteServiceService} from "../../../core/service/factureDeVente/facture-de-vente-service.service";
 import {CommonModule, DecimalPipe, NgForOf, NgIf} from "@angular/common";
@@ -26,7 +26,8 @@ import Swal from 'sweetalert2';
     ReactiveFormsModule,
     SharedModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './list-facture-de-vente.component.html',
   styleUrl: './list-facture-de-vente.component.scss'
@@ -486,6 +487,14 @@ export class ListFactureDeVenteComponent implements OnInit{
 
   closeStatusMenu() {
     this.statusMenuOpen = null;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.status-cell')) {
+      this.closeStatusMenu();
+    }
   }
 
   getUserAuthData(){

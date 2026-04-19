@@ -612,6 +612,34 @@ $text-light: #94a3b8;
               }
             }
 
+            &.receive {
+              background: #e0f2fe;
+              color: #0284c7;
+              border-color: #bae6fd;
+
+              &:hover {
+                background: #0284c7;
+                color: white;
+                border-color: #0284c7;
+                transform: translateY(-1px);
+                box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25);
+              }
+            }
+
+            &.invoice {
+              background: #ede9fe;
+              color: #7c3aed;
+              border-color: #ddd6fe;
+
+              &:hover {
+                background: #7c3aed;
+                color: white;
+                border-color: #7c3aed;
+                transform: translateY(-1px);
+                box-shadow: 0 3px 8px rgba(124, 58, 237, 0.25);
+              }
+            }
+
             &.delete {
               background: #fef2f2;
               color: #dc2626;
