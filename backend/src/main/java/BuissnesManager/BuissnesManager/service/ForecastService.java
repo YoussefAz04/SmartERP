@@ -121,8 +121,11 @@ public class ForecastService {
 
         // Confidence score: blend data-density with in-sample fit quality so a
         // steady series scores higher than an erratic one, capped at 95%.
+        // Always normalise density against a full year of expected data — previously
+        // `max(6, observedCurrentMonths)` let density hit 33% on just 2 months of data,
+        // overselling the confidence of very small samples.
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
-        double expectedMonths = hasPrevYear ? 24.0 : Math.max(6.0, observedCurrentMonths);
+        double expectedMonths = hasPrevYear ? 24.0 : 12.0;
         double density = Math.min(1.0, nonZeroMonths / expectedMonths);
         double fit = computeInSampleFitScore(historicalSeries, smoothed);
         double confidence = Math.min(95.0, (0.6 * density + 0.4 * fit) * 100.0);
