@@ -223,11 +223,11 @@ public class ForecastService {
 
         // Initialise level and trend. Level = first deseasonalised value;
         // trend = (second - first) if we have two observations, else 0.
-        double firstSeasonal = hasSeasonal ? seasonalForIndex(0, data.size(), seasonalIndices) : 1.0;
+        double firstSeasonal = hasSeasonal ? seasonalForIndex(0, seasonalIndices) : 1.0;
         double level = data.get(0) / safe(firstSeasonal);
         double trend = 0.0;
         if (data.size() >= 2) {
-            double secondSeasonal = hasSeasonal ? seasonalForIndex(1, data.size(), seasonalIndices) : 1.0;
+            double secondSeasonal = hasSeasonal ? seasonalForIndex(1, seasonalIndices) : 1.0;
             double second = data.get(1) / safe(secondSeasonal);
             trend = second - level;
         }
@@ -235,7 +235,7 @@ public class ForecastService {
         fitted.add(data.get(0));
 
         for (int t = 1; t < data.size(); t++) {
-            double seasonal = hasSeasonal ? seasonalForIndex(t, data.size(), seasonalIndices) : 1.0;
+            double seasonal = hasSeasonal ? seasonalForIndex(t, seasonalIndices) : 1.0;
             // One-step-ahead forecast before observing data[t]:
             double oneStep = Math.max(0.0, (level + trend) * seasonal);
             fitted.add(oneStep);
@@ -249,14 +249,11 @@ public class ForecastService {
 
     /**
      * Returns the seasonal index to apply to historical position {@code t} in the
-     * fitted series. When a prior year is present the first 12 positions map to
-     * that prior year's calendar months (Jan=idx 0, Dec=idx 11), and the next
-     * positions map to the current year's months in the same way. Otherwise we
-     * map position 0..11 to Jan..Dec of the current year.
+     * fitted series. The series is built as
+     * <code>[prevYear Jan..Dec][currentYear Jan..current]</code>, so the calendar
+     * month is simply {@code t % 12} — both blocks start in January.
      */
-    private double seasonalForIndex(int t, int seriesSize, double[] seasonalIndices) {
-        // The series is built as [prevYear Jan..Dec][currentYear Jan..current],
-        // so calendar month index is simply t % 12 — both blocks start in January.
+    private double seasonalForIndex(int t, double[] seasonalIndices) {
         int monthIdx = t % 12;
         return safe(seasonalIndices[monthIdx]);
     }

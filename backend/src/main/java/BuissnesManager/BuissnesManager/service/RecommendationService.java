@@ -241,7 +241,8 @@ public class RecommendationService {
         // user gets a single summary rather than five noisy alerts.
         if (topProducts != null && topProducts.size() > 10) {
             int slowCount = 0;
-            for (int i = topProducts.size() - 1; i >= Math.max(0, topProducts.size() - 5); i--) {
+            int start = Math.max(0, topProducts.size() - 5);
+            for (int i = topProducts.size() - 1; i >= start; i--) {
                 Object[] row = topProducts.get(i);
                 if (row != null && row.length > 1 && row[1] != null
                         && ((Number) row[1]).longValue() > 0) {
