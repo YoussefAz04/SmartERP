@@ -110,7 +110,7 @@
       top: -50%; left: -60%;
       width: 40%; height: 200%;
       background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
-      animation: iconShine 3.5s ease-in-out infinite 1.2s;
+      animation: iconShine 3.5s ease-in-out infinite 1s;
     }
 
     i { font-size: 22px; color: #fff; position: relative; z-index: 1; }
@@ -555,7 +555,7 @@
     animation: rowFadeIn 0.35s ease both;
 
     // Stagger rows on initial load
-    @for $i from 1 through 20 {
+    @for $i from 1 through 15 {
       &:nth-child(#{$i}) { animation-delay: #{$i * 0.04}s; }
     }
 
