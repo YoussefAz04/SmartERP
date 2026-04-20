@@ -66,20 +66,19 @@
               <!-- Prenom Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                  <label class="form-label">Prénom <span class="optional-badge">Optionnel</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-user input-icon"></i>
                     <input
                       type="text"
                       class="form-control"
                       formControlName="prenom"
-                      placeholder="Entrez le prénom"
+                      placeholder="Entrez le prénom (optionnel)"
                       [class.is-invalid]="isFieldInvalid('prenom')"
                       aria-label="Prénom du fournisseur">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('prenom')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('prenom')?.hasError('required')">Le prénom est requis</span>
                     <span *ngIf="fournisseurForm.get('prenom')?.hasError('minlength')">Min 2 caractères</span>
                   </span>
                 </div>

@@ -1,125 +1,166 @@
-// ========================================
-// Add Fournisseur Component - Modern Styling
-// ========================================
+// ==========================================================================
+// Add Fournisseur – Modern Fluid UI
+// ==========================================================================
 
-// Variables
-$primary-color: #ff9a44;
-$primary-dark: #ff8c2e;
-$primary-darker: #ff7d1a;
-$primary-light: rgba(255, 154, 68, 0.1);
-$secondary-color: #092C4C;
-$danger-color: #dc3545;
-$warning-color: #ffc107;
-$warning-bg: #fff3cd;
-$warning-text: #856404;
-$success-color: #28a745;
-$gray-light: #f8f9fa;
-$gray-border: #e8ecef;
-$gray-text: #6c757d;
-$text-dark: #2d3748;
-$text-muted: #718096;
-$section-bg: #fafbfc;
+// Design tokens
+$primary:        #ff9a44;
+$primary-dark:   #ff8224;
+$primary-darker: #f26d08;
+$primary-soft:   rgba(255, 154, 68, 0.12);
+$primary-ring:   rgba(255, 154, 68, 0.22);
 
-// ========================================
+$secondary:      #0d2e52;
+$secondary-2:    #164a86;
+
+$danger:         #e53e3e;
+$danger-soft:    #fff5f5;
+$warning:        #f6ad37;
+$warning-bg:     #fffaf0;
+$warning-text:   #744210;
+$success:        #2f9e44;
+
+$ink:            #1a2236;
+$ink-soft:       #4a5568;
+$muted:          #8792a2;
+$placeholder:    #adb5c0;
+
+$border:         #e6eaf0;
+$border-strong:  #cbd5e0;
+$bg-subtle:      #f7f9fc;
+$bg-section:     #fbfcfe;
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+$shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+$shadow-md: 0 4px 12px rgba(16, 24, 40, 0.06), 0 2px 4px rgba(16, 24, 40, 0.04);
+$shadow-lg: 0 20px 40px rgba(9, 44, 76, 0.08), 0 8px 16px rgba(9, 44, 76, 0.04);
+
+$ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Host wrapper — provides consistent breathing room on any screen
+:host {
+  display: block;
+  padding: clamp(12px, 2vw, 28px) clamp(8px, 2vw, 24px);
+  color: $ink;
+}
+
+// ==========================================================================
 // Page Header
-// ========================================
+// ==========================================================================
 .page-header {
-  margin-bottom: 28px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid $gray-border;
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.5vw, 28px);
+  margin-bottom: clamp(18px, 2.5vw, 26px);
+  box-shadow: $shadow-sm;
+  overflow: hidden;
 
-  .row {
-    display: flex;
-    align-items: center;
+  // Subtle gradient accent bar
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: linear-gradient(180deg, $primary 0%, $primary-dark 100%);
+    border-radius: $radius-lg 0 0 $radius-lg;
   }
 
-  .col {
-    flex: 1;
-  }
+  .row { display: flex; align-items: center; }
+  .col { flex: 1; min-width: 0; }
 
   h3.page-title {
-    font-size: 22px;
+    font-size: clamp(18px, 2vw, 22px);
     font-weight: 700;
-    color: $text-dark;
+    color: $ink;
     margin: 0 0 8px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    letter-spacing: -0.01em;
 
     .title-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, $primary-color, $primary-dark);
-      border-radius: 10px;
-      color: white;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, $primary, $primary-dark);
+      border-radius: $radius-md;
+      color: #fff;
+      box-shadow: 0 6px 14px rgba(255, 154, 68, 0.35);
 
-      i {
-        font-size: 18px;
-      }
+      i { font-size: 18px; }
     }
   }
 
+  // Clean breadcrumb — own separators only, prevents overlap with any global bootstrap styles
   .breadcrumb {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
+    gap: 6px 10px;
+    font-size: 12.5px;
+    background: transparent;
 
     .breadcrumb-item {
-      color: $text-muted;
+      color: $muted;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      // Remove any default Bootstrap "/" separator
+      &::before { content: none !important; }
+      padding-left: 0 !important;
 
       a {
-        color: $primary-color;
+        color: $primary;
         text-decoration: none;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 4px;
-        transition: color 0.2s ease;
-
-        i {
-          font-size: 13px;
-        }
-
-        &:hover {
-          color: $primary-dark;
-          text-decoration: underline;
-        }
+        font-weight: 500;
+        transition: color 0.2s $ease;
+        i { font-size: 13px; }
+        &:hover { color: $primary-dark; }
       }
 
-      &.active {
-        color: $text-muted;
-      }
-
-      &:not(:last-child)::after {
-        content: "›";
-        margin-left: 6px;
-        color: #cbd5e0;
+      & + .breadcrumb-item::before {
+        content: "›" !important;
+        color: $border-strong;
         font-size: 14px;
+        margin-right: 4px;
       }
+
+      &.active { color: $ink-soft; font-weight: 500; }
     }
   }
 }
 
-// ========================================
+// ==========================================================================
 // Form Card
-// ========================================
+// ==========================================================================
 .form-card {
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  background: white;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  background: #fff;
   overflow: hidden;
 
   .card-header {
-    background: linear-gradient(135deg, $secondary-color 0%, #154272 100%);
-    padding: 24px 28px;
+    background:
+      radial-gradient(1200px 300px at -10% -20%, rgba(255, 154, 68, 0.25) 0%, transparent 60%),
+      linear-gradient(135deg, $secondary 0%, $secondary-2 100%);
+    padding: clamp(18px, 2.4vw, 26px) clamp(20px, 3vw, 30px);
     border-bottom: none;
+    position: relative;
 
     .header-content {
       display: flex;
@@ -131,227 +172,241 @@ $section-bg: #fafbfc;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 52px;
-      height: 52px;
-      background: rgba(255, 154, 68, 0.2);
-      border-radius: 12px;
-      border: 2px solid rgba(255, 154, 68, 0.4);
+      width: 54px;
+      height: 54px;
+      background: rgba(255, 154, 68, 0.18);
+      border: 1.5px solid rgba(255, 154, 68, 0.45);
+      border-radius: $radius-md;
+      backdrop-filter: blur(6px);
       flex-shrink: 0;
 
-      i {
-        font-size: 24px;
-        color: $primary-color;
-      }
+      i { font-size: 24px; color: $primary; }
     }
 
     .card-title {
-      font-size: 18px;
+      font-size: clamp(16px, 1.8vw, 18px);
       font-weight: 700;
-      color: white;
+      color: #fff;
       margin: 0 0 4px 0;
+      letter-spacing: -0.01em;
     }
 
     .card-subtitle {
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.78);
       margin: 0;
     }
   }
 
   .card-body {
-    padding: 28px;
+    padding: clamp(18px, 2.5vw, 30px);
   }
 }
 
-// ========================================
+// ==========================================================================
 // Form Sections
-// ========================================
+// ==========================================================================
 .form-section {
-  margin-bottom: 28px;
-  padding: 20px;
-  background: $section-bg;
-  border-radius: 10px;
-  border: 1px solid $gray-border;
+  margin-bottom: clamp(18px, 2vw, 24px);
+  padding: clamp(16px, 2vw, 22px);
+  background: $bg-section;
+  border-radius: $radius-md;
+  border: 1px solid $border;
+  transition: border-color 0.25s $ease, box-shadow 0.25s $ease;
 
-  &:last-of-type {
-    margin-bottom: 0;
+  &:last-of-type { margin-bottom: 0; }
+
+  &:hover {
+    border-color: rgba(255, 154, 68, 0.35);
+    box-shadow: 0 2px 10px rgba(9, 44, 76, 0.04);
   }
 
   .section-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-size: 14px;
-    font-weight: 600;
-    color: $secondary-color;
+    font-weight: 700;
+    color: $secondary;
     margin-bottom: 18px;
     padding-bottom: 12px;
-    border-bottom: 2px solid $primary-light;
+    border-bottom: 1px dashed $border;
 
     i {
-      font-size: 16px;
-      color: $primary-color;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
+      color: $primary;
+      background: $primary-soft;
+      border-radius: 8px;
     }
   }
 }
 
-// ========================================
-// Form Labels
-// ========================================
+// ==========================================================================
+// Form Grid (fluid)
+// ==========================================================================
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.col-lg-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 0 10px;
+
+  @media (max-width: 991px) { flex: 0 0 100%; max-width: 100%; }
+}
+
+.col-md-12 { flex: 0 0 100%; max-width: 100%; padding: 0 10px; }
+
+// ==========================================================================
+// Labels + optional badge
+// ==========================================================================
 .form-label {
   font-weight: 600;
-  color: $text-dark;
+  color: $ink;
   margin-bottom: 8px;
   font-size: 13px;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 
-  .text-danger {
-    color: $danger-color;
-    margin-left: 3px;
+  .text-danger { color: $danger; margin-left: 2px; }
+
+  .optional-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: $muted;
+    background: $bg-subtle;
+    border: 1px solid $border;
+    border-radius: 999px;
+    text-transform: uppercase;
   }
 }
 
-// ========================================
-// Input Blocks Container
-// ========================================
 .input-blocks {
   margin-bottom: 16px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
+  &:last-child { margin-bottom: 0; }
 }
 
-// ========================================
-// Input Wrapper with Icon
-// ========================================
+// ==========================================================================
+// Input with icon
+// ==========================================================================
 .input-wrapper {
   position: relative;
 
   .input-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: $text-muted;
+    color: $muted;
     font-size: 15px;
     pointer-events: none;
-    transition: color 0.2s ease;
+    transition: color 0.2s $ease, transform 0.2s $ease;
     z-index: 1;
   }
 
   .form-control,
-  .form-select {
-    padding-left: 38px;
-  }
+  .form-select { padding-left: 40px; }
 
-  &:focus-within .input-icon {
-    color: $primary-color;
-  }
+  &:focus-within .input-icon { color: $primary; }
 }
 
-// ========================================
-// Error Message
-// ========================================
-.error-message {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  background-color: $warning-bg;
-  color: $warning-text;
-  padding: 7px 11px;
-  border-radius: 6px;
-  margin-top: 6px;
-  border-left: 3px solid $warning-color;
-  font-size: 12px;
-  line-height: 1.5;
-  animation: slideDown 0.2s ease-out;
-
-  i {
-    font-size: 13px;
-    flex-shrink: 0;
-    color: $warning-color;
-    margin-top: 1px;
-  }
-
-  span {
-    flex: 1;
-    word-break: break-word;
-  }
-}
-
-// ========================================
-// Form Controls
-// ========================================
+// ==========================================================================
+// Controls
+// ==========================================================================
 .form-control,
 .form-select {
   width: 100%;
-  border: 1.5px solid $gray-border;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 13px;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  padding: 11px 14px;
+  font-size: 13.5px;
+  line-height: 1.4;
   font-family: inherit;
-  transition: all 0.25s ease;
-  background-color: white;
-  color: $text-dark;
+  transition: border-color 0.2s $ease, box-shadow 0.2s $ease, background-color 0.2s $ease;
+  background-color: #fff;
+  color: $ink;
 
-  &::placeholder {
-    color: #b0bec5;
-    opacity: 1;
-  }
+  &::placeholder { color: $placeholder; opacity: 1; }
+
+  &:hover:not(:disabled):not(:focus) { border-color: $border-strong; }
 
   &:focus {
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px $primary-light;
+    border-color: $primary;
+    box-shadow: 0 0 0 4px $primary-ring;
     outline: none;
-    background-color: white;
-  }
-
-  &:hover:not(:disabled):not(:focus) {
-    border-color: #cbd5e0;
   }
 
   &:disabled {
-    background-color: $gray-light;
-    color: #a0aec0;
+    background-color: $bg-subtle;
+    color: $muted;
     cursor: not-allowed;
   }
 
-  // Valid state
-  &.ng-valid.ng-touched:not(.is-invalid) {
-    border-color: $success-color;
+  &.ng-valid.ng-touched:not(.is-invalid):not(:placeholder-shown) {
+    border-color: rgba(47, 158, 68, 0.55);
   }
 
-  // Invalid state
   &.is-invalid {
-    border-color: $danger-color;
-    background-color: #fff8f8;
+    border-color: $danger;
+    background-color: $danger-soft;
 
     &:focus {
-      border-color: $danger-color;
-      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+      border-color: $danger;
+      box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.15);
     }
   }
 }
 
 .form-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23718096' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%238792a2' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 14px center;
   background-size: 14px 14px;
-  padding-right: 38px;
+  padding-right: 40px;
   cursor: pointer;
 
-  option {
-    color: $text-dark;
-    background-color: white;
-  }
+  option { color: $ink; background-color: #fff; }
 }
 
-// ========================================
-// Form Actions
-// ========================================
+// ==========================================================================
+// Error message
+// ==========================================================================
+.error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background-color: $warning-bg;
+  color: $warning-text;
+  padding: 8px 12px;
+  border-radius: $radius-sm;
+  margin-top: 8px;
+  border-left: 3px solid $warning;
+  font-size: 12px;
+  line-height: 1.45;
+  animation: slideDown 0.2s $ease;
+
+  i { font-size: 13px; flex-shrink: 0; color: $warning; margin-top: 1px; }
+  span { flex: 1; word-break: break-word; }
+}
+
+// ==========================================================================
+// Actions
+// ==========================================================================
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -359,19 +414,16 @@ $section-bg: #fafbfc;
   gap: 12px;
   margin-top: 28px;
   padding-top: 20px;
-  border-top: 1px solid $gray-border;
+  border-top: 1px solid $border;
 }
 
-// ========================================
-// Buttons
-// ========================================
 .btn {
-  padding: 11px 24px;
-  border-radius: 8px;
+  padding: 11px 22px;
+  border-radius: $radius-sm;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: transform 0.15s $ease, box-shadow 0.2s $ease, background 0.2s $ease, color 0.2s $ease, border-color 0.2s $ease;
   border: none;
   display: inline-flex;
   align-items: center;
@@ -379,256 +431,100 @@ $section-bg: #fafbfc;
   font-family: inherit;
   white-space: nowrap;
   user-select: none;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 
-  i {
-    font-size: 15px;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(1px);
-  }
+  i { font-size: 15px; }
+  &:disabled { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
+  &:focus { outline: none; }
+  &:active:not(:disabled) { transform: translateY(1px); }
 }
 
 .btn-cancel {
-  background-color: white;
-  color: $gray-text;
-  border: 1.5px solid $gray-border;
+  background-color: #fff;
+  color: $ink-soft;
+  border: 1.5px solid $border;
 
   &:hover:not(:disabled) {
-    background-color: $gray-light;
-    border-color: #cbd5e0;
-    color: $text-dark;
+    background-color: $bg-subtle;
+    border-color: $border-strong;
+    color: $ink;
   }
-
-  &:focus:not(:disabled) {
-    box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.15);
-  }
+  &:focus:not(:disabled) { box-shadow: 0 0 0 4px rgba(135, 146, 161, 0.15); }
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-  color: white;
-  min-width: 140px;
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  color: #fff;
+  min-width: 150px;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(255, 154, 68, 0.35);
+  box-shadow: 0 8px 20px rgba(255, 154, 68, 0.35);
 
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, $primary-dark 0%, $primary-darker 100%);
-    box-shadow: 0 6px 16px rgba(255, 154, 68, 0.45);
+    box-shadow: 0 10px 24px rgba(255, 154, 68, 0.45);
     transform: translateY(-1px);
   }
-
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(255, 154, 68, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 154, 68, 0.3);
   }
 }
 
-// ========================================
-// Loading Spinner
-// ========================================
+// ==========================================================================
+// Spinner
+// ==========================================================================
 .spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.45);
   border-radius: 50%;
-  border-top-color: white;
+  border-top-color: #fff;
   animation: spin 0.7s linear infinite;
   flex-shrink: 0;
 }
 
-// ========================================
-// Utility Classes
-// ========================================
-.mb-3 {
-  margin-bottom: 16px;
-}
+// ==========================================================================
+// Utilities
+// ==========================================================================
+.mb-3 { margin-bottom: 16px; }
+.mt-4 { margin-top: 24px; }
+.text-danger { color: $danger; }
 
-.mt-4 {
-  margin-top: 24px;
-}
-
-.text-danger {
-  color: $danger-color;
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-right: -12px;
-  margin-left: -12px;
-}
-
-.col-lg-6 {
-  flex: 0 0 50%;
-  padding-right: 12px;
-  padding-left: 12px;
-
-  @media (max-width: 991px) {
-    flex: 0 0 100%;
-  }
-}
-
-.col-md-12 {
-  flex: 0 0 100%;
-  padding-right: 12px;
-  padding-left: 12px;
-}
-
-// ========================================
+// ==========================================================================
 // Animations
-// ========================================
+// ==========================================================================
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-// ========================================
-// Responsive Design
-// ========================================
+// ==========================================================================
+// Responsive
+// ==========================================================================
 @media (max-width: 991px) {
-  .form-card .card-body {
-    padding: 20px;
-  }
-
-  .col-lg-6 {
-    flex: 0 0 100%;
-  }
-
   .form-actions {
-    flex-direction: column;
-
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
+    flex-direction: column-reverse;
+    .btn { width: 100%; justify-content: center; }
   }
 }
 
 @media (max-width: 768px) {
-  .page-header {
-    margin-bottom: 20px;
-
-    h3.page-title {
-      font-size: 18px;
-
-      .title-icon {
-        width: 32px;
-        height: 32px;
-
-        i {
-          font-size: 15px;
-        }
-      }
-    }
-  }
-
-  .form-card {
-    .card-header {
-      padding: 18px 20px;
-
-      .header-icon {
-        width: 44px;
-        height: 44px;
-
-        i {
-          font-size: 20px;
-        }
-      }
-
-      .card-title {
-        font-size: 16px;
-      }
-    }
-
-    .card-body {
-      padding: 16px;
-    }
-  }
-
-  .form-section {
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-
-  .form-label {
-    font-size: 12px;
-  }
-
-  .form-control,
-  .form-select {
-    padding: 9px 12px;
-    font-size: 12px;
-  }
-
-  .input-wrapper .form-control,
-  .input-wrapper .form-select {
-    padding-left: 36px;
-  }
-
-  .error-message {
-    font-size: 11px;
-  }
+  .form-card .card-header .header-icon { width: 46px; height: 46px; i { font-size: 20px; } }
+  .form-section { padding: 16px; }
+  .form-label { font-size: 12.5px; }
+  .form-control, .form-select { padding: 10px 12px; font-size: 13px; }
+  .input-wrapper .form-control, .input-wrapper .form-select { padding-left: 38px; }
+  .error-message { font-size: 11.5px; }
 }
 
-@media (max-width: 576px) {
-  .page-header {
-    h3.page-title {
-      font-size: 16px;
-    }
-
-    .breadcrumb {
-      font-size: 11px;
-    }
-  }
-
-  .form-card .card-header .header-content {
-    gap: 12px;
-  }
-
-  .form-section .section-header {
-    font-size: 13px;
-  }
-
-  .btn {
-    padding: 10px 18px;
-    font-size: 12px;
-  }
-}
-
-// ========================================
+// ==========================================================================
 // Accessibility
-// ========================================
+// ==========================================================================
 @media (prefers-reduced-motion: reduce) {
-  .error-message,
-  .form-control,
-  .form-select,
-  .btn,
-  .spinner {
+  .error-message, .form-control, .form-select, .btn, .spinner, .form-section {
     animation: none !important;
     transition: none !important;
   }
