@@ -451,17 +451,11 @@ $shadow-xl:  0 20px 60px rgba(0,0,0,.15);
   i {
     font-size: 1.4rem;
     color: $indigo;
-    transition: transform .3s ease;
+    transition: transform .3s ease, color .3s ease;
   }
 
-  .rp-role-card:hover & {
-    background: linear-gradient(135deg, $indigo 0%, $purple 100%);
-    box-shadow: 0 6px 20px rgba($indigo, .35);
-
-    i {
-      color: white;
-      transform: rotate(10deg) scale(1.1);
-    }
+  .rp-role-card:hover & i {
+    transform: rotate(10deg) scale(1.1);
   }
 }
 
@@ -595,14 +589,16 @@ $shadow-xl:  0 20px 60px rgba(0,0,0,.15);
 
   &.rp-action-delete {
     color: $red;
-    border-color: rgba($red, .2);
-    background: transparent;
+    border-color: rgba($red, .3);
+    background: $red-light;
     margin-left: auto;
 
     &:hover {
-      background: $red-light;
-      border-color: rgba($red, .4);
+      background: $red;
+      border-color: $red;
+      color: white;
       transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba($red, .35);
     }
   }
 }
@@ -810,6 +806,115 @@ $shadow-xl:  0 20px 60px rgba(0,0,0,.15);
       }
 
       &:focus { box-shadow: 0 0 0 3px rgba($indigo, .15); }
+    }
+  }
+}
+
+// ============================================
+// ROLE-SPECIFIC COLOR THEMES
+// ============================================
+.rp-role-card {
+  &.role-super-admin {
+    &::before {
+      background: linear-gradient(90deg, #F59E0B 0%, #F97316 50%, #EF4444 100%);
+    }
+
+    .rp-card-icon-wrap {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FFEDD5 100%);
+      border-color: rgba(#F59E0B, .2);
+
+      i { color: #D97706; }
+    }
+
+    &:hover .rp-card-icon-wrap {
+      background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+      box-shadow: 0 6px 20px rgba(#F59E0B, .35);
+
+      i { color: white; }
+    }
+
+    .rp-card-badge {
+      background: #FEF3C7;
+      color: #92400E;
+      border-color: rgba(#F59E0B, .3);
+    }
+  }
+
+  &.role-admin {
+    &::before {
+      background: linear-gradient(90deg, $indigo 0%, $purple 50%, $blue 100%);
+    }
+
+    .rp-card-icon-wrap {
+      background: linear-gradient(135deg, $indigo-light 0%, rgba($purple-light, .8) 100%);
+      border-color: rgba($indigo, .15);
+
+      i { color: $indigo; }
+    }
+
+    &:hover .rp-card-icon-wrap {
+      background: linear-gradient(135deg, $indigo 0%, $purple 100%);
+      box-shadow: 0 6px 20px rgba($indigo, .35);
+
+      i { color: white; }
+    }
+
+    .rp-card-badge {
+      background: $indigo-light;
+      color: $indigo-dark;
+      border-color: rgba($indigo, .2);
+    }
+  }
+
+  &.role-employee {
+    &::before {
+      background: linear-gradient(90deg, $green 0%, #059669 50%, #047857 100%);
+    }
+
+    .rp-card-icon-wrap {
+      background: linear-gradient(135deg, $green-light 0%, #ECFDF5 100%);
+      border-color: rgba($green, .2);
+
+      i { color: #059669; }
+    }
+
+    &:hover .rp-card-icon-wrap {
+      background: linear-gradient(135deg, $green 0%, #059669 100%);
+      box-shadow: 0 6px 20px rgba($green, .35);
+
+      i { color: white; }
+    }
+
+    .rp-card-badge {
+      background: $green-light;
+      color: #065F46;
+      border-color: rgba($green, .2);
+    }
+  }
+
+  &.role-custom {
+    &::before {
+      background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%);
+    }
+
+    .rp-card-icon-wrap {
+      background: linear-gradient(135deg, $purple-light 0%, #F5F3FF 100%);
+      border-color: rgba($purple, .15);
+
+      i { color: $purple; }
+    }
+
+    &:hover .rp-card-icon-wrap {
+      background: linear-gradient(135deg, $purple 0%, $purple-dark 100%);
+      box-shadow: 0 6px 20px rgba($purple, .35);
+
+      i { color: white; }
+    }
+
+    .rp-card-badge {
+      background: $purple-light;
+      color: #5B21B6;
+      border-color: rgba($purple, .2);
     }
   }
 }

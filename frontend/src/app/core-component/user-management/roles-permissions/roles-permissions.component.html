@@ -94,14 +94,14 @@
 
   <!-- Role Cards -->
   @for (data of tableData; track data; let i = $index) {
-    <div class="rp-role-card" [style.animation-delay]="(i * 0.06) + 's'">
+    <div class="rp-role-card" [ngClass]="getRoleColorClass(data)" [style.animation-delay]="(i * 0.06) + 's'">
       <div class="rp-card-header">
         <div class="rp-card-icon-wrap">
-          <i class="feather icon-shield"></i>
+          <i class="feather" [ngClass]="getRoleIcon(data)"></i>
         </div>
         <div class="rp-card-badge">
           <i class="feather icon-award"></i>
-          {{ data.roleType || 'Custom' }}
+          {{ data.roleType || 'CUSTOM' }}
         </div>
       </div>
 
@@ -140,6 +140,7 @@
                 (click)="confirmColor(data.id)"
                 title="Delete Role">
           <i class="feather icon-trash-2"></i>
+          <span>Delete</span>
         </button>
       </div>
     </div>
