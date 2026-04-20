@@ -33,6 +33,9 @@ public class ArticleVenteService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<ArticleVente> getAllArticlesVente() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
@@ -70,7 +73,11 @@ public class ArticleVenteService {
             articleVente.setClient(client);
         }
         try {
-            return articleVenteRepo.save(articleVente);
+            ArticleVente saved = articleVenteRepo.save(articleVente);
+            if (articleAchat.getEntreprise() != null) {
+                notificationService.createArticleVenteAddedNotification(saved, articleAchat.getEntreprise());
+            }
+            return saved;
         } catch (DataIntegrityViolationException e) {
             throw new RuntimeException("Impossible de créer l'ArticleVente: contrainte d'intégrité violée. Vérifiez que l'article avec id=" + articleAchatId + " existe.", e);
         }

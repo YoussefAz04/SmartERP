@@ -55,6 +55,9 @@ public class CommandeAchatService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
+    @Autowired
+    private NotificationService notificationService;
+
     // ✅ FIXED: Proper enterprise scoping with error handling
     public List<CommandeAchat> getAllCommandes() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
@@ -304,6 +307,13 @@ public class CommandeAchatService {
         factureAchatRepository.save(factureAchat);
         logger.info("✅ Preliminary FactureAchat created for commande {} (enterprise: {})", saved.getId(), saved.getEntreprise() != null ? saved.getEntreprise().getId() : null);
 
+        if (saved.getEntreprise() != null) {
+            notificationService.createCommandeAchatNotification(
+                    BuissnesManager.BuissnesManager.entity.NotificationType.COMMANDE_ACHAT_CREEE,
+                    saved.getReference(),
+                    saved.getEntreprise());
+        }
+
         logger.info("✅ Purchase order creation complete - ID: {}", saved.getId());
         return saved;
     }
@@ -487,6 +497,13 @@ public class CommandeAchatService {
             }
         }
 
+        if (saved.getEntreprise() != null) {
+            notificationService.createCommandeAchatNotification(
+                    BuissnesManager.BuissnesManager.entity.NotificationType.COMMANDE_ACHAT_ANNULEE,
+                    saved.getReference(),
+                    saved.getEntreprise());
+        }
+
         logger.info("✅ Order cancelled - ID: {}, previous status: {}", id, ancienStatut);
         return saved;
     }
@@ -518,6 +535,13 @@ public class CommandeAchatService {
         BonReception savedBon = bonReceptionRepository.save(bon);
 
         stockAutomationService.incrementStockFromReception(id, commande.getReference());
+
+        if (commande.getEntreprise() != null) {
+            notificationService.createCommandeAchatNotification(
+                    BuissnesManager.BuissnesManager.entity.NotificationType.COMMANDE_ACHAT_RECUE,
+                    commande.getReference(),
+                    commande.getEntreprise());
+        }
 
         logger.info("✅ Order received and stock updated - Order ID: {}, Reception ID: {}", id, savedBon.getId());
         return savedBon;

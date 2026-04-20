@@ -46,6 +46,9 @@ public class CommandeVenteService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Transactional
     public CommandeVente createCommande(CommandeVenteDto dto) {
         CommandeVente commande = new CommandeVente();
@@ -126,6 +129,13 @@ public class CommandeVenteService {
         savedFacture.setReferance(referance);
         factureDeVenteRepository.save(savedFacture);
         logger.info("✅ Preliminary FactureDeVente created for commande {} (enterprise: {})", saved.getId(), saved.getEntreprise() != null ? saved.getEntreprise().getId() : null);
+
+        if (saved.getEntreprise() != null) {
+            notificationService.createCommandeVenteNotification(
+                    BuissnesManager.BuissnesManager.entity.NotificationType.COMMANDE_VENTE_CREEE,
+                    saved.getReference(),
+                    saved.getEntreprise());
+        }
 
         return saved;
     }
@@ -389,6 +399,12 @@ public class CommandeVenteService {
                 logger.warn("⚠️ Could not fully release stock reservation for commande {}: {}", id, e.getMessage());
             }
         }
+        if (saved.getEntreprise() != null) {
+            notificationService.createCommandeVenteNotification(
+                    BuissnesManager.BuissnesManager.entity.NotificationType.COMMANDE_VENTE_ANNULEE,
+                    saved.getReference(),
+                    saved.getEntreprise());
+        }
         return saved;
     }
 
@@ -420,6 +436,13 @@ public class CommandeVenteService {
 
         // ✅ Move stock from reserved → sold at the actual physical delivery
         stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
+
+        if (commande.getEntreprise() != null) {
+            notificationService.createCommandeVenteNotification(
+                    BuissnesManager.BuissnesManager.entity.NotificationType.COMMANDE_VENTE_LIVREE,
+                    commande.getReference(),
+                    commande.getEntreprise());
+        }
 
         logger.info("✅ Commande {} delivered, BonLivraison {} created and stock decremented",
                 id, savedBon.getId());
