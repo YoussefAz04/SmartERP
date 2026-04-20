@@ -512,7 +512,7 @@ public class CommandeAchatService {
         BonReception bon = new BonReception();
         bon.setReference("BR-" + commande.getReference());
         bon.setDateReception(LocalDate.now());
-        bon.setStatut("RECU");
+        bon.setStatut("COMPLET");
         bon.setCommandeAchat(commande);
         bon.setEntreprise(commande.getEntreprise());
         BonReception savedBon = bonReceptionRepository.save(bon);
