@@ -1,230 +1,344 @@
-<!-- Page Header -->
 <router-outlet></router-outlet>
-<div class="page-header">
-  <div class="page-header-inner">
-    <div class="page-header-left">
-      <div class="page-icon-wrap">
-        <i class="feather icon-package"></i>
-      </div>
-      <div>
-        <h1 class="page-title">Fournisseurs</h1>
-        <p class="page-subtitle">{{ totalCount }} fournisseur(s) enregistré(s)</p>
-      </div>
-    </div>
-    <div class="page-header-right">
-      <button type="button" class="btn-refresh" (click)="loadFournisseurs()">
-        <i class="feather icon-rotate-ccw"></i>
-      </button>
-      <button *ngIf="canCreateFournisseur" type="button" class="btn-add" (click)="addFournisseur()">
-        <i class="feather icon-plus"></i> Nouveau Fournisseur
-      </button>
-    </div>
-  </div>
-</div>
 
-<!-- Stat Cards -->
-<div class="stat-grid">
-  <div class="stat-card stat-delay-1">
-    <div class="stat-accent accent-blue"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-blue">
-        <i class="feather icon-package"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ totalCount }}</span>
-        <span class="stat-label">Total Fournisseurs</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-database"></i> Registre complet
-    </div>
-  </div>
+<div class="four-dashboard">
 
-  <div class="stat-card stat-delay-2">
-    <div class="stat-accent accent-emerald"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-emerald">
-        <i class="feather icon-mail"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ withEmail }}</span>
-        <span class="stat-label">Avec Email</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-check-circle"></i>
-      {{ getPercentage(withEmail) }}% contactables
-    </div>
-  </div>
-
-  <div class="stat-card stat-delay-3">
-    <div class="stat-accent accent-violet"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-violet">
-        <i class="feather icon-layers"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ uniqueCategories }}</span>
-        <span class="stat-label">Catégories</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-grid"></i> Types de fournisseurs
-    </div>
-  </div>
-
-  <div class="stat-card stat-delay-4">
-    <div class="stat-accent accent-amber"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-amber">
-        <i class="feather icon-phone"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ withPhone }}</span>
-        <span class="stat-label">Avec Téléphone</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-phone-call"></i>
-      {{ getPercentage(withPhone) }}% joignables
-    </div>
-  </div>
-</div>
-
-<!-- Filter Card -->
-<div class="filter-card mb-4">
-  <div class="filter-header">
-    <i class="feather icon-filter"></i>
-    Filtres &amp; Recherche
-  </div>
-  <div class="filter-body">
-    <div class="row g-3 align-items-end">
-      <div class="col-md-5">
-        <label class="filter-label">Recherche</label>
-        <div class="filter-input-group">
-          <i class="feather icon-search filter-input-icon"></i>
-          <input type="text" class="filter-input" placeholder="Nom, email, téléphone, adresse..."
-            [(ngModel)]="searchTerm">
+  <!-- ── Page Hero Header ── -->
+  <section class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-left">
+        <div class="page-icon-wrap">
+          <i class="feather icon-package"></i>
+        </div>
+        <div>
+          <span class="page-overline">
+            <i class="feather icon-truck"></i>
+            Vue relation fournisseur
+          </span>
+          <h1 class="page-title">Fournisseurs</h1>
+          <p class="page-subtitle">
+            {{ totalCount }} fournisseur(s) dans votre registre, avec une lecture claire,
+            des contacts accessibles et une gestion simplifiée.
+          </p>
         </div>
       </div>
-      <div class="col-md-4">
-        <label class="filter-label">Catégorie</label>
-        <div class="filter-select-group">
-          <i class="feather icon-layers filter-input-icon"></i>
-          <select class="filter-select" [(ngModel)]="filterCategorie">
-            <option value="">Toutes les catégories</option>
-            @for (cat of categories; track cat.id) {
-              <option [value]="cat.nom">{{ cat.nom }}</option>
-            }
-          </select>
+
+      <div class="page-header-right">
+        <div class="header-chip-list">
+          <span class="header-chip">
+            <i class="feather icon-mail"></i>
+            {{ getPercentage(withEmail) }}% avec email
+          </span>
+          <span class="header-chip">
+            <i class="feather icon-layers"></i>
+            {{ uniqueCategories }} catégorie(s)
+          </span>
         </div>
-      </div>
-      <div class="col-md-3">
-        <button type="button" class="btn-reset w-100" (click)="resetFilters()">
-          <i class="feather icon-refresh-cw"></i> Réinitialiser
+
+        <button type="button" class="btn-refresh" (click)="loadFournisseurs()" title="Actualiser">
+          <i class="feather icon-rotate-ccw"></i>
+        </button>
+
+        <button *ngIf="canCreateFournisseur" type="button" class="btn-add" (click)="addFournisseur()">
+          <i class="feather icon-plus"></i>
+          Nouveau Fournisseur
         </button>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- Fournisseurs Table -->
-<div class="modern-panel">
-  <div class="panel-header panel-header-four">
-    <h5 class="panel-title">
-      <i class="feather icon-package"></i>
-      Liste des Fournisseurs
+  <!-- ── Stat Cards ── -->
+  <div class="stat-grid">
+    <div class="stat-card stat-delay-1">
+      <div class="stat-accent accent-blue"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-blue">
+          <i class="feather icon-package"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalCount }}</span>
+          <span class="stat-label">Total Fournisseurs</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-database"></i>
+        Registre complet et consultable
+      </div>
+    </div>
+
+    <div class="stat-card stat-delay-2">
+      <div class="stat-accent accent-emerald"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-emerald">
+          <i class="feather icon-mail"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ withEmail }}</span>
+          <span class="stat-label">Avec Email</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-check-circle"></i>
+        {{ getPercentage(withEmail) }}% contactables par email
+      </div>
+    </div>
+
+    <div class="stat-card stat-delay-3">
+      <div class="stat-accent accent-violet"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-violet">
+          <i class="feather icon-layers"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ uniqueCategories }}</span>
+          <span class="stat-label">Catégories</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-grid"></i>
+        Diversité des types de fournisseurs
+      </div>
+    </div>
+
+    <div class="stat-card stat-delay-4">
+      <div class="stat-accent accent-amber"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-amber">
+          <i class="feather icon-phone"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ withPhone }}</span>
+          <span class="stat-label">Avec Téléphone</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-phone-call"></i>
+        {{ getPercentage(withPhone) }}% joignables rapidement
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filter Card ── -->
+  <div class="filter-card mb-4">
+    <div class="filter-header">
+      <div class="filter-title">
+        <span class="filter-title-main">
+          <i class="feather icon-filter"></i>
+          Filtres &amp; Recherche
+        </span>
+        <span class="filter-title-sub">
+          Recherchez instantanément un fournisseur par nom, contact, adresse ou catégorie.
+        </span>
+      </div>
+      <span class="filter-live-badge">{{ filteredFournisseurs.length }} résultat(s)</span>
+    </div>
+
+    <div class="filter-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-5">
+          <label class="filter-label">Recherche</label>
+          <div class="filter-input-group">
+            <i class="feather icon-search filter-input-icon"></i>
+            <input
+              type="text"
+              class="filter-input"
+              placeholder="Nom, email, téléphone, adresse..."
+              [(ngModel)]="searchTerm">
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="filter-label">Catégorie</label>
+          <div class="filter-select-group">
+            <i class="feather icon-layers filter-input-icon"></i>
+            <select class="filter-select" [(ngModel)]="filterCategorie">
+              <option value="">Toutes les catégories</option>
+              @for (cat of categories; track cat.id) {
+                <option [value]="cat.nom">{{ cat.nom }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <button type="button" class="btn-reset w-100" (click)="resetFilters()">
+            <i class="feather icon-refresh-cw"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-helper-row">
+        <div class="filter-chip-list">
+          <span class="mini-chip">
+            <i class="feather icon-mail"></i>
+            Emails {{ withEmail }}
+          </span>
+          <span class="mini-chip">
+            <i class="feather icon-phone"></i>
+            Téléphones {{ withPhone }}
+          </span>
+          <span class="mini-chip">
+            <i class="feather icon-layers"></i>
+            Catégories {{ uniqueCategories }}
+          </span>
+        </div>
+
+        @if (searchTerm || filterCategorie) {
+          <button type="button" class="btn-inline-clear" (click)="resetFilters()">
+            <i class="feather icon-x"></i>
+            Effacer les filtres
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Fournisseurs Table ── -->
+  <div class="modern-panel">
+    <div class="panel-header panel-header-four">
+      <h5 class="panel-title">
+        <i class="feather icon-package"></i>
+        <span class="panel-title-copy">
+          Liste des Fournisseurs
+          <small>Présentation claire, actions visibles, navigation agréable</small>
+        </span>
+      </h5>
       <span class="panel-badge">{{ filteredFournisseurs.length }}</span>
-    </h5>
-  </div>
-  <div class="panel-body">
-
-    <!-- Loading state -->
-    <div *ngIf="isLoading" class="empty-state">
-      <div class="loading-spinner"></div>
-      <p>Chargement des fournisseurs...</p>
     </div>
 
-    <!-- Table -->
-    <div class="table-responsive" *ngIf="!isLoading">
-      <table class="four-table">
-        <thead>
-          <tr>
-            <th>Fournisseur</th>
-            <th>Contact</th>
-            <th>Adresse</th>
-            <th>Catégorie</th>
-            <th>Créé le</th>
-            <th>Modifié le</th>
-            <th class="text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (f of filteredFournisseurs; track f.id) {
+    <div class="panel-body">
+
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="empty-state">
+        <span class="empty-icon">
+          <i class="feather icon-package"></i>
+        </span>
+        <h6>Chargement en cours…</h6>
+        <p>Récupération des fournisseurs, veuillez patienter.</p>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive" *ngIf="!isLoading">
+        <table class="four-table">
+          <thead>
             <tr>
-              <td>
-                <div class="four-name-cell">
-                  <div class="four-avatar">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
-                  <div>
-                    <strong>{{ f.nom }}</strong>
-                    <div class="four-meta">{{ f.ville || f.pays || '—' }}</div>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div class="contact-info">
-                  <a class="contact-link" [href]="'mailto:' + f.email" *ngIf="f.email">
-                    <i class="feather icon-mail"></i> {{ f.email }}
-                  </a>
-                  <a class="contact-link" [href]="'tel:' + f.telephone" *ngIf="f.telephone">
-                    <i class="feather icon-phone"></i> {{ f.telephone }}
-                  </a>
-                  <span class="text-muted" *ngIf="!f.email && !f.telephone">—</span>
-                </div>
-              </td>
-              <td>{{ f.adresse || '—' }}</td>
-              <td>
-                <span class="category-pill" *ngIf="f.categorieFournisseur?.nom">
-                  {{ f.categorieFournisseur?.nom }}
-                </span>
-                <span class="text-muted" *ngIf="!f.categorieFournisseur?.nom">—</span>
-              </td>
-              <td class="date-cell">{{ f.createdAt | date:'dd/MM/yyyy' }}</td>
-              <td class="date-cell">{{ f.updatedAt | date:'dd/MM/yyyy' }}</td>
+              <th>Fournisseur</th>
+              <th>Contact</th>
+              <th>Adresse</th>
+              <th>Catégorie</th>
+              <th>Créé le</th>
+              <th>Modifié le</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (f of filteredFournisseurs; track f.id) {
+              <tr>
                 <td>
-                <div class="action-btns">
-                  <button type="button" class="action-btn action-btn-view"
-                    (click)="viewFournisseur(f.id)" title="Voir détails">
-                    <i class="feather icon-eye"></i>
-                  </button>
-                  <button *ngIf="canEditFournisseur" type="button" class="action-btn action-btn-edit"
-                    (click)="editFournisseur(f.id)" title="Modifier">
-                    <i class="feather icon-edit"></i>
-                  </button>
-                  <button *ngIf="canDeleteFournisseur" type="button" class="action-btn action-btn-delete"
-                    (click)="deleteFournisseur(f.id)" title="Supprimer" [disabled]="isDeleting">
-                    <i class="feather icon-trash-2"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-          @if (filteredFournisseurs.length === 0 && !isLoading) {
-            <tr>
-              <td colspan="7">
-                <div class="empty-state">
-                  <i class="feather icon-package empty-icon"></i>
-                  <p>Aucun fournisseur trouvé</p>
-                  <button type="button" class="btn-retry" *ngIf="searchTerm || filterCategorie" (click)="resetFilters()">
-                    <i class="feather icon-x"></i> Effacer les filtres
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+                  <div class="four-name-cell">
+                    <div class="four-avatar">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
+                    <div class="four-name-copy">
+                      <strong>{{ f.nom }}</strong>
+                      <span class="four-meta">Fournisseur #{{ f.id }}</span>
+                    </div>
+                  </div>
+                </td>
 
+                <td>
+                  <div class="contact-info">
+                    <a class="contact-link" [href]="'mailto:' + f.email" *ngIf="f.email">
+                      <i class="feather icon-mail"></i> {{ f.email }}
+                    </a>
+                    <a class="contact-link" [href]="'tel:' + f.telephone" *ngIf="f.telephone">
+                      <i class="feather icon-phone"></i> {{ f.telephone }}
+                    </a>
+                    <span class="text-muted" *ngIf="!f.email && !f.telephone">—</span>
+                  </div>
+                </td>
+
+                <td>
+                  @if (f.adresse) {
+                    <span class="addr-text">
+                      <i class="feather icon-map-pin"></i>
+                      {{ f.adresse }}
+                    </span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+
+                <td>
+                  <span class="category-pill" *ngIf="f.categorieFournisseur?.nom">
+                    {{ f.categorieFournisseur?.nom }}
+                  </span>
+                  <span class="text-muted" *ngIf="!f.categorieFournisseur?.nom">—</span>
+                </td>
+
+                <td class="date-cell">{{ f.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td class="date-cell">{{ f.updatedAt | date:'dd/MM/yyyy' }}</td>
+
+                <td>
+                  <div class="action-btns">
+                    <button
+                      type="button"
+                      class="action-btn action-btn-view"
+                      (click)="viewFournisseur(f.id)"
+                      title="Voir détails">
+                      <i class="feather icon-eye"></i>
+                    </button>
+                    <button
+                      *ngIf="canEditFournisseur"
+                      type="button"
+                      class="action-btn action-btn-edit"
+                      (click)="editFournisseur(f.id)"
+                      title="Modifier">
+                      <i class="feather icon-edit"></i>
+                    </button>
+                    <button
+                      *ngIf="canDeleteFournisseur"
+                      type="button"
+                      class="action-btn action-btn-delete"
+                      (click)="deleteFournisseur(f.id)"
+                      title="Supprimer"
+                      [disabled]="isDeleting">
+                      <i class="feather icon-trash-2"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+            @if (filteredFournisseurs.length === 0 && !isLoading) {
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <span class="empty-icon">
+                      <i class="feather icon-package"></i>
+                    </span>
+                    <h6>Aucun fournisseur à afficher</h6>
+                    <p>
+                      @if (searchTerm || filterCategorie) {
+                        Aucun fournisseur ne correspond à votre recherche actuelle.
+                      } @else {
+                        La liste est vide pour le moment. Ajoutez un premier fournisseur pour démarrer.
+                      }
+                    </p>
+                    @if (searchTerm || filterCategorie) {
+                      <button type="button" class="btn-retry" (click)="resetFilters()">
+                        <i class="feather icon-x"></i>
+                        Effacer les filtres
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   </div>
+
 </div>
