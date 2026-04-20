@@ -213,6 +213,14 @@ const routes: Routes = [
           import('./commande-vente/commande-vente.module').then((m) => m.CommandeVenteModule),
       },
       {
+        path: 'sav',
+        canActivate: [RoleGuard],
+        canActivateChild: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
+        loadChildren: () =>
+          import('./sav/sav.module').then((m) => m.SavModule),
+      },
+      {
         path: 'ai-intelligence',
         canActivate: [RoleGuard],
         data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },

@@ -982,5 +982,14 @@ public static get registerbyStepper(): string {
   public static get articleAchatList(): string {
     return this.articleAchat + '/listArticleAchat';
   }
+  public static get sav(): string {
+    return this.core + '/sav';
+  }
+  public static get savList(): string {
+    return this.sav + '/list';
+  }
+  public static get addSav(): string {
+    return this.sav + '/add';
+  }
   // core pages child routes *ends*
 }

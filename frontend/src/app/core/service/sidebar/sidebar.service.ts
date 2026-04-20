@@ -333,6 +333,30 @@ generateSidebarData(modules: ModuleTittle[]) {
         ]
       });
     }
+
+    // Service Après-Vente — accessible to admins & employees (client-facing workflow)
+    if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'EMPLOYEE') {
+      result.push({
+        tittle: 'Service Après-Vente',
+        showAsTab: false,
+        separateRoute: false,
+        hasSubRoute: true,
+        showSubRoute: true,
+        menu: [
+          {
+            menuValue: 'Tickets SAV',
+            hasSubRoute: true,
+            showSubRoute: false,
+            icon: 'life-buoy',
+            base1: 'sav',
+            subMenus: [
+              { menuValue: 'Liste des tickets', route: '/sav/list', hasSubRoute: false, showSubRoute: false, customSubmenuTwo: false },
+              { menuValue: 'Nouveau ticket', route: '/sav/add', hasSubRoute: false, showSubRoute: false, customSubmenuTwo: false }
+            ]
+          }
+        ]
+      });
+    }
     this.sidebarDataSubject.next(result);
   }
 

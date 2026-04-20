@@ -1,0 +1,225 @@
+<!-- Modern page header -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title-wrap">
+      <button class="btn-back" (click)="back()" title="Retour à la liste">
+        <i class="feather icon-arrow-left"></i>
+      </button>
+      <div class="page-title-icon">
+        <i class="feather icon-life-buoy"></i>
+      </div>
+      <div>
+        <h1 class="page-title" *ngIf="ticket">
+          {{ ticket.reference }}
+          <span class="status-badge" [ngClass]="statutClass(ticket.statut)">{{ statutLabel(ticket.statut) }}</span>
+        </h1>
+        <nav class="breadcrumb-simple">
+          <a routerLink="/sav/list">Tickets SAV</a>
+          <i class="feather icon-chevron-right"></i>
+          <span>Détail</span>
+        </nav>
+      </div>
+    </div>
+
+    <div class="header-actions" *ngIf="ticket">
+      <button class="btn btn-edit" (click)="edit()" *ngIf="ticket.statut !== 'CLOTURE'">
+        <i class="feather icon-edit-2"></i>
+        Modifier
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="loading-state">
+  <div class="spinner"></div>
+  <p>Chargement du ticket...</p>
+</div>
+
+<div *ngIf="!isLoading && ticket" class="detail-layout">
+
+  <!-- Left column: details -->
+  <div class="left-col">
+    <div class="info-card">
+      <div class="info-card-header">
+        <i class="feather icon-info"></i>
+        <span>Informations</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-row">
+          <span class="label">Type</span>
+          <span class="type-chip">
+            <i class="feather icon-{{ typeIcon(ticket.type) }}"></i>
+            {{ typeLabel(ticket.type) }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Priorité</span>
+          <span class="priority-badge" [ngClass]="prioriteClass(ticket.priorite)">
+            {{ prioriteLabel(ticket.priorite) }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date d'ouverture</span>
+          <span class="value">{{ ticket.dateOuverture | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-row" *ngIf="ticket.dateCloture">
+          <span class="label">Date de clôture</span>
+          <span class="value">{{ ticket.dateCloture | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Client</span>
+          <span class="value">
+            {{ ticket.client?.nom || '-' }} {{ ticket.client?.prenom || '' }}
+            <small *ngIf="ticket.client?.email" class="muted">{{ ticket.client?.email }}</small>
+          </span>
+        </div>
+        <div class="info-row" *ngIf="ticket.articleVente">
+          <span class="label">Article</span>
+          <span class="value">{{ ticket.articleVente.nom || ('Produit #' + ticket.articleVente.id) }}</span>
+        </div>
+        <div class="info-row" *ngIf="ticket.coutEstime != null">
+          <span class="label">Coût estimé</span>
+          <span class="value">{{ ticket.coutEstime | number:'1.2-2' }} DT</span>
+        </div>
+        <div class="info-row" *ngIf="ticket.coutReel != null">
+          <span class="label">Coût réel</span>
+          <span class="value highlight">{{ ticket.coutReel | number:'1.2-2' }} DT</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Créé le</span>
+          <span class="value muted">{{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header">
+        <i class="feather icon-file-text"></i>
+        <span>Sujet</span>
+      </div>
+      <div class="info-body">
+        <h3 class="subject">{{ ticket.sujet || '—' }}</h3>
+        <p class="description">{{ ticket.description || 'Aucune description fournie.' }}</p>
+      </div>
+    </div>
+
+    <div class="info-card" *ngIf="ticket.resolution">
+      <div class="info-card-header">
+        <i class="feather icon-check-circle"></i>
+        <span>Résolution</span>
+      </div>
+      <div class="info-body">
+        <p class="description">{{ ticket.resolution }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right column: workflow + timeline -->
+  <div class="right-col">
+    <!-- Workflow actions -->
+    <div class="info-card workflow-card">
+      <div class="info-card-header">
+        <i class="feather icon-activity"></i>
+        <span>Workflow</span>
+      </div>
+      <div class="workflow-body">
+        <p class="workflow-hint">Changer l'état du ticket :</p>
+        <div class="workflow-buttons">
+          <button
+            *ngFor="let s of allStatuts"
+            class="wf-btn"
+            [class.current]="ticket.statut === s.value"
+            [disabled]="!canTransitionTo(s.value)"
+            (click)="openStatusDialog(s.value)">
+            <span class="dot" [ngClass]="statutClass(s.value)"></span>
+            {{ s.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="info-card">
+      <div class="info-card-header">
+        <i class="feather icon-clock"></i>
+        <span>Historique ({{ interventions.length }})</span>
+      </div>
+
+      <div class="timeline" *ngIf="interventions.length > 0">
+        <div class="timeline-item" *ngFor="let i of interventions; trackBy: trackInt">
+          <div class="timeline-marker">
+            <i class="feather icon-{{ interventionIcon(i.type) }}"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-head">
+              <span class="timeline-type">{{ interventionLabel(i.type) }}</span>
+              <span class="timeline-date">{{ i.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="timeline-meta">
+              <span *ngIf="i.auteur" class="timeline-author">
+                <i class="feather icon-user"></i>
+                {{ i.auteur }}
+              </span>
+              <span *ngIf="i.statut" class="timeline-status-badge" [ngClass]="statutClass(i.statut)">
+                {{ statutLabel(i.statut) }}
+              </span>
+            </div>
+            <p class="timeline-comment" *ngIf="i.commentaire">{{ i.commentaire }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-empty" *ngIf="interventions.length === 0">
+        <i class="feather icon-clock"></i>
+        <p>Aucun événement enregistré</p>
+      </div>
+
+      <!-- Add comment -->
+      <div class="new-comment" *ngIf="ticket.statut !== 'CLOTURE'">
+        <textarea
+          [(ngModel)]="newComment"
+          rows="2"
+          placeholder="Ajouter un commentaire..."
+          maxlength="2000"></textarea>
+        <button class="btn btn-primary" (click)="addComment()" [disabled]="commentLoading">
+          <i class="feather icon-send" *ngIf="!commentLoading"></i>
+          <span class="spinner-inline" *ngIf="commentLoading"></span>
+          Commenter
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Status change modal -->
+<div class="modal-overlay" *ngIf="showStatusDialog" (click)="closeStatusDialog()">
+  <div class="modal-modern" (click)="$event.stopPropagation()">
+    <div class="modal-header-modern">
+      <div class="modal-header-icon">
+        <i class="feather icon-activity"></i>
+      </div>
+      <div>
+        <h5>Changer le statut</h5>
+        <small>Passer au statut : <strong>{{ statutLabel(statusTarget) }}</strong></small>
+      </div>
+      <button class="modal-close" (click)="closeStatusDialog()">
+        <i class="feather icon-x"></i>
+      </button>
+    </div>
+    <div class="modal-body-modern">
+      <label class="modal-label">Commentaire (optionnel)</label>
+      <textarea
+        [(ngModel)]="statusComment"
+        rows="3"
+        placeholder="Ex : Pièce commandée, livraison sous 48h..."></textarea>
+    </div>
+    <div class="modal-footer-modern">
+      <button class="btn btn-cancel" (click)="closeStatusDialog()" [disabled]="statusLoading">Annuler</button>
+      <button class="btn btn-primary" (click)="confirmStatusChange()" [disabled]="statusLoading">
+        <span class="spinner-inline" *ngIf="statusLoading"></span>
+        Confirmer
+      </button>
+    </div>
+  </div>
+</div>

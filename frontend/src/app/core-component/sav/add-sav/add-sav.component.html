@@ -1,0 +1,166 @@
+<!-- Compact light page header (matches existing add-commande-vente style) -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title-wrap">
+      <div class="page-title-icon">
+        <i class="feather icon-life-buoy"></i>
+      </div>
+      <div>
+        <h1 class="page-title">{{ isEditMode ? 'Modifier Ticket SAV' : 'Nouveau Ticket SAV' }}</h1>
+        <nav class="breadcrumb-simple">
+          <a routerLink="/sav/list">Tickets SAV</a>
+          <i class="feather icon-chevron-right"></i>
+          <span>{{ isEditMode ? 'Modifier' : 'Nouveau' }}</span>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form class="sav-form-wrapper" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+  <!-- General infos -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <i class="feather icon-info"></i>
+      <span>Informations générales</span>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Référence</label>
+        <input type="text" formControlName="reference" placeholder="Auto-générée si vide" />
+        <small class="hint">Laissez vide pour auto-générer (SAV-YYYYMMDD-xxx)</small>
+      </div>
+
+      <div class="field">
+        <label>Date d'ouverture *</label>
+        <input type="date" formControlName="dateOuverture" />
+        <small class="error" *ngIf="submitted && f['dateOuverture'].errors">Date requise</small>
+      </div>
+
+      <div class="field">
+        <label>Type *</label>
+        <select formControlName="type">
+          <option *ngFor="let t of types" [value]="t.value">{{ t.label }}</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Priorité *</label>
+        <select formControlName="priorite">
+          <option *ngFor="let p of priorites" [value]="p.value">{{ p.label }}</option>
+        </select>
+      </div>
+
+      <div class="field" *ngIf="isEditMode">
+        <label>Statut *</label>
+        <select formControlName="statut">
+          <option *ngFor="let s of statuts" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client / article -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <i class="feather icon-user"></i>
+      <span>Client et produit</span>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Client *</label>
+        <select formControlName="clientId">
+          <option [ngValue]="null">-- Sélectionner un client --</option>
+          <option *ngFor="let c of clients" [ngValue]="c.id">
+            {{ c.nom }} {{ c.prenom }} ({{ c.email }})
+          </option>
+        </select>
+        <small class="error" *ngIf="submitted && f['clientId'].errors">Client requis</small>
+      </div>
+
+      <div class="field">
+        <label>Article concerné (optionnel)</label>
+        <select formControlName="articleVenteId">
+          <option [ngValue]="null">-- Aucun --</option>
+          <option *ngFor="let a of articles" [ngValue]="a.id">
+            {{ a.nom || ('Produit #' + a.id) }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem description -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <i class="feather icon-file-text"></i>
+      <span>Description du problème</span>
+    </div>
+
+    <div class="form-grid one-col">
+      <div class="field">
+        <label>Sujet *</label>
+        <input
+          type="text"
+          formControlName="sujet"
+          placeholder="Ex : Écran défectueux sous garantie"
+          maxlength="200" />
+        <small class="error" *ngIf="submitted && f['sujet'].errors">Sujet requis (max 200 caractères)</small>
+      </div>
+
+      <div class="field">
+        <label>Description détaillée *</label>
+        <textarea
+          formControlName="description"
+          rows="4"
+          placeholder="Décrivez le problème rencontré par le client..."
+          maxlength="2000"></textarea>
+        <small class="error" *ngIf="submitted && f['description'].errors">Description requise</small>
+      </div>
+
+      <div class="field" *ngIf="isEditMode">
+        <label>Résolution (notes internes)</label>
+        <textarea
+          formControlName="resolution"
+          rows="3"
+          placeholder="Actions correctives effectuées..."
+          maxlength="2000"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Costs -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <i class="feather icon-dollar-sign"></i>
+      <span>Coûts (optionnels)</span>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Coût estimé (DT)</label>
+        <input type="number" formControlName="coutEstime" min="0" step="0.01" placeholder="0.00" />
+      </div>
+      <div class="field">
+        <label>Coût réel (DT)</label>
+        <input type="number" formControlName="coutReel" min="0" step="0.01" placeholder="0.00" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="form-actions">
+    <button type="button" class="btn-cancel" (click)="cancel()" [disabled]="isLoading">
+      <i class="feather icon-x"></i>
+      Annuler
+    </button>
+    <button type="submit" class="btn-save" [disabled]="isLoading">
+      <i class="feather icon-save" *ngIf="!isLoading"></i>
+      <span class="spinner-inline" *ngIf="isLoading"></span>
+      {{ isEditMode ? 'Enregistrer les modifications' : 'Créer le ticket' }}
+    </button>
+  </div>
+</form>
