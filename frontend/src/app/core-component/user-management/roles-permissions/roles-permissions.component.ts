@@ -65,6 +65,27 @@ export class RolesPermissionsComponent implements OnInit{
   currentRoleForManage: Role | null = null;
   manageUsersLoading = false;
 
+  // Role icon & color map
+  private roleIconMap: Record<string, string> = {
+    SUPER_ADMIN: 'icon-award',
+    ADMIN: 'icon-shield',
+    EMPLOYEE: 'icon-briefcase',
+  };
+
+  private roleColorMap: Record<string, string> = {
+    SUPER_ADMIN: 'role-super-admin',
+    ADMIN: 'role-admin',
+    EMPLOYEE: 'role-employee',
+  };
+
+  getRoleIcon(role: Role): string {
+    return this.roleIconMap[role.roleType || ''] || 'icon-tag';
+  }
+
+  getRoleColorClass(role: Role): string {
+    return this.roleColorMap[role.roleType || ''] || 'role-custom';
+  }
+
   //** / pagination variables
 
   constructor(
@@ -126,10 +147,7 @@ export class RolesPermissionsComponent implements OnInit{
                 'success'
               );
 
-              this.roleService.getAllRoles().subscribe(data =>{
-                this.tableData = data ;
-                console.log(data);
-              })
+              this.refreshRoles();
             },
             error: (err) => {
               console.error('Erreur lors de la suppression', err);
@@ -254,30 +272,27 @@ export class RolesPermissionsComponent implements OnInit{
     this.editRoleForm = this.fb.group({
       name: ['', Validators.required]
     });
-    this.roleService.getAllRoles().subscribe(data =>{
-      this.tableData = data ;
-      console.log(data);
-    })
+    this.refreshRoles();
   }
 
   onSubmit() {
    this.roleService.createRole(this.roleForm.value).subscribe(data => {
      console.log(data);
-     this.roleService.getAllRoles().subscribe(data =>{
-       this.tableData = data ;
-       console.log(data);
-     })
+     this.refreshRoles();
    })
   }
 
   onUpdateRole() {
      this.roleService.updateRole(this.currentRoleId,this.editRoleForm.value).subscribe(data => {
        console.log(data);
-       this.roleService.getAllRoles().subscribe(data =>{
-         this.tableData = data ;
-         console.log(data);
-       })
-
+       this.refreshRoles();
      })
+  }
+
+  private refreshRoles(): void {
+    this.roleService.getAllRoles().subscribe(data => {
+      this.tableData = data.filter(r => r.name !== 'Manager');
+      this.dataSource = new MatTableDataSource(this.tableData);
+    });
   }
 }
