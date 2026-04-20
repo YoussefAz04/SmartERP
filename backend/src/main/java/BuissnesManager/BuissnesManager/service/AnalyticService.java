@@ -51,7 +51,11 @@ public class AnalyticService {
         }
 
         double totalRevenue = values.stream().mapToDouble(Double::doubleValue).sum();
-        double avgRevenue = totalRevenue / 12.0;
+        // Average monthly revenue over months that have at least some activity, so
+        // businesses that only started selling in, say, September don't get their
+        // average diluted by eight empty months.
+        long activeMonths = values.stream().filter(v -> v > 0).count();
+        double avgRevenue = activeMonths > 0 ? totalRevenue / activeMonths : 0.0;
 
         // Find best month
         double bestRevenue = 0.0;
@@ -63,10 +67,19 @@ public class AnalyticService {
             }
         }
 
-        // Growth rate: compare current half-year vs previous half-year
+        // Growth rate: compare the most recent half-year of activity against the
+        // preceding half-year. Only compute when the first half has meaningful
+        // revenue (prior code returned 0% when firstHalf==0, which wrongly read
+        // as "no growth" for brand-new businesses — still OK, but we also cap
+        // absurd ratios so a single tiny order doesn't claim +999 900% growth).
         double firstHalf = values.subList(0, 6).stream().mapToDouble(Double::doubleValue).sum();
         double secondHalf = values.subList(6, 12).stream().mapToDouble(Double::doubleValue).sum();
-        double growthRate = firstHalf > 0 ? ((secondHalf - firstHalf) / firstHalf) * 100.0 : 0.0;
+        double growthRate = 0.0;
+        if (firstHalf > 0) {
+            growthRate = ((secondHalf - firstHalf) / firstHalf) * 100.0;
+            if (growthRate >  9999.0) growthRate =  9999.0;
+            if (growthRate < -9999.0) growthRate = -9999.0;
+        }
 
         // Trend line (3-month moving average)
         List<Double> trendLine = computeMovingAverage(values, 3);
@@ -110,14 +123,19 @@ public class AnalyticService {
             }
         }
 
-        List<ProductIntelligenceDto.ProductPerformanceDto> topProducts = products.subList(0, Math.min(10, products.size()));
+        // Defensive copies: subList returns a *view* of the backing list, so
+        // later mutation of `products` (e.g. tagging slow-movers with the "LENT"
+        // performance label below) would leak back into the top-products slice
+        // and corrupt the ranking sent to the frontend.
+        List<ProductIntelligenceDto.ProductPerformanceDto> topProducts =
+            new ArrayList<>(products.subList(0, Math.min(10, products.size())));
 
         // Slow moving: products with lowest sales (bottom 5 from total, if enough data)
         List<ProductIntelligenceDto.ProductPerformanceDto> slowMoving = new ArrayList<>();
         if (products.size() > 5) {
             List<ProductIntelligenceDto.ProductPerformanceDto> reversed = new ArrayList<>(products);
             java.util.Collections.reverse(reversed);
-            slowMoving = reversed.subList(0, Math.min(5, reversed.size()));
+            slowMoving = new ArrayList<>(reversed.subList(0, Math.min(5, reversed.size())));
             for (ProductIntelligenceDto.ProductPerformanceDto p : slowMoving) {
                 p.setPerformanceLabel("LENT");
             }
@@ -156,7 +174,8 @@ public class AnalyticService {
         for (ProductIntelligenceDto.CategoryPerformanceDto cat : result) {
             cat.setRevenueShare(totalRev > 0 ? Math.round((cat.getRevenue() / totalRev) * 1000.0) / 10.0 : 0.0);
         }
-        return result.subList(0, Math.min(5, result.size()));
+        // Defensive copy again to avoid returning a subList view.
+        return new ArrayList<>(result.subList(0, Math.min(5, result.size())));
     }
 
     public List<Double> computeMovingAverage(List<Double> data, int window) {
