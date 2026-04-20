@@ -51,7 +51,7 @@
     </div>
     <div class="stat-footer">
       <i class="feather icon-check-circle"></i>
-      {{ totalCount > 0 ? ((withEmail / totalCount) * 100 | number:'1.0-0') : 0 }}% contactables
+      {{ getPercentage(withEmail) }}% contactables
     </div>
   </div>
 
@@ -68,7 +68,7 @@
     </div>
     <div class="stat-footer">
       <i class="feather icon-phone-call"></i>
-      {{ totalCount > 0 ? ((withPhone / totalCount) * 100 | number:'1.0-0') : 0 }}% joignables
+      {{ getPercentage(withPhone) }}% joignables
     </div>
   </div>
 

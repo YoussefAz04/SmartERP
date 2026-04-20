@@ -3,7 +3,7 @@ import { FournisseurService } from '../../core/service/fournisseur/fournisseur.s
 import { Router, RouterOutlet } from '@angular/router';
 import { Fournisseur } from '../../model/fournisseur.model';
 import { CategorieFournisseur } from '../../model/categorieFournisseur.model';
-import { NgForOf, NgIf, CommonModule, DecimalPipe } from '@angular/common';
+import { NgForOf, NgIf, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ResponseDto } from '../../model/reponseDto.model';
 import { PermissionDto } from '../../model/permissionDto.model';
@@ -16,7 +16,6 @@ import { NotificationService } from '../../shared/notification/notification.serv
     NgForOf,
     NgIf,
     CommonModule,
-    DecimalPipe,
     RouterOutlet,
     FormsModule
   ],
@@ -57,6 +56,9 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
   get withPhone(): number { return this.fournisseurList.filter(f => f.telephone).length; }
   get uniqueCategories(): number {
     return new Set(this.fournisseurList.map(f => f.categorieFournisseur?.nom).filter(Boolean)).size;
+  }
+  getPercentage(count: number): number {
+    return this.totalCount > 0 ? Math.round((count / this.totalCount) * 100) : 0;
   }
 
   resetFilters(): void {
