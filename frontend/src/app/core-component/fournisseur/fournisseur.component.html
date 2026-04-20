@@ -195,7 +195,7 @@
 
   <!-- ── Fournisseurs Table ── -->
   <div class="modern-panel">
-    <div class="panel-header panel-header-four">
+    <div class="panel-header panel-header-fournisseur">
       <h5 class="panel-title">
         <i class="feather icon-package"></i>
         <span class="panel-title-copy">
@@ -240,7 +240,7 @@
                     <div class="four-avatar">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
                     <div class="four-name-copy">
                       <strong>{{ f.nom }}</strong>
-                      <span class="four-meta">Fournisseur #{{ f.id }}</span>
+                      <span class="four-meta">{{ f.ville || f.pays || ('Fournisseur #' + f.id) }}</span>
                     </div>
                   </div>
                 </td>
