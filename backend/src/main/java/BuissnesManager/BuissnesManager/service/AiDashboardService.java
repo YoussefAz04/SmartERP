@@ -107,12 +107,13 @@ public class AiDashboardService {
         // Profit margin: (revenue - COGS) / revenue. Uses the same "cost of goods sold"
         // logic as the YTD gross-margin comparison so we don't treat inventory build-up
         // as a loss. All-time window so it matches totalRevenue.
-        // NOTE: when no purchase data exists at all, COGS comes back null and treating it
-        // as 0 would falsely report a 100% profit margin. In that case we report 0.0 so
-        // the UI doesn't mislead the user into thinking the business is infinitely profitable.
+        // NOTE: when the COGS query returns null (no purchase data tracked at all),
+        // treating it as 0 would falsely report a 100% profit margin. In that case we
+        // report 0.0 so the UI doesn't mislead the user. A legitimate COGS of 0 (digital
+        // goods, etc.) still resolves to a real 100% margin.
         Double cogsAllTime = commandeVenteRepository.getCOGSInPeriod(
                 entrepriseId, LocalDate.of(1970, 1, 1), LocalDate.now());
-        if (totalRevenue > 0 && cogsAllTime != null && cogsAllTime > 0) {
+        if (totalRevenue > 0 && cogsAllTime != null) {
             double profitMargin = ((totalRevenue - cogsAllTime) / totalRevenue) * 100.0;
             kpi.setProfitMargin(Math.round(profitMargin * 10.0) / 10.0);
         } else {
