@@ -1031,6 +1031,13 @@ GO
 -- 12. CHECK CONSTRAINTS
 -- ============================================================
 
+ALTER TABLE [dbo].[notification] WITH CHECK
+    ADD CONSTRAINT [CHK_notification_type]
+    CHECK ([type] IN ('RUPTURE', 'FAIBLE_STOCK', 'ALERTE_COMMANDE', 'STOCK_REPRISE', 'ARTICLE_AJOUTE', 'STOCK_AJOUTE'))
+GO
+ALTER TABLE [dbo].[notification] CHECK CONSTRAINT [CHK_notification_type]
+GO
+
 ALTER TABLE [dbo].[mouvement_stock] WITH CHECK
     ADD CONSTRAINT [CHK_mouvement_stock_type]
     CHECK ([type_mouvement] IN ('ENTREE', 'SORTIE', 'RETOUR', 'AJUSTEMENT'))
