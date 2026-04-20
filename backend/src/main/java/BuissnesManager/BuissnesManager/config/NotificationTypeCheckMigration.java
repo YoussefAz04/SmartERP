@@ -8,6 +8,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import BuissnesManager.BuissnesManager.entity.NotificationType;
+
 /**
  * One-time migration that drops any existing CHECK constraint on the
  * {@code notification.type} column and recreates it with all current
@@ -73,9 +78,14 @@ public class NotificationTypeCheckMigration implements CommandLineRunner {
      */
     private void createUpdatedCheckConstraint() {
         try {
+            String allowedValues = Arrays.stream(NotificationType.values())
+                .map(Enum::name)
+                .filter(NotificationTypeCheckMigration::isSafeIdentifier)
+                .map(n -> "'" + n + "'")
+                .collect(Collectors.joining(","));
             jdbcTemplate.execute(
                 "ALTER TABLE [notification] WITH NOCHECK ADD CONSTRAINT [CHK_notification_type] " +
-                "CHECK ([type] IN ('RUPTURE','FAIBLE_STOCK','ALERTE_COMMANDE','STOCK_REPRISE','ARTICLE_AJOUTE','STOCK_AJOUTE'))"
+                "CHECK ([type] IN (" + allowedValues + "))"
             );
             logger.info("NotificationTypeCheckMigration: created CHECK constraint CHK_notification_type with all current enum values");
         } catch (Exception e) {
