@@ -3,7 +3,7 @@ import { ClientService } from "../../core/service/client/client.service";
 import { Router, RouterOutlet } from "@angular/router";
 import { Client } from "../../model/client.model";
 import { MatTooltip } from "@angular/material/tooltip";
-import { NgForOf, NgIf, CommonModule } from "@angular/common";
+import { NgForOf, NgIf, CommonModule, DecimalPipe } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ResponseDto } from "../../model/reponseDto.model";
 import { PermissionDto } from "../../model/permissionDto.model";
@@ -17,6 +17,7 @@ import { NotificationService } from '../../shared/notification/notification.serv
     NgForOf,
     NgIf,
     CommonModule,
+    DecimalPipe,
     RouterOutlet,
     FormsModule
   ],
@@ -47,6 +48,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
   get totalCount(): number { return this.clientList.length; }
   get uniqueSectors(): number { return new Set(this.clientList.map(c => c.secteurActivite).filter(Boolean)).size; }
   get withEmail(): number { return this.clientList.filter(c => c.email).length; }
+  get withPhone(): number { return this.clientList.filter(c => c.telephone).length; }
 
   resetFilters(): void { this.searchTerm = ''; }
   
