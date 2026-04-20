@@ -74,9 +74,17 @@ public class AiDashboardService {
         revenueCurrentYear = revenueCurrentYear != null ? revenueCurrentYear : 0.0;
         revenuePrevYear = revenuePrevYear != null ? revenuePrevYear : 0.0;
 
-        double revenueGrowth = revenuePrevYear > 0
-            ? Math.round(((revenueCurrentYear - revenuePrevYear) / revenuePrevYear) * 1000.0) / 10.0
-            : 0.0;
+        // Year-over-year revenue growth. When the prior year has no data we
+        // report null (nullable Double) rather than 0.0 so the UI can show a
+        // "NOUV." badge instead of misleading "0% growth". We also cap extreme
+        // ratios (tiny prev-year anchor → millions of % growth) to ±9999%.
+        Double revenueGrowth = null;
+        if (revenuePrevYear > 0) {
+            double raw = ((revenueCurrentYear - revenuePrevYear) / revenuePrevYear) * 100.0;
+            if (raw >  9999.0) raw =  9999.0;
+            if (raw < -9999.0) raw = -9999.0;
+            revenueGrowth = Math.round(raw * 10.0) / 10.0;
+        }
         kpi.setRevenueGrowth(revenueGrowth);
 
         Long totalOrders = commandeVenteRepository.getTotalSalesOrders(entrepriseId);
@@ -87,9 +95,15 @@ public class AiDashboardService {
         Long ordersPrevYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startPrevYear, endPrevYear);
         long ocy = ordersCurrentYear != null ? ordersCurrentYear : 0L;
         long opy = ordersPrevYear != null ? ordersPrevYear : 0L;
-        double orderGrowth = opy > 0
-            ? Math.round(((ocy - opy) / (double) opy) * 1000.0) / 10.0
-            : 0.0;
+        // Same treatment as revenueGrowth: null for "no prior data" and ±9999%
+        // clamp so a single prior-year order doesn't produce absurd percentages.
+        Double orderGrowth = null;
+        if (opy > 0) {
+            double raw = ((ocy - opy) / (double) opy) * 100.0;
+            if (raw >  9999.0) raw =  9999.0;
+            if (raw < -9999.0) raw = -9999.0;
+            orderGrowth = Math.round(raw * 10.0) / 10.0;
+        }
         kpi.setOrderGrowth(orderGrowth);
 
         Long totalSKUs = stockRepository.getTotalSKUs(entrepriseId);
