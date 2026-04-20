@@ -137,18 +137,18 @@
             </svg>
           </div>
           <div class="section-text">
-            <h2 class="section-title">Prix &amp; Quantité</h2>
-            <p class="section-subtitle">Tarification et stock initial</p>
+            <h2 class="section-title">Prix</h2>
+            <p class="section-subtitle">Tarification de l'article</p>
           </div>
           <span class="section-step">2 / 3</span>
         </div>
 
-        <div class="fields-grid two-cols">
+        <div class="fields-grid">
           <!-- Prix d'Achat -->
           <div class="field-group">
             <label class="field-label required" for="prixUnitaire">Prix d'Achat</label>
             <div class="input-wrapper" [class.invalid]="isFieldInvalid('prixUnitaire')">
-              <span class="input-icon currency">DH</span>
+              <span class="input-icon currency">DT</span>
               <input id="prixUnitaire" type="number" class="field-input with-currency" formControlName="prixUnitaire"
                 placeholder="0.00" min="0" step="0.01" aria-required="true">
             </div>
@@ -161,27 +161,6 @@
             </div>
           </div>
 
-          <!-- Quantité -->
-          <div class="field-group">
-            <label class="field-label required" for="quantite">Quantité</label>
-            <div class="input-wrapper" [class.invalid]="isFieldInvalid('quantite')">
-              <span class="input-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-              </span>
-              <input id="quantite" type="number" class="field-input" formControlName="quantite"
-                placeholder="0" min="0" aria-required="true">
-            </div>
-            <div class="field-error" *ngIf="isFieldInvalid('quantite')" role="alert">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              <span *ngIf="articleForm.get('quantite')?.hasError('required')">La quantité est requise</span>
-              <span *ngIf="articleForm.get('quantite')?.hasError('min')">La quantité doit être positive</span>
-            </div>
-          </div>
         </div>
       </div>
 
