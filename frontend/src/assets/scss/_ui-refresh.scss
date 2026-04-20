@@ -1,0 +1,618 @@
+// =================================================================
+// UI Refresh — Global design-system polish
+// -----------------------------------------------------------------
+// This stylesheet layers a refined color palette, smoother shadows,
+// consistent radii and transitions on top of the existing per-page
+// styling used across the business modules:
+//   • entreprise
+//   • user-management (users / roles / permissions)
+//   • client, fournisseur
+//   • article-achat, article-vente
+//   • commande-achat, commande-vente
+//   • facture
+//
+// It is purely additive — it does not remove existing rules. It
+// targets the shared class patterns already used by those pages
+// (`.page-header`, `.modern-page-header`, `.hero-header`,
+//  `.breadcrumb`, `.form-card`, `.modern-card`, `.modern-panel`,
+//  `.kpi-card`, `.filter-card`, `.filter-box`, `.modern-table`,
+//  `.ent-table`, `.action-btn*`, `.btn-hero*`, badges, etc.).
+// =================================================================
+
+:root {
+  // Primary brand gradient (cool indigo → vibrant blue)
+  --ui-primary-50:  #eef2ff;
+  --ui-primary-100: #e0e7ff;
+  --ui-primary-500: #4f46e5;
+  --ui-primary-600: #4338ca;
+  --ui-primary-700: #3730a3;
+  --ui-primary-grad: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #2563eb 100%);
+
+  // Accent (teal / emerald)
+  --ui-accent-500: #10b981;
+  --ui-accent-600: #059669;
+  --ui-accent-grad: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+
+  // Functional colors
+  --ui-success-grad: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --ui-warning-grad: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --ui-danger-grad:  linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --ui-info-grad:    linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  --ui-purple-grad:  linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  --ui-rose-grad:    linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  --ui-teal-grad:    linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  --ui-orange-grad:  linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+
+  // Neutrals
+  --ui-surface:     #ffffff;
+  --ui-surface-2:   #f8fafc;
+  --ui-border:      #e5e7eb;
+  --ui-border-soft: #eef0f4;
+  --ui-text:        #111827;
+  --ui-text-muted:  #6b7280;
+
+  // Elevation
+  --ui-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04),
+                  0 1px 3px rgba(15, 23, 42, 0.05);
+  --ui-shadow-md: 0 4px 10px -2px rgba(15, 23, 42, 0.06),
+                  0 6px 18px -4px rgba(15, 23, 42, 0.08);
+  --ui-shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.10),
+                  0 20px 40px -12px rgba(15, 23, 42, 0.12);
+
+  // Motion
+  --ui-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ui-radius-sm: 10px;
+  --ui-radius-md: 14px;
+  --ui-radius-lg: 18px;
+}
+
+// -----------------------------------------------------------------
+// Page / Hero headers
+// -----------------------------------------------------------------
+.page-header,
+.modern-page-header {
+  border-radius: var(--ui-radius-lg) !important;
+  box-shadow: var(--ui-shadow-md) !important;
+  border: 1px solid var(--ui-border-soft) !important;
+  transition: box-shadow .3s var(--ui-ease), transform .3s var(--ui-ease);
+
+  &:hover { box-shadow: var(--ui-shadow-lg) !important; }
+
+  .page-icon-wrap,
+  .page-header-icon,
+  .header-icon {
+    background: var(--ui-primary-grad) !important;
+    box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.45) !important;
+  }
+
+  .page-title,
+  .modern-page-title {
+    letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+// Hero-style headers (entreprise list, etc.)
+.ent-hero-header,
+.hero-header {
+  background: var(--ui-primary-grad) !important;
+  border-radius: var(--ui-radius-lg) !important;
+  box-shadow: 0 20px 45px -15px rgba(79, 70, 229, 0.45) !important;
+  color: #fff;
+
+  .hero-title      { color: #fff; letter-spacing: -0.4px; }
+  .hero-subtitle   { color: rgba(255,255,255,.88); }
+  .hero-badge {
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,.28);
+    color: #fff;
+  }
+}
+
+// -----------------------------------------------------------------
+// Breadcrumb
+// -----------------------------------------------------------------
+.breadcrumb {
+  .breadcrumb-item {
+    font-size: 13px;
+    color: var(--ui-text-muted);
+
+    a, a:link {
+      color: var(--ui-primary-600);
+      text-decoration: none;
+      transition: color .2s var(--ui-ease);
+    }
+    a:hover { color: var(--ui-primary-700); }
+
+    &.active { color: var(--ui-text); font-weight: 600; }
+
+    + .breadcrumb-item::before {
+      color: #cbd5e1;
+    }
+  }
+}
+
+// -----------------------------------------------------------------
+// Hero / primary action buttons used on list + form headers
+// -----------------------------------------------------------------
+.btn-hero-primary {
+  background: var(--ui-primary-grad) !important;
+  border: none !important;
+  color: #fff !important;
+  box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.5) !important;
+  transition: transform .25s var(--ui-ease), box-shadow .25s var(--ui-ease), filter .25s var(--ui-ease);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px -8px rgba(79, 70, 229, 0.6) !important;
+    filter: brightness(1.05);
+  }
+  &:active { transform: translateY(0); }
+}
+
+.btn-hero-outline {
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(79, 70, 229, .25) !important;
+  color: var(--ui-primary-700) !important;
+  transition: background-color .2s var(--ui-ease), border-color .2s var(--ui-ease), color .2s var(--ui-ease);
+
+  &:hover {
+    background: #fff !important;
+    border-color: rgba(79, 70, 229, .55) !important;
+    color: var(--ui-primary-700) !important;
+  }
+}
+
+// On a colored hero header the outline needs to stay legible
+.ent-hero-header .btn-hero-outline,
+.hero-header .btn-hero-outline {
+  background: rgba(255,255,255,.14) !important;
+  border-color: rgba(255,255,255,.4) !important;
+  color: #fff !important;
+
+  &:hover {
+    background: rgba(255,255,255,.22) !important;
+    border-color: rgba(255,255,255,.6) !important;
+  }
+}
+
+// -----------------------------------------------------------------
+// Cards & Panels shared across modules
+// -----------------------------------------------------------------
+.form-card,
+.modern-card,
+.modern-panel {
+  border-radius: var(--ui-radius-lg) !important;
+  border: 1px solid var(--ui-border-soft) !important;
+  box-shadow: var(--ui-shadow-md) !important;
+  background: var(--ui-surface);
+  transition: box-shadow .3s var(--ui-ease), transform .3s var(--ui-ease);
+
+  &:hover { box-shadow: var(--ui-shadow-lg) !important; }
+}
+
+// Modern card headers (purple / blue bar variants) — unified bar color
+.card-header-modern {
+  background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%) !important;
+  border-bottom: 1px solid var(--ui-border-soft) !important;
+
+  .card-header-bar,
+  .card-header-dot {
+    background: var(--ui-primary-grad) !important;
+  }
+
+  .card-title {
+    color: var(--ui-text);
+    letter-spacing: -0.2px;
+  }
+}
+
+// Panel headers on the entreprise table
+.panel-header,
+.panel-header-ent {
+  background: linear-gradient(180deg, #ffffff 0%, #f7f8ff 100%) !important;
+  border-bottom: 1px solid var(--ui-border-soft) !important;
+
+  .panel-title {
+    color: var(--ui-text);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+
+    i { color: var(--ui-primary-600); }
+  }
+
+  .panel-badge {
+    background: var(--ui-primary-50);
+    color: var(--ui-primary-700);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-weight: 600;
+    font-size: 12px;
+    border: 1px solid var(--ui-primary-100);
+  }
+}
+
+// -----------------------------------------------------------------
+// KPI cards
+// -----------------------------------------------------------------
+.kpi-card {
+  border-radius: var(--ui-radius-lg) !important;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  box-shadow: var(--ui-shadow-md);
+  transition: transform .3s var(--ui-ease), box-shadow .3s var(--ui-ease);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 80% at 100% 0%, rgba(255,255,255,.18), transparent 60%);
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  .kpi-number { font-weight: 700; letter-spacing: -0.5px; }
+  .kpi-label,
+  .kpi-trend,
+  .kpi-footer { color: rgba(255,255,255,.9); }
+
+  .kpi-icon-wrap {
+    background: rgba(255,255,255,.2);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 14px;
+  }
+
+  .kpi-footer {
+    border-top: 1px solid rgba(255,255,255,.2);
+  }
+}
+
+.kpi-purple  { background: var(--ui-purple-grad) !important; }
+.kpi-teal    { background: var(--ui-teal-grad) !important; }
+.kpi-blue    { background: var(--ui-info-grad) !important; }
+.kpi-primary { background: var(--ui-primary-grad) !important; }
+.kpi-success { background: var(--ui-success-grad) !important; }
+.kpi-warning { background: var(--ui-warning-grad) !important; }
+.kpi-slate   { background: linear-gradient(135deg, #475569 0%, #334155 100%) !important; }
+
+// -----------------------------------------------------------------
+// Filter cards / search boxes
+// -----------------------------------------------------------------
+.filter-card,
+.filter-box {
+  border-radius: var(--ui-radius-lg) !important;
+  border: 1px solid var(--ui-border-soft) !important;
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+
+  .filter-header {
+    color: var(--ui-text);
+    font-weight: 600;
+    letter-spacing: -0.1px;
+
+    i { color: var(--ui-primary-600); }
+  }
+
+  .filter-label {
+    color: var(--ui-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+
+  .filter-input-icon { color: #94a3b8; }
+}
+
+.filter-input,
+.filter-select {
+  border-radius: var(--ui-radius-sm) !important;
+  border: 1px solid var(--ui-border) !important;
+  transition: border-color .2s var(--ui-ease), box-shadow .2s var(--ui-ease);
+
+  &:focus {
+    border-color: var(--ui-primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+    outline: none;
+  }
+}
+
+.btn-reset {
+  border-radius: var(--ui-radius-sm) !important;
+  background: #f3f4f8 !important;
+  border: 1px solid var(--ui-border) !important;
+  color: var(--ui-text) !important;
+  font-weight: 600;
+  transition: background-color .2s var(--ui-ease), border-color .2s var(--ui-ease);
+
+  &:hover {
+    background: #e9ebf2 !important;
+    border-color: #cbd0db !important;
+  }
+}
+
+// -----------------------------------------------------------------
+// Tables (entreprise, commandes, factures, users, etc.)
+// -----------------------------------------------------------------
+.ent-table,
+.modern-table {
+  thead th {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+    color: var(--ui-text) !important;
+    font-weight: 600;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    font-size: 12px;
+    border-bottom: 1px solid var(--ui-border) !important;
+  }
+
+  tbody tr {
+    transition: background-color .2s var(--ui-ease);
+
+    &:hover {
+      background: linear-gradient(180deg, #fafbff 0%, #f5f7ff 100%) !important;
+    }
+  }
+
+  tbody td {
+    border-bottom: 1px solid var(--ui-border-soft);
+    vertical-align: middle;
+  }
+}
+
+// Avatars inside rows
+.ent-avatar,
+.user-avatar {
+  background: var(--ui-primary-grad) !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 10px -3px rgba(79, 70, 229, 0.45);
+}
+
+// -----------------------------------------------------------------
+// Row action buttons
+// -----------------------------------------------------------------
+.action-btn {
+  border-radius: 10px !important;
+  border: 1px solid transparent !important;
+  transition: transform .2s var(--ui-ease),
+              box-shadow .2s var(--ui-ease),
+              background-color .2s var(--ui-ease),
+              color .2s var(--ui-ease);
+
+  &:hover { transform: translateY(-1px); }
+}
+
+.action-btn-view {
+  background: #eef2ff !important;
+  color: var(--ui-primary-600) !important;
+  border-color: #e0e7ff !important;
+
+  &:hover {
+    background: var(--ui-primary-grad) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: 0 6px 14px -4px rgba(79, 70, 229, 0.5) !important;
+  }
+}
+
+.action-btn-edit {
+  background: #ecfdf5 !important;
+  color: var(--ui-accent-600) !important;
+  border-color: #d1fae5 !important;
+
+  &:hover {
+    background: var(--ui-success-grad) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: 0 6px 14px -4px rgba(16, 185, 129, 0.5) !important;
+  }
+}
+
+.action-btn-delete {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  border-color: #fee2e2 !important;
+
+  &:hover {
+    background: var(--ui-danger-grad) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: 0 6px 14px -4px rgba(239, 68, 68, 0.5) !important;
+  }
+}
+
+// -----------------------------------------------------------------
+// Badges (status / sector / role / info)
+// -----------------------------------------------------------------
+.sector-pill,
+.info-badge {
+  background: #eef2ff;
+  color: var(--ui-primary-700);
+  border: 1px solid #e0e7ff;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-badge {
+  background: #ecfeff;
+  color: #0e7490;
+  border: 1px solid #cffafe;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.role-badge {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+
+  &-admin {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+  }
+  &-employee {
+    background: #e0e7ff;
+    color: var(--ui-primary-700);
+    border-color: #c7d2fe;
+  }
+}
+
+// -----------------------------------------------------------------
+// Form controls — consistent focus rings across pages
+// -----------------------------------------------------------------
+.form-card .form-control,
+.form-card .form-select,
+.modern-card .form-control,
+.modern-card .form-select,
+.modern-panel .form-control,
+.modern-panel .form-select {
+  border-radius: var(--ui-radius-sm);
+  border: 1px solid var(--ui-border);
+  transition: border-color .2s var(--ui-ease), box-shadow .2s var(--ui-ease);
+
+  &:focus {
+    border-color: var(--ui-primary-500);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    outline: none;
+  }
+}
+
+.form-label {
+  color: var(--ui-text);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.form-hint {
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+// -----------------------------------------------------------------
+// Loading spinner + empty / retry states
+// -----------------------------------------------------------------
+.loading-spinner {
+  border: 3px solid rgba(79, 70, 229, 0.15);
+  border-top-color: var(--ui-primary-500);
+  border-radius: 50%;
+  animation: ui-spin 0.9s linear infinite;
+}
+
+@keyframes ui-spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn-retry {
+  background: var(--ui-primary-grad) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--ui-radius-sm) !important;
+  padding: 8px 16px;
+  font-weight: 600;
+  box-shadow: 0 6px 16px -6px rgba(79, 70, 229, 0.55);
+  transition: transform .2s var(--ui-ease), box-shadow .2s var(--ui-ease);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -6px rgba(79, 70, 229, 0.65);
+  }
+}
+
+// -----------------------------------------------------------------
+// Read-only notice (entreprise detail for employees)
+// -----------------------------------------------------------------
+.readonly-notice {
+  background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  border-radius: var(--ui-radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// -----------------------------------------------------------------
+// Dark mode tweaks so the refresh stays readable
+// -----------------------------------------------------------------
+body.dark-mode,
+body.dark {
+  --ui-surface:     #1f2937;
+  --ui-surface-2:   #111827;
+  --ui-border:      #374151;
+  --ui-border-soft: #2a3342;
+  --ui-text:        #f3f4f6;
+  --ui-text-muted:  #9ca3af;
+
+  .page-header,
+  .modern-page-header,
+  .form-card,
+  .modern-card,
+  .modern-panel,
+  .filter-card,
+  .filter-box {
+    background: var(--ui-surface) !important;
+    border-color: var(--ui-border-soft) !important;
+  }
+
+  .page-title,
+  .modern-page-title {
+    background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .card-header-modern,
+  .panel-header,
+  .panel-header-ent {
+    background: linear-gradient(180deg, #1f2937 0%, #1b2431 100%) !important;
+    border-bottom-color: var(--ui-border-soft) !important;
+
+    .card-title,
+    .panel-title { color: var(--ui-text); }
+  }
+
+  .ent-table,
+  .modern-table {
+    thead th {
+      background: linear-gradient(180deg, #1f2937 0%, #1a2330 100%) !important;
+      color: var(--ui-text) !important;
+      border-bottom-color: var(--ui-border) !important;
+    }
+    tbody tr:hover {
+      background: #1b2634 !important;
+    }
+    tbody td { border-bottom-color: var(--ui-border-soft); }
+  }
+
+  .action-btn-view    { background: #1e293b !important; color: #a5b4fc !important; border-color: #334155 !important; }
+  .action-btn-edit    { background: #14261f !important; color: #6ee7b7 !important; border-color: #1f3a2e !important; }
+  .action-btn-delete  { background: #2a1416 !important; color: #fca5a5 !important; border-color: #3b1d20 !important; }
+}
