@@ -1,11 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators, ReactiveFormsModule} from "@angular/forms";
-import {ClientService} from "../../../core/service/client/client.service";
-import {CategorieClient} from "../../../model/categorieClient.model";
-import {CommonModule, NgForOf} from "@angular/common";
-import {PaginatorModule} from "primeng/paginator";
-import {routes} from "../../../core/helpers/routes";
-import {Router, RouterLink} from "@angular/router";
+import { CommonModule, NgClass, NgForOf } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { PaginatorModule } from 'primeng/paginator';
+import { routes } from '../../../core/helpers/routes';
+import { ClientService } from '../../../core/service/client/client.service';
+import { CategorieClient } from '../../../model/categorieClient.model';
 import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
@@ -13,6 +14,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
   standalone: true,
   imports: [
     NgForOf,
+    NgClass,
     CommonModule,
     PaginatorModule,
     ReactiveFormsModule,
@@ -82,7 +84,7 @@ export class AddClientComponent implements OnInit{
           this.notification.success('✓ Client ajouté avec succès!');
           this.router.navigate(['/client/listClient']);
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           this.isLoading = false;
           console.error('Erreur:', err);
           const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter le client';
@@ -100,7 +102,7 @@ export class AddClientComponent implements OnInit{
         this.categories = data;
         console.log('Catégories chargées:', data);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Erreur:', err);
       }
     });
