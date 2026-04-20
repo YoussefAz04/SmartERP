@@ -222,31 +222,6 @@
             </div>
             <div class="row">
 
-              <!-- Quantité -->
-              <div class="col-lg-6">
-                <div class="input-blocks mb-3">
-                  <label class="form-label" for="quantite">Quantité <span class="text-danger">*</span></label>
-                  <div class="input-wrapper">
-                    <i class="feather icon-layers input-icon"></i>
-                    <input
-                      id="quantite"
-                      type="number"
-                      class="form-control"
-                      formControlName="quantite"
-                      placeholder="0"
-                      [class.is-invalid]="isFieldInvalid('quantite')"
-                      aria-required="true"
-                      min="0"
-                    >
-                  </div>
-                  <div id="quantite-error" class="error-message" *ngIf="isFieldInvalid('quantite')" role="alert">
-                    <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="articleForm.get('quantite')?.hasError('required')">La quantité est requise</span>
-                    <span *ngIf="articleForm.get('quantite')?.hasError('min')">La quantité doit être positive ou nulle</span>
-                  </div>
-                </div>
-              </div>
-
               <!-- Unité -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
