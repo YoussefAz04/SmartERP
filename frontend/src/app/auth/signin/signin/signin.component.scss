@@ -2,6 +2,14 @@
 // Modern Login Page Styles — Redesigned
 // =============================================
 
+:host {
+  --brand-primary: #4f46e5;
+  --brand-secondary: #7c3aed;
+  --panel-surface: #f4f7ff;
+  --text-primary: #111827;
+  --text-muted: #6b7280;
+}
+
 // ----- Animations -----
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(24px); }
@@ -37,13 +45,25 @@
   50%      { opacity: 0.06; }
 }
 
+@keyframes auroraShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes glowFloat {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(-10px); opacity: 0.8; }
+}
+
 // =============================================
 // Wrapper – full-page two-column layout
 // =============================================
 .login-modern-wrapper {
   display: grid;
   grid-template-columns: 58% 42%;
-  min-height: 100vh;
+  min-height: 100dvh;
+  background: radial-gradient(circle at 30% 20%, #1e1b4b 0%, #0f172a 45%, #020617 100%);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
   @media (max-width: 1100px) {
@@ -60,11 +80,13 @@
 // =============================================
 .login-stats-panel {
   position: relative;
-  background: linear-gradient(160deg, #0f0a2e 0%, #1e1660 35%, #2d1f8a 70%, #1a1254 100%);
+  background: linear-gradient(140deg, #0f172a, #1e1b4b, #312e81, #1e1b4b);
+  background-size: 220% 220%;
+  animation: auroraShift 16s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 56px 48px;
+  padding: clamp(2rem, 4vw, 3.5rem) clamp(1.75rem, 4vw, 3rem);
   overflow: hidden;
 
   @media (max-width: 992px) {
@@ -128,6 +150,7 @@
     z-index: 1;
     width: 100%;
     max-width: 540px;
+    padding: clamp(1rem, 2vw, 1.5rem);
     animation: fadeSlideIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
@@ -188,7 +211,7 @@
     }
 
     h1 {
-      font-size: 38px;
+      font-size: clamp(2rem, 3.1vw, 2.4rem);
       font-weight: 800;
       color: #fff;
       line-height: 1.15;
@@ -206,7 +229,7 @@
     }
 
     p {
-      font-size: 15px;
+      font-size: clamp(0.9rem, 1.15vw, 0.98rem);
       color: rgba(255, 255, 255, 0.6);
       line-height: 1.7;
       max-width: 440px;
@@ -232,6 +255,7 @@
     gap: 14px;
     animation: fadeSlideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
 
     &:hover {
       transform: translateY(-3px);
@@ -406,11 +430,11 @@
 // RIGHT PANEL – Login form
 // =============================================
 .login-form-panel {
-  background: #f8f9fc;
+  background: radial-gradient(circle at top left, #eef2ff, var(--panel-surface) 55%, #eef2ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 36px;
+  padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2.25rem);
   animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   position: relative;
 
@@ -422,6 +446,20 @@
     background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
     background-size: 24px 24px;
     opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: min(38vw, 460px);
+    aspect-ratio: 1;
+    right: -12%;
+    top: -15%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0) 70%);
+    filter: blur(4px);
+    animation: glowFloat 8s ease-in-out infinite;
     pointer-events: none;
   }
 
@@ -437,21 +475,23 @@
 }
 
 .form-card {
-  width: 100%;
-  max-width: 420px;
-  background: #fff;
+  width: min(100%, 430px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 24px;
-  padding: 44px 40px 36px;
+  padding: clamp(1.75rem, 4vw, 2.75rem) clamp(1.25rem, 3vw, 2.5rem) clamp(1.5rem, 3vw, 2.25rem);
   position: relative;
   z-index: 1;
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.04),
     0 6px 16px rgba(0, 0, 0, 0.06),
     0 20px 50px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.3s ease;
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 
   &:hover {
+    transform: translateY(-2px);
     box-shadow:
       0 1px 3px rgba(0, 0, 0, 0.04),
       0 8px 20px rgba(0, 0, 0, 0.08),
@@ -475,7 +515,7 @@
       }
 
       .login-logo-text {
-        font-size: 26px;
+        font-size: clamp(1.45rem, 2.1vw, 1.62rem);
         font-weight: 800;
         letter-spacing: 0.3px;
         display: inline-flex;
@@ -500,16 +540,16 @@
     }
 
     h2 {
-      font-size: 26px;
+      font-size: clamp(1.45rem, 2.4vw, 1.65rem);
       font-weight: 800;
-      color: #111827;
+      color: var(--text-primary);
       margin-bottom: 6px;
       letter-spacing: -0.3px;
     }
 
     p {
-      font-size: 14px;
-      color: #6b7280;
+      font-size: clamp(0.88rem, 1.1vw, 0.95rem);
+      color: var(--text-muted);
       line-height: 1.5;
     }
   }
@@ -531,19 +571,19 @@
     transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 
     &:focus-within {
-      border-color: #4f46e5;
+      border-color: var(--brand-primary);
       background: #fff;
       box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
 
       .field-icon {
-        color: #4f46e5;
+        color: var(--brand-primary);
       }
 
       .floating-label {
         top: -10px;
         left: 38px;
         font-size: 11px;
-        color: #4f46e5;
+        color: var(--brand-primary);
         background: #fff;
         padding: 0 6px;
         border-radius: 4px;
@@ -573,7 +613,7 @@
 
     .modern-input {
       width: 100%;
-      height: 50px;
+      height: clamp(3rem, 4vw, 3.2rem);
       border: none;
       background: transparent;
       padding: 0 44px;
@@ -733,7 +773,7 @@
 
     .forgot-link {
       font-size: 13px;
-      color: #4f46e5;
+      color: var(--brand-primary);
       font-weight: 600;
       text-decoration: none;
       transition: all 0.25s ease;
@@ -754,7 +794,7 @@
     height: 52px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
+    background: linear-gradient(135deg, var(--brand-primary) 0%, #6366f1 50%, var(--brand-secondary) 100%);
     background-size: 200% auto;
     color: #fff;
     font-size: 15px;
@@ -835,9 +875,8 @@
     background: rgba(255, 255, 255, 0.97);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    max-width: 420px;
+    max-width: 430px;
     margin: 0 auto;
-    padding: 36px 28px;
   }
 }
 
@@ -849,5 +888,16 @@
 
   .login-form-panel {
     padding: 24px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
