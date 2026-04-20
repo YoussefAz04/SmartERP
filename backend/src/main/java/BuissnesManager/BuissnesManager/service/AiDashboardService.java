@@ -107,10 +107,12 @@ public class AiDashboardService {
         // Profit margin: (revenue - COGS) / revenue. Uses the same "cost of goods sold"
         // logic as the YTD gross-margin comparison so we don't treat inventory build-up
         // as a loss. All-time window so it matches totalRevenue.
+        // NOTE: when no purchase data exists at all, COGS comes back null and treating it
+        // as 0 would falsely report a 100% profit margin. In that case we report 0.0 so
+        // the UI doesn't mislead the user into thinking the business is infinitely profitable.
         Double cogsAllTime = commandeVenteRepository.getCOGSInPeriod(
                 entrepriseId, LocalDate.of(1970, 1, 1), LocalDate.now());
-        cogsAllTime = cogsAllTime != null ? cogsAllTime : 0.0;
-        if (totalRevenue > 0) {
+        if (totalRevenue > 0 && cogsAllTime != null && cogsAllTime > 0) {
             double profitMargin = ((totalRevenue - cogsAllTime) / totalRevenue) * 100.0;
             kpi.setProfitMargin(Math.round(profitMargin * 10.0) / 10.0);
         } else {
@@ -145,7 +147,9 @@ public class AiDashboardService {
         // YTD: Jan 1 of current year to today
         LocalDate ytdStart = LocalDate.of(currentYear, 1, 1);
         LocalDate lastYearStart = LocalDate.of(currentYear - 1, 1, 1);
-        LocalDate lastYearSameDay = LocalDate.of(currentYear - 1, today.getMonthValue(), today.getDayOfMonth());
+        // Use minusYears(1) so that Feb 29 in a leap year is safely mapped to Feb 28
+        // in the previous non-leap year instead of throwing DateTimeException.
+        LocalDate lastYearSameDay = today.minusYears(1);
 
         Double ytd = commandeVenteRepository.getSalesInPeriod(entrepriseId, ytdStart, today);
         Double lastYear = commandeVenteRepository.getSalesInPeriod(entrepriseId, lastYearStart, lastYearSameDay);

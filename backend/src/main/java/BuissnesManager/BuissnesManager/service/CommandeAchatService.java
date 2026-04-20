@@ -355,6 +355,17 @@ public class CommandeAchatService {
         if ("RECUE".equals(currentStatut)) {
             throw new RuntimeException("Une commande reçue ne peut être modifiée que via l'annulation.");
         }
+        // Lifecycle transitions have side effects (facture creation, stock increment,
+        // bon de réception) and must be performed via the dedicated endpoints.
+        if ("CONFIRMEE".equals(statut) && !"CONFIRMEE".equals(currentStatut)) {
+            throw new RuntimeException("Utilisez l'endpoint de validation (/valider) pour confirmer une commande.");
+        }
+        if ("RECUE".equals(statut)) {
+            throw new RuntimeException("Utilisez l'endpoint de réception (/recevoir) pour réceptionner une commande.");
+        }
+        if ("ANNULEE".equals(statut)) {
+            throw new RuntimeException("Utilisez l'endpoint d'annulation (/annuler) pour annuler une commande.");
+        }
 
         commande.setStatut(statut);
         return commandeAchatRepository.save(commande);

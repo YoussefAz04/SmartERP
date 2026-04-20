@@ -230,6 +230,18 @@ public class CommandeVenteService {
         if ("LIVREE".equals(currentStatut)) {
             throw new RuntimeException("Une commande livrée ne peut être modifiée que via l'annulation.");
         }
+        // Lifecycle transitions with side effects (facture creation, stock moves, bon de livraison)
+        // must go through the dedicated methods, not a raw status set — otherwise we would
+        // skip stock decrement on delivery or skip releasing reservations on cancellation.
+        if ("CONFIRMEE".equals(statut) && !"CONFIRMEE".equals(currentStatut)) {
+            throw new RuntimeException("Utilisez l'endpoint de validation (/valider) pour confirmer une commande.");
+        }
+        if ("LIVREE".equals(statut)) {
+            throw new RuntimeException("Utilisez l'endpoint de livraison (/livrer) pour livrer une commande.");
+        }
+        if ("ANNULEE".equals(statut)) {
+            throw new RuntimeException("Utilisez l'endpoint d'annulation (/annuler) pour annuler une commande.");
+        }
 
         commande.setStatut(statut);
         return commandeVenteRepository.save(commande);

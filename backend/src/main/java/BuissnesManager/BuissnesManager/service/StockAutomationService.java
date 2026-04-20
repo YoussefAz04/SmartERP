@@ -109,19 +109,24 @@ public class StockAutomationService {
             BigDecimal vendue = stock.getQuantiteVendue() != null
                     ? stock.getQuantiteVendue() : BigDecimal.ZERO;
 
-            // Prefer releasing from reservation if available, otherwise check disponible
+            // Prefer releasing from reservation first. If reservation doesn't fully
+            // cover the delivery, consume all of it and take the remainder from the
+            // available stock — otherwise reserved quantities can stay orphaned in
+            // `quantiteReserve` after the sale is delivered.
+            BigDecimal totalAccessible = reserve.add(disponible);
+            if (totalAccessible.compareTo(quantite) < 0) {
+                throw new RuntimeException(
+                        String.format("Stock insuffisant pour l'article '%s' (id: %d, disponible: %s, réservé: %s, demandé: %s)",
+                                article.getNom(), article.getId(), disponible, reserve, quantite));
+            }
             if (reserve.compareTo(quantite) >= 0) {
                 stock.setQuantiteReserve(reserve.subtract(quantite));
-                stock.setQuantiteVendue(vendue.add(quantite));
-            } else if (disponible.compareTo(quantite) >= 0) {
-                // Backward-compatible path: no prior reservation, decrement disponible directly
-                stock.setQuantiteDisponible(disponible.subtract(quantite));
-                stock.setQuantiteVendue(vendue.add(quantite));
             } else {
-                throw new RuntimeException(
-                        String.format("Stock insuffisant pour l'article '%s' (id: %d, disponible: %s, demandé: %s)",
-                                article.getNom(), article.getId(), disponible, quantite));
+                BigDecimal remainder = quantite.subtract(reserve);
+                stock.setQuantiteReserve(BigDecimal.ZERO);
+                stock.setQuantiteDisponible(disponible.subtract(remainder));
             }
+            stock.setQuantiteVendue(vendue.add(quantite));
             stockRepository.save(stock);
 
             StockMouvement mouvement = new StockMouvement();

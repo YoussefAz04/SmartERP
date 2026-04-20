@@ -108,10 +108,10 @@ export class AddCommandeVenteComponent implements OnInit {
     const quantite = ligneGroup.get('quantite')?.value || 0;
     const prix = ligneGroup.get('prixUnitaireHT')?.value || 0;
     const tva = ligneGroup.get('tva')?.value || 0;
-    const montantHT = quantite * prix;
-    const montantTTC = montantHT * (1 + tva / 100);
-    ligneGroup.get('montantHT')?.setValue(montantHT.toFixed(2), { emitEvent: false });
-    ligneGroup.get('montantTTC')?.setValue(montantTTC.toFixed(2), { emitEvent: false });
+    const montantHT = Math.round(quantite * prix * 100) / 100;
+    const montantTTC = Math.round(montantHT * (1 + tva / 100) * 100) / 100;
+    ligneGroup.get('montantHT')?.setValue(montantHT, { emitEvent: false });
+    ligneGroup.get('montantTTC')?.setValue(montantTTC, { emitEvent: false });
   }
 
   get totalHT(): number {
