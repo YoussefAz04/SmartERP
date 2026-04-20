@@ -79,7 +79,9 @@ public class NotificationTypeCheckMigration implements CommandLineRunner {
     private void createUpdatedCheckConstraint() {
         try {
             String allowedValues = Arrays.stream(NotificationType.values())
-                .map(v -> "'" + v.name() + "'")
+                .map(Enum::name)
+                .filter(NotificationTypeCheckMigration::isSafeIdentifier)
+                .map(n -> "'" + n + "'")
                 .collect(Collectors.joining(","));
             jdbcTemplate.execute(
                 "ALTER TABLE [notification] WITH NOCHECK ADD CONSTRAINT [CHK_notification_type] " +
