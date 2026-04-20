@@ -2472,3 +2472,11 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
   border-color: #374151;
 }
 .dark .smart-dialog .smart-dialog-cancel:hover { background: #374151; }
+
+// =================================================================
+// Global UI refresh — refined palette & polish for shared patterns
+// used across the business pages (entreprise, user-management,
+// client, fournisseur, article-achat/vente, commande-achat/vente,
+// facture). Loaded last so it layers on top of per-page SCSS.
+// =================================================================
+@import "/src/assets/scss/ui-refresh";
