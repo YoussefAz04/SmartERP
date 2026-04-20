@@ -2,6 +2,7 @@
 
 <!-- Hero Header -->
 <div class="achat-hero-header">
+  <div class="hero-orb"></div>
   <div class="hero-content">
     <div>
       <span class="hero-badge">
@@ -24,7 +25,7 @@
 <!-- KPI Cards -->
 <div class="row mb-4">
   <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-primary" style="animation-delay: 0.1s">
+    <div class="kpi-card kpi-primary kpi-delay-1">
       <div class="kpi-body">
         <div>
           <div class="kpi-number">{{ totalCount }}</div>
@@ -41,7 +42,7 @@
     </div>
   </div>
   <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-slate" style="animation-delay: 0.2s">
+    <div class="kpi-card kpi-slate kpi-delay-2">
       <div class="kpi-body">
         <div>
           <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
@@ -58,7 +59,7 @@
     </div>
   </div>
   <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-success" style="animation-delay: 0.3s">
+    <div class="kpi-card kpi-success kpi-delay-3">
       <div class="kpi-body">
         <div>
           <div class="kpi-number">{{ uniqueFournisseurs.length }}</div>
@@ -75,7 +76,7 @@
     </div>
   </div>
   <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-warning" style="animation-delay: 0.4s">
+    <div class="kpi-card kpi-warning kpi-delay-4">
       <div class="kpi-body">
         <div>
           <div class="kpi-number">{{ totalValue | number:'1.0-0' }}</div>
