@@ -28,6 +28,9 @@ public class FournisseurService {
     @Autowired
     private EntrepriseRepo entrepriseRepo;
 
+    @Autowired
+    private NotificationService notificationService;
+
     // ✅ ADD FOURNISSEUR
     @Transactional
     public Fournisseur addFournisseur(Fournisseur fournisseur, Long idCategorie) {
@@ -40,7 +43,11 @@ public class FournisseurService {
                 .orElseThrow(() -> new RuntimeException("Entreprise not found with id: " + entrepriseId));
             fournisseur.setEntreprise(entreprise);
         }
-        return fournisseurRepo.save(fournisseur);
+        Fournisseur saved = fournisseurRepo.save(fournisseur);
+        if (saved.getEntreprise() != null) {
+            notificationService.createFournisseurAddedNotification(saved, saved.getEntreprise());
+        }
+        return saved;
     }
 
     // ✅ GET ALL FOURNISSEURS (enterprise-scoped)

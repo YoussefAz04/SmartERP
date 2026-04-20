@@ -91,6 +91,101 @@ public class NotificationService {
     }
 
     @Transactional
+    public void createStockSoldNotification(Stock stock, Article article, Entreprise entreprise, BigDecimal quantiteVendue) {
+        if (stock == null || article == null || entreprise == null) {
+            return;
+        }
+        BigDecimal soldQty = quantiteVendue != null ? quantiteVendue : BigDecimal.ZERO;
+        if (soldQty.compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+        String articleName = article.getNom() != null ? article.getNom() : ("Article #" + article.getId());
+        BigDecimal remaining = stock.getQuantiteDisponible() != null ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
+        String message = String.format("STOCK VENDU: -%s pour l'article '%s' (reste: %s).",
+                soldQty.stripTrailingZeros().toPlainString(),
+                articleName,
+                remaining.stripTrailingZeros().toPlainString());
+        createNotification(NotificationType.STOCK_VENDU, message, remaining, stock.getSeuilMinimum(), stock, article, entreprise);
+    }
+
+    @Transactional
+    public void createClientAddedNotification(Client client, Entreprise entreprise) {
+        if (client == null || entreprise == null) {
+            return;
+        }
+        String clientName = client.getNom() != null ? client.getNom() : ("Client #" + client.getId());
+        String message = String.format("NOUVEAU CLIENT: '%s' a été ajouté.", clientName);
+        createNotification(NotificationType.CLIENT_AJOUTE, message, null, null, null, null, entreprise);
+    }
+
+    @Transactional
+    public void createFournisseurAddedNotification(Fournisseur fournisseur, Entreprise entreprise) {
+        if (fournisseur == null || entreprise == null) {
+            return;
+        }
+        String fournisseurName = fournisseur.getNom() != null ? fournisseur.getNom() : ("Fournisseur #" + fournisseur.getId());
+        String message = String.format("NOUVEAU FOURNISSEUR: '%s' a été ajouté.", fournisseurName);
+        createNotification(NotificationType.FOURNISSEUR_AJOUTE, message, null, null, null, null, entreprise);
+    }
+
+    @Transactional
+    public void createArticleVenteAddedNotification(ArticleVente articleVente, Entreprise entreprise) {
+        if (articleVente == null || entreprise == null) {
+            return;
+        }
+        String name = articleVente.getNom() != null ? articleVente.getNom() : ("ArticleVente #" + articleVente.getId());
+        String message = String.format("NOUVEL ARTICLE DE VENTE: '%s' a été ajouté au catalogue.", name);
+        Article article = articleVente.getArticleAchat();
+        createNotification(NotificationType.ARTICLE_VENTE_AJOUTE, message, null, null, null, article, entreprise);
+    }
+
+    @Transactional
+    public void createCommandeAchatNotification(NotificationType type, String reference, Entreprise entreprise) {
+        if (entreprise == null || type == null) {
+            return;
+        }
+        String ref = reference != null ? reference : "-";
+        String message;
+        switch (type) {
+            case COMMANDE_ACHAT_CREEE:
+                message = String.format("COMMANDE D'ACHAT CRÉÉE: '%s'.", ref);
+                break;
+            case COMMANDE_ACHAT_RECUE:
+                message = String.format("COMMANDE D'ACHAT REÇUE: '%s'.", ref);
+                break;
+            case COMMANDE_ACHAT_ANNULEE:
+                message = String.format("COMMANDE D'ACHAT ANNULÉE: '%s'.", ref);
+                break;
+            default:
+                return;
+        }
+        createNotification(type, message, null, null, null, null, entreprise);
+    }
+
+    @Transactional
+    public void createCommandeVenteNotification(NotificationType type, String reference, Entreprise entreprise) {
+        if (entreprise == null || type == null) {
+            return;
+        }
+        String ref = reference != null ? reference : "-";
+        String message;
+        switch (type) {
+            case COMMANDE_VENTE_CREEE:
+                message = String.format("COMMANDE DE VENTE CRÉÉE: '%s'.", ref);
+                break;
+            case COMMANDE_VENTE_LIVREE:
+                message = String.format("COMMANDE DE VENTE LIVRÉE: '%s'.", ref);
+                break;
+            case COMMANDE_VENTE_ANNULEE:
+                message = String.format("COMMANDE DE VENTE ANNULÉE: '%s'.", ref);
+                break;
+            default:
+                return;
+        }
+        createNotification(type, message, null, null, null, null, entreprise);
+    }
+
+    @Transactional
     public Notification markAsViewed(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notification not found: " + notificationId));

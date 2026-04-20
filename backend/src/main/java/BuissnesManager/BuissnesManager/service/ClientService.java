@@ -28,6 +28,9 @@ public class ClientService {
     @Autowired
     private EntrepriseRepo entrepriseRepo;
 
+    @Autowired
+    private NotificationService notificationService;
+
     // ✅ ADD CLIENT
     @Transactional
     public Client addClient(Client client, Long idCategorie) {
@@ -40,7 +43,11 @@ public class ClientService {
                 .orElseThrow(() -> new RuntimeException("Entreprise not found with id: " + entrepriseId));
             client.setEntreprise(entreprise);
         }
-        return clientRepo.save(client);
+        Client saved = clientRepo.save(client);
+        if (saved.getEntreprise() != null) {
+            notificationService.createClientAddedNotification(saved, saved.getEntreprise());
+        }
+        return saved;
     }
 
     // ✅ GET ALL CLIENTS (enterprise-scoped)
