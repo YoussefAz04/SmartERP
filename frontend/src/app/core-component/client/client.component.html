@@ -1,223 +1,310 @@
 <router-outlet></router-outlet>
 
-<!-- Page Header -->
-<div class="page-header">
-  <div class="page-header-inner">
-    <div class="page-header-left">
-      <div class="page-icon-wrap">
-        <i class="feather icon-users"></i>
-      </div>
-      <div>
-        <h1 class="page-title">Clients</h1>
-        <p class="page-subtitle">{{ totalCount }} client(s) dans votre portefeuille</p>
-      </div>
-    </div>
-    <div class="page-header-right">
-      <button *ngIf="canCreateClient" type="button" class="btn-add" (click)="addClient()">
-        <i class="feather icon-plus"></i> Nouveau Client
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Stat Cards -->
-<div class="stat-grid">
-  <div class="stat-card stat-delay-1">
-    <div class="stat-accent accent-blue"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-blue">
-        <i class="feather icon-users"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ totalCount }}</span>
-        <span class="stat-label">Total Clients</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-briefcase"></i> Portefeuille actif
-    </div>
-  </div>
-
-  <div class="stat-card stat-delay-2">
-    <div class="stat-accent accent-emerald"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-emerald">
-        <i class="feather icon-mail"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ withEmail }}</span>
-        <span class="stat-label">Avec Email</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-check-circle"></i>
-      {{ getPercentage(withEmail) }}% contactables
-    </div>
-  </div>
-
-  <div class="stat-card stat-delay-3">
-    <div class="stat-accent accent-violet"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-violet">
-        <i class="feather icon-phone"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ withPhone }}</span>
-        <span class="stat-label">Avec Téléphone</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-phone-call"></i>
-      {{ getPercentage(withPhone) }}% joignables
-    </div>
-  </div>
-
-  <div class="stat-card stat-delay-4">
-    <div class="stat-accent accent-amber"></div>
-    <div class="stat-content">
-      <div class="stat-icon-circle icon-amber">
-        <i class="feather icon-layers"></i>
-      </div>
-      <div class="stat-info">
-        <span class="stat-value">{{ uniqueSectors }}</span>
-        <span class="stat-label">Secteurs</span>
-      </div>
-    </div>
-    <div class="stat-footer">
-      <i class="feather icon-grid"></i> Diversité sectorielle
-    </div>
-  </div>
-</div>
-
-<!-- Filter Card -->
-<div class="filter-card mb-4">
-  <div class="filter-header">
-    <i class="feather icon-filter"></i>
-    Filtres &amp; Recherche
-  </div>
-  <div class="filter-body">
-    <div class="row g-3 align-items-end">
-      <div class="col-md-9">
-        <label class="filter-label">Recherche</label>
-        <div class="filter-input-group">
-          <i class="feather icon-search filter-input-icon"></i>
-          <input type="text" class="filter-input" placeholder="Nom, prénom, email, téléphone, secteur..."
-            [(ngModel)]="searchTerm">
+<div class="client-dashboard">
+  <section class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-left">
+        <div class="page-icon-wrap">
+          <i class="feather icon-users"></i>
+        </div>
+        <div>
+          <span class="page-overline">
+            <i class="feather icon-shield"></i>
+            Vue relation client
+          </span>
+          <h1 class="page-title">Clients</h1>
+          <p class="page-subtitle">
+            {{ totalCount }} client(s) dans votre portefeuille, avec une lecture plus premium,
+            des animations plus fluides et une recherche plus agréable.
+          </p>
         </div>
       </div>
-      <div class="col-md-3">
-        <button type="button" class="btn-reset w-100" (click)="resetFilters()">
-          <i class="feather icon-refresh-cw"></i> Réinitialiser
+
+      <div class="page-header-right">
+        <div class="header-chip-list">
+          <span class="header-chip">
+            <i class="feather icon-phone-call"></i>
+            {{ getPercentage(withPhone) }}% joignables
+          </span>
+          <span class="header-chip">
+            <i class="feather icon-layers"></i>
+            {{ uniqueSectors }} secteurs
+          </span>
+        </div>
+
+        <button *ngIf="canCreateClient" type="button" class="btn-add" (click)="addClient()">
+          <i class="feather icon-plus"></i>
+          Nouveau Client
         </button>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- Clients Table -->
-<div class="modern-panel">
-  <div class="panel-header panel-header-client">
-    <h5 class="panel-title">
-      <i class="feather icon-users"></i>
-      Liste des Clients
-      <span class="panel-badge">{{ filteredClients.length }}</span>
-    </h5>
+  <div class="stat-grid">
+    <div class="stat-card stat-delay-1">
+      <div class="stat-accent accent-blue"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-blue">
+          <i class="feather icon-users"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalCount }}</span>
+          <span class="stat-label">Total Clients</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-briefcase"></i>
+        Portefeuille actif et consultable
+      </div>
+    </div>
+
+    <div class="stat-card stat-delay-2">
+      <div class="stat-accent accent-emerald"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-emerald">
+          <i class="feather icon-mail"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ withEmail }}</span>
+          <span class="stat-label">Avec Email</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-check-circle"></i>
+        {{ getPercentage(withEmail) }}% contactables par email
+      </div>
+    </div>
+
+    <div class="stat-card stat-delay-3">
+      <div class="stat-accent accent-violet"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-violet">
+          <i class="feather icon-phone"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ withPhone }}</span>
+          <span class="stat-label">Avec Téléphone</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-phone-call"></i>
+        {{ getPercentage(withPhone) }}% joignables rapidement
+      </div>
+    </div>
+
+    <div class="stat-card stat-delay-4">
+      <div class="stat-accent accent-amber"></div>
+      <div class="stat-content">
+        <div class="stat-icon-circle icon-amber">
+          <i class="feather icon-layers"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ uniqueSectors }}</span>
+          <span class="stat-label">Secteurs</span>
+        </div>
+      </div>
+      <div class="stat-footer">
+        <i class="feather icon-grid"></i>
+        Diversité sectorielle visible
+      </div>
+    </div>
   </div>
-  <div class="panel-body">
-    <div class="table-responsive">
-      <table class="client-table">
-        <thead>
-          <tr>
-            <th>Nom &amp; Prénom</th>
-            <th>Email</th>
-            <th>Téléphone</th>
-            <th>Adresse</th>
-            <th>Secteur d'Activité</th>
-            <th class="text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (filteredClients && filteredClients.length > 0) {
-            @for (d of filteredClients; track d.id) {
-              <tr>
-                <td>
-                  <div class="client-name-cell">
-                    <div class="client-avatar">{{ (d.nom || '?').charAt(0).toUpperCase() }}</div>
-                    <div>
-                      <strong>{{ d.nom }} {{ d.prenom }}</strong>
+
+  <div class="filter-card mb-4">
+    <div class="filter-header">
+      <div class="filter-title">
+        <span class="filter-title-main">
+          <i class="feather icon-filter"></i>
+          Filtres &amp; Recherche
+        </span>
+        <span class="filter-title-sub">
+          Recherchez instantanément un client par identité, contact ou secteur d'activité.
+        </span>
+      </div>
+
+      <span class="filter-live-badge">{{ filteredClients.length }} résultat(s)</span>
+    </div>
+
+    <div class="filter-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-9">
+          <label class="filter-label">Recherche</label>
+          <div class="filter-input-group">
+            <i class="feather icon-search filter-input-icon"></i>
+            <input
+              type="text"
+              class="filter-input"
+              placeholder="Nom, prénom, email, téléphone, secteur..."
+              [(ngModel)]="searchTerm">
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <button type="button" class="btn-reset w-100" (click)="resetFilters()">
+            <i class="feather icon-refresh-cw"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-helper-row">
+        <div class="filter-chip-list">
+          <span class="mini-chip">
+            <i class="feather icon-mail"></i>
+            Emails {{ withEmail }}
+          </span>
+          <span class="mini-chip">
+            <i class="feather icon-phone"></i>
+            Téléphones {{ withPhone }}
+          </span>
+          <span class="mini-chip">
+            <i class="feather icon-layers"></i>
+            Secteurs {{ uniqueSectors }}
+          </span>
+        </div>
+
+        @if (searchTerm) {
+          <button type="button" class="btn-inline-clear" (click)="resetFilters()">
+            <i class="feather icon-x"></i>
+            Effacer la recherche
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="modern-panel">
+    <div class="panel-header panel-header-client">
+      <h5 class="panel-title">
+        <i class="feather icon-users"></i>
+        <span class="panel-title-copy">
+          Liste des Clients
+          <small>Présentation claire, actions visibles, navigation plus agréable</small>
+        </span>
+      </h5>
+      <span class="panel-badge">{{ filteredClients.length }}</span>
+    </div>
+
+    <div class="panel-body">
+      <div class="table-responsive">
+        <table class="client-table">
+          <thead>
+            <tr>
+              <th>Nom &amp; Prénom</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Adresse</th>
+              <th>Secteur d'Activité</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (filteredClients && filteredClients.length > 0) {
+              @for (d of filteredClients; track d.id) {
+                <tr>
+                  <td>
+                    <div class="client-name-cell">
+                      <div class="client-avatar">{{ (d.nom || '?').charAt(0).toUpperCase() }}</div>
+                      <div class="client-name-copy">
+                        <strong>{{ d.nom }} {{ d.prenom }}</strong>
+                        <span class="client-id">Client #{{ d.id }}</span>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td>
-                  @if (d.email) {
-                    <a class="contact-link" [href]="'mailto:' + d.email">
-                      <i class="feather icon-mail"></i> {{ d.email }}
-                    </a>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
-                </td>
-                <td>
-                  @if (d.telephone) {
-                    <a class="contact-link" [href]="'tel:' + d.telephone">
-                      <i class="feather icon-phone"></i> {{ d.telephone }}
-                    </a>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
-                </td>
-                <td>
-                  @if (d.adresse) {
-                    <span class="addr-text"><i class="feather icon-map-pin"></i> {{ d.adresse }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
-                </td>
-                <td>
-                  @if (d.secteurActivite) {
-                    <span class="sector-pill">{{ d.secteurActivite }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
-                </td>
-                <td>
-                  <div class="action-btns">
-                    <button type="button" class="action-btn action-btn-view"
-                       (click)="viewClient(d.id)"
-                       title="Voir">
-                      <i class="feather icon-eye"></i>
-                    </button>
-                    <button *ngIf="canEditClient" type="button" class="action-btn action-btn-edit"
-                       (click)="editClient(d.id)"
-                       title="Modifier">
-                      <i class="feather icon-edit"></i>
-                    </button>
-                    <button *ngIf="canDeleteClient" type="button" class="action-btn action-btn-delete"
-                       (click)="deleteClient(d.id)"
-                       title="Supprimer">
-                      <i class="feather icon-trash-2"></i>
-                    </button>
+                  </td>
+
+                  <td>
+                    @if (d.email) {
+                      <a class="contact-link" [href]="'mailto:' + d.email">
+                        <i class="feather icon-mail"></i>
+                        {{ d.email }}
+                      </a>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+
+                  <td>
+                    @if (d.telephone) {
+                      <a class="contact-link" [href]="'tel:' + d.telephone">
+                        <i class="feather icon-phone"></i>
+                        {{ d.telephone }}
+                      </a>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+
+                  <td>
+                    @if (d.adresse) {
+                      <span class="addr-text">
+                        <i class="feather icon-map-pin"></i>
+                        {{ d.adresse }}
+                      </span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+
+                  <td>
+                    @if (d.secteurActivite) {
+                      <span class="sector-pill">{{ d.secteurActivite }}</span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+
+                  <td>
+                    <div class="action-btns">
+                      <button
+                        type="button"
+                        class="action-btn action-btn-view"
+                        (click)="viewClient(d.id)"
+                        title="Voir">
+                        <i class="feather icon-eye"></i>
+                      </button>
+                      <button
+                        *ngIf="canEditClient"
+                        type="button"
+                        class="action-btn action-btn-edit"
+                        (click)="editClient(d.id)"
+                        title="Modifier">
+                        <i class="feather icon-edit"></i>
+                      </button>
+                      <button
+                        *ngIf="canDeleteClient"
+                        type="button"
+                        class="action-btn action-btn-delete"
+                        (click)="deleteClient(d.id)"
+                        title="Supprimer">
+                        <i class="feather icon-trash-2"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @else {
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <span class="empty-icon">
+                      <i class="feather icon-users"></i>
+                    </span>
+                    <h6>Aucun client à afficher</h6>
+                    <p>@if (searchTerm) { Aucun client ne correspond à votre recherche actuelle. } @else { La liste est vide pour le moment. Ajoutez un premier client pour démarrer. }</p>
+                    @if (searchTerm) {
+                      <button type="button" class="btn-retry" (click)="resetFilters()">
+                        <i class="feather icon-x"></i>
+                        Effacer le filtre
+                      </button>
+                    }
                   </div>
                 </td>
               </tr>
             }
-          } @else {
-            <tr>
-              <td colspan="6">
-                <div class="empty-state">
-                  <i class="feather icon-users empty-icon"></i>
-                  <p>@if (searchTerm) { Aucun client ne correspond à votre recherche } @else { Aucun client disponible }</p>
-                  @if (searchTerm) {
-                    <button type="button" class="btn-retry" (click)="resetFilters()">
-                      <i class="feather icon-x"></i> Effacer le filtre
-                    </button>
-                  }
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

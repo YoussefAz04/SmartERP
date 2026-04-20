@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ClientService } from "../../core/service/client/client.service";
 import { Router, RouterOutlet } from "@angular/router";
 import { Client } from "../../model/client.model";
@@ -170,7 +170,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
 
         let clientPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
-          const clientPerm = currentUser.permission.find((p: any) =>
+          const clientPerm = currentUser.permission.find((p: PermissionDto) =>
             p.moduleTitle?.toLowerCase().includes('client')
           );
           if (clientPerm) {

@@ -1,16 +1,19 @@
+import { CommonModule, NgClass } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { ClientService } from '../../../core/service/client/client.service';
 import { Client } from '../../../model/client.model';
 import { CategorieClient } from '../../../model/categorieClient.model';
 import { NotificationService } from '../../../shared/notification/notification.service';
+import { RouterLink } from '@angular/router';
+import { routes } from '../../../core/helpers/routes';
 
 @Component({
   selector: 'app-edit-client',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgClass],
   templateUrl: './edit-client.component.html',
   styleUrl: './edit-client.component.scss'
 })
@@ -19,6 +22,7 @@ export class EditClientComponent implements OnInit {
   categories: CategorieClient[] = [];
   clientId: number | null = null;
   isLoading = false;
+  protected readonly routes = routes;
 
   constructor(private fb: FormBuilder,
     private clientService: ClientService,
@@ -53,7 +57,7 @@ export class EditClientComponent implements OnInit {
       next: (data: CategorieClient[]) => {
         this.categories = data;
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Error loading categories:', err);
       }
     });
@@ -72,11 +76,11 @@ export class EditClientComponent implements OnInit {
           email: client.email || '',
           adresse: client.adresse || '',
           secteurActivite: client.secteurActivite || '',
-          categorieId: (client as any).categorieClient?.id || ''
+          categorieId: client.categorieClient?.id || ''
         });
         this.isLoading = false;
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Error loading client:', err);
         this.notification.error('Erreur lors du chargement du client');
         this.isLoading = false;
@@ -103,12 +107,12 @@ export class EditClientComponent implements OnInit {
     if (this.clientId) {
       // UPDATE
       this.clientService.updateClient(this.clientId, formData).subscribe({
-        next: (response: any) => {
+        next: () => {
           this.notification.success('✓ Client modifié avec succès');
           this.router.navigate(['/client/listClient']);
           this.isLoading = false;
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           console.error('Error:', err);
           this.notification.error('Erreur lors de la modification');
           this.isLoading = false;
@@ -117,12 +121,12 @@ export class EditClientComponent implements OnInit {
     } else {
       // ADD NEW
       this.clientService.addClient(formData, idCategorie).subscribe({
-        next: (response: any) => {
+        next: () => {
           this.notification.success('✓ Client ajouté avec succès');
           this.router.navigate(['/client/listClient']);
           this.isLoading = false;
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           console.error('Error:', err);
           this.notification.error('Erreur lors de l\'ajout');
           this.isLoading = false;
