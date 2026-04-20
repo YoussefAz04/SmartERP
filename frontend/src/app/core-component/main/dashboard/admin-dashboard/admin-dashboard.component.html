@@ -3,8 +3,19 @@
      ==================================================== -->
 
 <div class="dashboard-shell">
+  <!-- Animated background mesh -->
+  <div class="bg-mesh" aria-hidden="true">
+    <span class="bg-orb bg-orb--1"></span>
+    <span class="bg-orb bg-orb--2"></span>
+    <span class="bg-orb bg-orb--3"></span>
+  </div>
+
   <!-- Header -->
   <div class="db-header fade-in">
+    <!-- Decorative animated orbs -->
+    <span class="db-header__glow db-header__glow--a" aria-hidden="true"></span>
+    <span class="db-header__glow db-header__glow--b" aria-hidden="true"></span>
+    <span class="db-header__grid" aria-hidden="true"></span>
     <div class="db-header__inner">
       <div>
         <p class="db-header__eyebrow">Vue d'ensemble</p>
@@ -19,6 +30,7 @@
           {{ today | date: 'EEE d MMMM yyyy' }}
         </span>
         <span class="meta-pill">
+          <span class="live-dot" aria-hidden="true"></span>
           <i class="feather icon-trending-up"></i>
           Activité en direct
         </span>
@@ -28,20 +40,24 @@
 
   <section class="quick-actions fade-in" style="animation-delay:0.03s">
     <a class="quick-action quick-action--indigo" routerLink="/client/addClient">
-      <i class="feather icon-user-plus"></i>
-      <span>Nouveau client</span>
+      <span class="quick-action__icon"><i class="feather icon-user-plus"></i></span>
+      <span class="quick-action__label">Nouveau client</span>
+      <i class="feather icon-arrow-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--amber" routerLink="/fournisseur/addFournisseur">
-      <i class="feather icon-truck"></i>
-      <span>Nouveau fournisseur</span>
+      <span class="quick-action__icon"><i class="feather icon-truck"></i></span>
+      <span class="quick-action__label">Nouveau fournisseur</span>
+      <i class="feather icon-arrow-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--emerald" routerLink="/article-achat/add">
-      <i class="feather icon-package"></i>
-      <span>Ajouter un article</span>
+      <span class="quick-action__icon"><i class="feather icon-package"></i></span>
+      <span class="quick-action__label">Ajouter un article</span>
+      <i class="feather icon-arrow-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--slate" routerLink="/commande-vente/add">
-      <i class="feather icon-file-plus"></i>
-      <span>Nouvelle commande</span>
+      <span class="quick-action__icon"><i class="feather icon-file-plus"></i></span>
+      <span class="quick-action__label">Nouvelle commande</span>
+      <i class="feather icon-arrow-right quick-action__arrow"></i>
     </a>
   </section>
 
@@ -51,6 +67,8 @@
 
       <!-- Clients Card -->
       <div class="stat-card stat-card--blue" (click)="onStatCardClick($event, '/client/listClient')">
+        <span class="stat-card__sheen" aria-hidden="true"></span>
+        <span class="stat-card__blob" aria-hidden="true"></span>
         <div class="stat-card__icon">
           <i class="feather icon-users"></i>
         </div>
@@ -68,6 +86,8 @@
 
       <!-- Fournisseurs Card -->
       <div class="stat-card stat-card--orange" (click)="onStatCardClick($event, '/fournisseur/listFournisseur')">
+        <span class="stat-card__sheen" aria-hidden="true"></span>
+        <span class="stat-card__blob" aria-hidden="true"></span>
         <div class="stat-card__icon">
           <i class="feather icon-truck"></i>
         </div>
@@ -85,6 +105,8 @@
 
       <!-- Articles Card -->
       <div class="stat-card stat-card--green" (click)="onStatCardClick($event, '/article-achat/listArticleAchat')">
+        <span class="stat-card__sheen" aria-hidden="true"></span>
+        <span class="stat-card__blob" aria-hidden="true"></span>
         <div class="stat-card__icon">
           <i class="feather icon-package"></i>
         </div>
