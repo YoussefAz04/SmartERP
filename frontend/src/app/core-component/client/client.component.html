@@ -1,57 +1,90 @@
 <router-outlet></router-outlet>
 
-<!-- Hero Header -->
-<div class="client-hero-header">
-  <div class="hero-content">
-    <div>
-      <span class="hero-badge">
-        <i class="feather icon-users"></i> Gestion des Clients
-      </span>
-      <h1 class="hero-title">Liste des Clients</h1>
-      <p class="hero-subtitle">{{ totalCount }} client(s) enregistré(s)</p>
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-left">
+      <div class="page-icon-wrap">
+        <i class="feather icon-users"></i>
+      </div>
+      <div>
+        <h1 class="page-title">Clients</h1>
+        <p class="page-subtitle">{{ totalCount }} client(s) dans votre portefeuille</p>
+      </div>
     </div>
-    <div class="hero-actions">
-      <button *ngIf="canCreateClient" type="button" class="btn-hero btn-hero-primary" (click)="addClient()">
-        <i class="feather icon-plus-circle"></i> Ajouter Client
+    <div class="page-header-right">
+      <button *ngIf="canCreateClient" type="button" class="btn-add" (click)="addClient()">
+        <i class="feather icon-plus"></i> Nouveau Client
       </button>
     </div>
   </div>
 </div>
 
-<!-- KPI Cards -->
-<div class="row mb-4">
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-blue kpi-delay-1">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ totalCount }}</div>
-          <div class="kpi-label">Total Clients</div>
-          <span class="kpi-trend"><i class="feather icon-trending-up"></i> Portefeuille</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-users"></i>
-        </div>
+<!-- Stat Cards -->
+<div class="stat-grid">
+  <div class="stat-card stat-delay-1">
+    <div class="stat-accent accent-blue"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-blue">
+        <i class="feather icon-users"></i>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-list me-1"></i> Voir tous les clients
+      <div class="stat-info">
+        <span class="stat-value">{{ totalCount }}</span>
+        <span class="stat-label">Total Clients</span>
       </div>
     </div>
+    <div class="stat-footer">
+      <i class="feather icon-briefcase"></i> Portefeuille actif
+    </div>
   </div>
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-teal kpi-delay-2">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ uniqueSectors }}</div>
-          <div class="kpi-label">Secteurs</div>
-          <span class="kpi-trend"><i class="feather icon-layers"></i> Diversité</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-layers"></i>
-        </div>
+
+  <div class="stat-card stat-delay-2">
+    <div class="stat-accent accent-emerald"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-emerald">
+        <i class="feather icon-mail"></i>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-bar-chart-2 me-1"></i> Secteurs d'activité
+      <div class="stat-info">
+        <span class="stat-value">{{ withEmail }}</span>
+        <span class="stat-label">Avec Email</span>
       </div>
+    </div>
+    <div class="stat-footer">
+      <i class="feather icon-check-circle"></i>
+      {{ getPercentage(withEmail) }}% contactables
+    </div>
+  </div>
+
+  <div class="stat-card stat-delay-3">
+    <div class="stat-accent accent-violet"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-violet">
+        <i class="feather icon-phone"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ withPhone }}</span>
+        <span class="stat-label">Avec Téléphone</span>
+      </div>
+    </div>
+    <div class="stat-footer">
+      <i class="feather icon-phone-call"></i>
+      {{ getPercentage(withPhone) }}% joignables
+    </div>
+  </div>
+
+  <div class="stat-card stat-delay-4">
+    <div class="stat-accent accent-amber"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-amber">
+        <i class="feather icon-layers"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ uniqueSectors }}</span>
+        <span class="stat-label">Secteurs</span>
+      </div>
+    </div>
+    <div class="stat-footer">
+      <i class="feather icon-grid"></i> Diversité sectorielle
     </div>
   </div>
 </div>

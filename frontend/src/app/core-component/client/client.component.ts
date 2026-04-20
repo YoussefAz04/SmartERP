@@ -47,6 +47,10 @@ export class ClientComponent implements OnInit, AfterViewInit {
   get totalCount(): number { return this.clientList.length; }
   get uniqueSectors(): number { return new Set(this.clientList.map(c => c.secteurActivite).filter(Boolean)).size; }
   get withEmail(): number { return this.clientList.filter(c => c.email).length; }
+  get withPhone(): number { return this.clientList.filter(c => c.telephone).length; }
+  getPercentage(count: number): number {
+    return this.totalCount > 0 ? Math.round((count / this.totalCount) * 100) : 0;
+  }
 
   resetFilters(): void { this.searchTerm = ''; }
   

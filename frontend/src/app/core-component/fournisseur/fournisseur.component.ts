@@ -57,6 +57,9 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
   get uniqueCategories(): number {
     return new Set(this.fournisseurList.map(f => f.categorieFournisseur?.nom).filter(Boolean)).size;
   }
+  getPercentage(count: number): number {
+    return this.totalCount > 0 ? Math.round((count / this.totalCount) * 100) : 0;
+  }
 
   resetFilters(): void {
     this.searchTerm = '';

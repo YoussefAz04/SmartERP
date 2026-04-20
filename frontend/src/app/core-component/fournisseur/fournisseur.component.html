@@ -1,59 +1,92 @@
-<!-- Hero Header -->
+<!-- Page Header -->
 <router-outlet></router-outlet>
-<div class="four-hero-header">
-  <div class="hero-content">
-    <div>
-      <span class="hero-badge">
-        <i class="feather icon-package"></i> Gestion des Fournisseurs
-      </span>
-      <h1 class="hero-title">Liste des Fournisseurs</h1>
-      <p class="hero-subtitle">{{ totalCount }} fournisseur(s) enregistré(s)</p>
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-left">
+      <div class="page-icon-wrap">
+        <i class="feather icon-package"></i>
+      </div>
+      <div>
+        <h1 class="page-title">Fournisseurs</h1>
+        <p class="page-subtitle">{{ totalCount }} fournisseur(s) enregistré(s)</p>
+      </div>
     </div>
-    <div class="hero-actions">
-      <button type="button" class="btn-hero btn-hero-outline" (click)="loadFournisseurs()">
-        <i class="feather icon-rotate-ccw"></i> Actualiser
+    <div class="page-header-right">
+      <button type="button" class="btn-refresh" (click)="loadFournisseurs()">
+        <i class="feather icon-rotate-ccw"></i>
       </button>
-      <button *ngIf="canCreateFournisseur" type="button" class="btn-hero btn-hero-primary" (click)="addFournisseur()">
-        <i class="feather icon-plus-circle"></i> Ajouter Fournisseur
+      <button *ngIf="canCreateFournisseur" type="button" class="btn-add" (click)="addFournisseur()">
+        <i class="feather icon-plus"></i> Nouveau Fournisseur
       </button>
     </div>
   </div>
 </div>
 
-<!-- KPI Cards -->
-<div class="row mb-4">
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-navy kpi-delay-1">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ totalCount }}</div>
-          <div class="kpi-label">Total Fournisseurs</div>
-          <span class="kpi-trend"><i class="feather icon-trending-up"></i> Registre</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-package"></i>
-        </div>
+<!-- Stat Cards -->
+<div class="stat-grid">
+  <div class="stat-card stat-delay-1">
+    <div class="stat-accent accent-blue"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-blue">
+        <i class="feather icon-package"></i>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-list me-1"></i> Voir tous les fournisseurs
+      <div class="stat-info">
+        <span class="stat-value">{{ totalCount }}</span>
+        <span class="stat-label">Total Fournisseurs</span>
       </div>
     </div>
+    <div class="stat-footer">
+      <i class="feather icon-database"></i> Registre complet
+    </div>
   </div>
-  <div class="col-xl-6 col-sm-6 mb-4">
-    <div class="kpi-card kpi-slate kpi-delay-2">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ withEmail }}</div>
-          <div class="kpi-label">Avec Email</div>
-          <span class="kpi-trend"><i class="feather icon-mail"></i> Contact</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-mail"></i>
-        </div>
+
+  <div class="stat-card stat-delay-2">
+    <div class="stat-accent accent-emerald"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-emerald">
+        <i class="feather icon-mail"></i>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-send me-1"></i> Fournisseurs contactables
+      <div class="stat-info">
+        <span class="stat-value">{{ withEmail }}</span>
+        <span class="stat-label">Avec Email</span>
       </div>
+    </div>
+    <div class="stat-footer">
+      <i class="feather icon-check-circle"></i>
+      {{ getPercentage(withEmail) }}% contactables
+    </div>
+  </div>
+
+  <div class="stat-card stat-delay-3">
+    <div class="stat-accent accent-violet"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-violet">
+        <i class="feather icon-layers"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ uniqueCategories }}</span>
+        <span class="stat-label">Catégories</span>
+      </div>
+    </div>
+    <div class="stat-footer">
+      <i class="feather icon-grid"></i> Types de fournisseurs
+    </div>
+  </div>
+
+  <div class="stat-card stat-delay-4">
+    <div class="stat-accent accent-amber"></div>
+    <div class="stat-content">
+      <div class="stat-icon-circle icon-amber">
+        <i class="feather icon-phone"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ withPhone }}</span>
+        <span class="stat-label">Avec Téléphone</span>
+      </div>
+    </div>
+    <div class="stat-footer">
+      <i class="feather icon-phone-call"></i>
+      {{ getPercentage(withPhone) }}% joignables
     </div>
   </div>
 </div>
