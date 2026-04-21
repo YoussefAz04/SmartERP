@@ -148,11 +148,16 @@ $text-light:     #94a3b8;
         line-height: 1.1;
         text-shadow: 0 2px 12px rgba(0,0,0,0.15);
 
-        .title-accent {
-          background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+        .title-main {
+          background: linear-gradient(135deg, #7c3aed, #a78bfa);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+        }
+
+        .title-accent {
+          -webkit-text-fill-color: white;
+          color: white;
         }
       }
 
