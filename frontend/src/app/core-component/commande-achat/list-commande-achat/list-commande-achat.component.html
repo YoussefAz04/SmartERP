@@ -2,6 +2,9 @@
 
 <!-- Modern Page Header -->
 <div class="modern-page-header">
+  <span class="header-shape s1"></span>
+  <span class="header-shape s2"></span>
+  <span class="header-shape s3"></span>
   <div class="header-content">
     <div class="header-icon">
       <i class="feather icon-shopping-cart"></i>
@@ -16,9 +19,41 @@
         Actualiser
       </button>
       <button class="btn-header-action btn-add" (click)="addCommande()">
-        <i class="feather icon-plus-circle"></i>
+        <i class="feather icon-plus"></i>
         Nouvelle Commande
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- KPI Summary Cards -->
+<div class="kpi-row">
+  <div class="kpi-card kpi-blue">
+    <div class="kpi-icon-wrap"><i class="feather icon-layers"></i></div>
+    <div class="kpi-data">
+      <span class="kpi-value">{{ commandes.length }}</span>
+      <span class="kpi-label">Total Commandes</span>
+    </div>
+  </div>
+  <div class="kpi-card kpi-emerald">
+    <div class="kpi-icon-wrap"><i class="feather icon-trending-up"></i></div>
+    <div class="kpi-data">
+      <span class="kpi-value">{{ totalMontantTTC | number:'1.0-0' }} DT</span>
+      <span class="kpi-label">Valeur TTC Totale</span>
+    </div>
+  </div>
+  <div class="kpi-card kpi-amber">
+    <div class="kpi-icon-wrap"><i class="feather icon-clock"></i></div>
+    <div class="kpi-data">
+      <span class="kpi-value">{{ commandesEnAttente }}</span>
+      <span class="kpi-label">En Attente</span>
+    </div>
+  </div>
+  <div class="kpi-card kpi-sky">
+    <div class="kpi-icon-wrap"><i class="feather icon-package"></i></div>
+    <div class="kpi-data">
+      <span class="kpi-value">{{ commandesRecues }}</span>
+      <span class="kpi-label">Reçues</span>
     </div>
   </div>
 </div>
