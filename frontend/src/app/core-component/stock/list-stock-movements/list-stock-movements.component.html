@@ -1,203 +1,218 @@
-<!-- Page Header -->
-<div class="page-header">
-  <div class="add-item d-flex">
-    <div class="page-title">
-      <h4>Historique des Mouvements</h4>
-      <h6>Audit trail complet de l'inventaire</h6>
+<!-- ── Hero Header ── -->
+<div class="mvt-hero">
+  <div class="mvt-hero-orbs">
+    <div class="mvt-orb mvt-orb-1"></div>
+    <div class="mvt-orb mvt-orb-2"></div>
+    <div class="mvt-orb mvt-orb-3"></div>
+  </div>
+  <div class="mvt-hero-content">
+    <div class="mvt-hero-left">
+      <div class="mvt-badge">
+        <i class="feather icon-activity"></i>
+        <span>Gestion des Stocks</span>
+      </div>
+      <h1 class="mvt-title">Mouvements</h1>
+      <p class="mvt-subtitle">Audit trail complet de l'inventaire en temps réel</p>
     </div>
-  </div>
-  <div class="page-btn d-flex gap-2">
-    <button class="btn btn-secondary" routerLink="/stock/listStockDashboard">
-      <i class="feather icon-home me-2"></i>Dashboard
-    </button>
-    <button class="btn btn-outline-success" (click)="exportCSV()">
-      <i class="feather icon-download me-2"></i>Exporter CSV
-    </button>
-  </div>
-</div>
-
-<!-- Filters -->
-<div class="card mb-3">
-  <div class="card-body">
-    <div class="row g-3 align-items-end">
-      <div class="col-md-3">
-        <label class="form-label">Rechercher</label>
-        <div class="input-group">
-          <span class="input-group-text"><i class="feather icon-search"></i></span>
-          <input type="text" class="form-control" placeholder="Article, motif, utilisateur..."
-            [(ngModel)]="searchTerm" (input)="applyFilters()">
-        </div>
-      </div>
-      <div class="col-md-2">
-        <label class="form-label">Type</label>
-        <select class="form-select" [(ngModel)]="filterType" (change)="applyFilters()">
-          <option value="">Tous les types</option>
-          <option value="ENTREE">Entrée</option>
-          <option value="SORTIE">Sortie</option>
-          <option value="AJUSTEMENT">Ajustement</option>
-          <option value="RESERVATION">Réservation</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <label class="form-label">Date début</label>
-        <input type="date" class="form-control" [(ngModel)]="filterDateFrom" (change)="applyFilters()">
-      </div>
-      <div class="col-md-2">
-        <label class="form-label">Date fin</label>
-        <input type="date" class="form-control" [(ngModel)]="filterDateTo" (change)="applyFilters()">
-      </div>
-      <div class="col-md-3 d-flex gap-2 align-items-end">
-        <button class="btn btn-outline-secondary flex-fill" (click)="clearFilters()">
-          <i class="feather icon-x me-1"></i>Réinitialiser
-        </button>
-        <button class="btn btn-primary flex-fill" (click)="loadMovements()">
-          <i class="feather icon-refresh-cw me-1"></i>Actualiser
-        </button>
-      </div>
+    <div class="mvt-hero-actions">
+      <button class="mvt-btn mvt-btn-ghost" routerLink="/stock/listStockDashboard">
+        <i class="feather icon-home"></i>
+        <span>Dashboard</span>
+      </button>
+      <button class="mvt-btn mvt-btn-success" (click)="exportCSV()">
+        <i class="feather icon-download"></i>
+        <span>Exporter CSV</span>
+      </button>
     </div>
   </div>
 </div>
 
-<!-- Loading -->
+<!-- ── Filters Card ── -->
+<div class="mvt-filters-card">
+  <div class="mvt-filters-row">
+    <div class="mvt-filter-group mvt-filter-grow">
+      <label class="mvt-filter-label"><i class="feather icon-search"></i> Rechercher</label>
+      <input type="text" class="mvt-input" placeholder="Article, motif, utilisateur..."
+        [(ngModel)]="searchTerm" (input)="applyFilters()">
+    </div>
+    <div class="mvt-filter-group">
+      <label class="mvt-filter-label"><i class="feather icon-tag"></i> Type</label>
+      <select class="mvt-select" [(ngModel)]="filterType" (change)="applyFilters()">
+        <option value="">Tous les types</option>
+        <option value="ENTREE">Entrée</option>
+        <option value="SORTIE">Sortie</option>
+        <option value="AJUSTEMENT">Ajustement</option>
+        <option value="RESERVATION">Réservation</option>
+      </select>
+    </div>
+    <div class="mvt-filter-group">
+      <label class="mvt-filter-label"><i class="feather icon-calendar"></i> Date début</label>
+      <input type="date" class="mvt-input" [(ngModel)]="filterDateFrom" (change)="applyFilters()">
+    </div>
+    <div class="mvt-filter-group">
+      <label class="mvt-filter-label"><i class="feather icon-calendar"></i> Date fin</label>
+      <input type="date" class="mvt-input" [(ngModel)]="filterDateTo" (change)="applyFilters()">
+    </div>
+    <div class="mvt-filter-actions">
+      <button class="mvt-btn-reset" (click)="clearFilters()">
+        <i class="feather icon-x"></i> Reset
+      </button>
+      <button class="mvt-btn-refresh" (click)="loadMovements()">
+        <i class="feather icon-refresh-cw"></i> Actualiser
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Loading ── -->
 @if (isLoading) {
-  <div class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2">Chargement des mouvements...</p>
+  <div class="mvt-skeleton-wrap" role="status" aria-live="polite" aria-label="Chargement des mouvements">
+    <div class="mvt-skeleton-row" *ngFor="let n of [1,2,3,4,5]"></div>
   </div>
 }
 
 @if (!isLoading) {
-  <!-- Summary Totals -->
-  <div class="row g-3 mb-3">
-    <div class="col-md-3">
-      <div class="card border-0 bg-light">
-        <div class="card-body text-center py-2">
-          <div class="fs-5 fw-bold text-secondary">{{ filteredMovements.length }}</div>
-          <small class="text-muted">Total mouvements</small>
-        </div>
+  <!-- ── Summary KPI Cards ── -->
+  <div class="mvt-kpi-grid">
+    <div class="mvt-kpi-card mvt-kpi-total">
+      <div class="mvt-kpi-icon"><i class="feather icon-layers"></i></div>
+      <div class="mvt-kpi-info">
+        <div class="mvt-kpi-value">{{ filteredMovements.length }}</div>
+        <div class="mvt-kpi-label">Total mouvements</div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card border-0 bg-success bg-opacity-10">
-        <div class="card-body text-center py-2">
-          <div class="fs-5 fw-bold text-success">{{ totalEntree }}</div>
-          <small class="text-muted">Total entrées (qté)</small>
-        </div>
+    <div class="mvt-kpi-card mvt-kpi-entree">
+      <div class="mvt-kpi-icon"><i class="feather icon-arrow-down-circle"></i></div>
+      <div class="mvt-kpi-info">
+        <div class="mvt-kpi-value">{{ totalEntree }}</div>
+        <div class="mvt-kpi-label">Total entrées (qté)</div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card border-0 bg-danger bg-opacity-10">
-        <div class="card-body text-center py-2">
-          <div class="fs-5 fw-bold text-danger">{{ totalSortie }}</div>
-          <small class="text-muted">Total sorties (qté)</small>
-        </div>
+    <div class="mvt-kpi-card mvt-kpi-sortie">
+      <div class="mvt-kpi-icon"><i class="feather icon-arrow-up-circle"></i></div>
+      <div class="mvt-kpi-info">
+        <div class="mvt-kpi-value">{{ totalSortie }}</div>
+        <div class="mvt-kpi-label">Total sorties (qté)</div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card border-0 bg-warning bg-opacity-10">
-        <div class="card-body text-center py-2">
-          <div class="fs-5 fw-bold text-warning">{{ totalAjustement }}</div>
-          <small class="text-muted">Ajustements</small>
-        </div>
+    <div class="mvt-kpi-card mvt-kpi-ajust">
+      <div class="mvt-kpi-icon"><i class="feather icon-sliders"></i></div>
+      <div class="mvt-kpi-info">
+        <div class="mvt-kpi-value">{{ totalAjustement }}</div>
+        <div class="mvt-kpi-label">Ajustements</div>
       </div>
     </div>
   </div>
 
-  <!-- Table -->
-  <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="card-title mb-0">
-        {{ filteredMovements.length }} mouvement(s)
-      </h5>
-      <div class="d-flex align-items-center gap-2">
-        <label class="form-label mb-0 small">Lignes:</label>
-        <select class="form-select form-select-sm" style="width: auto"
-          [(ngModel)]="pageSize" (change)="currentPage=1">
+  <!-- ── Table Card ── -->
+  <div class="mvt-table-card">
+    <div class="mvt-table-header">
+      <div class="mvt-table-count">
+        <span class="mvt-count-num">{{ filteredMovements.length }}</span>
+        <span class="mvt-count-label">mouvement(s)</span>
+      </div>
+      <div class="mvt-table-controls">
+        <span class="mvt-control-label">Lignes :</span>
+        <select class="mvt-page-select" [(ngModel)]="pageSize" (change)="currentPage=1">
           <option [value]="25">25</option>
           <option [value]="50">50</option>
           <option [value]="100">100</option>
         </select>
       </div>
     </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Date</th>
-              <th>Article</th>
-              <th>Type</th>
-              <th class="text-center">Quantité</th>
-              <th>Référence</th>
-              <th>Motif</th>
-              <th>Utilisateur</th>
-              <th>Localisation</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if (paginatedMovements.length > 0) {
-              @for (mvt of paginatedMovements; track mvt.id) {
-                <tr>
-                  <td class="text-nowrap">{{ mvt.dateMouvement | date:'dd/MM/yyyy HH:mm' }}</td>
-                  <td>
-                    @if (mvt.stock?.id) {
-                      <a [routerLink]="['/stock/view', mvt.stock!.id]" class="text-decoration-none">
-                        {{ mvt.stock?.articleAchat?.nom || 'Stock #' + mvt.stock?.id }}
-                      </a>
-                    } @else {
-                      -
-                    }
-                  </td>
-                  <td>
-                    <span [class]="getMovementBadgeClass(mvt.typeMouvement)">
-                      {{ mvt.typeMouvement }}
-                    </span>
-                  </td>
-                  <td class="text-center fw-bold">{{ mvt.quantite }}</td>
-                  <td>{{ mvt.referenceCommande || '-' }}</td>
-                  <td class="text-truncate" style="max-width: 200px" [title]="mvt.motif || ''">
-                    {{ mvt.motif || '-' }}
-                  </td>
-                  <td>{{ mvt.utilisateur?.username || mvt.utilisateur?.email || '-' }}</td>
-                  <td>{{ mvt.stock?.localisation || '-' }}</td>
-                </tr>
-              }
-            } @else {
-              <tr>
-                <td colspan="8" class="text-center py-4 text-muted">
-                  <i class="feather icon-inbox fs-1 d-block mb-2"></i>
-                  Aucun mouvement trouvé
+
+    <div class="mvt-table-responsive">
+      <table class="mvt-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Article</th>
+            <th>Type</th>
+            <th class="col-center">Quantité</th>
+            <th>Référence</th>
+            <th>Motif</th>
+            <th>Utilisateur</th>
+            <th>Localisation</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (paginatedMovements.length > 0) {
+            @for (mvt of paginatedMovements; track mvt.id) {
+              <tr class="mvt-row">
+                <td class="mvt-date">
+                  <i class="feather icon-clock mvt-date-icon"></i>
+                  {{ mvt.dateMouvement | date:'dd/MM/yyyy' }}
+                  <span class="mvt-time">{{ mvt.dateMouvement | date:'HH:mm' }}</span>
+                </td>
+                <td>
+                  @if (mvt.stock?.id) {
+                    <a [routerLink]="['/stock/view', mvt.stock!.id]" class="mvt-article-link">
+                      <div class="mvt-article-avatar"><i class="feather icon-box"></i></div>
+                      <span>{{ mvt.stock?.articleAchat?.nom || 'Stock #' + mvt.stock?.id }}</span>
+                    </a>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  <span [class]="getMovementBadgeClass(mvt.typeMouvement)">
+                    {{ mvt.typeMouvement }}
+                  </span>
+                </td>
+                <td class="col-center">
+                  <span class="mvt-qty" [class.mvt-qty-up]="mvt.typeMouvement === 'ENTREE'" [class.mvt-qty-down]="mvt.typeMouvement === 'SORTIE'">
+                    {{ mvt.typeMouvement === 'ENTREE' ? '+' : mvt.typeMouvement === 'SORTIE' ? '-' : '' }}{{ mvt.quantite }}
+                  </span>
+                </td>
+                <td><span class="mvt-ref">{{ mvt.referenceCommande || '—' }}</span></td>
+                <td class="mvt-motif" [title]="mvt.motif || ''">{{ mvt.motif || '—' }}</td>
+                <td>
+                  <div class="mvt-user">
+                    <div class="mvt-user-avatar">{{ ((mvt.utilisateur?.username || mvt.utilisateur?.email || '?') + '')[0].toUpperCase() }}</div>
+                    <span>{{ mvt.utilisateur?.username || mvt.utilisateur?.email || '—' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="mvt-location">
+                    <i class="feather icon-map-pin"></i>
+                    {{ mvt.stock?.localisation || '—' }}
+                  </span>
                 </td>
               </tr>
             }
-          </tbody>
-        </table>
-      </div>
+          } @else {
+            <tr>
+              <td colspan="8">
+                <div class="mvt-empty">
+                  <div class="mvt-empty-icon"><i class="feather icon-inbox"></i></div>
+                  <p class="mvt-empty-title">Aucun mouvement trouvé</p>
+                  <p class="mvt-empty-sub">Essayez de modifier vos filtres ou la plage de dates</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
 
     <!-- Pagination -->
     @if (totalPages > 1) {
-      <div class="card-footer d-flex justify-content-between align-items-center">
-        <span class="text-muted small">
-          {{ (currentPage - 1) * pageSize + 1 }} -
-          {{ Math.min(currentPage * pageSize, filteredMovements.length) }}
+      <div class="mvt-pagination">
+        <span class="mvt-pagination-info">
+          {{ (currentPage - 1) * pageSize + 1 }}–{{ Math.min(currentPage * pageSize, filteredMovements.length) }}
           sur {{ filteredMovements.length }}
         </span>
-        <nav>
-          <ul class="pagination pagination-sm mb-0">
-            <li class="page-item" [class.disabled]="currentPage === 1">
-              <button class="page-link" (click)="currentPage = currentPage - 1">«</button>
-            </li>
-            @for (page of pages; track page) {
-              <li class="page-item" [class.active]="page === currentPage">
-                <button class="page-link" (click)="currentPage = page">{{ page }}</button>
-              </li>
-            }
-            <li class="page-item" [class.disabled]="currentPage === totalPages">
-              <button class="page-link" (click)="currentPage = currentPage + 1">»</button>
-            </li>
-          </ul>
-        </nav>
+        <div class="mvt-pagination-controls">
+          <button class="mvt-page-btn" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">
+            <i class="feather icon-chevron-left"></i>
+          </button>
+          @for (page of pages; track page) {
+            <button class="mvt-page-btn" [class.active]="page === currentPage" (click)="currentPage = page">{{ page }}</button>
+          }
+          <button class="mvt-page-btn" [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1">
+            <i class="feather icon-chevron-right"></i>
+          </button>
+        </div>
       </div>
     }
   </div>
