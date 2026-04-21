@@ -332,12 +332,11 @@ $text-light:     #94a3b8;
         text-shadow: 0 2px 8px rgba(0,0,0,0.15);
         animation: countIn 0.6s ease both;
       }
-      }
 
       .kpi-label {
         display: block;
         font-size: 0.72rem;
-        color: rgba(255,255,255,0.72);
+        color: rgba(255,255,255,0.78);
         font-weight: 500;
         margin-top: 0.35rem;
         text-transform: uppercase;
@@ -345,28 +344,44 @@ $text-light:     #94a3b8;
       }
     }
 
+    // Shine sweep on hover — same treatment for every card, for consistency
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -60%;
+      width: 50%; height: 100%;
+      background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.28) 50%, transparent 80%);
+      transform: skewX(-20deg);
+      pointer-events: none;
+      transition: left 0.7s ease;
+    }
+    &:hover::after { left: 130%; }
+
+    // Cohesive cool-tone palette: teal → emerald → amber (warm accent) → indigo
     &.kpi-teal {
-      background: linear-gradient(135deg, #0d9488 0%, #0891b2 60%, #06b6d4 100%);
-      box-shadow: 0 8px 24px rgba(13,148,136,0.45), 0 2px 6px rgba(13,148,136,0.2);
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 55%, #14b8a6 100%);
+      box-shadow: 0 8px 24px rgba(13,148,136,0.42), 0 2px 6px rgba(13,148,136,0.18);
       &:hover { box-shadow: 0 16px 40px rgba(13,148,136,0.55), 0 4px 12px rgba(13,148,136,0.25); }
     }
 
     &.kpi-emerald {
-      background: linear-gradient(135deg, #059669 0%, #0d9488 60%, #10b981 100%);
-      box-shadow: 0 8px 24px rgba(5,150,105,0.45), 0 2px 6px rgba(5,150,105,0.2);
+      background: linear-gradient(135deg, #047857 0%, #059669 55%, #10b981 100%);
+      box-shadow: 0 8px 24px rgba(5,150,105,0.42), 0 2px 6px rgba(5,150,105,0.18);
       &:hover { box-shadow: 0 16px 40px rgba(5,150,105,0.55), 0 4px 12px rgba(5,150,105,0.25); }
     }
 
     &.kpi-amber {
-      background: linear-gradient(135deg, #d97706 0%, #ea580c 60%, #f59e0b 100%);
-      box-shadow: 0 8px 24px rgba(217,119,6,0.45), 0 2px 6px rgba(217,119,6,0.2);
+      background: linear-gradient(135deg, #b45309 0%, #d97706 55%, #f59e0b 100%);
+      box-shadow: 0 8px 24px rgba(217,119,6,0.42), 0 2px 6px rgba(217,119,6,0.18);
       &:hover { box-shadow: 0 16px 40px rgba(217,119,6,0.55), 0 4px 12px rgba(217,119,6,0.25); }
     }
 
+    // Class name kept as `kpi-purple` for HTML compatibility; visually it's now
+    // a softer indigo/violet that blends with the cool teal/emerald palette.
     &.kpi-purple {
-      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #8b5cf6 100%);
-      box-shadow: 0 8px 24px rgba(124,58,237,0.45), 0 2px 6px rgba(124,58,237,0.2);
-      &:hover { box-shadow: 0 16px 40px rgba(124,58,237,0.55), 0 4px 12px rgba(124,58,237,0.25); }
+      background: linear-gradient(135deg, #4338ca 0%, #4f46e5 55%, #6366f1 100%);
+      box-shadow: 0 8px 24px rgba(79,70,229,0.42), 0 2px 6px rgba(79,70,229,0.18);
+      &:hover { box-shadow: 0 16px 40px rgba(79,70,229,0.55), 0 4px 12px rgba(79,70,229,0.25); }
     }
   }
 }
@@ -618,12 +633,23 @@ $text-light:     #94a3b8;
     tr {
       border-bottom: 1px solid $border-light;
       transition: background 0.15s ease, transform 0.15s ease;
+      animation: fadeInRow 0.35s ease both;
+
+      &:nth-child(1)  { animation-delay: 0.05s; }
+      &:nth-child(2)  { animation-delay: 0.10s; }
+      &:nth-child(3)  { animation-delay: 0.15s; }
+      &:nth-child(4)  { animation-delay: 0.20s; }
+      &:nth-child(5)  { animation-delay: 0.25s; }
+      &:nth-child(6)  { animation-delay: 0.30s; }
+      &:nth-child(7)  { animation-delay: 0.35s; }
+      &:nth-child(8)  { animation-delay: 0.40s; }
 
       &:nth-child(even).table-row { background: #f9fffe; }
 
       &.table-row:hover {
-        background: rgba($primary, 0.04) !important;
-        transform: translateX(2px);
+        background: rgba($primary, 0.06) !important;
+        transform: translateX(3px);
+        box-shadow: inset 3px 0 0 0 $primary-light;
       }
 
       &.empty-row td {
