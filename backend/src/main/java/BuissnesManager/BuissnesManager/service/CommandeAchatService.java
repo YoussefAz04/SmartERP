@@ -257,6 +257,14 @@ public class CommandeAchatService {
                         );
                     }
 
+                    // ✅ VALIDATE QUANTITY
+                    if (ligneDto.getQuantite() == null || ligneDto.getQuantite().compareTo(BigDecimal.ZERO) <= 0) {
+                        logger.error("❌ Line {}: Quantity is invalid: {}", lineNumber, ligneDto.getQuantite());
+                        throw new RuntimeException(
+                                String.format("Ligne %d: La quantité doit être supérieure à 0.", lineNumber)
+                        );
+                    }
+
                     logger.info("✅ Line {}: Price validated - {}", lineNumber, ligneDto.getPrixUnitaireHT());
 
                     // ✅ CREATE LINE ITEM
@@ -556,24 +564,13 @@ public class CommandeAchatService {
             throw new RuntimeException("Impossible de supprimer une commande déjà réceptionnée. Veuillez d'abord l'annuler.");
         }
 
-        // ✅ DELETE INVOICE LINES
-        List<LigneFactureAchat> factureLines = commande.getLignes().stream()
-                .flatMap(ligne -> ligneFactureAchatRepository.findAll().stream()
-                        .filter(facLigne -> facLigne.getFactureAchat().getCommandeAchat().getId().equals(id)))
-                .toList();
-
-        if (!factureLines.isEmpty()) {
-            ligneFactureAchatRepository.deleteAll(factureLines);
-        }
-
-        // ✅ DELETE INVOICES
-        List<FactureAchat> invoices = factureAchatRepository.findAll().stream()
-                .filter(facture -> facture.getCommandeAchat() != null && facture.getCommandeAchat().getId().equals(id))
-                .toList();
-
-        if (!invoices.isEmpty()) {
-            factureAchatRepository.deleteAll(invoices);
-        }
+        // ✅ DELETE INVOICE LINES + INVOICE for this commande (targeted queries,
+        // no full-table scan). Repository contract is one FactureAchat per
+        // CommandeAchat, so Optional is sufficient.
+        factureAchatRepository.findByCommandeAchatId(id).ifPresent(facture -> {
+            ligneFactureAchatRepository.deleteByFactureAchatId(facture.getId());
+            factureAchatRepository.delete(facture);
+        });
 
         // ✅ DELETE BON RECEPTION records
         List<BonReception> bons = bonReceptionRepository.findByCommandeAchatId(id);
