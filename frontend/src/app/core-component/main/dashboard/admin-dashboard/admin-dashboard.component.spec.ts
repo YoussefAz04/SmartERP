@@ -7,6 +7,7 @@ import { AdminDashboardComponent } from './admin-dashboard.component';
 import { ClientService } from 'src/app/core/service/client/client.service';
 import { FournisseurService } from 'src/app/core/service/fournisseur/fournisseur.service';
 import { ArticleAchatService } from 'src/app/core/service/article-achat/article-achat.service';
+import { StockService } from 'src/app/core/service/stock/stock.service';
 import { CommandeVenteService } from 'src/app/core/service/commande-vente/commande-vente.service';
 import { of } from 'rxjs';
 
@@ -23,6 +24,9 @@ describe('AdminDashboardComponent', () => {
   const articleServiceMock = {
     getAllArticlesAchat: () => of([]),
   };
+  const stockServiceMock = {
+    getAllStocks: () => of([]),
+  };
   const commandeServiceMock = {
     getAllCommandes: () => of([]),
   };
@@ -35,6 +39,7 @@ describe('AdminDashboardComponent', () => {
         { provide: ClientService, useValue: clientServiceMock },
         { provide: FournisseurService, useValue: fournisseurServiceMock },
         { provide: ArticleAchatService, useValue: articleServiceMock },
+        { provide: StockService, useValue: stockServiceMock },
         { provide: CommandeVenteService, useValue: commandeServiceMock },
       ],
     })

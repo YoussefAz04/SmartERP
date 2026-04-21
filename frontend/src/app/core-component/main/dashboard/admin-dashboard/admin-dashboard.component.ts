@@ -6,10 +6,11 @@ import { catchError } from 'rxjs/operators';
 import { ClientService } from 'src/app/core/service/client/client.service';
 import { FournisseurService } from 'src/app/core/service/fournisseur/fournisseur.service';
 import { ArticleAchatService } from 'src/app/core/service/article-achat/article-achat.service';
+import { StockService } from 'src/app/core/service/stock/stock.service';
 import { CommandeVenteService } from 'src/app/core/service/commande-vente/commande-vente.service';
 import { Client } from 'src/app/model/client.model';
 import { Fournisseur } from 'src/app/model/fournisseur.model';
-import { ArticleAchat } from 'src/app/model/article-achat.model';
+import { Stock } from 'src/app/model/stock.model';
 import { CommandeVente } from 'src/app/model/commande-vente.model';
 
 export interface DashboardStats {
@@ -69,6 +70,7 @@ export class AdminDashboardComponent implements OnInit {
     private clientService: ClientService,
     private fournisseurService: FournisseurService,
     private articleService: ArticleAchatService,
+    private stockService: StockService,
     private commandeService: CommandeVenteService,
   ) {}
 
@@ -112,11 +114,14 @@ export class AdminDashboardComponent implements OnInit {
       articles: this.articleService.getAllArticlesAchat().pipe(
         catchError(err => this.handleLoadError(err, 'articles', () => this.errorArticles = true))
       ),
+      stocks: this.stockService.getAllStocks().pipe(
+        catchError(err => this.handleLoadError(err, 'stocks', () => this.errorArticles = true))
+      ),
       commandes: this.commandeService.getAllCommandes().pipe(
         catchError(err => this.handleLoadError(err, 'commandes', () => this.errorCommandes = true))
       ),
     }).subscribe({
-      next: ({ clients, fournisseurs, articles, commandes }) => {
+      next: ({ clients, fournisseurs, articles, stocks, commandes }) => {
         // Stats
         this.stats = {
           totalClients: clients ? clients.length : 0,
@@ -137,22 +142,24 @@ export class AdminDashboardComponent implements OnInit {
         }
         this.loadingFournisseurs = false;
 
-        // Recent articles with stock status (last 5, sorted by id desc)
-        if (articles) {
-          const typedArticles = articles as ArticleAchat[];
-          const qtys = typedArticles.map(a => a.quantite || 0);
+        // Recent articles with stock status (from Stock entries, last 5 by id desc)
+        if (stocks) {
+          const typedStocks = stocks as Stock[];
+          const qtys = typedStocks.map(s => s.quantiteDisponible ?? 0);
           const maxQty = qtys.length > 0 ? Math.max(...qtys, 1) : 1;
-          this.recentArticles = [...typedArticles]
+          this.recentArticles = [...typedStocks]
             .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
             .slice(0, 5)
-            .map(a => {
-              const qty = a.quantite || 0;
+            .map(s => {
+              const qty = s.quantiteDisponible ?? 0;
               const percent = Math.round((qty / maxQty) * 100);
               let stockStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
               if (qty === 0) stockStatus = 'OUT_OF_STOCK';
               else if (qty < this.LOW_STOCK_THRESHOLD) stockStatus = 'LOW_STOCK';
               else stockStatus = 'IN_STOCK';
-              return { id: a.id ?? 0, name: a.nom, quantity: qty, stockStatus, stockPercent: percent };
+              const name = s.articleAchat?.nom
+                || (s.articleAchatId ? `Article #${s.articleAchatId}` : 'Article inconnu');
+              return { id: s.id ?? 0, name, quantity: qty, stockStatus, stockPercent: percent };
             });
         }
         this.loadingArticles = false;
