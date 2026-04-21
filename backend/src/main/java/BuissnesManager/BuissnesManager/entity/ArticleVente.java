@@ -29,7 +29,15 @@ public class ArticleVente {
     @Column(name = "prix_unitaire", precision = 15, scale = 2)
     private BigDecimal prixUnitaire;
 
+    @Column(name = "quantite", nullable = false)
     private Integer quantite;
+
+    @PrePersist
+    protected void prePersist() {
+        if (this.quantite == null) {
+            this.quantite = 0;
+        }
+    }
 
     private String unite;
 
