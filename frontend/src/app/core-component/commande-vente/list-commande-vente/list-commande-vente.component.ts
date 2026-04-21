@@ -176,7 +176,7 @@ export class ListCommandeVenteComponent implements OnInit {
     return this.commandes.reduce((sum, c) => sum + (c.montantTTC || 0), 0);
   }
 
-  get commandesBrouillon(): number {
+  get commandesEnCours(): number {
     return this.commandes.filter(c => c.statut === 'BROUILLON' || c.statut === 'EN_ATTENTE').length;
   }
 
