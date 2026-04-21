@@ -64,7 +64,7 @@
 
 <!-- ── Loading Skeleton ── -->
 @if (isLoading) {
-  <div class="inv-skeleton-wrap">
+  <div class="inv-skeleton-wrap" role="status" aria-live="polite" aria-label="Chargement de l'inventaire">
     <div class="inv-skeleton-row" *ngFor="let n of [1,2,3,4,5]"></div>
   </div>
 }

@@ -66,7 +66,7 @@
 
 <!-- ── Loading ── -->
 @if (isLoading) {
-  <div class="mvt-skeleton-wrap">
+  <div class="mvt-skeleton-wrap" role="status" aria-live="polite" aria-label="Chargement des mouvements">
     <div class="mvt-skeleton-row" *ngFor="let n of [1,2,3,4,5]"></div>
   </div>
 }
@@ -168,7 +168,7 @@
                 <td class="mvt-motif" [title]="mvt.motif || ''">{{ mvt.motif || '—' }}</td>
                 <td>
                   <div class="mvt-user">
-                    <div class="mvt-user-avatar">{{ (mvt.utilisateur?.username || mvt.utilisateur?.email || '?')[0].toUpperCase() }}</div>
+                    <div class="mvt-user-avatar">{{ ((mvt.utilisateur?.username || mvt.utilisateur?.email || '?') + '')[0].toUpperCase() }}</div>
                     <span>{{ mvt.utilisateur?.username || mvt.utilisateur?.email || '—' }}</span>
                   </div>
                 </td>
