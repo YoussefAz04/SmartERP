@@ -182,7 +182,6 @@
                 [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
                 [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
             </th>
-            <th class="sortable" (click)="setSort('quantite')">Quantité</th>
             <th>Unité</th>
             <th>SKU</th>
             <th>Fournisseur</th>
@@ -214,12 +213,6 @@
                 </td>
                 <td>
                   <span class="price-badge">{{ (a.prixUnitaire ?? 0) | number:'1.2-2' }} DT</span>
-                </td>
-                <td>
-                  <span class="qty-badge" [class.qty-ok]="(a.quantite ?? 0) >= 5"
-                    [class.qty-low]="(a.quantite ?? 0) > 0 && (a.quantite ?? 0) < 5">
-                    {{ a.quantite ?? 0 }}
-                  </span>
                 </td>
                 <td>
                   @if (a.unite) {
@@ -266,7 +259,7 @@
             }
           } @else {
             <tr>
-              <td colspan="10">
+              <td colspan="9">
                 <div class="empty-state">
                   <i class="feather icon-shopping-bag empty-icon"></i>
                   <p>@if (isLoading) { Chargement en cours... } @else { Aucun article d'achat trouvé }</p>
