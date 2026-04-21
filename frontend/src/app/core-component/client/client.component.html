@@ -1,116 +1,61 @@
 <router-outlet></router-outlet>
 
-<div class="client-dashboard">
-  <section class="page-header">
-    <div class="page-header-inner">
-      <div class="page-header-left">
-        <div class="page-icon-wrap">
-          <i class="feather icon-users"></i>
-        </div>
-        <div>
-          <span class="page-overline">
-            <i class="feather icon-shield"></i>
-            Vue relation client
-          </span>
-          <h1 class="page-title">Clients</h1>
-          <p class="page-subtitle">
-            {{ totalCount }} client(s) dans votre portefeuille, avec une lecture plus premium,
-            des animations plus fluides et une recherche plus agréable.
-          </p>
-        </div>
+<!-- Hero Header with integrated stats -->
+<div class="client-hero-header">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <span class="hero-badge">
+        <i class="feather icon-users"></i> Gestion des Clients
+      </span>
+      <h1 class="hero-title">Clients</h1>
+      <p class="hero-subtitle">Gérez votre portefeuille client avec une vue claire, sobre et professionnelle.</p>
+    </div>
+    <div class="hero-actions">
+      <button type="button" class="btn-hero btn-hero-outline" (click)="loadClients()">
+        <i class="feather icon-rotate-ccw"></i> Actualiser
+      </button>
+      <button *ngIf="canCreateClient" type="button" class="btn-hero btn-hero-primary" (click)="addClient()">
+        <i class="feather icon-plus-circle"></i> Nouveau Client
+      </button>
+    </div>
+  </div>
+  <div class="hero-stats-bar">
+    <div class="hero-stat">
+      <div class="hero-stat-icon hero-stat-icon-indigo">
+        <i class="feather icon-users"></i>
       </div>
-
-      <div class="page-header-right">
-        <div class="header-chip-list">
-          <span class="header-chip">
-            <i class="feather icon-phone-call"></i>
-            {{ getPercentage(withPhone) }}% joignables
-          </span>
-          <span class="header-chip">
-            <i class="feather icon-layers"></i>
-            {{ uniqueSectors }} secteurs
-          </span>
-        </div>
-
-        <button *ngIf="canCreateClient" type="button" class="btn-add" (click)="addClient()">
-          <i class="feather icon-plus"></i>
-          Nouveau Client
-        </button>
+      <div class="hero-stat-info">
+        <span class="hero-stat-value">{{ totalCount }}</span>
+        <span class="hero-stat-label">Total Clients</span>
       </div>
     </div>
-  </section>
-
-  <div class="stat-grid">
-    <div class="stat-card stat-delay-1">
-      <div class="stat-accent accent-blue"></div>
-      <div class="stat-content">
-        <div class="stat-icon-circle icon-blue">
-          <i class="feather icon-users"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ totalCount }}</span>
-          <span class="stat-label">Total Clients</span>
-        </div>
+    <div class="hero-stat-sep"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-icon hero-stat-icon-pink">
+        <i class="feather icon-mail"></i>
       </div>
-      <div class="stat-footer">
-        <i class="feather icon-briefcase"></i>
-        Portefeuille actif et consultable
+      <div class="hero-stat-info">
+        <span class="hero-stat-value">{{ withEmail }}</span>
+        <span class="hero-stat-label">Avec Email</span>
       </div>
     </div>
-
-    <div class="stat-card stat-delay-2">
-      <div class="stat-accent accent-emerald"></div>
-      <div class="stat-content">
-        <div class="stat-icon-circle icon-emerald">
-          <i class="feather icon-mail"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ withEmail }}</span>
-          <span class="stat-label">Avec Email</span>
-        </div>
+    <div class="hero-stat-sep"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-icon hero-stat-icon-green">
+        <i class="feather icon-phone"></i>
       </div>
-      <div class="stat-footer">
-        <i class="feather icon-check-circle"></i>
-        {{ getPercentage(withEmail) }}% contactables par email
-      </div>
-    </div>
-
-    <div class="stat-card stat-delay-3">
-      <div class="stat-accent accent-violet"></div>
-      <div class="stat-content">
-        <div class="stat-icon-circle icon-violet">
-          <i class="feather icon-phone"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ withPhone }}</span>
-          <span class="stat-label">Avec Téléphone</span>
-        </div>
-      </div>
-      <div class="stat-footer">
-        <i class="feather icon-phone-call"></i>
-        {{ getPercentage(withPhone) }}% joignables rapidement
-      </div>
-    </div>
-
-    <div class="stat-card stat-delay-4">
-      <div class="stat-accent accent-amber"></div>
-      <div class="stat-content">
-        <div class="stat-icon-circle icon-amber">
-          <i class="feather icon-layers"></i>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ uniqueSectors }}</span>
-          <span class="stat-label">Secteurs</span>
-        </div>
-      </div>
-      <div class="stat-footer">
-        <i class="feather icon-grid"></i>
-        Diversité sectorielle visible
+      <div class="hero-stat-info">
+        <span class="hero-stat-value">{{ withPhone }}</span>
+        <span class="hero-stat-label">Avec Téléphone</span>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="filter-card mb-4">
+<div class="filter-card mb-4">
     <div class="filter-header">
       <div class="filter-title">
         <span class="filter-title-main">
@@ -307,4 +252,4 @@
       </div>
     </div>
   </div>
-</div>
+
