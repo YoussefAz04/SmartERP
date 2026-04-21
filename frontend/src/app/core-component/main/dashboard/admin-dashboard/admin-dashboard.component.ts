@@ -157,7 +157,8 @@ export class AdminDashboardComponent implements OnInit {
               if (qty === 0) stockStatus = 'OUT_OF_STOCK';
               else if (qty < this.LOW_STOCK_THRESHOLD) stockStatus = 'LOW_STOCK';
               else stockStatus = 'IN_STOCK';
-              const name = s.articleAchat?.nom || `Article #${s.articleAchatId ?? s.id ?? ''}`;
+              const name = s.articleAchat?.nom
+                || (s.articleAchatId ? `Article #${s.articleAchatId}` : 'Article inconnu');
               return { id: s.id ?? 0, name, quantity: qty, stockStatus, stockPercent: percent };
             });
         }
