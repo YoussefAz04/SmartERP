@@ -217,6 +217,22 @@ export class ListCommandeAchatComponent implements OnInit {
     }
   }
 
+  get totalMontantTTC(): number {
+    return this.commandes.reduce((sum, c) => sum + (c.montantTTC || 0), 0);
+  }
+
+  get commandesEnAttente(): number {
+    return this.commandes.filter(c => c.statut === 'EN_ATTENTE').length;
+  }
+
+  get commandesConfirmees(): number {
+    return this.commandes.filter(c => c.statut === 'CONFIRMEE').length;
+  }
+
+  get commandesRecues(): number {
+    return this.commandes.filter(c => c.statut === 'RECUE').length;
+  }
+
   getStatutBadgeClass(statut?: string): string {
     switch (statut) {
       case 'CONFIRMEE': return 'badge bg-success';
