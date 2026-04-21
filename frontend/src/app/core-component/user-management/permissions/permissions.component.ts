@@ -366,7 +366,7 @@ export class PermissionsComponent implements OnInit {
           // Mettre à jour le sidebar si c'est l'utilisateur actuel
           const item = localStorage.getItem('myLSkey');
           if (item) {
-            let currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
+            const currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
             if (this.idRole == currentUser.idRole) {
               return this.moduleService.updateStatusByRole(this.idRole).toPromise()
                 .then(() => {
@@ -415,7 +415,7 @@ export class PermissionsComponent implements OnInit {
 
       const item = localStorage.getItem('myLSkey');
       if (item) {
-        let currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
+        const currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
 
         if (!Array.isArray(currentUser.permission)) {
           currentUser.permission = [];
@@ -457,7 +457,7 @@ export class PermissionsComponent implements OnInit {
     const item = localStorage.getItem('myLSkey');
 
     if (item) {
-      let currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
+      const currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
 
       this.idUser = currentUser.userId;
       console.log("idUser pour update", this.idUser);
