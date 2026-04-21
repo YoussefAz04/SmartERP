@@ -2,25 +2,32 @@
 
 <!-- Modern Page Header -->
 <div class="modern-page-header">
-  <span class="header-shape s1"></span>
-  <span class="header-shape s2"></span>
-  <span class="header-shape s3"></span>
+  <span class="header-blob b1"></span>
+  <span class="header-blob b2"></span>
+  <span class="header-blob b3"></span>
   <div class="header-content">
-    <div class="header-icon">
-      <i class="feather icon-shopping-bag"></i>
+    <div class="header-icon-wrap">
+      <span class="icon-ring"></span>
+      <div class="header-icon">
+        <i class="feather icon-shopping-bag"></i>
+      </div>
     </div>
     <div class="header-title">
-      <h1>Commandes Vente</h1>
-      <p class="subtitle">Gestion complète de vos commandes de vente</p>
+      <div class="header-eyebrow">
+        <span class="dot-pulse"></span>
+        Gestion des ventes
+      </div>
+      <h1>Commandes <span class="title-accent">Vente</span></h1>
+      <p class="subtitle">Suivez et gérez l'ensemble de vos commandes de vente en temps réel</p>
     </div>
     <div class="header-actions">
       <button class="btn-header-action btn-refresh" (click)="loadCommandes()" [disabled]="isLoading" title="Actualiser">
-        <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
-        Actualiser
+        <span class="btn-icon"><i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i></span>
+        <span>Actualiser</span>
       </button>
       <button class="btn-header-action btn-add" (click)="addCommande()">
-        <i class="feather icon-plus-circle"></i>
-        Nouvelle Commande
+        <span class="btn-icon"><i class="feather icon-plus"></i></span>
+        <span>Nouvelle Commande</span>
       </button>
     </div>
   </div>
@@ -29,32 +36,52 @@
 <!-- KPI Summary Cards -->
 <div class="kpi-row">
   <div class="kpi-card kpi-teal">
-    <div class="kpi-icon-wrap"><i class="feather icon-layers"></i></div>
+    <div class="kpi-bg-shape"></div>
+    <div class="kpi-icon-wrap">
+      <span class="kpi-icon-ring"></span>
+      <i class="feather icon-layers"></i>
+    </div>
     <div class="kpi-data">
       <span class="kpi-value">{{ commandes.length }}</span>
       <span class="kpi-label">Total Commandes</span>
     </div>
+    <div class="kpi-trend"><i class="feather icon-bar-chart-2"></i></div>
   </div>
   <div class="kpi-card kpi-emerald">
-    <div class="kpi-icon-wrap"><i class="feather icon-trending-up"></i></div>
+    <div class="kpi-bg-shape"></div>
+    <div class="kpi-icon-wrap">
+      <span class="kpi-icon-ring"></span>
+      <i class="feather icon-trending-up"></i>
+    </div>
     <div class="kpi-data">
       <span class="kpi-value">{{ totalMontantTTC | number:'1.0-0' }} DT</span>
       <span class="kpi-label">Chiffre d'Affaires TTC</span>
     </div>
+    <div class="kpi-trend"><i class="feather icon-activity"></i></div>
   </div>
   <div class="kpi-card kpi-amber">
-    <div class="kpi-icon-wrap"><i class="feather icon-clock"></i></div>
+    <div class="kpi-bg-shape"></div>
+    <div class="kpi-icon-wrap">
+      <span class="kpi-icon-ring"></span>
+      <i class="feather icon-clock"></i>
+    </div>
     <div class="kpi-data">
       <span class="kpi-value">{{ commandesEnCours }}</span>
       <span class="kpi-label">En Cours</span>
     </div>
+    <div class="kpi-trend"><i class="feather icon-zap"></i></div>
   </div>
   <div class="kpi-card kpi-purple">
-    <div class="kpi-icon-wrap"><i class="feather icon-truck"></i></div>
+    <div class="kpi-bg-shape"></div>
+    <div class="kpi-icon-wrap">
+      <span class="kpi-icon-ring"></span>
+      <i class="feather icon-truck"></i>
+    </div>
     <div class="kpi-data">
       <span class="kpi-value">{{ commandesLivrees }}</span>
       <span class="kpi-label">Livrées</span>
     </div>
+    <div class="kpi-trend"><i class="feather icon-check-circle"></i></div>
   </div>
 </div>
 
