@@ -1,4 +1,4 @@
-import {Component, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {FactureVente} from "../../../model/FactureDeVente.model";
 import {FactureDeVenteServiceService} from "../../../core/service/factureDeVente/facture-de-vente-service.service";
@@ -431,7 +431,7 @@ export class ListFactureDeVenteComponent implements OnInit{
     ).length;
   }
 
-  changeStatus(facture: FactureVente, newStatus: string) {
+  changeStatus(facture: FactureVente) {
     const statusLabels: Record<string, string> = {
       'PAYEE': 'Payée',
       'PARTIELLEMENT_PAYEE': 'Partiellement Payée',
@@ -441,16 +441,19 @@ export class ListFactureDeVenteComponent implements OnInit{
 
     Swal.fire({
       title: 'Changer le statut',
-      text: `Voulez-vous changer le statut de cette facture en "${statusLabels[newStatus] || newStatus}" ?`,
-      icon: 'question',
+      input: 'select',
+      inputOptions: statusLabels,
+      inputValue: facture.statut ?? '',
       showCancelButton: true,
       confirmButtonColor: '#0ea5e9',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Oui, changer',
+      confirmButtonText: 'Changer',
       cancelButtonText: 'Annuler',
-      reverseButtons: true
+      reverseButtons: true,
+      inputPlaceholder: 'Sélectionner un statut'
     }).then((result) => {
-      if (result.isConfirmed) {
+      const newStatus = result.value as string;
+      if (result.isConfirmed && newStatus && newStatus !== facture.statut) {
         const updatedFacture = { ...facture, statut: newStatus };
         this.factureService.updateFacture(facture.id!, updatedFacture).subscribe({
           next: () => {
@@ -476,38 +479,6 @@ export class ListFactureDeVenteComponent implements OnInit{
         });
       }
     });
-  }
-
-  statusMenuOpen: number | null = null;
-  dropdownPosition = { top: 0, left: 0 };
-
-  toggleStatusMenu(factureId: number | undefined, event: MouseEvent) {
-    if (factureId === undefined) return;
-    if (this.statusMenuOpen === factureId) {
-      this.statusMenuOpen = null;
-      return;
-    }
-    const badge = (event.currentTarget as HTMLElement);
-    const rect = badge.getBoundingClientRect();
-    this.dropdownPosition = { top: rect.bottom + 4, left: rect.left };
-    this.statusMenuOpen = factureId;
-  }
-
-  closeStatusMenu() {
-    this.statusMenuOpen = null;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.status-cell')) {
-      this.closeStatusMenu();
-    }
-  }
-
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    this.closeStatusMenu();
   }
 
   getUserAuthData(){

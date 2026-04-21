@@ -203,38 +203,15 @@
           <td class="payment-cell">
             <span class="payment-badge">{{ facture.modePaiement }}</span>
           </td>
-          <td class="status-cell" [class.menu-open]="statusMenuOpen === facture.id">
-            <div class="status-wrapper">
-              <span class="status-badge" 
-                    [ngClass]="getStatusClass(facture.statut)"
-                    (click)="toggleStatusMenu(facture.id, $event)">
-                {{ facture.statut }}
-                <i class="feather icon-chevron-down status-arrow"></i>
-              </span>
-              <div class="status-dropdown" *ngIf="statusMenuOpen === facture.id"
-                   [ngStyle]="{'top.px': dropdownPosition.top, 'left.px': dropdownPosition.left}">
-                <button class="status-option status-opt-payee" 
-                        (click)="changeStatus(facture, 'PAYEE'); closeStatusMenu()"
-                        *ngIf="facture.statut !== 'PAYEE'">
-                  <i class="feather icon-check-circle"></i> Payée
-                </button>
-                <button class="status-option status-opt-partielle" 
-                        (click)="changeStatus(facture, 'PARTIELLEMENT_PAYEE'); closeStatusMenu()"
-                        *ngIf="facture.statut !== 'PARTIELLEMENT_PAYEE'">
-                  <i class="feather icon-clock"></i> Partiellement Payée
-                </button>
-                <button class="status-option status-opt-attente" 
-                        (click)="changeStatus(facture, 'EN_ATTENTE'); closeStatusMenu()"
-                        *ngIf="facture.statut !== 'EN_ATTENTE'">
-                  <i class="feather icon-pause-circle"></i> En Attente
-                </button>
-                <button class="status-option status-opt-annulee" 
-                        (click)="changeStatus(facture, 'ANNULEE'); closeStatusMenu()"
-                        *ngIf="facture.statut !== 'ANNULEE'">
-                  <i class="feather icon-x-circle"></i> Annulée
-                </button>
-              </div>
-            </div>
+          <td class="status-cell">
+            <span class="status-badge" 
+                  [ngClass]="getStatusClass(facture.statut)"
+                  (click)="changeStatus(facture)"
+                  style="cursor: pointer;"
+                  title="Cliquer pour changer le statut">
+              {{ facture.statut }}
+              <i class="feather icon-edit-2" style="font-size: 10px; margin-left: 4px;"></i>
+            </span>
           </td>
           <td class="commande-cell">
             <a *ngIf="facture.commandeVente?.reference"
