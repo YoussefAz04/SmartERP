@@ -61,14 +61,14 @@
 // =============================================
 .login-modern-wrapper {
   display: grid;
-  grid-template-columns: 58% 42%;
+  grid-template-columns: 1fr 1fr;
   min-height: 100vh;
   min-height: 100dvh;
   background: radial-gradient(circle at 30% 20%, #1e1b4b 0%, #0f172a 45%, #020617 100%);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
   @media (max-width: 1100px) {
-    grid-template-columns: 55% 45%;
+    grid-template-columns: 1fr 1fr;
   }
 
   @media (max-width: 992px) {
@@ -191,33 +191,14 @@
       }
     }
 
-    .ai-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      margin-bottom: 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(167, 139, 250, 0.45);
-      background: rgba(139, 92, 246, 0.14);
-      color: #ddd6fe;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-
-      i {
-        font-size: 11px;
-        color: #c4b5fd;
-      }
-    }
-
     h1 {
-      font-size: clamp(2rem, 3.1vw, 2.4rem);
+      font-size: clamp(2.1rem, 3.3vw, 2.6rem);
       font-weight: 800;
       color: #fff;
       line-height: 1.15;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       letter-spacing: -0.5px;
+      margin-top: 8px;
 
       .highlight {
         background: linear-gradient(90deg, #a78bfa, #c4b5fd, #818cf8);
@@ -429,11 +410,11 @@
 // RIGHT PANEL – Login form
 // =============================================
 .login-form-panel {
-  background: radial-gradient(circle at top left, #eef2ff, var(--panel-surface) 55%, #eef2ff 100%);
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 40%, #ede9ff 70%, #f4f0ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2.25rem);
+  padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1rem, 4vw, 3rem);
   animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   position: relative;
 
@@ -442,22 +423,22 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
-    background-size: 24px 24px;
-    opacity: 0.5;
+    background-image: radial-gradient(circle, rgba(99, 102, 241, 0.15) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.6;
     pointer-events: none;
   }
 
   &::after {
     content: '';
     position: absolute;
-    width: clamp(220px, 28vw, 420px);
+    width: clamp(220px, 28vw, 500px);
     aspect-ratio: 1;
-    right: -12%;
-    top: -15%;
+    right: -10%;
+    top: -10%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0) 70%);
-    filter: blur(2px);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.12) 40%, rgba(99, 102, 241, 0) 70%);
+    filter: blur(4px);
     animation: glowFloat 12s ease-in-out infinite;
     pointer-events: none;
   }
@@ -474,27 +455,28 @@
 }
 
 .form-card {
-  width: min(100%, 430px);
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 24px;
-  padding: clamp(1.75rem, 4vw, 2.75rem) clamp(1.25rem, 3vw, 2.5rem) clamp(1.5rem, 3vw, 2.25rem);
+  width: min(100%, 460px);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3.5vw, 2.75rem) clamp(1.75rem, 3vw, 2.5rem);
   position: relative;
   z-index: 1;
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 6px 16px rgba(0, 0, 0, 0.06),
-    0 20px 50px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.14);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+    0 2px 4px rgba(79, 70, 229, 0.04),
+    0 8px 24px rgba(79, 70, 229, 0.08),
+    0 24px 64px rgba(79, 70, 229, 0.12),
+    0 0 0 1px rgba(99, 102, 241, 0.12);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      0 8px 20px rgba(0, 0, 0, 0.08),
-      0 24px 60px rgba(0, 0, 0, 0.1);
+      0 2px 4px rgba(79, 70, 229, 0.04),
+      0 12px 32px rgba(79, 70, 229, 0.12),
+      0 32px 80px rgba(79, 70, 229, 0.16),
+      0 0 0 1px rgba(99, 102, 241, 0.18);
   }
 
   .form-card-header {
@@ -848,28 +830,6 @@
       height: 18px;
       border-width: 2px;
     }
-  }
-}
-
-// ----- Form footer -----
-.form-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #f3f4f6;
-
-  i {
-    font-size: 12px;
-    color: #10b981;
-  }
-
-  span {
-    font-size: 12px;
-    color: #9ca3af;
-    font-weight: 500;
   }
 }
 
