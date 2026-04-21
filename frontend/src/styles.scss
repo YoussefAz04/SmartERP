@@ -2308,6 +2308,344 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
   background: var(--ui-row-hover);
 }
 
+// ===========================================================
+// COMPREHENSIVE DARK MODE — .dark class (on .main-wrapper)
+// ===========================================================
+
+// --- Base & layout ---
+.dark,
+.dark body {
+  color: #d0d5e8;
+}
+
+.dark .page-wrapper {
+  background: #141432;
+}
+
+.dark .content {
+  background: transparent;
+}
+
+// --- Sidebar base (global) ---
+.dark .sidebar {
+  background: #13151f;
+  border-right: 1px solid #2a2f45;
+}
+
+.dark .sidebar-inner,
+.dark .sidebar-inner.slimscroll {
+  background: #13151f;
+}
+
+// --- Typography ---
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6,
+.dark .h1, .dark .h2, .dark .h3, .dark .h4, .dark .h5, .dark .h6 {
+  color: #e2e8f0;
+}
+
+.dark p,
+.dark span:not([class*="badge"]):not([class*="status"]) {
+  color: inherit;
+}
+
+.dark label,
+.dark .form-label {
+  color: #c8cfe0;
+}
+
+// --- Cards ---
+.dark .card {
+  background: #1e2235;
+  border-color: #2a2f45;
+  color: #d0d5e8;
+}
+
+.dark .card-header {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom-color: #2a2f45;
+  color: #e2e8f0;
+}
+
+.dark .card-footer {
+  background: rgba(255, 255, 255, 0.02);
+  border-top-color: #2a2f45;
+}
+
+.dark .card-title {
+  color: #e2e8f0;
+}
+
+// --- Forms ---
+.dark .form-control,
+.dark .form-select,
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="search"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark textarea,
+.dark select {
+  background-color: #1e2235;
+  border-color: #2a2f45;
+  color: #d0d5e8;
+
+  &::placeholder {
+    color: #5a6480;
+  }
+
+  &:focus {
+    background-color: #1e2235;
+    border-color: #4f6ef7;
+    color: #e2e8f0;
+    box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
+  }
+}
+
+.dark .input-group-text {
+  background: #252b40;
+  border-color: #2a2f45;
+  color: #8d97b5;
+}
+
+.dark .input-blocks label {
+  color: #c8cfe0;
+}
+
+// --- Tables ---
+.dark table {
+  color: #d0d5e8;
+}
+
+.dark .table {
+  color: #d0d5e8;
+
+  th, td {
+    border-color: #2a2f45;
+  }
+
+  thead th {
+    background: rgba(47, 53, 87, 0.5);
+    color: #c0cae0;
+    border-bottom-color: #384069;
+  }
+
+  tbody tr {
+    &:hover {
+      background: rgba(79, 110, 247, 0.07);
+    }
+  }
+
+  &.table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+
+.dark .table-bordered {
+  border-color: #2a2f45;
+
+  th, td {
+    border-color: #2a2f45;
+  }
+}
+
+// --- Table list card ---
+.dark .table-list-card {
+  background: #1e2235;
+  border-color: #2a2f45;
+}
+
+.dark .table-top-head li a {
+  color: #8d97b5;
+
+  &:hover {
+    color: #6c8cff;
+  }
+}
+
+// --- Dropdowns ---
+.dark .dropdown-menu {
+  background: #1e2235;
+  border-color: #2a2f45;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dark .dropdown-item {
+  color: #c8cfe0;
+
+  &:hover, &:focus {
+    background: rgba(79, 110, 247, 0.1);
+    color: #e2e8f0;
+  }
+}
+
+.dark .dropdown-divider {
+  border-color: #2a2f45;
+}
+
+// --- Modals ---
+.dark .modal-content {
+  background: #1e2235;
+  border-color: #2a2f45;
+}
+
+.dark .modal-header {
+  border-bottom-color: #2a2f45;
+  color: #e2e8f0;
+}
+
+.dark .modal-footer {
+  border-top-color: #2a2f45;
+}
+
+.dark .modal-title {
+  color: #e2e8f0;
+}
+
+.dark .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+// --- Page headers ---
+.dark .page-header h4,
+.dark .page-header h6,
+.dark .page-header .breadcrumb-item,
+.dark .page-header .breadcrumb-item a {
+  color: #c8cfe0;
+}
+
+.dark .page-header .breadcrumb-item.active {
+  color: #8d97b5;
+}
+
+// --- Borders & dividers ---
+.dark hr {
+  border-color: #2a2f45;
+}
+
+.dark .border,
+.dark .border-top,
+.dark .border-bottom,
+.dark .border-start,
+.dark .border-end {
+  border-color: #2a2f45 !important;
+}
+
+// --- Text helpers ---
+.dark .text-dark,
+.dark .text-body {
+  color: #d0d5e8 !important;
+}
+
+.dark .text-muted {
+  color: #6e7a9a !important;
+}
+
+// --- Breadcrumb ---
+.dark .breadcrumb {
+  color: #8d97b5;
+}
+
+.dark .breadcrumb-item + .breadcrumb-item::before {
+  color: #5a6480;
+}
+
+// --- Nav tabs ---
+.dark .nav-tabs {
+  border-bottom-color: #2a2f45;
+
+  .nav-link {
+    color: #8d97b5;
+
+    &:hover {
+      color: #c8cfe0;
+      border-color: transparent transparent #2a2f45;
+    }
+
+    &.active {
+      background: #1e2235;
+      border-color: #2a2f45 #2a2f45 #1e2235;
+      color: #6c8cff;
+    }
+  }
+}
+
+// --- Badges (neutral) ---
+.dark .badge.bg-light {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #c8cfe0 !important;
+}
+
+// --- Pagination ---
+.dark .page-item .page-link {
+  background: #1e2235;
+  border-color: #2a2f45;
+  color: #8d97b5;
+
+  &:hover {
+    background: rgba(79, 110, 247, 0.1);
+    color: #6c8cff;
+  }
+}
+
+.dark .page-item.active .page-link {
+  background: #4f6ef7;
+  border-color: #4f6ef7;
+  color: #fff;
+}
+
+.dark .page-item.disabled .page-link {
+  background: #13151f;
+  border-color: #2a2f45;
+  color: #3d4668;
+}
+
+// --- Scrollbar (global dark) ---
+.dark ::-webkit-scrollbar-track {
+  background: #13151f;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #2a2f45;
+
+  &:hover {
+    background: #384069;
+  }
+}
+
+// --- Bootstrap utilities override for dark ---
+.dark .bg-white {
+  background-color: #1e2235 !important;
+}
+
+.dark .bg-light {
+  background-color: #252b40 !important;
+  color: #d0d5e8 !important;
+}
+
+// --- List groups ---
+.dark .list-group-item {
+  background: #1e2235;
+  border-color: #2a2f45;
+  color: #d0d5e8;
+}
+
+// --- Alert ---
+.dark .alert {
+  border-color: #2a2f45;
+}
+
+// --- SweetAlert dark ---
+.dark-select.swal2-shown .swal2-popup {
+  background: #1e2235;
+  color: #d0d5e8;
+}
+
+.dark-select .swal2-popup .swal2-title {
+  color: #e2e8f0;
+}
+
 @media (max-width: 991.98px) {
   .page-wrapper .content {
     padding: 16px 14px 22px;
