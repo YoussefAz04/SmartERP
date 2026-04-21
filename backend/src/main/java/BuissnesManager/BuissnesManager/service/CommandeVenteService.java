@@ -55,7 +55,11 @@ public class CommandeVenteService {
         commande.setReference(dto.getReference());
         commande.setDateCommande(dto.getDateCommande());
         commande.setDateLivraisonPrevue(dto.getDateLivraisonPrevue());
-        commande.setStatut(dto.getStatut() != null ? dto.getStatut() : "EN_ATTENTE");
+        // A new sales order always starts as a draft (EN_ATTENTE). Subsequent
+        // lifecycle transitions (CONFIRMEE, LIVREE, ANNULEE) are only allowed
+        // through the dedicated endpoints (/valider, /livrer, /annuler) which
+        // also handle the associated stock reservation / decrement side effects.
+        commande.setStatut("EN_ATTENTE");
         commande.setMontantHT(dto.getMontantHT() != null ? dto.getMontantHT() : BigDecimal.ZERO);
         commande.setMontantTVA(dto.getMontantTVA() != null ? dto.getMontantTVA() : BigDecimal.ZERO);
         commande.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC() : BigDecimal.ZERO);
@@ -103,13 +107,11 @@ public class CommandeVenteService {
             }
         }
 
-        // Reserve stock for the created order
-        try {
-            stockAutomationService.reserverStockPourCommande(saved.getId(), saved.getReference());
-        } catch (RuntimeException e) {
-            logger.error("❌ Stock reservation failed for commande {} ({}): {}", saved.getId(), saved.getReference(), e.getMessage(), e);
-            throw e;
-        }
+        // NOTE: Stock is NOT reserved at draft creation. A draft order
+        // (EN_ATTENTE) has no effect on stock. Reservation happens when the
+        // order is confirmed via validerCommande(), and the reserved stock is
+        // consumed (moved to "vendue") when the order is delivered via
+        // livrerCommande(). This mirrors a standard ERP order-to-cash flow.
 
         // ✅ AUTO-CREATE preliminary FactureDeVente (EN_ATTENTE) so it appears in the factures list immediately
         FactureDeVente factureDeVente = new FactureDeVente();
@@ -276,8 +278,10 @@ public class CommandeVenteService {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
-        // Release stock reservations if the order has not been delivered
-        if (!"LIVREE".equals(commande.getStatut()) && !"ANNULEE".equals(commande.getStatut())) {
+        // Release stock reservations only if the order is currently CONFIRMEE
+        // (i.e. stock was reserved but not yet consumed). EN_ATTENTE drafts
+        // never reserved stock, and LIVREE orders already consumed it.
+        if ("CONFIRMEE".equals(commande.getStatut())) {
             try {
                 stockAutomationService.annulerReservationStock(id, commande.getReference());
                 logger.info("✅ Stock reservations released for deleted commande {}", id);
@@ -317,6 +321,17 @@ public class CommandeVenteService {
         }
         if ("ANNULEE".equals(commande.getStatut())) {
             throw new RuntimeException("Impossible de confirmer une commande annulée.");
+        }
+
+        // ✅ Reserve stock BEFORE changing the status. If the warehouse does
+        // not have enough available stock, reserverStockPourCommande will
+        // throw and the @Transactional boundary will roll back the whole
+        // confirmation — the order stays in EN_ATTENTE.
+        try {
+            stockAutomationService.reserverStockPourCommande(id, commande.getReference());
+        } catch (RuntimeException e) {
+            logger.error("❌ Stock reservation failed for commande {} ({}): {}", id, commande.getReference(), e.getMessage(), e);
+            throw e;
         }
 
         // ✅ Change status to CONFIRMEE
@@ -364,9 +379,11 @@ public class CommandeVenteService {
             savedFacture = factureDeVenteRepository.save(savedFacture);
         }
 
-        // ✅ Update stock: move reserved quantity to sold (quantite_reserve → quantite_vendue)
-        // is handled at delivery (livrerCommande), not at confirmation.
-        // At confirmation, the order is still "reserved" in stock terms.
+        // ✅ Stock handling:
+        //   - Reservation (quantiteDisponible → quantiteReserve) is done above
+        //     at confirmation time.
+        //   - Consumption (quantiteReserve → quantiteVendue) happens later at
+        //     physical delivery via livrerCommande().
 
         logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={}",
             id, savedFacture.getId(), totalHT, totalTVA, totalTTC);
@@ -391,8 +408,10 @@ public class CommandeVenteService {
             logger.info("✅ Associated FactureDeVente {} cancelled", facture.getId());
         });
 
-        // Release stock reservations if the order was not yet delivered
-        if (!"LIVREE".equals(ancienStatut)) {
+        // Release stock reservations only if the order was confirmed (i.e. stock
+        // was actually reserved). Drafts in EN_ATTENTE never touched stock, and
+        // LIVREE orders already consumed their reservation at delivery.
+        if ("CONFIRMEE".equals(ancienStatut)) {
             try {
                 stockAutomationService.annulerReservationStock(id, commande.getReference());
             } catch (RuntimeException e) {
