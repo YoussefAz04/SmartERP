@@ -1,64 +1,141 @@
-<div class="container mt-4">
-  <div class="card shadow-lg">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0">Modifier l'entreprise</h5>
+<div class="entreprise-details-wrapper fade-in" *ngIf="entreprise">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-info">
+        <a routerLink="/entreprise/listEntreprise" class="back-btn" title="Retour à la liste">
+          <i class="feather icon-arrow-left"></i>
+        </a>
+        <div class="header-text">
+          <h1 class="page-title">{{ entreprise.nom || 'Modifier Entreprise' }}</h1>
+          <p class="page-subtitle">
+            <i class="feather icon-edit-2" style="font-size:13px;margin-right:4px;"></i>
+            Modifiez les informations de votre entreprise
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Form Card -->
+  <div class="card card-edit">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="feather icon-briefcase"></i>
+        Informations de l'entreprise
+      </h3>
     </div>
     <div class="card-body">
-      <form (ngSubmit)="onSubmit()" #entrepriseForm="ngForm">
 
-        <div class="mb-3">
-          <label for="nom" class="form-label">Nom</label>
-          <input type="text" id="nom" class="form-control" name="nom" [(ngModel)]="entreprise.nom" required>
+      <form (ngSubmit)="onSubmit()" #entrepriseForm="ngForm" class="edit-form">
+
+        <!-- Row 1: Nom + Raison Sociale -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nom <span class="required">*</span></label>
+            <input type="text" class="form-control" name="nom" [(ngModel)]="entreprise.nom" required
+                   placeholder="Nom de l'entreprise">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Raison Sociale</label>
+            <input type="text" class="form-control" name="raisonSociale" [(ngModel)]="entreprise.raisonSociale"
+                   placeholder="Raison sociale">
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label for="raisonSociale" class="form-label">Raison Sociale</label>
-          <input type="text" id="raisonSociale" class="form-control" name="raisonSociale" [(ngModel)]="entreprise.raisonSociale" required>
+        <!-- Row 2: Secteur d'activité + Statut Juridique -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Secteur d'activité</label>
+            <input type="text" class="form-control" name="secteurActivite" [(ngModel)]="entreprise.secteurActivite"
+                   placeholder="Ex: Nutrition, Technologie...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Statut Juridique</label>
+            <input type="text" class="form-control" name="statutJuridique" [(ngModel)]="entreprise.statutJuridique"
+                   placeholder="Ex: SAS, SARL, SA...">
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
-          <textarea id="description" class="form-control" name="description" [(ngModel)]="entreprise.description" rows="3"></textarea>
+        <!-- Row 3: Email + Téléphone -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" [(ngModel)]="entreprise.email"
+                   placeholder="contact@entreprise.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Téléphone</label>
+            <input type="text" class="form-control" name="telephone" [(ngModel)]="entreprise.telephone"
+                   placeholder="+213 XX XX XX XX">
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label for="secteurActivite" class="form-label">Secteur d'activité</label>
-          <input type="text" id="secteurActivite" class="form-control" name="secteurActivite" [(ngModel)]="entreprise.secteurActivite">
+        <!-- Row 4: NIF + Registre Commerce -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">N° Identification Fiscale</label>
+            <input type="text" class="form-control" name="numeroIdentificationFiscale"
+                   [(ngModel)]="entreprise.numeroIdentificationFiscale"
+                   placeholder="Numéro d'identification fiscale">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Registre Commerce</label>
+            <input type="text" class="form-control" name="registreCommerce" [(ngModel)]="entreprise.registreCommerce"
+                   placeholder="Numéro registre commerce">
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label for="statutJuridique" class="form-label">Statut Juridique</label>
-          <input type="text" id="statutJuridique" class="form-control" name="statutJuridique" [(ngModel)]="entreprise.statutJuridique">
+        <!-- Row 5: Site Web + Date Création -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Site Web</label>
+            <input type="url" class="form-control" name="siteWeb" [(ngModel)]="entreprise.siteWeb"
+                   placeholder="https://www.entreprise.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date de Création</label>
+            <input type="date" class="form-control" name="dateCreation" [(ngModel)]="entreprise.dateCreation">
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label for="numeroIdentificationFiscale" class="form-label">N° Identification Fiscale</label>
-          <input type="text" id="numeroIdentificationFiscale" class="form-control" name="numeroIdentificationFiscale" [(ngModel)]="entreprise.numeroIdentificationFiscale">
+        <!-- Row 6: Adresse (full width) -->
+        <div class="form-row">
+          <div class="form-group form-group-full">
+            <label class="form-label">Adresse</label>
+            <input type="text" class="form-control" name="adresse" [(ngModel)]="entreprise.adresse"
+                   placeholder="Adresse complète de l'entreprise">
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label for="registreCommerce" class="form-label">Registre Commerce</label>
-          <input type="text" id="registreCommerce" class="form-control" name="registreCommerce" [(ngModel)]="entreprise.registreCommerce">
+        <!-- Row 7: Description (full width) -->
+        <div class="form-row">
+          <div class="form-group form-group-full">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" [(ngModel)]="entreprise.description"
+                      rows="4" placeholder="Description de l'activité de l'entreprise..."></textarea>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label for="siteWeb" class="form-label">Site Web</label>
-          <input type="url" id="siteWeb" class="form-control" name="siteWeb" [(ngModel)]="entreprise.siteWeb">
-        </div>
-
-        <div class="mb-3">
-          <label for="dateCreation" class="form-label">Date de Création</label>
-          <input type="date" id="dateCreation" class="form-control" name="dateCreation" [(ngModel)]="entreprise.dateCreation">
-        </div>
-
-        <!-- ✅ SUBMIT BUTTON SECTION -->
-        <div class="form-actions text-end mt-4">
-          <a routerLink="/entreprise/listEntreprise" class="btn btn-secondary me-2">Annuler</a>
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <a routerLink="/entreprise/listEntreprise" class="btn btn-secondary">
+            <i class="feather icon-x"></i> Annuler
+          </a>
           <button type="submit" class="btn btn-primary">
-            <i class="feather icon-check-circle me-2"></i>Enregistrer
+            <i class="feather icon-check-circle"></i> Enregistrer
           </button>
         </div>
+
       </form>
     </div>
   </div>
+
+</div>
+
+<!-- Loading state -->
+<div *ngIf="!entreprise" class="loading-state">
+  <div class="spinner"></div>
+  <p>Chargement des informations...</p>
 </div>

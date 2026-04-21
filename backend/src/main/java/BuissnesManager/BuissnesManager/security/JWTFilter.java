@@ -43,11 +43,10 @@ public class JWTFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
         
-        // ✅ Only truly public paths skip JWT validation
+        // Truly public paths that never need JWT processing
         boolean isPublic = path.startsWith("/test") ||
                 path.startsWith("/auth") ||
                 path.startsWith("/api/auth") ||
-                path.startsWith("/entreprise") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/swagger-resources") ||
                 path.startsWith("/webjars") ||
@@ -55,11 +54,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (isPublic) {
             logger.debug("✅ [JWTFilter] SKIPPING JWT validation for PUBLIC path: {}", path);
-            return true;  // Skip this filter
+            return true;
         }
 
-        logger.debug("🔒 [JWTFilter] VALIDATING JWT for PROTECTED path: {}", path);
-        return false;  // Apply filter
+        logger.debug("🔒 [JWTFilter] VALIDATING JWT for path: {}", path);
+        return false;
     }
 
     @Override
@@ -125,9 +124,9 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
         } else {
-            logger.warn("⚠️ [JWTFilter] No Bearer token found for protected path: {}", path);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
-            return;
+            // No token provided – continue without authentication.
+            // URL-level security (permitAll / authenticated) will decide access.
+            logger.debug("⚠️ [JWTFilter] No Bearer token for path: {} – proceeding unauthenticated", path);
         }
 
         try {
