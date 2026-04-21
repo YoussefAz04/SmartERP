@@ -6,6 +6,7 @@ import {DatePipe, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {ResponseDto} from "../../../model/reponseDto.model";
 import {PermissionDto} from "../../../model/permissionDto.model";
+import {NotificationService} from "../../../shared/notification/notification.service";
 
 @Component({
   selector: 'app-detais-entreprise',
@@ -22,7 +23,7 @@ import {PermissionDto} from "../../../model/permissionDto.model";
 export class DetaisEntrepriseComponent implements OnInit{
 
 
-   constructor(private entrepriseService : EntrepriseService,private routerLink : ActivatedRoute,private router : Router) {
+   constructor(private entrepriseService : EntrepriseService,private routerLink : ActivatedRoute,private router : Router, private notification: NotificationService) {
    }
    idEntreprise!: number ;
    entreprise!: Entreprise ;
@@ -81,10 +82,12 @@ export class DetaisEntrepriseComponent implements OnInit{
       this.entrepriseService.updateEntreprise(this.entreprise.id, this.entreprise).subscribe({
         next: (updated) => {
           console.log("Entreprise mise à jour :", updated);
+          this.notification.success('Entreprise mise à jour avec succès');
           this.router.navigate(['/entreprise/listEntreprise'])
         },
         error: (err) => {
           console.error("Erreur de mise à jour :", err);
+          this.notification.error('Erreur lors de la mise à jour de l\'entreprise');
         }
       });
     }

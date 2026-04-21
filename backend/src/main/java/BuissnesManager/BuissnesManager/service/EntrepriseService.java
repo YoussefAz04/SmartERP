@@ -51,7 +51,6 @@ public class EntrepriseService {
             entreprise.setRegistreCommerce(entrepriseDetails.getRegistreCommerce());
             entreprise.setSiteWeb(entrepriseDetails.getSiteWeb());
             entreprise.setDateCreation(entrepriseDetails.getDateCreation());
-            entreprise.setDateDerniereModification(entrepriseDetails.getDateDerniereModification());
             entreprise.setEmail(entrepriseDetails.getEmail());
             entreprise.setTelephone(entrepriseDetails.getTelephone());
             entreprise.setAdresse(entrepriseDetails.getAdresse());
