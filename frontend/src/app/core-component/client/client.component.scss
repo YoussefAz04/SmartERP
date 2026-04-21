@@ -14,8 +14,8 @@
 .client-dashboard {
   position: relative;
   display: grid;
-  gap: 22px;
-  padding-bottom: 16px;
+  gap: 24px;
+  padding-bottom: 24px;
 }
 
 .client-dashboard::before,
@@ -53,7 +53,7 @@
 
 .page-header {
   overflow: hidden;
-  padding: 28px 30px;
+  padding: 32px 36px;
   border-radius: 30px;
   background:
     radial-gradient(circle at top right, rgba(34, 211, 238, 0.22), transparent 32%),
@@ -93,28 +93,29 @@
   display: flex;
   justify-content: space-between;
   gap: 22px;
-  align-items: flex-end;
+  align-items: center;
   flex-wrap: wrap;
 }
 
 .page-header-left {
   display: flex;
   gap: 18px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .page-icon-wrap {
   position: relative;
-  width: 62px;
-  height: 62px;
+  width: 70px;
+  height: 70px;
   border-radius: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 12px 28px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .page-icon-wrap::after {
@@ -156,6 +157,10 @@
   letter-spacing: -0.05em;
 }
 
+.page-header .page-title {
+  color: #fff;
+}
+
 .page-subtitle {
   max-width: 560px;
   margin: 0;
@@ -167,7 +172,7 @@
 .page-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
@@ -218,7 +223,7 @@
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
 .stat-card {
@@ -250,6 +255,7 @@
 .stat-content {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 16px;
   padding: 20px;
 }
@@ -280,6 +286,8 @@
 .stat-info {
   display: grid;
   gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .stat-value {
@@ -336,7 +344,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 14px;
-  padding: 18px 22px;
+  padding: 20px 24px;
 }
 
 .filter-header {
@@ -387,7 +395,7 @@
 }
 
 .filter-body {
-  padding: 20px 22px 24px;
+  padding: 22px 24px 26px;
 }
 
 .filter-helper-row {
@@ -862,6 +870,11 @@
   .filter-header,
   .panel-header {
     padding: 20px;
+  }
+
+  .page-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .page-header-left,
