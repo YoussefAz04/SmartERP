@@ -479,10 +479,18 @@ export class ListFactureDeVenteComponent implements OnInit{
   }
 
   statusMenuOpen: number | null = null;
+  dropdownPosition = { top: 0, left: 0 };
 
-  toggleStatusMenu(factureId: number | undefined) {
+  toggleStatusMenu(factureId: number | undefined, event: MouseEvent) {
     if (factureId === undefined) return;
-    this.statusMenuOpen = this.statusMenuOpen === factureId ? null : factureId;
+    if (this.statusMenuOpen === factureId) {
+      this.statusMenuOpen = null;
+      return;
+    }
+    const badge = (event.currentTarget as HTMLElement);
+    const rect = badge.getBoundingClientRect();
+    this.dropdownPosition = { top: rect.bottom + 4, left: rect.left };
+    this.statusMenuOpen = factureId;
   }
 
   closeStatusMenu() {
@@ -495,6 +503,11 @@ export class ListFactureDeVenteComponent implements OnInit{
     if (!target.closest('.status-cell')) {
       this.closeStatusMenu();
     }
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    this.closeStatusMenu();
   }
 
   getUserAuthData(){

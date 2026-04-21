@@ -182,11 +182,12 @@
           <td class="status-cell" [class.menu-open]="statusMenuOpen === facture.id">
             <div class="status-wrapper">
               <span class="status-badge" [ngClass]="getStatusClass(facture.statut)"
-                    (click)="toggleStatusMenu(facture.id)">
+                    (click)="toggleStatusMenu(facture.id, $event)">
                 {{ facture.statut }}
                 <i class="feather icon-chevron-down status-arrow"></i>
               </span>
-              <div class="status-dropdown" *ngIf="statusMenuOpen === facture.id">
+              <div class="status-dropdown" *ngIf="statusMenuOpen === facture.id"
+                   [ngStyle]="{'top.px': dropdownPosition.top, 'left.px': dropdownPosition.left}">
                 <button class="status-option status-opt-payee" 
                         (click)="changeStatus(facture, 'PAYEE'); closeStatusMenu()"
                         *ngIf="facture.statut !== 'PAYEE'">
