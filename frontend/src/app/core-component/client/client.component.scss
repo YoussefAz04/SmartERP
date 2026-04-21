@@ -150,11 +150,15 @@
 
 .page-title {
   margin: 16px 0 8px;
-  color: #fff !important;
+  color: #fff;
   font-size: clamp(2rem, 3vw, 2.8rem);
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.05em;
+}
+
+.page-header .page-title {
+  color: #fff;
 }
 
 .page-subtitle {
