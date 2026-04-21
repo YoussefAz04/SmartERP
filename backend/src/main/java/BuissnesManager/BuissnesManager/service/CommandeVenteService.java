@@ -65,11 +65,15 @@ public class CommandeVenteService {
         commande.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC() : BigDecimal.ZERO);
         commande.setNote(dto.getNote());
         
-        if (dto.getClientId() != null) {
-            Client client = clientRepo.findById(dto.getClientId())
-                    .orElseThrow(() -> new RuntimeException("Client non trouvé: " + dto.getClientId()));
-            commande.setClient(client);
+        // ✅ Client is mandatory (parity with Fournisseur in CommandeAchat) — a
+        // sales order without a client is a data-integrity bug downstream
+        // (invoicing, reporting, etc.).
+        if (dto.getClientId() == null) {
+            throw new RuntimeException("Le client est obligatoire.");
         }
+        Client client = clientRepo.findById(dto.getClientId())
+                .orElseThrow(() -> new RuntimeException("Client non trouvé: " + dto.getClientId()));
+        commande.setClient(client);
         
         // ✅ Set Entreprise - from JWT or DTO
         final Long resolvedEntrepriseId = dto.getEntrepriseId() != null
@@ -90,10 +94,25 @@ public class CommandeVenteService {
         CommandeVente saved = commandeVenteRepository.save(commande);
 
         if (dto.getLignes() != null && !dto.getLignes().isEmpty()) {
-            for (LigneCommandeVenteDto ligneDto : dto.getLignes()) {
+            for (int idx = 0; idx < dto.getLignes().size(); idx++) {
+                final int lineNumber = idx + 1;
+                LigneCommandeVenteDto ligneDto = dto.getLignes().get(idx);
+
+                // ✅ Validate quantity and price (parity with CommandeAchatService).
+                // Without this, zero/negative values silently corrupt downstream
+                // invoicing totals and stock reservations.
+                if (ligneDto.getQuantite() == null || ligneDto.getQuantite().compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new RuntimeException(
+                            String.format("Ligne %d: La quantité doit être supérieure à 0.", lineNumber));
+                }
+                if (ligneDto.getPrixUnitaireHT() == null || ligneDto.getPrixUnitaireHT().compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new RuntimeException(
+                            String.format("Ligne %d: Le prix unitaire HT doit être supérieur à 0.", lineNumber));
+                }
+
                 LigneCommandeVente ligne = new LigneCommandeVente();
-                ligne.setQuantite(ligneDto.getQuantite() != null ? ligneDto.getQuantite() : BigDecimal.ZERO);
-                ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT() != null ? ligneDto.getPrixUnitaireHT() : BigDecimal.ZERO);
+                ligne.setQuantite(ligneDto.getQuantite());
+                ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT());
                 ligne.setTva(ligneDto.getTva() != null ? ligneDto.getTva() : BigDecimal.ZERO);
                 ligne.setMontantHT(ligneDto.getMontantHT() != null ? ligneDto.getMontantHT() : BigDecimal.ZERO);
                 ligne.setMontantTTC(ligneDto.getMontantTTC() != null ? ligneDto.getMontantTTC() : BigDecimal.ZERO);
@@ -391,6 +410,7 @@ public class CommandeVenteService {
         return savedFacture;
     }
 
+    @Transactional
     public CommandeVente annulerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
