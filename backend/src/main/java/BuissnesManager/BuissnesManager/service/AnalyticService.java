@@ -8,6 +8,7 @@ import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
 import BuissnesManager.BuissnesManager.service.ml.FeatureScaler;
 import BuissnesManager.BuissnesManager.service.ml.LoessSmoother;
+import org.springframework.cache.annotation.Cacheable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,15 @@ public class AnalyticService {
      */
     private static final int KMEANS_RESTARTS = 8;
 
+    /**
+     * Cross-module cache key: {@code (entrepriseId, dayOfYear)}. Heavy ML
+     * work (LOESS, bootstrap CI, K-Means + silhouette grid-search) is stable
+     * within a calendar day for a given enterprise, so repeated calls from
+     * the Angular dashboard reuse the same DTO instead of retraining every
+     * time the user switches tabs.
+     */
+    @Cacheable(cacheNames = "salesAnalysis",
+               key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public SalesAnalysisDto analyzeSales(Long entrepriseId) {
         int currentYear = LocalDate.now().getYear();
         List<Object[]> rawData = commandeVenteRepository.getMonthlySales(entrepriseId, currentYear);
@@ -163,6 +173,8 @@ public class AnalyticService {
         return dto;
     }
 
+    @Cacheable(cacheNames = "productIntelligence",
+               key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public ProductIntelligenceDto analyzeProducts(Long entrepriseId) {
         List<Object[]> topRaw = commandeVenteRepository.getTopProducts(entrepriseId);
 

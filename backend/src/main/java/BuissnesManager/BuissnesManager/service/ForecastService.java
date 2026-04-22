@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.service.ml.MlForecastEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -79,6 +80,8 @@ public class ForecastService {
     // history, to avoid absurd extrapolations on very short series.
     private static final double MAX_TREND_GROWTH_PER_MONTH = 0.50; // 50%/month
 
+    @Cacheable(cacheNames = "salesForecast",
+               key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public ForecastDto generateForecast(Long entrepriseId) {
         int currentYear = LocalDate.now().getYear();
         int currentMonth = LocalDate.now().getMonthValue();
@@ -302,13 +305,14 @@ public class ForecastService {
         double predictedNext3Months = futureForecasts.stream().limit(3).mapToDouble(Double::doubleValue).sum();
         double predictedNext6Months = futureForecasts.stream().limit(6).mapToDouble(Double::doubleValue).sum();
 
-        // Confidence: when walk-forward CV could run, we use (1 - OOS-MAPE) as
-        // the honest accuracy signal — it reflects how well the model
-        // predicted points it never saw during training, which is what users
-        // actually care about. We blend it with a data-density term so a
-        // tiny-but-perfectly-fitted sample doesn't claim 95% confidence, and
-        // fall back to in-sample R² only when CV wasn't possible. Capped at
-        // 95% — we never advertise certainty.
+        // Confidence: a *blended* quality score that fuses
+        //   (1) out-of-sample accuracy (1 − OOS-MAPE from walk-forward CV,
+        //       falling back to in-sample R²),
+        //   (2) data density (fraction of months with non-zero revenue), and
+        //   (3) residual-std stability (1 − min(1, σ/mean)), which penalises
+        //       models whose training residuals are large relative to the
+        //       series mean even if the OOS accuracy looks good on a few folds.
+        // Capped at 95% — we never advertise certainty.
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
         double expectedMonths = hasPrevYear ? 24.0 : 12.0;
         double density = Math.min(1.0, nonZeroMonths / expectedMonths);
@@ -319,8 +323,13 @@ public class ForecastService {
         } else {
             accuracySignal = rSquaredClamped;
         }
+        double seriesMean = historicalSeries.stream().filter(v -> v > 0)
+                .mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double stability = seriesMean > 0
+                ? Math.max(0.0, 1.0 - Math.min(1.0, result.residualStd / seriesMean))
+                : 0.5; // neutral when we can't compute ratio
         double confidence = Math.min(95.0, Math.max(0.0,
-                (0.4 * density + 0.6 * accuracySignal) * 100.0));
+                (0.3 * density + 0.5 * accuracySignal + 0.2 * stability) * 100.0));
 
         List<ForecastDto.SeasonalityDto> seasonality =
             computeSeasonalityView(hasPrevYear ? prevValues : currentValues);
