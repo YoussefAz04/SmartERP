@@ -290,15 +290,25 @@ public class ForecastService {
         double predictedNext3Months = futureForecasts.stream().limit(3).mapToDouble(Double::doubleValue).sum();
         double predictedNext6Months = futureForecasts.stream().limit(6).mapToDouble(Double::doubleValue).sum();
 
-        // Confidence: R² from the fitted model, blended with a data-density
-        // term so that a tiny-but-perfectly-fitted sample doesn't claim 95%
-        // confidence. Capped at 95% — we never advertise certainty.
+        // Confidence: when walk-forward CV could run, we use (1 - OOS-MAPE) as
+        // the honest accuracy signal — it reflects how well the model
+        // predicted points it never saw during training, which is what users
+        // actually care about. We blend it with a data-density term so a
+        // tiny-but-perfectly-fitted sample doesn't claim 95% confidence, and
+        // fall back to in-sample R² only when CV wasn't possible. Capped at
+        // 95% — we never advertise certainty.
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
         double expectedMonths = hasPrevYear ? 24.0 : 12.0;
         double density = Math.min(1.0, nonZeroMonths / expectedMonths);
         double rSquaredClamped = Math.max(0.0, Math.min(1.0, result.rSquared));
+        double accuracySignal;
+        if (!Double.isNaN(result.walkForwardMape)) {
+            accuracySignal = Math.max(0.0, Math.min(1.0, 1.0 - result.walkForwardMape));
+        } else {
+            accuracySignal = rSquaredClamped;
+        }
         double confidence = Math.min(95.0, Math.max(0.0,
-                (0.4 * density + 0.6 * rSquaredClamped) * 100.0));
+                (0.4 * density + 0.6 * accuracySignal) * 100.0));
 
         List<ForecastDto.SeasonalityDto> seasonality =
             computeSeasonalityView(hasPrevYear ? prevValues : currentValues);
@@ -309,14 +319,19 @@ public class ForecastService {
         dto.setPredictedNext3Months(round2(predictedNext3Months));
         dto.setPredictedNext6Months(round2(predictedNext6Months));
         dto.setConfidenceScore(Math.round(confidence * 10.0) / 10.0);
+        String mapeText = Double.isNaN(result.walkForwardMape)
+                ? "MAPE-CV n/a"
+                : String.format("MAPE-CV=%.1f%% (%d plis)",
+                        result.walkForwardMape * 100.0, result.walkForwardFolds);
         dto.setMethodology(String.format(
-            "Régression linéaire ML (Smile OLS) sur caractéristiques lag/saisonnières — R²=%.2f, %d échantillons",
-            rSquaredClamped, result.trainingSamples));
+            "ML supervisé Smile %s (%d caractéristiques lag/saisonnières) — R²=%.2f, %s, %d échantillons",
+            result.modelName, result.featureCount, rSquaredClamped, mapeText, result.trainingSamples));
         dto.setSeasonality(seasonality);
 
         if (log.isDebugEnabled()) {
-            log.debug("ML forecast: R²={}, residualStd={}, samples={}, confidence={}%",
-                    result.rSquared, result.residualStd, result.trainingSamples, confidence);
+            log.debug("ML forecast: model={}, R²={}, OOS-MAPE={}, residualStd={}, samples={}, confidence={}%",
+                    result.modelName, result.rSquared, result.walkForwardMape,
+                    result.residualStd, result.trainingSamples, confidence);
         }
 
         return dto;
