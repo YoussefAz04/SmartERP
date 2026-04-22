@@ -1,12 +1,15 @@
 package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.dto.RecommendationDto;
+import BuissnesManager.BuissnesManager.entity.Stock;
 import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
+import BuissnesManager.BuissnesManager.service.ml.MlRecommendationEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +43,24 @@ public class RecommendationService {
     @Autowired
     private CommandeAchatRepository commandeAchatRepository;
 
+    @Autowired
+    private MlRecommendationEngine mlRecommendationEngine;
+
+    /** Horizon (days) used by the stock-risk classifier. */
+    private static final int STOCK_RISK_HORIZON_DAYS = 30;
+
+    /** Max ML stock-risk recommendations surfaced per call (avoid spamming the UI). */
+    private static final int MAX_ML_STOCK_RECOMMENDATIONS = 5;
+
     public List<RecommendationDto> generateRecommendations(Long entrepriseId) {
         List<RecommendationDto> recommendations = new ArrayList<>();
+
+        // === 0. ML stock-risk classifier (per-article). Appended first so
+        // critical risks surface at the top of the list. When the classifier
+        // can't fit (too few articles, single-class data …) it returns an
+        // empty list and the rule-based counts below take over. ===
+        List<RecommendationDto> mlStockRisk = mlStockRiskRecommendations(entrepriseId);
+        recommendations.addAll(mlStockRisk);
 
         // === 1. Stock alerts ===
         Long lowStockCount = stockRepository.getLowStockItemsCount(entrepriseId);
@@ -105,11 +124,15 @@ public class RecommendationService {
             }
         }
 
-        // === 3. Top products recommendation ===
+        // === 3. ML-driven product opportunities (replaces rule-based PRODUIT_STAR) ===
         List<Object[]> topProducts = commandeVenteRepository.getTopProducts(entrepriseId);
-        if (topProducts != null && !topProducts.isEmpty()
+        List<RecommendationDto> mlOpportunity = mlOpportunityRecommendations(topProducts);
+        if (!mlOpportunity.isEmpty()) {
+            recommendations.addAll(mlOpportunity);
+        } else if (topProducts != null && !topProducts.isEmpty()
                 && topProducts.get(0) != null && topProducts.get(0).length > 0
                 && topProducts.get(0)[0] != null) {
+            // Fallback to the rule-based rendering when ML has insufficient data.
             String topProduct = topProducts.get(0)[0].toString();
             recommendations.add(new RecommendationDto(
                 "PRODUIT_STAR",
@@ -276,5 +299,102 @@ public class RecommendationService {
         }
 
         return recommendations;
+    }
+
+    /* =========================== ML helpers =========================== */
+
+    /**
+     * Build per-article evidence rows and delegate to
+     * {@link MlRecommendationEngine#stockRiskRecommendations}.
+     *
+     * <p>Demand velocity is estimated from the persisted {@code quantite_vendue}
+     * cumulative counter divided by a 12-month window — a rough but
+     * database-only proxy that avoids heavy SQL joins. Articles without any
+     * recorded sales are skipped.
+     */
+    List<RecommendationDto> mlStockRiskRecommendations(Long entrepriseId) {
+        List<RecommendationDto> out = new ArrayList<>();
+        List<Stock> stocks;
+        try {
+            stocks = stockRepository.findByEntrepriseId(entrepriseId);
+        } catch (RuntimeException ex) {
+            return out;
+        }
+        if (stocks == null || stocks.isEmpty()) return out;
+
+        List<MlRecommendationEngine.StockRow> rows = new ArrayList<>();
+        for (Stock s : stocks) {
+            double stockLevel = toDouble(s.getQuantiteDisponible());
+            double sold = toDouble(s.getQuantiteVendue());
+            if (stockLevel <= 0 && sold <= 0) continue;
+            double avgMonthly = sold > 0 ? sold / 12.0 : 0.0;
+            // Demand variance unknown at row level — use a fraction of the
+            // mean as a reasonable CV proxy so features are never exactly zero.
+            double demandVariance = Math.max(1.0, avgMonthly * 0.5);
+            double dailyDemand = avgMonthly / 30.0;
+            double daysOfCover = dailyDemand > 0
+                    ? stockLevel / dailyDemand
+                    : (stockLevel > 0 ? 365.0 : 0.0);
+            // Lead-time proxy from current month — a constant default; the
+            // classifier still works because only the *relative* ordering
+            // matters for the logistic fit.
+            double leadTimeProxy = 7.0;
+            double seasonalityPhase = (LocalDate.now().getMonthValue() - 1) / 11.0;
+            String articleName = articleName(s);
+            rows.add(new MlRecommendationEngine.StockRow(
+                    articleName, stockLevel, avgMonthly, demandVariance,
+                    leadTimeProxy, daysOfCover, seasonalityPhase));
+        }
+        List<RecommendationDto> all = mlRecommendationEngine.stockRiskRecommendations(
+                rows, STOCK_RISK_HORIZON_DAYS);
+        // Cap to MAX_ML_STOCK_RECOMMENDATIONS to avoid flooding the dashboard.
+        for (int i = 0; i < all.size() && i < MAX_ML_STOCK_RECOMMENDATIONS; i++) {
+            out.add(all.get(i));
+        }
+        return out;
+    }
+
+    /** Opportunity regression on the top-products dataset. */
+    List<RecommendationDto> mlOpportunityRecommendations(List<Object[]> topProducts) {
+        if (topProducts == null || topProducts.isEmpty()) return new ArrayList<>();
+        // Compute category share on the fly from total revenue.
+        double totalRev = 0.0;
+        for (Object[] row : topProducts) {
+            if (row != null && row.length > 2 && row[2] != null) {
+                totalRev += ((Number) row[2]).doubleValue();
+            }
+        }
+        List<MlRecommendationEngine.ProductRow> rows = new ArrayList<>();
+        int n = topProducts.size();
+        for (int i = 0; i < n; i++) {
+            Object[] row = topProducts.get(i);
+            if (row == null || row.length < 3 || row[0] == null) continue;
+            String name = row[0].toString();
+            double qty = row[1] != null ? ((Number) row[1]).doubleValue() : 0.0;
+            double rev = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+            double marginProxy = qty > 0 ? rev / qty : rev;
+            double catShare = totalRev > 0 ? rev / totalRev : 0.0;
+            // Velocity trend proxy: rank-based descending score. Higher-ranked
+            // products get a positive trend, lower-ranked get negative.
+            double trend = n > 1 ? (double) (n - 1 - i) / (n - 1) - 0.5 : 0.0;
+            rows.add(new MlRecommendationEngine.ProductRow(
+                    name, rev, qty, marginProxy, catShare, trend));
+        }
+        return mlRecommendationEngine.opportunityRecommendations(rows);
+    }
+
+    private static double toDouble(BigDecimal b) {
+        return b != null ? b.doubleValue() : 0.0;
+    }
+
+    private static String articleName(Stock s) {
+        try {
+            if (s.getArticleAchat() != null && s.getArticleAchat().getNom() != null) {
+                return s.getArticleAchat().getNom();
+            }
+        } catch (RuntimeException ignored) {
+            // Lazy-loading issue on a detached article — fall through to fallback.
+        }
+        return "Article #" + s.getId();
     }
 }

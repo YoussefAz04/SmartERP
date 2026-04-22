@@ -11,6 +11,16 @@ public class ForecastDto {
     private Double confidenceScore;
     private String methodology;
     private List<SeasonalityDto> seasonality;
+    /** Name of the learner picked by walk-forward CV (e.g. "Ridge", "RandomForest"). */
+    private String selectedModel;
+    /** Cross-validated RMSE, in TND (null if CV couldn't run). */
+    private Double crossValidatedRmse;
+    /** Cross-validated sMAPE, [0, 1]. */
+    private Double crossValidatedSmape;
+    /** Cross-validated MAPE, [0, 1]. */
+    private Double crossValidatedMape;
+    /** Full ML diagnostics bundle for the methodology panel. */
+    private ModelMetricsDto modelMetrics;
 
     public ForecastDto() {}
 
@@ -34,6 +44,17 @@ public class ForecastDto {
 
     public List<SeasonalityDto> getSeasonality() { return seasonality; }
     public void setSeasonality(List<SeasonalityDto> seasonality) { this.seasonality = seasonality; }
+
+    public String getSelectedModel() { return selectedModel; }
+    public void setSelectedModel(String selectedModel) { this.selectedModel = selectedModel; }
+    public Double getCrossValidatedRmse() { return crossValidatedRmse; }
+    public void setCrossValidatedRmse(Double crossValidatedRmse) { this.crossValidatedRmse = crossValidatedRmse; }
+    public Double getCrossValidatedSmape() { return crossValidatedSmape; }
+    public void setCrossValidatedSmape(Double crossValidatedSmape) { this.crossValidatedSmape = crossValidatedSmape; }
+    public Double getCrossValidatedMape() { return crossValidatedMape; }
+    public void setCrossValidatedMape(Double crossValidatedMape) { this.crossValidatedMape = crossValidatedMape; }
+    public ModelMetricsDto getModelMetrics() { return modelMetrics; }
+    public void setModelMetrics(ModelMetricsDto modelMetrics) { this.modelMetrics = modelMetrics; }
 
     public static class ForecastPointDto {
         private String period;

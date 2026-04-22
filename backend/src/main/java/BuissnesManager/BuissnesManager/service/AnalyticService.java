@@ -1,10 +1,14 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.ModelMetricsDto;
 import BuissnesManager.BuissnesManager.dto.MonthlySalesDto;
 import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
 import BuissnesManager.BuissnesManager.dto.SalesAnalysisDto;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
+import BuissnesManager.BuissnesManager.service.ml.FeatureScaler;
+import BuissnesManager.BuissnesManager.service.ml.LoessSmoother;
+import org.springframework.cache.annotation.Cacheable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +49,10 @@ public class AnalyticService {
     private static final int MIN_KMEANS_PRODUCTS = 15;
 
     /** Number of clusters used for product performance tiers: TOP, BON, LENT. */
-    private static final int KMEANS_K = 3;
+    static final int KMEANS_K = 3;
+
+    /** Candidate cluster counts explored when auto-selecting via silhouette. */
+    private static final int[] KMEANS_K_CANDIDATES = {2, 3, 4, 5};
 
     /** Fixed seed so clustering is deterministic between requests. */
     private static final long KMEANS_SEED = 42L;
@@ -62,6 +69,15 @@ public class AnalyticService {
      */
     private static final int KMEANS_RESTARTS = 8;
 
+    /**
+     * Cross-module cache key: {@code (entrepriseId, dayOfYear)}. Heavy ML
+     * work (LOESS, bootstrap CI, K-Means + silhouette grid-search) is stable
+     * within a calendar day for a given enterprise, so repeated calls from
+     * the Angular dashboard reuse the same DTO instead of retraining every
+     * time the user switches tabs.
+     */
+    @Cacheable(cacheNames = "salesAnalysis",
+               key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public SalesAnalysisDto analyzeSales(Long entrepriseId) {
         int currentYear = LocalDate.now().getYear();
         List<Object[]> rawData = commandeVenteRepository.getMonthlySales(entrepriseId, currentYear);
@@ -98,22 +114,34 @@ public class AnalyticService {
             }
         }
 
-        // Growth rate: compare the most recent half-year of activity against the
-        // preceding half-year. Only compute when the first half has meaningful
-        // revenue (prior code returned 0% when firstHalf==0, which wrongly read
-        // as "no growth" for brand-new businesses — still OK, but we also cap
-        // absurd ratios so a single tiny order doesn't claim +999 900% growth).
-        double firstHalf = values.subList(0, 6).stream().mapToDouble(Double::doubleValue).sum();
-        double secondHalf = values.subList(6, 12).stream().mapToDouble(Double::doubleValue).sum();
-        double growthRate = 0.0;
-        if (firstHalf > 0) {
-            growthRate = ((secondHalf - firstHalf) / firstHalf) * 100.0;
-            if (growthRate >  9999.0) growthRate =  9999.0;
-            if (growthRate < -9999.0) growthRate = -9999.0;
+        // Growth rate via bootstrapped log-OLS regression on the active month
+        // series. The slope β of log(y) ~ α + β·t (t in 0..n-1) is the monthly
+        // log-growth rate; annualised = exp(12β) − 1. We bootstrap the active
+        // months with replacement to also surface a 95% confidence interval.
+        GrowthEstimate growth = estimateAnnualGrowth(values);
+        double growthRate = growth.pointEstimatePercent;
+        if (firstHalfFallbackNeeded(values)) {
+            // Fallback: simple half-year ratio when log-OLS is under-determined
+            // (< 2 non-zero months) so brand-new businesses still get a number.
+            double firstHalf = values.subList(0, 6).stream().mapToDouble(Double::doubleValue).sum();
+            double secondHalf = values.subList(6, 12).stream().mapToDouble(Double::doubleValue).sum();
+            if (firstHalf > 0) {
+                growthRate = ((secondHalf - firstHalf) / firstHalf) * 100.0;
+                if (growthRate >  9999.0) growthRate =  9999.0;
+                if (growthRate < -9999.0) growthRate = -9999.0;
+            } else {
+                growthRate = 0.0;
+            }
         }
 
-        // Trend line (3-month moving average)
-        List<Double> trendLine = computeMovingAverage(values, 3);
+        // LOESS trend line — a locally-weighted linear regression that tracks
+        // the local slope of the series instead of lagging it like a 3-month
+        // moving average. Bandwidth 0.5 is the standard default.
+        List<Double> trendLine = computeLoessTrend(values);
+
+        // Anomaly flags — z-score on the residuals of the LOESS fit. Any
+        // month more than ±2 residual-σ from the smoothed trend is tagged.
+        List<Boolean> anomalies = detectAnomalies(values, trendLine);
 
         SalesAnalysisDto dto = new SalesAnalysisDto();
         dto.setMonthlySales(monthlySales);
@@ -123,10 +151,30 @@ public class AnalyticService {
         dto.setBestMonth(bestMonth);
         dto.setBestMonthRevenue(bestRevenue);
         dto.setTrendLine(trendLine);
+        dto.setAnomalies(anomalies);
+        if (!Double.isNaN(growth.lowerPercent)) {
+            dto.setGrowthRateLower(Math.round(growth.lowerPercent * 10.0) / 10.0);
+        }
+        if (!Double.isNaN(growth.upperPercent)) {
+            dto.setGrowthRateUpper(Math.round(growth.upperPercent * 10.0) / 10.0);
+        }
+        dto.setMethodology(buildSalesMethodology(growth, values));
+
+        // Diagnostics bundle for the sales-analysis block.
+        if (growth.samples >= 2) {
+            ModelMetricsDto metrics = new ModelMetricsDto();
+            metrics.setModelName("OLS log-linéaire + bootstrap");
+            metrics.setSamples(growth.samples);
+            metrics.setFeatures(1);
+            metrics.setRSquared(Math.round(growth.rSquared * 1000.0) / 1000.0);
+            dto.setModelMetrics(metrics);
+        }
 
         return dto;
     }
 
+    @Cacheable(cacheNames = "productIntelligence",
+               key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public ProductIntelligenceDto analyzeProducts(Long entrepriseId) {
         List<Object[]> topRaw = commandeVenteRepository.getTopProducts(entrepriseId);
 
@@ -268,18 +316,26 @@ public class AnalyticService {
     }
 
     /**
-     * Clusters products into {@link #KMEANS_K} performance tiers using Smile's
-     * {@link KMeans} on a (revenue, quantity) feature vector. Features are
-     * standardised (z-score) so a product with a large revenue doesn't
-     * completely dominate the Euclidean distance used by K-Means.
+     * Clusters products into performance tiers via Smile's {@link KMeans}
+     * on a feature vector of (revenue, quantity, log-avg-unit-price). The
+     * number of clusters {@code k} is selected automatically over
+     * {@link #KMEANS_K_CANDIDATES} using the mean silhouette coefficient
+     * — a standard unsupervised criterion ([-1, 1], higher is better) that
+     * rewards tight, well-separated clusters.
      *
-     * <p>The clusters returned by the algorithm carry arbitrary numeric labels
-     * (0, 1, 2). We remap them so that label <b>0 = highest mean revenue (TOP),
-     * 1 = middle (BON), 2 = lowest (LENT)</b>. The returned array is aligned
-     * with the input list so caller can look up the tier of product i in O(1).
-     *
-     * <p>Returns {@code null} when clustering fails for any numerical reason so
-     * the caller can gracefully fall back to rule-based labelling.
+     * <p>The clusters returned by the algorithm carry arbitrary numeric
+     * labels. To keep the frontend contract stable (3 display tiers:
+     * TOP / BON / LENT) we remap each cluster to the display tier whose
+     * mean revenue falls into the corresponding tercile:
+     * <ul>
+     *   <li>top-third mean-revenue clusters → <b>0 (TOP)</b></li>
+     *   <li>middle-third → <b>1 (BON)</b></li>
+     *   <li>bottom-third → <b>2 (LENT)</b></li>
+     * </ul>
+     * The returned array is aligned with the input list so caller can look
+     * up the tier of product i in O(1). Returns {@code null} when clustering
+     * fails for any numerical reason so the caller can gracefully fall back
+     * to rule-based labelling.
      */
     int[] clusterProductsByPerformance(List<ProductIntelligenceDto.ProductPerformanceDto> products) {
         int n = products.size();
@@ -300,67 +356,142 @@ public class AnalyticService {
             avgOrderValues[i] = Math.log1p(Math.max(0.0, revenues[i]) / qty);
         }
 
-        double[] revStats = meanStd(revenues);
-        double[] qtyStats = meanStd(quantities);
-        double[] aovStats = meanStd(avgOrderValues);
-        double revStd = revStats[1] > 0 ? revStats[1] : 1.0;
-        double qtyStd = qtyStats[1] > 0 ? qtyStats[1] : 1.0;
-        double aovStd = aovStats[1] > 0 ? aovStats[1] : 1.0;
-
-        double[][] features = new double[n][3];
+        // Standardise via our shared scaler so the Euclidean distance used
+        // by K-Means doesn't let revenue completely dominate quantity.
+        double[][] raw = new double[n][3];
         for (int i = 0; i < n; i++) {
-            features[i][0] = (revenues[i] - revStats[0]) / revStd;
-            features[i][1] = (quantities[i] - qtyStats[0]) / qtyStd;
-            features[i][2] = (avgOrderValues[i] - aovStats[0]) / aovStd;
+            raw[i][0] = revenues[i];
+            raw[i][1] = quantities[i];
+            raw[i][2] = avgOrderValues[i];
         }
+        double[][] features = FeatureScaler.scale(raw, FeatureScaler.Mode.Z_SCORE);
 
-        KMeans km;
-        try {
-            // Seed Smile's shared RNG so the first restart is deterministic;
-            // subsequent restarts derive their own pseudo-randomness from
-            // the same generator, so the best-of-N result is still stable
-            // across requests.
-            smile.math.MathEx.setSeed(KMEANS_SEED);
-            km = bestOfNKMeans(features, KMEANS_K, KMEANS_RESTARTS);
-        } catch (RuntimeException ex) {
-            log.warn("K-Means clustering failed ({}); falling back to rule-based tiers.",
-                    ex.getMessage());
+        // Grid-search over k and pick the partition with the highest mean
+        // silhouette score. Each k runs best-of-N K-Means to fight local optima.
+        KMeans bestKm = null;
+        int bestK = KMEANS_K;
+        double bestSilhouette = Double.NEGATIVE_INFINITY;
+        for (int k : KMEANS_K_CANDIDATES) {
+            if (k >= n) continue;
+            try {
+                smile.math.MathEx.setSeed(KMEANS_SEED + k);
+                KMeans km = bestOfNKMeans(features, k, KMEANS_RESTARTS);
+                double sil = meanSilhouette(features, km.y, k);
+                if (sil > bestSilhouette) {
+                    bestSilhouette = sil;
+                    bestKm = km;
+                    bestK = k;
+                }
+            } catch (RuntimeException ex) {
+                log.debug("K-Means k={} failed ({}); trying next candidate.", k, ex.getMessage());
+            }
+        }
+        if (bestKm == null) {
+            log.warn("K-Means clustering failed for all k candidates; falling back to rule-based tiers.");
             return null;
         }
 
-        int[] rawLabels = km.y;
+        int[] rawLabels = bestKm.y;
         if (rawLabels == null || rawLabels.length != n) return null;
 
-        // Compute mean revenue per raw cluster so we can sort clusters by
-        // performance and remap their indices to 0=TOP..2=LENT.
-        double[] sumRev = new double[KMEANS_K];
-        int[] countRev = new int[KMEANS_K];
+        // Mean revenue per raw cluster → used to rank clusters and remap them
+        // into the 3 display tiers (TOP / BON / LENT).
+        double[] sumRev = new double[bestK];
+        int[] countRev = new int[bestK];
         for (int i = 0; i < n; i++) {
             int c = rawLabels[i];
-            if (c >= 0 && c < KMEANS_K) {
+            if (c >= 0 && c < bestK) {
                 sumRev[c] += revenues[i];
                 countRev[c]++;
             }
         }
-        Integer[] order = new Integer[KMEANS_K];
-        for (int c = 0; c < KMEANS_K; c++) order[c] = c;
+        Integer[] order = new Integer[bestK];
+        for (int c = 0; c < bestK; c++) order[c] = c;
         Arrays.sort(order, (a, b) -> {
             double ma = countRev[a] > 0 ? sumRev[a] / countRev[a] : Double.NEGATIVE_INFINITY;
             double mb = countRev[b] > 0 ? sumRev[b] / countRev[b] : Double.NEGATIVE_INFINITY;
             return Double.compare(mb, ma); // descending
         });
-        int[] remap = new int[KMEANS_K];
-        for (int tier = 0; tier < KMEANS_K; tier++) {
-            remap[order[tier]] = tier;
+        int[] remap = new int[bestK];
+        // Tercile mapping: ceil(k/3) best-ranked clusters → TOP (display tier 0),
+        // the worst ceil(k/3) → LENT (2), everything in between → BON (1).
+        // For k=3 this degenerates to the identity (rank==tier), which is the
+        // intuitive mapping; for other k we keep three display tiers so the
+        // frontend doesn't need to grow new categories.
+        int topSize = (int) Math.ceil(bestK / 3.0);
+        int lentStart = bestK - topSize;
+        for (int rank = 0; rank < bestK; rank++) {
+            int tier;
+            if (rank < topSize) tier = 0;           // TOP
+            else if (rank >= lentStart) tier = 2;   // LENT
+            else tier = 1;                          // BON
+            remap[order[rank]] = tier;
         }
 
         int[] tiers = new int[n];
         for (int i = 0; i < n; i++) {
             int c = rawLabels[i];
-            tiers[i] = (c >= 0 && c < KMEANS_K) ? remap[c] : -1;
+            tiers[i] = (c >= 0 && c < bestK) ? remap[c] : -1;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Product clustering: picked k={} (silhouette={})", bestK, bestSilhouette);
         }
         return tiers;
     }
+
+    /**
+     * Mean silhouette coefficient. For each point <i>i</i>:
+     * <ul>
+     *   <li>a(i) = mean distance to other points in the same cluster</li>
+     *   <li>b(i) = min over other clusters of the mean distance to their points</li>
+     *   <li>s(i) = (b − a) / max(a, b), in [−1, 1]</li>
+     * </ul>
+     * A higher mean s(i) indicates tighter, better-separated clusters.
+     * Pure Java because Smile 3.1.1 ships silhouette only as part of its
+     * (not bundled) validation metric DataFrame API.
+     */
+    static double meanSilhouette(double[][] features, int[] labels, int k) {
+        int n = features.length;
+        if (n <= 1 || labels == null || labels.length != n) return 0.0;
+        double total = 0.0;
+        int counted = 0;
+        for (int i = 0; i < n; i++) {
+            int ci = labels[i];
+            if (ci < 0 || ci >= k) continue;
+            double[] sumPerCluster = new double[k];
+            int[] countPerCluster = new int[k];
+            for (int j = 0; j < n; j++) {
+                if (j == i) continue;
+                int cj = labels[j];
+                if (cj < 0 || cj >= k) continue;
+                sumPerCluster[cj] += euclidean(features[i], features[j]);
+                countPerCluster[cj]++;
+            }
+            double a = countPerCluster[ci] > 0 ? sumPerCluster[ci] / countPerCluster[ci] : 0.0;
+            double b = Double.POSITIVE_INFINITY;
+            for (int c = 0; c < k; c++) {
+                if (c == ci || countPerCluster[c] == 0) continue;
+                double mean = sumPerCluster[c] / countPerCluster[c];
+                if (mean < b) b = mean;
+            }
+            if (b == Double.POSITIVE_INFINITY) continue;
+            double s = Math.max(a, b) > 0 ? (b - a) / Math.max(a, b) : 0.0;
+            total += s;
+            counted++;
+        }
+        return counted > 0 ? total / counted : 0.0;
+    }
+
+    private static double euclidean(double[] a, double[] b) {
+        double sum = 0.0;
+        int len = Math.min(a.length, b.length);
+        for (int i = 0; i < len; i++) {
+            double d = a[i] - b[i];
+            sum += d * d;
+        }
+        return Math.sqrt(sum);
+    }
+
 
     /**
      * Runs K-Means {@code restarts} times with different initialisations and
@@ -396,5 +527,193 @@ public class AnalyticService {
         double sq = 0.0;
         for (double x : v) { double d = x - mean; sq += d * d; }
         return new double[]{mean, Math.sqrt(sq / (v.length - 1))};
+    }
+
+    /* =========================== log-OLS growth =========================== */
+
+    /** Result of {@link #estimateAnnualGrowth(List)}. */
+    static final class GrowthEstimate {
+        final double pointEstimatePercent;
+        final double lowerPercent;
+        final double upperPercent;
+        final double rSquared;
+        final int samples;
+        GrowthEstimate(double p, double lo, double hi, double r2, int n) {
+            this.pointEstimatePercent = p;
+            this.lowerPercent = lo;
+            this.upperPercent = hi;
+            this.rSquared = r2;
+            this.samples = n;
+        }
+    }
+
+    /**
+     * Estimates the annualised growth rate (in percent) by fitting
+     * {@code log(y) ~ α + β·t} on the non-zero monthly values and
+     * returning <code>(exp(12·β) − 1) × 100</code>. The 95% confidence
+     * interval comes from a bootstrap over the indices, which makes the
+     * estimate robust to single-month outliers.
+     */
+    GrowthEstimate estimateAnnualGrowth(List<Double> values) {
+        List<double[]> pts = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            double v = values.get(i);
+            if (v > 0) pts.add(new double[]{i, Math.log(v)});
+        }
+        int n = pts.size();
+        if (n < 2) return new GrowthEstimate(0.0, Double.NaN, Double.NaN, 0.0, n);
+
+        double[] xs = new double[n];
+        double[] ys = new double[n];
+        for (int i = 0; i < n; i++) { xs[i] = pts.get(i)[0]; ys[i] = pts.get(i)[1]; }
+        double[] fit = olsSlope(xs, ys);
+        double beta = fit[1];
+        double r2 = fit[2];
+
+        // Bootstrap the β coefficient for a 95% CI.
+        int B = 300;
+        double[] betas = new double[B];
+        java.util.Random rng = new java.util.Random(7919L);
+        double[] xb = new double[n];
+        double[] yb = new double[n];
+        for (int b = 0; b < B; b++) {
+            for (int i = 0; i < n; i++) {
+                int k = rng.nextInt(n);
+                xb[i] = xs[k];
+                yb[i] = ys[k];
+            }
+            try {
+                betas[b] = olsSlope(xb, yb)[1];
+            } catch (RuntimeException ex) {
+                betas[b] = beta;
+            }
+        }
+        double[] sorted = betas.clone();
+        java.util.Arrays.sort(sorted);
+        double betaLo = percentile(sorted, 0.025);
+        double betaHi = percentile(sorted, 0.975);
+
+        double pointPct = (Math.exp(12.0 * beta) - 1.0) * 100.0;
+        double loPct = (Math.exp(12.0 * betaLo) - 1.0) * 100.0;
+        double hiPct = (Math.exp(12.0 * betaHi) - 1.0) * 100.0;
+        pointPct = clampPercent(pointPct);
+        loPct = clampPercent(loPct);
+        hiPct = clampPercent(hiPct);
+        return new GrowthEstimate(pointPct, loPct, hiPct, r2, n);
+    }
+
+    /** Standard OLS closed-form: returns [intercept, slope, R²]. */
+    private static double[] olsSlope(double[] x, double[] y) {
+        int n = x.length;
+        double sx = 0, sy = 0, sxx = 0, sxy = 0;
+        for (int i = 0; i < n; i++) {
+            sx += x[i]; sy += y[i];
+            sxx += x[i] * x[i]; sxy += x[i] * y[i];
+        }
+        double denom = n * sxx - sx * sx;
+        if (Math.abs(denom) < 1e-12) return new double[]{sy / n, 0.0, 0.0};
+        double beta = (n * sxy - sx * sy) / denom;
+        double alpha = (sy - beta * sx) / n;
+        double ym = sy / n;
+        double ssRes = 0, ssTot = 0;
+        for (int i = 0; i < n; i++) {
+            double yhat = alpha + beta * x[i];
+            ssRes += (y[i] - yhat) * (y[i] - yhat);
+            ssTot += (y[i] - ym) * (y[i] - ym);
+        }
+        double r2 = ssTot > 0 ? 1.0 - ssRes / ssTot : 0.0;
+        return new double[]{alpha, beta, Math.max(0.0, r2)};
+    }
+
+    private static double percentile(double[] sorted, double q) {
+        if (sorted.length == 0) return 0.0;
+        double idx = q * (sorted.length - 1);
+        int lo = (int) Math.floor(idx);
+        int hi = (int) Math.ceil(idx);
+        if (lo == hi) return sorted[lo];
+        double frac = idx - lo;
+        return sorted[lo] * (1.0 - frac) + sorted[hi] * frac;
+    }
+
+    private static double clampPercent(double p) {
+        if (p >  9999.0) return  9999.0;
+        if (p < -99.9)   return -99.9;   // losing >100% is arithmetically impossible on a log-scale
+        return p;
+    }
+
+    private static boolean firstHalfFallbackNeeded(List<Double> values) {
+        int nonZero = 0;
+        for (double v : values) if (v > 0) nonZero++;
+        return nonZero < 2;
+    }
+
+    /* ============================= LOESS trend ============================= */
+
+    /**
+     * LOESS-based trend line with a 0.5-length bandwidth. Uses tricube
+     * weighting and a degree-1 local fit, which tracks the slope of the
+     * series and does not lag the way a 3-month moving average does.
+     */
+    List<Double> computeLoessTrend(List<Double> values) {
+        double[] y = new double[values.size()];
+        for (int i = 0; i < values.size(); i++) y[i] = values.get(i);
+        double[] smoothed = LoessSmoother.smooth(y, 0.5);
+        List<Double> result = new ArrayList<>(smoothed.length);
+        for (double v : smoothed) {
+            result.add(Math.round(Math.max(0.0, v) * 100.0) / 100.0);
+        }
+        return result;
+    }
+
+    /* ========================= Anomaly detection ========================= */
+
+    /**
+     * Flags monthly observations whose residual against the LOESS trend
+     * exceeds ±2 standard deviations — a standard z-score outlier rule.
+     * Returns one boolean per input month (same length as {@code values});
+     * returns an empty list when there isn't enough signal to compute a std.
+     */
+    List<Boolean> detectAnomalies(List<Double> values, List<Double> trend) {
+        int n = values.size();
+        if (trend == null || trend.size() != n) return new ArrayList<>();
+        double[] residuals = new double[n];
+        int effective = 0;
+        for (int i = 0; i < n; i++) {
+            if (values.get(i) > 0) {
+                residuals[i] = values.get(i) - trend.get(i);
+                effective++;
+            } else {
+                residuals[i] = 0.0;
+            }
+        }
+        if (effective < 3) {
+            List<Boolean> empty = new ArrayList<>(n);
+            for (int i = 0; i < n; i++) empty.add(false);
+            return empty;
+        }
+        double[] ms = FeatureScaler.meanStd(residuals);
+        double sigma = ms[1] > 0 ? ms[1] : 1.0;
+        List<Boolean> flags = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            if (values.get(i) > 0) {
+                flags.add(Math.abs(residuals[i] - ms[0]) > 2.0 * sigma);
+            } else {
+                flags.add(false);
+            }
+        }
+        return flags;
+    }
+
+    private static String buildSalesMethodology(GrowthEstimate g, List<Double> values) {
+        int nonZero = 0;
+        for (double v : values) if (v > 0) nonZero++;
+        if (g.samples >= 2) {
+            return String.format(
+                "Tendance LOESS (bande 0.5, noyau tricube) + taux de croissance OLS log-linéaire bootstrap (%d mois actifs, R²=%.2f)",
+                g.samples, g.rSquared);
+        }
+        return String.format(
+                "Tendance LOESS (bande 0.5) — %d mois actifs, croissance calculée par ratio semestriel",
+                nonZero);
     }
 }

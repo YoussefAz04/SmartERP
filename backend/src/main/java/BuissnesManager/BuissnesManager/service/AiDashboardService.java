@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
 import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
+import BuissnesManager.BuissnesManager.service.ml.SupplierRatingEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,8 @@ public class AiDashboardService {
 
     @Autowired
     private StockRepository stockRepository;
+
+    private final SupplierRatingEngine supplierRatingEngine = new SupplierRatingEngine();
 
     public AiDashboardDto getAiDashboard(Long entrepriseId) {
         AiDashboardDto dashboard = new AiDashboardDto();
@@ -363,6 +366,9 @@ public class AiDashboardService {
 
         // Build status breakdown map: supplierId -> list of StatusCountDto
         Map<Long, List<AiDashboardDto.StatusCountDto>> statusMap = new HashMap<>();
+        // Also count cancelled orders per supplier for the rating features.
+        Map<Long, Long> cancelledMap = new HashMap<>();
+        Map<Long, Long> totalMap = new HashMap<>();
         for (Object[] row : statusRows) {
             Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
             String status = row[1] != null ? row[1].toString() : "INCONNU";
@@ -370,12 +376,36 @@ public class AiDashboardService {
             if (supplierId != null) {
                 statusMap.computeIfAbsent(supplierId, k -> new ArrayList<>())
                          .add(new AiDashboardDto.StatusCountDto(status, count, null));
+                totalMap.merge(supplierId, count, Long::sum);
+                if ("ANNULEE".equalsIgnoreCase(status) || "CANCELLED".equalsIgnoreCase(status)) {
+                    cancelledMap.merge(supplierId, count, Long::sum);
+                }
             }
         }
 
-        int limit = 0;
+        // First pass: collect up to 10 suppliers' raw data so we can peer-group
+        // them with the ML rating engine before emitting the DTOs.
+        List<Object[]> selectedRows = new ArrayList<>();
+        List<SupplierRatingEngine.Input> inputs = new ArrayList<>();
         for (Object[] row : supplierRows) {
-            if (limit >= 10) break;
+            if (selectedRows.size() >= 10) break;
+            Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
+            Long orderCount = row[3] != null ? ((Number) row[3]).longValue() : 0L;
+            Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+            Double deliveryRate = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
+            double cancelled = cancelledMap.getOrDefault(supplierId, 0L);
+            double totalForSupplier = totalMap.getOrDefault(supplierId, orderCount);
+            double cancelledRatio = totalForSupplier > 0 ? cancelled / totalForSupplier : 0.0;
+            selectedRows.add(row);
+            inputs.add(new SupplierRatingEngine.Input(
+                    orderCount, totalSpend,
+                    normaliseDeliveryRate(deliveryRate),
+                    cancelledRatio));
+        }
+        List<SupplierRatingEngine.Output> ratings = supplierRatingEngine.rate(inputs);
+
+        for (int i = 0; i < selectedRows.size(); i++) {
+            Object[] row = selectedRows.get(i);
             Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
             String nom = row[1] != null ? row[1].toString() : "";
             String prenom = row[2] != null ? row[2].toString().trim() : "";
@@ -383,7 +413,9 @@ public class AiDashboardService {
             Long orderCount = row[3] != null ? ((Number) row[3]).longValue() : 0L;
             Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
             Double deliveryRate = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
-            Double rating = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0;
+            // Replace the legacy persisted `notation` with the ML peer-group
+            // rating so the dashboard reflects real-time relative performance.
+            Double rating = ratings.get(i).ratingStars;
 
             AiDashboardDto.SupplierPerformanceDto dto = new AiDashboardDto.SupplierPerformanceDto();
             dto.setSupplierId(supplierId);
@@ -394,9 +426,21 @@ public class AiDashboardService {
             dto.setRating(rating);
             dto.setStatusBreakdown(statusMap.getOrDefault(supplierId, new ArrayList<>()));
             result.add(dto);
-            limit++;
         }
 
         return result;
+    }
+
+    /**
+     * Normalise supplier delivery-rate to the [0, 1] range expected by
+     * {@link SupplierRatingEngine}. The legacy column stores values either
+     * as a percentage (0–100) or a fraction (0–1) depending on the data
+     * source, so we detect the scale heuristically.
+     */
+    private static double normaliseDeliveryRate(double raw) {
+        if (raw > 1.0 && raw <= 100.0) return raw / 100.0;
+        if (raw < 0.0) return 0.0;
+        if (raw > 1.0) return 1.0;
+        return raw;
     }
 }

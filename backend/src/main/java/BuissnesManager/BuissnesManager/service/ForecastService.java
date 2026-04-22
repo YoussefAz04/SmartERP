@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.service.ml.MlForecastEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -79,6 +80,8 @@ public class ForecastService {
     // history, to avoid absurd extrapolations on very short series.
     private static final double MAX_TREND_GROWTH_PER_MONTH = 0.50; // 50%/month
 
+    @Cacheable(cacheNames = "salesForecast",
+               key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public ForecastDto generateForecast(Long entrepriseId) {
         int currentYear = LocalDate.now().getYear();
         int currentMonth = LocalDate.now().getMonthValue();
@@ -266,13 +269,25 @@ public class ForecastService {
             ));
         }
 
-        // Future points: intervals widen with sqrt(h) as usual.
+        // Future points: intervals come from the bootstrap (preferred) or fall
+        // back to the classic ±σ·√h band if the bootstrap wasn't produced.
         for (int h = 1; h <= result.futurePoint.size(); h++) {
             int futureMonthIdx = ((currentMonth - 1) + h) % 12;
             double forecastValue = result.futurePoint.get(h - 1);
-            double horizonStd = result.residualStd * Math.sqrt((double) h);
-            double upper = Math.max(0.0, forecastValue + horizonStd);
-            double lower = Math.max(0.0, forecastValue - horizonStd);
+            double upper;
+            double lower;
+            if (result.upperBounds != null && h - 1 < result.upperBounds.size()
+                    && result.lowerBounds != null && h - 1 < result.lowerBounds.size()) {
+                upper = Math.max(0.0, result.upperBounds.get(h - 1));
+                lower = Math.max(0.0, result.lowerBounds.get(h - 1));
+                // Ensure the point forecast stays inside the interval after clamping.
+                if (upper < forecastValue) upper = forecastValue;
+                if (lower > forecastValue) lower = forecastValue;
+            } else {
+                double horizonStd = result.residualStd * Math.sqrt((double) h);
+                upper = Math.max(0.0, forecastValue + horizonStd);
+                lower = Math.max(0.0, forecastValue - horizonStd);
+            }
             forecastPoints.add(new ForecastDto.ForecastPointDto(
                 MONTH_NAMES_FR[futureMonthIdx] + "+", null,
                 round2(forecastValue), round2(upper), round2(lower)
@@ -290,13 +305,14 @@ public class ForecastService {
         double predictedNext3Months = futureForecasts.stream().limit(3).mapToDouble(Double::doubleValue).sum();
         double predictedNext6Months = futureForecasts.stream().limit(6).mapToDouble(Double::doubleValue).sum();
 
-        // Confidence: when walk-forward CV could run, we use (1 - OOS-MAPE) as
-        // the honest accuracy signal — it reflects how well the model
-        // predicted points it never saw during training, which is what users
-        // actually care about. We blend it with a data-density term so a
-        // tiny-but-perfectly-fitted sample doesn't claim 95% confidence, and
-        // fall back to in-sample R² only when CV wasn't possible. Capped at
-        // 95% — we never advertise certainty.
+        // Confidence: a *blended* quality score that fuses
+        //   (1) out-of-sample accuracy (1 − OOS-MAPE from walk-forward CV,
+        //       falling back to in-sample R²),
+        //   (2) data density (fraction of months with non-zero revenue), and
+        //   (3) residual-std stability (1 − min(1, σ/mean)), which penalises
+        //       models whose training residuals are large relative to the
+        //       series mean even if the OOS accuracy looks good on a few folds.
+        // Capped at 95% — we never advertise certainty.
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
         double expectedMonths = hasPrevYear ? 24.0 : 12.0;
         double density = Math.min(1.0, nonZeroMonths / expectedMonths);
@@ -307,8 +323,13 @@ public class ForecastService {
         } else {
             accuracySignal = rSquaredClamped;
         }
+        double seriesMean = historicalSeries.stream().filter(v -> v > 0)
+                .mapToDouble(Double::doubleValue).average().orElse(0.0);
+        double stability = seriesMean > 0
+                ? Math.max(0.0, 1.0 - Math.min(1.0, result.residualStd / seriesMean))
+                : 0.5; // neutral when we can't compute ratio
         double confidence = Math.min(95.0, Math.max(0.0,
-                (0.4 * density + 0.6 * accuracySignal) * 100.0));
+                (0.3 * density + 0.5 * accuracySignal + 0.2 * stability) * 100.0));
 
         List<ForecastDto.SeasonalityDto> seasonality =
             computeSeasonalityView(hasPrevYear ? prevValues : currentValues);
@@ -321,12 +342,43 @@ public class ForecastService {
         dto.setConfidenceScore(Math.round(confidence * 10.0) / 10.0);
         String mapeText = Double.isNaN(result.walkForwardMape)
                 ? "MAPE-CV n/a"
-                : String.format("MAPE-CV=%.1f%% (%d plis)",
-                        result.walkForwardMape * 100.0, result.walkForwardFolds);
+                : String.format("MAPE-CV=%.1f%%, sMAPE-CV=%.1f%% (%d plis)",
+                        result.walkForwardMape * 100.0,
+                        Double.isNaN(result.walkForwardSmape) ? 0.0 : result.walkForwardSmape * 100.0,
+                        result.walkForwardFolds);
         dto.setMethodology(String.format(
-            "ML supervisé Smile %s (%d caractéristiques lag/saisonnières) — R²=%.2f, %s, %d échantillons",
+            "ML supervisé Smile %s (%d caractéristiques lag/saisonnières, intervalles bootstrap) — R²=%.2f, %s, %d échantillons",
             result.modelName, result.featureCount, rSquaredClamped, mapeText, result.trainingSamples));
         dto.setSeasonality(seasonality);
+        dto.setSelectedModel(result.modelName);
+        if (!Double.isNaN(result.walkForwardMape)) {
+            dto.setCrossValidatedMape(Math.round(result.walkForwardMape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardSmape)) {
+            dto.setCrossValidatedSmape(Math.round(result.walkForwardSmape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardRmse)) {
+            dto.setCrossValidatedRmse(Math.round(result.walkForwardRmse * 100.0) / 100.0);
+        }
+
+        // Rich diagnostics bundle — feeds the "methodology" panel in the UI.
+        BuissnesManager.BuissnesManager.dto.ModelMetricsDto metrics =
+                new BuissnesManager.BuissnesManager.dto.ModelMetricsDto();
+        metrics.setModelName(result.modelName);
+        metrics.setSamples(result.trainingSamples);
+        metrics.setFeatures(result.featureCount);
+        metrics.setRSquared(Math.round(rSquaredClamped * 1000.0) / 1000.0);
+        if (!Double.isNaN(result.walkForwardMape)) {
+            metrics.setCvMape(Math.round(result.walkForwardMape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardSmape)) {
+            metrics.setCvSmape(Math.round(result.walkForwardSmape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardRmse)) {
+            metrics.setCvRmse(Math.round(result.walkForwardRmse * 100.0) / 100.0);
+        }
+        metrics.setCvFolds(result.walkForwardFolds);
+        dto.setModelMetrics(metrics);
 
         if (log.isDebugEnabled()) {
             log.debug("ML forecast: model={}, R²={}, OOS-MAPE={}, residualStd={}, samples={}, confidence={}%",
