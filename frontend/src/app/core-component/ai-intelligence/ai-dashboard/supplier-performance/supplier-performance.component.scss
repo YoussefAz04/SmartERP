@@ -14,12 +14,12 @@
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  background: #f8f9fc;
+  background: #f0f7ff;
   border-radius: 10px;
   transition: background 0.15s;
 
   &:hover {
-    background: #eef2ff;
+    background: #dbeafe;
   }
 
   @media (max-width: 768px) {
@@ -65,7 +65,7 @@
 .supplier-name {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -155,7 +155,7 @@
 }
 
 .stat-icon {
-  color: #4361ee;
+  color: #1d4ed8;
   font-size: 0.7rem;
   width: 14px;
   text-align: center;
@@ -164,7 +164,7 @@
 .stat-val {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #0f172a;
 }
 
 .stat-lbl {
@@ -193,8 +193,8 @@
   }
 
   &.en-cours {
-    background: #eef2ff;
-    color: #4361ee;
+    background: #eff6ff;
+    color: #1d4ed8;
   }
 
   &.annulee {
@@ -210,7 +210,41 @@
 
 .no-data {
   text-align: center;
-  color: #999;
+  color: #64748b;
   padding: 24px;
   font-size: 0.9rem;
+}
+
+// ═══════════════════════════════════════════════════════
+//  DARK MODE
+// ═══════════════════════════════════════════════════════
+body.dark-mode {
+  .supplier-row {
+    background: #1a2744;
+
+    &:hover {
+      background: #1e3a8a;
+    }
+  }
+
+  .supplier-name {
+    color: #e2e8f0;
+  }
+
+  .rating-num, .stat-lbl, .delivery-label { color: #475569; }
+  .stat-val { color: #e2e8f0; }
+  .stat-icon { color: #3b82f6; }
+
+  .delivery-bar-wrap {
+    background: #1e3a5f;
+  }
+
+  .status-pill {
+    &.livree    { background: #064e3b; color: #34d399; }
+    &.en-cours  { background: #1e3a8a; color: #7dd3fc; }
+    &.annulee   { background: #450a0a; color: #f87171; }
+    &.confirmee { background: #052e16; color: #34d399; }
+  }
+
+  .no-data { color: #475569; }
 }
