@@ -50,6 +50,18 @@ public class AnalyticService {
     /** Fixed seed so clustering is deterministic between requests. */
     private static final long KMEANS_SEED = 42L;
 
+    /**
+     * Number of independent K-Means restarts. K-Means converges to a local
+     * optimum that depends on the initial centroids; running the algorithm
+     * N times and keeping the partition with the lowest within-cluster
+     * distortion (sum of squared distances to the assigned centroid) is the
+     * standard way to get a more robust, higher-quality fit. Smile's own
+     * {@code KMeans.fit} already uses k-means++ seeding, but restarting is
+     * still worth it on small product catalogues where a single bad init
+     * could glue two tiers together.
+     */
+    private static final int KMEANS_RESTARTS = 8;
+
     public SalesAnalysisDto analyzeSales(Long entrepriseId) {
         int currentYear = LocalDate.now().getYear();
         List<Object[]> rawData = commandeVenteRepository.getMonthlySales(entrepriseId, currentYear);
@@ -275,29 +287,41 @@ public class AnalyticService {
 
         double[] revenues = new double[n];
         double[] quantities = new double[n];
+        double[] avgOrderValues = new double[n];
         for (int i = 0; i < n; i++) {
             revenues[i] = products.get(i).getRevenue();
             quantities[i] = products.get(i).getQuantitySold();
+            // Engineered feature: log-average unit price. Distinguishes a
+            // product selling a handful of high-value items from one selling
+            // many low-value items at a similar total revenue. log1p makes
+            // the feature robust to zero quantities and compresses the long
+            // tail of very-expensive items.
+            double qty = Math.max(1.0, quantities[i]);
+            avgOrderValues[i] = Math.log1p(Math.max(0.0, revenues[i]) / qty);
         }
 
         double[] revStats = meanStd(revenues);
         double[] qtyStats = meanStd(quantities);
+        double[] aovStats = meanStd(avgOrderValues);
         double revStd = revStats[1] > 0 ? revStats[1] : 1.0;
         double qtyStd = qtyStats[1] > 0 ? qtyStats[1] : 1.0;
+        double aovStd = aovStats[1] > 0 ? aovStats[1] : 1.0;
 
-        double[][] features = new double[n][2];
+        double[][] features = new double[n][3];
         for (int i = 0; i < n; i++) {
             features[i][0] = (revenues[i] - revStats[0]) / revStd;
             features[i][1] = (quantities[i] - qtyStats[0]) / qtyStd;
+            features[i][2] = (avgOrderValues[i] - aovStats[0]) / aovStd;
         }
 
         KMeans km;
         try {
-            // Seed Smile's shared RNG to keep the output deterministic across
-            // requests; otherwise two identical datasets could get opposite
-            // cluster indices and confuse the UI.
+            // Seed Smile's shared RNG so the first restart is deterministic;
+            // subsequent restarts derive their own pseudo-randomness from
+            // the same generator, so the best-of-N result is still stable
+            // across requests.
             smile.math.MathEx.setSeed(KMEANS_SEED);
-            km = KMeans.fit(features, KMEANS_K);
+            km = bestOfNKMeans(features, KMEANS_K, KMEANS_RESTARTS);
         } catch (RuntimeException ex) {
             log.warn("K-Means clustering failed ({}); falling back to rule-based tiers.",
                     ex.getMessage());
@@ -336,6 +360,30 @@ public class AnalyticService {
             tiers[i] = (c >= 0 && c < KMEANS_K) ? remap[c] : -1;
         }
         return tiers;
+    }
+
+    /**
+     * Runs K-Means {@code restarts} times with different initialisations and
+     * returns the partition with the lowest within-cluster distortion. Smile's
+     * {@code KMeans.distortion} field holds the sum of squared distances from
+     * each point to its assigned centroid — the classic K-Means objective —
+     * so "best distortion" means "tightest clusters".
+     *
+     * <p>This is the standard multi-restart pattern for K-Means. A single
+     * run is known to get stuck in local optima, especially on small
+     * datasets; averaging over {@code N} runs would destroy the discrete
+     * labelling, but taking the best run is always strictly better than a
+     * single run.
+     */
+    static KMeans bestOfNKMeans(double[][] features, int k, int restarts) {
+        KMeans best = null;
+        for (int i = 0; i < restarts; i++) {
+            KMeans candidate = KMeans.fit(features, k);
+            if (best == null || candidate.distortion < best.distortion) {
+                best = candidate;
+            }
+        }
+        return best;
     }
 
     /** Returns [mean, sampleStdDev] for a non-empty array. */

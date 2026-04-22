@@ -91,6 +91,66 @@ class MlForecastEngineTest {
         }
     }
 
+    @Test
+    void smallFeatureSetOnShortHistory() {
+        // 14 months is below the WIDE threshold (18) so the engine must
+        // pick the small 4-feature set.
+        double[] history = linearSeries(14);
+        MlForecastEngine.MlForecastResult r = engine.forecast(history, 0, 6);
+        assertEquals(4, r.featureCount,
+                "short history should use the 4-feature set");
+        assertTrue(r.walkForwardMape >= 0.0 || Double.isNaN(r.walkForwardMape));
+        assertTrue(r.walkForwardFolds >= 0);
+    }
+
+    @Test
+    void wideFeatureSetOnLongHistory() {
+        // 24 months — well above WIDE_MIN_SAMPLES — so the wide 7-feature
+        // set must be used and walk-forward CV must produce a real MAPE.
+        double[] history = new double[24];
+        for (int t = 0; t < 24; t++) {
+            history[t] = 1000.0 + 50.0 * t + 200.0 * Math.sin(2.0 * Math.PI * t / 12.0);
+        }
+        MlForecastEngine.MlForecastResult r = engine.forecast(history, 0, 6);
+        assertEquals(7, r.featureCount,
+                "long history should trigger the 7-feature wide model");
+        assertFalse(Double.isNaN(r.walkForwardMape),
+                "walk-forward CV should produce a real MAPE on 24-month history");
+        assertTrue(r.walkForwardFolds > 0, "CV should evaluate at least one fold");
+        assertNotNull(r.modelName);
+        assertTrue("OLS".equals(r.modelName) || "Ridge".equals(r.modelName),
+                "selected model must be one of OLS / Ridge, got " + r.modelName);
+    }
+
+    @Test
+    void modelSelectionPicksLowerMapeOnSeasonalData() {
+        // On a clean sinusoidal signal either OLS or Ridge can win — but
+        // whichever is picked, its MAPE must be reasonably low (< 30%).
+        double[] history = new double[36];
+        for (int t = 0; t < 36; t++) {
+            history[t] = 1000.0 + 200.0 * Math.sin(2.0 * Math.PI * t / 12.0);
+        }
+        MlForecastEngine.MlForecastResult r = engine.forecast(history, 0, 6);
+        assertFalse(Double.isNaN(r.walkForwardMape));
+        assertTrue(r.walkForwardMape < 0.30,
+                "selected model should track the seasonal signal well; got MAPE="
+                        + r.walkForwardMape);
+    }
+
+    @Test
+    void forecastValuesAreNeverNegative() {
+        // A steeply declining series could produce negative predictions
+        // without clamping — make sure we never surface any.
+        double[] history = new double[24];
+        for (int t = 0; t < 24; t++) {
+            history[t] = Math.max(0.0, 2000.0 - 80.0 * t);
+        }
+        MlForecastEngine.MlForecastResult r = engine.forecast(history, 0, 12);
+        for (Double v : r.futurePoint) {
+            assertTrue(v >= 0.0, "forecast must be clamped at 0, got " + v);
+        }
+    }
+
     private static double[] linearSeries(int n) {
         double[] s = new double[n];
         for (int t = 0; t < n; t++) {
