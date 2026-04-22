@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.dto.ForecastDto;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
+import BuissnesManager.BuissnesManager.service.ml.MlForecastEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,16 @@ public class ForecastService {
     @Autowired
     private CommandeVenteRepository commandeVenteRepository;
 
+    /**
+     * Supervised-learning forecast engine (Smile OLS regression on lag/seasonal
+     * features). When the history is long enough we prefer it over Holt's
+     * smoothing; otherwise we fall back to the hand-coded path below which is
+     * more robust on very short series. Injected as a Spring bean so it can be
+     * mocked or swapped in tests and future implementations.
+     */
+    @Autowired(required = false)
+    private MlForecastEngine mlForecastEngine;
+
     private static final String[] MONTH_NAMES_FR = {
         "Jan", "Fév", "Mars", "Avr", "Mai", "Juin",
         "Juil", "Août", "Sept", "Oct", "Nov", "Déc"
@@ -93,6 +104,21 @@ public class ForecastService {
         }
         for (int i = 0; i < observedCurrentMonths; i++) {
             historicalSeries.add(currentValues[i]);
+        }
+
+        // === Real ML path ===
+        // When the history is long enough, train a Smile OLS regression on
+        // engineered lag/seasonal features. The fallback Holt-Winters path below
+        // still handles very short series where OLS would be under-determined
+        // or produce wildly overfitted coefficients.
+        if (mlForecastEngine != null && mlForecastEngine.canFit(historicalSeries.size())) {
+            ForecastDto mlDto = generateMlForecast(
+                historicalSeries, currentValues, prevValues, hasPrevYear,
+                observedCurrentMonths, currentMonth);
+            if (mlDto != null) return mlDto;
+            // If something goes wrong (singular matrix, numerical error, ...) we
+            // silently fall through to the statistical path so the endpoint
+            // keeps responding — forecasts are advisory, never a hard failure.
         }
 
         // Multiplicative seasonal indices (12 values) computed from prior-year
@@ -190,6 +216,107 @@ public class ForecastService {
                     "finalLevel={}, finalTrend={}, residualStd={}, confidence={}%",
                     entrepriseId, historicalSeries.size(), hasPrevYear,
                     holt.finalLevel, holt.finalTrend, residualStd, confidence);
+        }
+
+        return dto;
+    }
+
+    /* ----------------------------- ML path ----------------------------- */
+
+    /**
+     * Builds a {@link ForecastDto} using the supervised-learning engine.
+     *
+     * <p>The series layout here is {@code [prevYear Jan..Dec][currentYear Jan..current]},
+     * which always starts in January (index 0 = month index 0). We feed the
+     * whole series to {@link MlForecastEngine} and shape its outputs into the
+     * same DTO the Angular dashboard already consumes.
+     *
+     * @return a filled DTO, or {@code null} if the engine threw an exception
+     *         (so the caller can fall back to the statistical path).
+     */
+    private ForecastDto generateMlForecast(
+            List<Double> historicalSeries, double[] currentValues, double[] prevValues,
+            boolean hasPrevYear, int observedCurrentMonths, int currentMonth) {
+
+        double[] series = new double[historicalSeries.size()];
+        for (int i = 0; i < series.length; i++) series[i] = historicalSeries.get(i);
+
+        MlForecastEngine.MlForecastResult result;
+        try {
+            result = mlForecastEngine.forecast(series, 0, 6);
+        } catch (RuntimeException ex) {
+            log.warn("ML forecast failed ({}); falling back to Holt-Winters.", ex.getMessage());
+            return null;
+        }
+
+        int historyOffset = hasPrevYear ? 12 : 0;
+        List<ForecastDto.ForecastPointDto> forecastPoints = new ArrayList<>();
+
+        // Historical points: only current-year months are shown to the user.
+        for (int m = 1; m <= observedCurrentMonths; m++) {
+            double actual = currentValues[m - 1];
+            int fittedIdx = historyOffset + m - 1;
+            double fitted = fittedIdx >= 0 && fittedIdx < result.fittedHistorical.size()
+                ? result.fittedHistorical.get(fittedIdx) : actual;
+            double upper = Math.max(0.0, fitted + result.residualStd);
+            double lower = Math.max(0.0, fitted - result.residualStd);
+            forecastPoints.add(new ForecastDto.ForecastPointDto(
+                MONTH_NAMES_FR[m - 1], round2(actual), round2(fitted),
+                round2(upper), round2(lower)
+            ));
+        }
+
+        // Future points: intervals widen with sqrt(h) as usual.
+        for (int h = 1; h <= result.futurePoint.size(); h++) {
+            int futureMonthIdx = ((currentMonth - 1) + h) % 12;
+            double forecastValue = result.futurePoint.get(h - 1);
+            double horizonStd = result.residualStd * Math.sqrt((double) h);
+            double upper = Math.max(0.0, forecastValue + horizonStd);
+            double lower = Math.max(0.0, forecastValue - horizonStd);
+            forecastPoints.add(new ForecastDto.ForecastPointDto(
+                MONTH_NAMES_FR[futureMonthIdx] + "+", null,
+                round2(forecastValue), round2(upper), round2(lower)
+            ));
+        }
+
+        // Summary stats derived from the freshly-produced future points.
+        List<Double> futureForecasts = new ArrayList<>();
+        for (ForecastDto.ForecastPointDto p : forecastPoints) {
+            if (p.getActual() == null && p.getForecast() != null) {
+                futureForecasts.add(p.getForecast());
+            }
+        }
+        double predictedNextMonth = futureForecasts.isEmpty() ? 0.0 : futureForecasts.get(0);
+        double predictedNext3Months = futureForecasts.stream().limit(3).mapToDouble(Double::doubleValue).sum();
+        double predictedNext6Months = futureForecasts.stream().limit(6).mapToDouble(Double::doubleValue).sum();
+
+        // Confidence: R² from the fitted model, blended with a data-density
+        // term so that a tiny-but-perfectly-fitted sample doesn't claim 95%
+        // confidence. Capped at 95% — we never advertise certainty.
+        long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
+        double expectedMonths = hasPrevYear ? 24.0 : 12.0;
+        double density = Math.min(1.0, nonZeroMonths / expectedMonths);
+        double rSquaredClamped = Math.max(0.0, Math.min(1.0, result.rSquared));
+        double confidence = Math.min(95.0, Math.max(0.0,
+                (0.4 * density + 0.6 * rSquaredClamped) * 100.0));
+
+        List<ForecastDto.SeasonalityDto> seasonality =
+            computeSeasonalityView(hasPrevYear ? prevValues : currentValues);
+
+        ForecastDto dto = new ForecastDto();
+        dto.setForecastPoints(forecastPoints);
+        dto.setPredictedNextMonth(round2(predictedNextMonth));
+        dto.setPredictedNext3Months(round2(predictedNext3Months));
+        dto.setPredictedNext6Months(round2(predictedNext6Months));
+        dto.setConfidenceScore(Math.round(confidence * 10.0) / 10.0);
+        dto.setMethodology(String.format(
+            "Régression linéaire ML (Smile OLS) sur caractéristiques lag/saisonnières — R²=%.2f, %d échantillons",
+            rSquaredClamped, result.trainingSamples));
+        dto.setSeasonality(seasonality);
+
+        if (log.isDebugEnabled()) {
+            log.debug("ML forecast: R²={}, residualStd={}, samples={}, confidence={}%",
+                    result.rSquared, result.residualStd, result.trainingSamples, confidence);
         }
 
         return dto;

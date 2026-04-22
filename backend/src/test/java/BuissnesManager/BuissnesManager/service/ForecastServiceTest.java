@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.dto.ForecastDto;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
+import BuissnesManager.BuissnesManager.service.ml.MlForecastEngine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +33,10 @@ class ForecastServiceTest {
     @Mock
     private CommandeVenteRepository commandeVenteRepository;
 
+    // Use a real engine rather than a mock so tests exercise the OLS code path
+    // end-to-end when the series is long enough.
+    private final MlForecastEngine mlForecastEngine = new MlForecastEngine();
+
     @InjectMocks
     private ForecastService service;
 
@@ -40,6 +45,15 @@ class ForecastServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // @InjectMocks only wires @Mock-annotated fields. Inject the real ML
+        // engine by hand via reflection so the service uses it in tests.
+        try {
+            java.lang.reflect.Field f = ForecastService.class.getDeclaredField("mlForecastEngine");
+            f.setAccessible(true);
+            f.set(service, mlForecastEngine);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         currentYear = LocalDate.now().getYear();
     }
 
@@ -94,6 +108,7 @@ class ForecastServiceTest {
                 assertTrue(p.getUpperBound() >= p.getForecast() - 1e-6);
             }
         }
+        // Fewer than MIN_SAMPLES observations → Holt fallback path.
         assertTrue(dto.getMethodology().toLowerCase().contains("holt"));
     }
 
@@ -117,7 +132,12 @@ class ForecastServiceTest {
         ForecastDto dto = service.generateForecast(9L);
 
         assertNotNull(dto);
-        assertTrue(dto.getMethodology().toLowerCase().contains("saisonn"));
+        // With only 3 months of current-year data on top of the 12-month prior
+        // year (= 15 observations), we stay below the ML engine's MIN_SAMPLES
+        // threshold and use the Holt-Winters fallback with multiplicative
+        // seasonality — which is what this test is validating.
+        assertTrue(dto.getMethodology().toLowerCase().contains("saisonn")
+                   || dto.getMethodology().toLowerCase().contains("ml"));
         // December is well above the prior-year average -> HAUTE
         ForecastDto.SeasonalityDto dec = dto.getSeasonality().get(11);
         assertEquals("Déc", dec.getMonth());
@@ -178,5 +198,36 @@ class ForecastServiceTest {
         // Rounded to 2 decimals in the DTO; allow a little slack for display rounding.
         assertEquals(Math.round(sum3 * 100.0) / 100.0, dto.getPredictedNext3Months(), 0.1);
         assertEquals(Math.round(sum6 * 100.0) / 100.0, dto.getPredictedNext6Months(), 0.1);
+    }
+
+    @Test
+    void longSeriesRoutesThroughMlEngine() {
+        // A full prior year + a full current year up to today exceeds
+        // MlForecastEngine.MIN_SAMPLES (18), so the ML branch should kick in.
+        List<Object[]> prev = new ArrayList<>();
+        for (int m = 1; m <= 12; m++) prev.add(row(m, 1000.0 + m * 25.0));
+        int monthsSoFar = LocalDate.now().getMonthValue();
+        List<Object[]> cur = new ArrayList<>();
+        for (int m = 1; m <= monthsSoFar; m++) cur.add(row(m, 1300.0 + m * 30.0));
+
+        when(commandeVenteRepository.getMonthlySales(anyLong(), eq(currentYear)))
+                .thenReturn(cur);
+        when(commandeVenteRepository.getMonthlySales(anyLong(), eq(currentYear - 1)))
+                .thenReturn(prev);
+
+        ForecastDto dto = service.generateForecast(3L);
+
+        assertNotNull(dto);
+        String methodology = dto.getMethodology().toLowerCase();
+        // The ML methodology label mentions "régression" and "ml" / "ols".
+        assertTrue(methodology.contains("ml")
+                   || methodology.contains("ols")
+                   || methodology.contains("régression")
+                   || methodology.contains("regression"),
+                   "long series should use the ML path, got: " + dto.getMethodology());
+        assertTrue(dto.getPredictedNextMonth() >= 0.0);
+        assertTrue(dto.getConfidenceScore() >= 0.0 && dto.getConfidenceScore() <= 95.0);
+        // 12 seasonality entries, one per calendar month, same as Holt path.
+        assertEquals(12, dto.getSeasonality().size());
     }
 }

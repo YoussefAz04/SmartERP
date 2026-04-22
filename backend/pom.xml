@@ -151,6 +151,19 @@
 			<artifactId>cloudinary-http44</artifactId>
 			<version>1.37.0</version>
 		</dependency>
+
+		<!--
+		     Smile (Statistical Machine Intelligence & Learning Engine) — pure-Java
+		     ML library. Used by AnalyticService (K-Means clustering of products)
+		     and ForecastService (OLS regression with engineered lag/seasonal
+		     features). smile-core alone is enough for our use case; we avoid the
+		     heavier smile-plot / smile-io modules to keep the fat-jar size sane.
+		-->
+		<dependency>
+			<groupId>com.github.haifengl</groupId>
+			<artifactId>smile-core</artifactId>
+			<version>3.1.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
