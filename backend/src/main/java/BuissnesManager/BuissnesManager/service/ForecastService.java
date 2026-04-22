@@ -266,13 +266,25 @@ public class ForecastService {
             ));
         }
 
-        // Future points: intervals widen with sqrt(h) as usual.
+        // Future points: intervals come from the bootstrap (preferred) or fall
+        // back to the classic ±σ·√h band if the bootstrap wasn't produced.
         for (int h = 1; h <= result.futurePoint.size(); h++) {
             int futureMonthIdx = ((currentMonth - 1) + h) % 12;
             double forecastValue = result.futurePoint.get(h - 1);
-            double horizonStd = result.residualStd * Math.sqrt((double) h);
-            double upper = Math.max(0.0, forecastValue + horizonStd);
-            double lower = Math.max(0.0, forecastValue - horizonStd);
+            double upper;
+            double lower;
+            if (result.upperBounds != null && h - 1 < result.upperBounds.size()
+                    && result.lowerBounds != null && h - 1 < result.lowerBounds.size()) {
+                upper = Math.max(0.0, result.upperBounds.get(h - 1));
+                lower = Math.max(0.0, result.lowerBounds.get(h - 1));
+                // Ensure the point forecast stays inside the interval after clamping.
+                if (upper < forecastValue) upper = forecastValue;
+                if (lower > forecastValue) lower = forecastValue;
+            } else {
+                double horizonStd = result.residualStd * Math.sqrt((double) h);
+                upper = Math.max(0.0, forecastValue + horizonStd);
+                lower = Math.max(0.0, forecastValue - horizonStd);
+            }
             forecastPoints.add(new ForecastDto.ForecastPointDto(
                 MONTH_NAMES_FR[futureMonthIdx] + "+", null,
                 round2(forecastValue), round2(upper), round2(lower)
@@ -321,12 +333,43 @@ public class ForecastService {
         dto.setConfidenceScore(Math.round(confidence * 10.0) / 10.0);
         String mapeText = Double.isNaN(result.walkForwardMape)
                 ? "MAPE-CV n/a"
-                : String.format("MAPE-CV=%.1f%% (%d plis)",
-                        result.walkForwardMape * 100.0, result.walkForwardFolds);
+                : String.format("MAPE-CV=%.1f%%, sMAPE-CV=%.1f%% (%d plis)",
+                        result.walkForwardMape * 100.0,
+                        Double.isNaN(result.walkForwardSmape) ? 0.0 : result.walkForwardSmape * 100.0,
+                        result.walkForwardFolds);
         dto.setMethodology(String.format(
-            "ML supervisé Smile %s (%d caractéristiques lag/saisonnières) — R²=%.2f, %s, %d échantillons",
+            "ML supervisé Smile %s (%d caractéristiques lag/saisonnières, intervalles bootstrap) — R²=%.2f, %s, %d échantillons",
             result.modelName, result.featureCount, rSquaredClamped, mapeText, result.trainingSamples));
         dto.setSeasonality(seasonality);
+        dto.setSelectedModel(result.modelName);
+        if (!Double.isNaN(result.walkForwardMape)) {
+            dto.setCrossValidatedMape(Math.round(result.walkForwardMape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardSmape)) {
+            dto.setCrossValidatedSmape(Math.round(result.walkForwardSmape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardRmse)) {
+            dto.setCrossValidatedRmse(Math.round(result.walkForwardRmse * 100.0) / 100.0);
+        }
+
+        // Rich diagnostics bundle — feeds the "methodology" panel in the UI.
+        BuissnesManager.BuissnesManager.dto.ModelMetricsDto metrics =
+                new BuissnesManager.BuissnesManager.dto.ModelMetricsDto();
+        metrics.setModelName(result.modelName);
+        metrics.setSamples(result.trainingSamples);
+        metrics.setFeatures(result.featureCount);
+        metrics.setRSquared(Math.round(rSquaredClamped * 1000.0) / 1000.0);
+        if (!Double.isNaN(result.walkForwardMape)) {
+            metrics.setCvMape(Math.round(result.walkForwardMape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardSmape)) {
+            metrics.setCvSmape(Math.round(result.walkForwardSmape * 10000.0) / 10000.0);
+        }
+        if (!Double.isNaN(result.walkForwardRmse)) {
+            metrics.setCvRmse(Math.round(result.walkForwardRmse * 100.0) / 100.0);
+        }
+        metrics.setCvFolds(result.walkForwardFolds);
+        dto.setModelMetrics(metrics);
 
         if (log.isDebugEnabled()) {
             log.debug("ML forecast: model={}, R²={}, OOS-MAPE={}, residualStd={}, samples={}, confidence={}%",
