@@ -8,9 +8,9 @@
   gap: 12px;
   margin-bottom: 12px;
   padding: 8px 12px;
-  background: #fff8e6;
+  background: #fffbeb;
   border-radius: 8px;
-  border-left: 3px solid #ffd166;
+  border-left: 3px solid #fbbf24;
 }
 
 .summary-item {
@@ -37,12 +37,12 @@
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  background: #f8f9fc;
+  background: #f0f7ff;
   border-radius: 8px;
   transition: background 0.15s;
 
   &:hover {
-    background: #fff5f5;
+    background: #dbeafe;
   }
 }
 
@@ -62,7 +62,7 @@
 .item-name {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -116,7 +116,42 @@
 
 .no-data {
   text-align: center;
-  color: #999;
+  color: #64748b;
   padding: 24px;
   font-size: 0.9rem;
+}
+
+// ═══════════════════════════════════════════════════════
+//  DARK MODE
+// ═══════════════════════════════════════════════════════
+body.dark-mode {
+  .summary-bar {
+    background: #1c1810;
+    border-left-color: #d97706;
+  }
+
+  .summary-item { color: #94a3b8; }
+
+  .slow-mover-row {
+    background: #1a2744;
+
+    &:hover {
+      background: #1e3a8a;
+    }
+  }
+
+  .item-rank {
+    background: #1e3a5f;
+    color: #7dd3fc;
+  }
+
+  .item-name { color: #e2e8f0; }
+
+  .qty-badge {
+    &.risk-dead   { background: #450a0a; color: #fca5a5; }
+    &.risk-high   { background: #431407; color: #fdba74; }
+    &.risk-medium { background: #422006; color: #fcd34d; }
+  }
+
+  .no-data { color: #475569; }
 }
