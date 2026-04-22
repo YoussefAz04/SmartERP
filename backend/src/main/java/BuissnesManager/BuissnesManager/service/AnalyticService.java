@@ -413,20 +413,18 @@ public class AnalyticService {
             return Double.compare(mb, ma); // descending
         });
         int[] remap = new int[bestK];
+        // Tercile mapping: ceil(k/3) best-ranked clusters → TOP (display tier 0),
+        // the worst ceil(k/3) → LENT (2), everything in between → BON (1).
+        // For k=3 this degenerates to the identity (rank==tier), which is the
+        // intuitive mapping; for other k we keep three display tiers so the
+        // frontend doesn't need to grow new categories.
+        int topSize = (int) Math.ceil(bestK / 3.0);
+        int lentStart = bestK - topSize;
         for (int rank = 0; rank < bestK; rank++) {
-            // rank 0 (highest mean revenue) → display tier 0 (TOP)
-            // rank bestK-1 (lowest mean revenue) → display tier 2 (LENT)
             int tier;
-            if (rank < bestK / 3 + (bestK % 3 > 0 ? 1 : 0)) {
-                tier = 0; // TOP third
-            } else if (rank < bestK - bestK / 3) {
-                tier = 1; // BON middle
-            } else {
-                tier = 2; // LENT bottom third
-            }
-            // For k=3 the above degenerates to rank==tier, which is the
-            // classic mapping; for k=5 we'd get {0,0,1,2,2} for example.
-            if (bestK == 3) tier = rank;
+            if (rank < topSize) tier = 0;           // TOP
+            else if (rank >= lentStart) tier = 2;   // LENT
+            else tier = 1;                          // BON
             remap[order[rank]] = tier;
         }
 
