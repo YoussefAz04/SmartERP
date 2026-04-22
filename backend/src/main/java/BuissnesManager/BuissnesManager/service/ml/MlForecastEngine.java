@@ -231,7 +231,11 @@ public class MlForecastEngine {
 
     /* ------------------------- Feature engineering ------------------------- */
 
-    /** Describes one of the two supported feature sets. */
+    /** Describes one of the two supported feature sets.
+     *  <p>{@code columnNames} must always have exactly {@code nFeatures + 1}
+     *  entries: one for the target column {@code "y"} plus one per feature,
+     *  since {@link DataFrame#of(double[][], String[])} expects column names
+     *  for every column (target + predictors). */
     private enum FeatureSpec {
         SMALL(4, 1, new String[]{"y", "lag1", "t", "sin_m", "cos_m"}),
         WIDE(7, 2,  new String[]{"y", "lag1", "lag2", "t", "sin_m", "cos_m", "sin_2m", "cos_2m"});
@@ -304,8 +308,6 @@ public class MlForecastEngine {
         f[4] = Math.cos(theta);
         f[5] = Math.sin(2.0 * theta);                    // 2nd harmonic
         f[6] = Math.cos(2.0 * theta);
-        // (rolling-3 mean would live at index 7 if we had a slot; omitted to
-        // keep the matrix compact — 2nd harmonic is richer and orthogonal.)
         return f;
     }
 
