@@ -1,205 +1,268 @@
 <!-- Page Header -->
 <div class="page-header">
-  <div class="add-item d-flex">
-    <div class="page-title">
-      <h4>Ajustement de Stock</h4>
-      <h6>Entrée, sortie ou correction de stock</h6>
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">
+        <span class="title-icon"><i class="feather icon-sliders"></i></span>
+        Ajustement de Stock
+      </h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/stock/list">Stocks</a>
+        </li>
+        <li class="breadcrumb-item active">Ajustement</li>
+      </ul>
     </div>
-  </div>
-  <div class="page-btn d-flex gap-2">
-    <button class="btn btn-secondary" (click)="cancel()">
-      <i class="feather icon-arrow-left me-2"></i>Annuler
-    </button>
   </div>
 </div>
 
-<div class="row justify-content-center">
-  <div class="col-xl-8">
-    <div class="card">
+<!-- Form Card -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="card form-card">
+
+      <!-- Card Header -->
       <div class="card-header">
-        <h5 class="card-title mb-0">Formulaire d'ajustement</h5>
+        <div class="header-content">
+          <div class="header-icon">
+            <i class="feather icon-sliders"></i>
+          </div>
+          <div>
+            <h5 class="card-title">Formulaire d'ajustement</h5>
+            <p class="card-subtitle">Entrée, sortie ou correction de stock</p>
+          </div>
+        </div>
       </div>
+
       <div class="card-body">
         @if (isLoading) {
-          <div class="text-center py-3">
+          <div class="loading-state">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2">Chargement des stocks...</p>
+            <p>Chargement des stocks...</p>
           </div>
         } @else {
           <form [formGroup]="adjustForm" (ngSubmit)="onSubmit()" novalidate>
-            <!-- Stock Selection -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">
-                Sélectionner un stock <span class="text-danger">*</span>
-              </label>
-              <select class="form-select" formControlName="stockId"
-                [class.is-invalid]="isFieldInvalid('stockId')">
-                <option [ngValue]="null">-- Choisir un stock --</option>
-                @for (stock of stocks; track stock.id) {
-                  <option [value]="stock.id">{{ getStockLabel(stock) }}</option>
-                }
-              </select>
-              <div class="invalid-feedback">Veuillez sélectionner un stock.</div>
-            </div>
 
-            <!-- Current Stock Info -->
-            @if (selectedStock) {
-              <div class="alert alert-info">
-                <div class="row">
-                  <div class="col-sm-6">
-                    <strong>Article:</strong> {{ selectedStock.articleAchat?.nom || 'N/A' }}<br>
-                    <strong>Localisation:</strong> {{ selectedStock.localisation || 'N/A' }}
-                  </div>
-                  <div class="col-sm-6">
-                    <strong>Quantité actuelle:</strong>
-                    <span class="fs-5 fw-bold ms-2"
-                      [class.text-success]="quantiteActuelle >= 5"
-                      [class.text-warning]="quantiteActuelle > 0 && quantiteActuelle < 5"
-                      [class.text-danger]="quantiteActuelle === 0">
-                      {{ quantiteActuelle }}
-                    </span>
-                  </div>
-                </div>
+            <!-- Section: Sélection du stock -->
+            <div class="form-section">
+              <div class="section-header">
+                <i class="feather icon-archive"></i>
+                Sélection du stock
               </div>
-            }
 
-            <!-- Movement Type -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">Type d'ajustement <span class="text-danger">*</span></label>
-              <div class="row g-2">
-                <div class="col-md-4">
-                  <div class="card border-2"
-                    [class.border-success]="adjustForm.get('typeMouvement')?.value === 'ENTREE'"
-                    [class.border-light]="adjustForm.get('typeMouvement')?.value !== 'ENTREE'"
-                    style="cursor: pointer"
-                    (click)="adjustForm.patchValue({typeMouvement: 'ENTREE'})">
-                    <div class="card-body text-center p-2">
-                      <input type="radio" formControlName="typeMouvement" value="ENTREE" class="d-none">
-                      <i class="feather icon-arrow-down-circle text-success fs-4"></i>
-                      <div class="fw-bold text-success">ENTRÉE</div>
-                      <small class="text-muted">Ajouter au stock</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card border-2"
-                    [class.border-danger]="adjustForm.get('typeMouvement')?.value === 'SORTIE'"
-                    [class.border-light]="adjustForm.get('typeMouvement')?.value !== 'SORTIE'"
-                    style="cursor: pointer"
-                    (click)="adjustForm.patchValue({typeMouvement: 'SORTIE'})">
-                    <div class="card-body text-center p-2">
-                      <input type="radio" formControlName="typeMouvement" value="SORTIE" class="d-none">
-                      <i class="feather icon-arrow-up-circle text-danger fs-4"></i>
-                      <div class="fw-bold text-danger">SORTIE</div>
-                      <small class="text-muted">Retirer du stock</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card border-2"
-                    [class.border-warning]="adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT'"
-                    [class.border-light]="adjustForm.get('typeMouvement')?.value !== 'AJUSTEMENT'"
-                    style="cursor: pointer"
-                    (click)="adjustForm.patchValue({typeMouvement: 'AJUSTEMENT'})">
-                    <div class="card-body text-center p-2">
-                      <input type="radio" formControlName="typeMouvement" value="AJUSTEMENT" class="d-none">
-                      <i class="feather icon-sliders text-warning fs-4"></i>
-                      <div class="fw-bold text-warning">AJUSTEMENT</div>
-                      <small class="text-muted">Corriger à une valeur exacte</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row g-3 mb-3">
-              <!-- Quantity -->
-              <div class="col-md-6">
-                <label class="form-label fw-bold">
-                  @if (adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT') {
-                    Nouvelle quantité exacte
-                  } @else {
-                    Quantité à {{ adjustForm.get('typeMouvement')?.value === 'ENTREE' ? 'ajouter' : 'retirer' }}
-                  }
-                  <span class="text-danger">*</span>
+              <div class="input-blocks">
+                <label class="form-label" for="stockId">
+                  Sélectionner un stock <span class="text-danger">*</span>
                 </label>
-                <input type="number" class="form-control" formControlName="quantite"
-                  placeholder="0" min="0"
-                  [class.is-invalid]="isFieldInvalid('quantite')">
-                <div class="invalid-feedback">
-                  <span *ngIf="adjustForm.get('quantite')?.hasError('required')">La quantité est requise.</span>
-                  <span *ngIf="adjustForm.get('quantite')?.hasError('min')">La quantité doit être positive.</span>
+                <div class="input-wrapper">
+                  <i class="feather icon-archive input-icon"></i>
+                  <select id="stockId" class="form-select" formControlName="stockId"
+                    [class.is-invalid]="isFieldInvalid('stockId')">
+                    <option [ngValue]="null">-- Choisir un stock --</option>
+                    @for (stock of stocks; track stock.id) {
+                      <option [value]="stock.id">{{ getStockLabel(stock) }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="error-message" *ngIf="isFieldInvalid('stockId')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span>Veuillez sélectionner un stock.</span>
                 </div>
               </div>
 
-              <!-- New Total Preview -->
-              @if (selectedStock && adjustForm.get('quantite')?.value) {
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Nouvelle quantité totale</label>
-                  <div class="form-control-plaintext">
-                    <span class="fs-4 fw-bold"
-                      [class.text-success]="quantiteNouvelle >= 5"
-                      [class.text-warning]="quantiteNouvelle > 0 && quantiteNouvelle < 5"
-                      [class.text-danger]="quantiteNouvelle <= 0">
-                      {{ quantiteNouvelle }}
-                    </span>
-                    @if (quantiteNouvelle < 0) {
-                      <span class="text-danger ms-2 small">
-                        <i class="feather icon-alert-triangle"></i> Résultat négatif!
+              @if (selectedStock) {
+                <div class="stock-info-card">
+                  <div class="stock-info-row">
+                    <div class="stock-info-item">
+                      <span class="info-label"><i class="feather icon-package"></i> Article</span>
+                      <span class="info-value">{{ selectedStock.articleAchat?.nom || 'N/A' }}</span>
+                    </div>
+                    <div class="stock-info-item">
+                      <span class="info-label"><i class="feather icon-map-pin"></i> Localisation</span>
+                      <span class="info-value">{{ selectedStock.localisation || 'N/A' }}</span>
+                    </div>
+                    <div class="stock-info-item">
+                      <span class="info-label"><i class="feather icon-layers"></i> Quantité actuelle</span>
+                      <span class="qty-badge"
+                        [class.qty-ok]="quantiteActuelle >= 5"
+                        [class.qty-low]="quantiteActuelle > 0 && quantiteActuelle < 5"
+                        [class.qty-zero]="quantiteActuelle === 0">
+                        {{ quantiteActuelle }}
                       </span>
-                    }
+                    </div>
                   </div>
                 </div>
               }
             </div>
 
-            <!-- Date -->
-            <div class="mb-3">
-              <label class="form-label fw-bold">Date du mouvement</label>
-              <input type="datetime-local" class="form-control" formControlName="dateMouvement">
+            <!-- Section: Type d'ajustement -->
+            <div class="form-section">
+              <div class="section-header">
+                <i class="feather icon-refresh-cw"></i>
+                Type d'ajustement
+              </div>
+              <div class="type-selector">
+                <div class="type-card"
+                  [class.active-entree]="adjustForm.get('typeMouvement')?.value === 'ENTREE'"
+                  (click)="adjustForm.patchValue({typeMouvement: 'ENTREE'})">
+                  <input type="radio" formControlName="typeMouvement" value="ENTREE" class="d-none">
+                  <div class="type-icon entree"><i class="feather icon-arrow-down-circle"></i></div>
+                  <div class="type-label entree">ENTRÉE</div>
+                  <div class="type-desc">Ajouter au stock</div>
+                </div>
+                <div class="type-card"
+                  [class.active-sortie]="adjustForm.get('typeMouvement')?.value === 'SORTIE'"
+                  (click)="adjustForm.patchValue({typeMouvement: 'SORTIE'})">
+                  <input type="radio" formControlName="typeMouvement" value="SORTIE" class="d-none">
+                  <div class="type-icon sortie"><i class="feather icon-arrow-up-circle"></i></div>
+                  <div class="type-label sortie">SORTIE</div>
+                  <div class="type-desc">Retirer du stock</div>
+                </div>
+                <div class="type-card"
+                  [class.active-ajustement]="adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT'"
+                  (click)="adjustForm.patchValue({typeMouvement: 'AJUSTEMENT'})">
+                  <input type="radio" formControlName="typeMouvement" value="AJUSTEMENT" class="d-none">
+                  <div class="type-icon ajustement"><i class="feather icon-sliders"></i></div>
+                  <div class="type-label ajustement">AJUSTEMENT</div>
+                  <div class="type-desc">Corriger à une valeur exacte</div>
+                </div>
+              </div>
             </div>
 
-            <!-- Localisation -->
-            <div class="mb-3">
-              <label class="form-label fw-bold">
-                <i class="feather icon-map-pin me-1"></i>Localisation (optionnel)
-              </label>
-              <input type="text" class="form-control" formControlName="localisation"
-                placeholder="Ex: Warehouse A1 - Rack 3, Zone B...">
+            <!-- Section: Détails du mouvement -->
+            <div class="form-section">
+              <div class="section-header">
+                <i class="feather icon-edit-3"></i>
+                Détails du mouvement
+              </div>
+              <div class="row">
+
+                <!-- Quantity -->
+                <div class="col-lg-6">
+                  <div class="input-blocks">
+                    <label class="form-label">
+                      @if (adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT') {
+                        Nouvelle quantité exacte
+                      } @else {
+                        Quantité à {{ adjustForm.get('typeMouvement')?.value === 'ENTREE' ? 'ajouter' : 'retirer' }}
+                      }
+                      <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="feather icon-hash input-icon"></i>
+                      <input type="number" class="form-control" formControlName="quantite"
+                        placeholder="0" min="0"
+                        [class.is-invalid]="isFieldInvalid('quantite')">
+                    </div>
+                    <div class="error-message" *ngIf="isFieldInvalid('quantite')">
+                      <i class="feather icon-alert-circle"></i>
+                      <span *ngIf="adjustForm.get('quantite')?.hasError('required')">La quantité est requise.</span>
+                      <span *ngIf="adjustForm.get('quantite')?.hasError('min')">La quantité doit être positive.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- New Total Preview -->
+                @if (selectedStock && adjustForm.get('quantite')?.value) {
+                  <div class="col-lg-6">
+                    <div class="input-blocks">
+                      <label class="form-label">Nouvelle quantité totale</label>
+                      <div class="qty-preview"
+                        [class.qty-ok]="quantiteNouvelle >= 5"
+                        [class.qty-low]="quantiteNouvelle > 0 && quantiteNouvelle < 5"
+                        [class.qty-zero]="quantiteNouvelle <= 0">
+                        <span class="qty-number">{{ quantiteNouvelle }}</span>
+                        @if (quantiteNouvelle < 0) {
+                          <span class="qty-warning">
+                            <i class="feather icon-alert-triangle"></i> Résultat négatif!
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- Date -->
+                <div class="col-lg-6">
+                  <div class="input-blocks">
+                    <label class="form-label">Date du mouvement</label>
+                    <div class="input-wrapper">
+                      <i class="feather icon-calendar input-icon"></i>
+                      <input type="datetime-local" class="form-control" formControlName="dateMouvement">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Localisation -->
+                <div class="col-lg-6">
+                  <div class="input-blocks">
+                    <label class="form-label">Localisation (optionnel)</label>
+                    <div class="input-wrapper">
+                      <i class="feather icon-map-pin input-icon"></i>
+                      <input type="text" class="form-control" formControlName="localisation"
+                        placeholder="Ex: Warehouse A1 - Rack 3, Zone B...">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Reference -->
+                <div class="col-lg-6">
+                  <div class="input-blocks">
+                    <label class="form-label">Référence document (optionnel)</label>
+                    <div class="input-wrapper">
+                      <i class="feather icon-file-text input-icon"></i>
+                      <input type="text" class="form-control" formControlName="referenceCommande"
+                        placeholder="Ex: BC-2024-001, FAC-001...">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
-            <!-- Reference -->
-            <div class="mb-3">
-              <label class="form-label fw-bold">Référence document (optionnel)</label>
-              <input type="text" class="form-control" formControlName="referenceCommande"
-                placeholder="Ex: BC-2024-001, FAC-001...">
+            <!-- Section: Motif -->
+            <div class="form-section">
+              <div class="section-header">
+                <i class="feather icon-message-square"></i>
+                Motif
+              </div>
+              <div class="input-blocks">
+                <label class="form-label">
+                  Motif / Raison <span class="text-danger">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <i class="feather icon-message-square input-icon textarea-icon"></i>
+                  <textarea class="form-control" formControlName="motif" rows="3"
+                    placeholder="Décrivez la raison de cet ajustement..."
+                    [class.is-invalid]="isFieldInvalid('motif')"></textarea>
+                </div>
+                <div class="error-message" *ngIf="isFieldInvalid('motif')">
+                  <i class="feather icon-alert-circle"></i>
+                  <span>Le motif est obligatoire.</span>
+                </div>
+              </div>
             </div>
 
-            <!-- Motif -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">
-                Motif / Raison <span class="text-danger">*</span>
-              </label>
-              <textarea class="form-control" formControlName="motif" rows="3"
-                placeholder="Décrivez la raison de cet ajustement..."
-                [class.is-invalid]="isFieldInvalid('motif')"></textarea>
-              <div class="invalid-feedback">Le motif est obligatoire.</div>
-            </div>
-
-            <!-- Submit -->
-            <div class="d-flex gap-2 justify-content-end">
-              <button type="button" class="btn btn-secondary" (click)="cancel()">
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="button" class="btn btn-cancel" (click)="cancel()">
+                <i class="feather icon-x"></i>
                 Annuler
               </button>
-              <button type="submit" class="btn btn-added" [disabled]="isSubmitting">
+              <button type="submit" class="btn btn-submit" [disabled]="isSubmitting">
                 @if (isSubmitting) {
-                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <span class="spinner" aria-hidden="true"></span>
                   Enregistrement...
                 } @else {
-                  <i class="feather icon-check me-2"></i>Enregistrer l'ajustement
+                  <i class="feather icon-check"></i>
+                  Enregistrer l'ajustement
                 }
               </button>
             </div>
+
           </form>
         }
       </div>
