@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
+import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class StockAutomationService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private EnterpriseSecurityUtil enterpriseSecurityUtil;
+
     /**
      * Increments stock for all articles in a purchase order (CommandeAchat).
      * Called when the order is marked as received (RECUE).
@@ -40,6 +44,7 @@ public class StockAutomationService {
     @Transactional
     public void incrementStockFromReception(Long commandeAchatId, String referenceCommande) {
         List<LigneCommandeAchat> lignes = ligneCommandeAchatRepository.findByCommandeAchatId(commandeAchatId);
+        User currentUser = enterpriseSecurityUtil.getCurrentUser().orElse(null);
 
         for (LigneCommandeAchat ligne : lignes) {
             Article article = ligne.getArticle();
@@ -71,6 +76,7 @@ public class StockAutomationService {
             mouvement.setMotif("Réception commande achat " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
+            if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
             logger.info("✅ Stock incremented for article {} by {}", article.getId(), quantite);
@@ -84,6 +90,7 @@ public class StockAutomationService {
     @Transactional
     public void decrementStockFromDelivery(Long commandeVenteId, String referenceCommande) {
         List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
+        User currentUser = enterpriseSecurityUtil.getCurrentUser().orElse(null);
 
         for (LigneCommandeVente ligne : lignes) {
             ArticleVente articleVente = ligne.getArticleVente();
@@ -141,6 +148,7 @@ public class StockAutomationService {
             mouvement.setMotif("Livraison commande vente " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
+            if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
             if (stock.getSeuilMinimum() != null && stock.getQuantiteDisponible().compareTo(stock.getSeuilMinimum()) < 0) {
@@ -158,6 +166,7 @@ public class StockAutomationService {
     @Transactional
     public void reserverStockPourCommande(Long commandeVenteId, String referenceCommande) {
         List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
+        User currentUser = enterpriseSecurityUtil.getCurrentUser().orElse(null);
 
         for (LigneCommandeVente ligne : lignes) {
             ArticleVente articleVente = ligne.getArticleVente();
@@ -192,6 +201,7 @@ public class StockAutomationService {
             mouvement.setMotif("Réservation commande vente " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
+            if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
             logger.info("✅ Stock reserved for article {} by {}", article.getId(), quantite);
@@ -205,6 +215,7 @@ public class StockAutomationService {
     @Transactional
     public void annulerStockDepuisReception(Long commandeAchatId, String referenceCommande) {
         List<LigneCommandeAchat> lignes = ligneCommandeAchatRepository.findByCommandeAchatId(commandeAchatId);
+        User currentUser = enterpriseSecurityUtil.getCurrentUser().orElse(null);
 
         for (LigneCommandeAchat ligne : lignes) {
             Article article = ligne.getArticle();
@@ -237,6 +248,7 @@ public class StockAutomationService {
             mouvement.setMotif("Annulation réception commande achat " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
+            if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
             logger.info("✅ Stock reversed for article {} by {} (cancellation of reception)", article.getId(), toReverse);
@@ -250,6 +262,7 @@ public class StockAutomationService {
     @Transactional
     public void annulerReservationStock(Long commandeVenteId, String referenceCommande) {
         List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
+        User currentUser = enterpriseSecurityUtil.getCurrentUser().orElse(null);
 
         for (LigneCommandeVente ligne : lignes) {
             ArticleVente articleVente = ligne.getArticleVente();
@@ -282,6 +295,7 @@ public class StockAutomationService {
             mouvement.setMotif("Annulation réservation commande vente " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
+            if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
             logger.info("✅ Stock reservation released for article {} by {}", article.getId(), toRelease);
