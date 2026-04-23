@@ -24,7 +24,7 @@
                 <li class="submenu nav-item">
                   <a class="nav-link" href="javascript:void(0)" (click)="expandSubMenus(menu)"
                     [ngClass]="{ 'subdrop': menu.showSubRoute === true }"
-                    [class.active]="base === menu.base1 || base === menu.base || page === menu.page">
+                    [class.active]="base === menu.base1 || base === menu.base || (menu.page && page === menu.page)">
                     <span class="nav-icon-wrap">
                       <i class="feather" [class]="'icon-' + menu.icon"></i>
                     </span>
