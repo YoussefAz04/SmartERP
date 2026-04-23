@@ -16,6 +16,7 @@ import {Role} from "../../../model/role.model";
 import {UserService} from "../../../auth/service/user/user.service";
 import {UserDTO} from "../../../model/userDTO.model";
 import {forkJoin} from "rxjs";
+import {AuthService} from "../../../auth/service/auth.service";
 interface data {
   value: string;
 }
@@ -95,8 +96,13 @@ export class RolesPermissionsComponent implements OnInit{
     private sidebar: SidebarService,
     private fb: FormBuilder,
     private roleService : RoleService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {
+  }
+
+  isSuperAdmin(): boolean {
+    return this.authService.getRoles().includes('SUPER_ADMIN');
   }
 
 
