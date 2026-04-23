@@ -1,8 +1,10 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.entity.CategorieClient;
 import BuissnesManager.BuissnesManager.entity.Client;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
+import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.CategorieClientRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
@@ -18,7 +20,10 @@ public class ClientService {
 
     @Autowired
     private ClientRepo clientRepo;
-    
+
+    @Autowired
+    private ArticleVenteRepo articleVenteRepo;
+
     @Autowired
     private CategorieClientRepo categorieClientRepo;
 
@@ -76,6 +81,12 @@ public class ClientService {
         if (!clientRepo.existsById(id)) {
             throw new RuntimeException("Client not found with id: " + id);
         }
+        // Detach any article_vente rows that reference this client before deletion
+        List<ArticleVente> relatedArticles = articleVenteRepo.findByClientId(id);
+        for (ArticleVente av : relatedArticles) {
+            av.setClient(null);
+        }
+        articleVenteRepo.saveAll(relatedArticles);
         clientRepo.deleteById(id);
     }
 
