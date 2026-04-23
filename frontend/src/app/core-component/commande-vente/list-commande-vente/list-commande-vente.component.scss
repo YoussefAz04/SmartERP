@@ -1,12 +1,12 @@
 // =============================================
-// Commandes Vente – Premium Indigo/Jewel Theme
+// Commandes Vente – Premium Teal/Emerald Theme
 // =============================================
 
-$primary:        #4f46e5;
-$primary-light:  #6366f1;
-$primary-lighter:#818cf8;
-$accent:         #a5b4fc;
-$accent-light:   #eef2ff;
+$primary:        #0d9488;
+$primary-light:  #14b8a6;
+$primary-lighter:#2dd4bf;
+$accent:         #5eead4;
+$accent-light:   #f0fdfa;
 $surface:        #ffffff;
 $surface-alt:    #f8fafc;
 $border:         #e2e8f0;
@@ -17,13 +17,13 @@ $text-light:     #94a3b8;
 
 // ─── Page Header ──────────────────────────────────────────────────────────────
 .modern-page-header {
-  background: linear-gradient(135deg, #0f0a1e 0%, #1e1b4b 28%, #312e81 58%, #4338ca 80%, #6366f1 100%);
+  background: linear-gradient(135deg, #042f2e 0%, #065f46 25%, #0d9488 60%, #0ea5e9 100%);
   padding: 2.5rem 2.5rem 2.75rem;
   border-radius: 22px;
   margin-bottom: 1.5rem;
   box-shadow:
-    0 4px 6px rgba(15,10,30,0.18),
-    0 20px 50px rgba(79,70,229,0.35),
+    0 4px 6px rgba(4,47,46,0.15),
+    0 20px 50px rgba(13,148,136,0.35),
     inset 0 1px 0 rgba(255,255,255,0.08);
   position: relative;
   overflow: hidden;
@@ -39,19 +39,19 @@ $text-light:     #94a3b8;
     &.b1 {
       width: 260px; height: 260px;
       top: -90px; right: 200px;
-      background: radial-gradient(circle, rgba(165,180,252,0.2) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(94,234,212,0.18) 0%, transparent 70%);
       animation: floatBlob 8s ease-in-out infinite;
     }
     &.b2 {
       width: 160px; height: 160px;
       bottom: -60px; right: 120px;
-      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%);
       animation: floatBlob 6s ease-in-out infinite 1.5s;
     }
     &.b3 {
       width: 80px; height: 80px;
       top: 20px; right: 50px;
-      background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255,255,255,0.14) 0%, transparent 70%);
       animation: floatBlob 5s ease-in-out infinite 0.5s;
     }
   }
@@ -134,8 +134,8 @@ $text-light:     #94a3b8;
         .dot-pulse {
           width: 7px; height: 7px;
           border-radius: 50%;
-          background: #a5b4fc;
-          box-shadow: 0 0 0 0 rgba(165,180,252,0.6);
+          background: #34d399;
+          box-shadow: 0 0 0 0 rgba(52,211,153,0.6);
           animation: dotPulse 2s ease-out infinite;
         }
       }
@@ -222,15 +222,15 @@ $text-light:     #94a3b8;
         }
 
         &.btn-add {
-          background: linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
-          color: #312e81;
+          background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+          color: #065f46;
           border: 1.5px solid rgba(255,255,255,0.9);
           box-shadow: 0 4px 16px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
 
           &:hover {
             transform: translateY(-3px) scale(1.02);
             box-shadow: 0 10px 28px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.8);
-            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #d1fae5 100%);
           }
         }
       }
@@ -362,30 +362,31 @@ $text-light:     #94a3b8;
     }
     &:hover::after { left: 130%; }
 
-    // Cohesive jewel-tone palette: sapphire → emerald → violet → rose
+    // Cohesive cool-tone palette: teal → emerald → amber (warm accent) → indigo
     &.kpi-teal {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 55%, #3b82f6 100%);
-      box-shadow: 0 8px 24px rgba(29,78,216,0.42), 0 2px 6px rgba(29,78,216,0.18);
-      &:hover { box-shadow: 0 16px 40px rgba(29,78,216,0.55), 0 4px 12px rgba(29,78,216,0.25); }
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 55%, #14b8a6 100%);
+      box-shadow: 0 8px 24px rgba(13,148,136,0.42), 0 2px 6px rgba(13,148,136,0.18);
+      &:hover { box-shadow: 0 16px 40px rgba(13,148,136,0.55), 0 4px 12px rgba(13,148,136,0.25); }
     }
 
     &.kpi-emerald {
-      background: linear-gradient(135deg, #064e3b 0%, #065f46 45%, #059669 80%, #10b981 100%);
+      background: linear-gradient(135deg, #047857 0%, #059669 55%, #10b981 100%);
       box-shadow: 0 8px 24px rgba(5,150,105,0.42), 0 2px 6px rgba(5,150,105,0.18);
       &:hover { box-shadow: 0 16px 40px rgba(5,150,105,0.55), 0 4px 12px rgba(5,150,105,0.25); }
     }
 
     &.kpi-amber {
-      background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #8b5cf6 100%);
-      box-shadow: 0 8px 24px rgba(109,40,217,0.42), 0 2px 6px rgba(109,40,217,0.18);
-      &:hover { box-shadow: 0 16px 40px rgba(109,40,217,0.55), 0 4px 12px rgba(109,40,217,0.25); }
+      background: linear-gradient(135deg, #b45309 0%, #d97706 55%, #f59e0b 100%);
+      box-shadow: 0 8px 24px rgba(217,119,6,0.42), 0 2px 6px rgba(217,119,6,0.18);
+      &:hover { box-shadow: 0 16px 40px rgba(217,119,6,0.55), 0 4px 12px rgba(217,119,6,0.25); }
     }
 
-    // Class name kept as `kpi-purple` for HTML compatibility; now rendered as rose/pink.
+    // Class name kept as `kpi-purple` for HTML compatibility; visually it's now
+    // a softer indigo/violet that blends with the cool teal/emerald palette.
     &.kpi-purple {
-      background: linear-gradient(135deg, #881337 0%, #be185d 55%, #ec4899 100%);
-      box-shadow: 0 8px 24px rgba(190,24,93,0.42), 0 2px 6px rgba(190,24,93,0.18);
-      &:hover { box-shadow: 0 16px 40px rgba(190,24,93,0.55), 0 4px 12px rgba(190,24,93,0.25); }
+      background: linear-gradient(135deg, #4338ca 0%, #4f46e5 55%, #6366f1 100%);
+      box-shadow: 0 8px 24px rgba(79,70,229,0.42), 0 2px 6px rgba(79,70,229,0.18);
+      &:hover { box-shadow: 0 16px 40px rgba(79,70,229,0.55), 0 4px 12px rgba(79,70,229,0.25); }
     }
   }
 }
@@ -526,7 +527,7 @@ $text-light:     #94a3b8;
   animation: slideUp 0.35s ease 0.1s both;
 
   .card-header-modern {
-    background: linear-gradient(to right, #eef2ff, $surface-alt);
+    background: linear-gradient(to right, #f0fdfb, $surface-alt);
     padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -547,7 +548,7 @@ $text-light:     #94a3b8;
       font-weight: 700;
       font-size: 0.75rem;
 
-      &.badge-info { background: #e0e7ff; color: $primary; }
+      &.badge-info { background: #ccfbf1; color: $primary; }
       &.badge-warning { background: #fef3c7; color: #b45309; }
     }
   }
@@ -613,8 +614,9 @@ $text-light:     #94a3b8;
 
   thead {
     tr {
-      background: linear-gradient(to right, #eef2ff, $surface-alt);
+      background: linear-gradient(to right, #f0fdfb, $surface-alt);
       border-bottom: 2px solid $border;
+    }
 
     th {
       padding: 0.9rem 1rem;
@@ -647,7 +649,7 @@ $text-light:     #94a3b8;
       &:nth-child(7)  { animation-delay: 0.35s; }
       &:nth-child(8)  { animation-delay: 0.40s; }
 
-      &:nth-child(even).table-row { background: #f5f3ff; }
+      &:nth-child(even).table-row { background: #f9fffe; }
 
       &.table-row:hover {
         background: rgba($primary, 0.06) !important;
@@ -668,7 +670,7 @@ $text-light:     #94a3b8;
 
       &.reference-cell {
         .badge-ref {
-          background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+          background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
           color: $primary;
           padding: 0.3rem 0.75rem;
           border-radius: 6px;
@@ -676,7 +678,7 @@ $text-light:     #94a3b8;
           font-size: 0.8rem;
           white-space: nowrap;
           font-family: 'SF Mono', 'Cascadia Code', monospace;
-          border: 1px solid #c7d2fe;
+          border: 1px solid #99f6e4;
           letter-spacing: 0.3px;
         }
       }
@@ -837,7 +839,7 @@ $text-light:     #94a3b8;
     overflow: hidden;
 
     .modal-header-modern {
-      background: linear-gradient(135deg, #1e1b4b 0%, $primary 100%);
+      background: linear-gradient(135deg, #065f46 0%, $primary 100%);
       padding: 1.3rem 1.5rem;
       display: flex;
       align-items: center;
@@ -907,13 +909,13 @@ $text-light:     #94a3b8;
           font-weight: 600;
 
           &.badge-ref {
-            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
             color: $primary;
             padding: 0.25rem 0.6rem;
             border-radius: 6px;
             font-size: 0.82rem;
             font-family: 'SF Mono', 'Cascadia Code', monospace;
-            border: 1px solid #c7d2fe;
+            border: 1px solid #99f6e4;
           }
 
           &.amount-highlight { color: $primary; font-size: 1rem; }
@@ -939,7 +941,7 @@ $text-light:     #94a3b8;
         transition: all 0.2s ease;
 
         &:hover {
-          background: #4338ca;
+          background: darken(#0d9488, 8%);
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba($primary, 0.3);
         }
@@ -977,9 +979,9 @@ $text-light:     #94a3b8;
   100% { transform: scale(1.25); opacity: 0; }
 }
 @keyframes dotPulse {
-  0%   { box-shadow: 0 0 0 0 rgba(165,180,252,0.7); }
-  70%  { box-shadow: 0 0 0 7px rgba(165,180,252,0); }
-  100% { box-shadow: 0 0 0 0 rgba(165,180,252,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.65); }
+  70%  { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
+  100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
 }
 @keyframes iconFloat {
   0%, 100% { transform: translateY(0); }
