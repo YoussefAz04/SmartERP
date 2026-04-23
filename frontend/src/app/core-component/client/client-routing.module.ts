@@ -6,6 +6,7 @@ import {ListCategorieClientComponent} from "./list-categorie-client/list-categor
 import {AddClientComponent} from "./add-client/add-client.component";
 import {AddCategorieClientComponent} from "./add-categorie-client/add-categorie-client.component";
 import {EditClientComponent} from "./edit-client/edit-client.component";
+import {ViewClientComponent} from "./view-client/view-client.component";
 import { RoleGuard } from '../../core/guard/role/role.guard';
 
 const routes: Routes = [
@@ -33,6 +34,9 @@ const routes: Routes = [
     component: EditClientComponent,
     canActivate: [RoleGuard],
     data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+  },{
+    path: 'viewClient/:id',
+    component: ViewClientComponent,
   },
   
 ];

@@ -1,0 +1,86 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="row">
+    <div class="col">
+      <h3 class="page-title">Détails Client</h3>
+      <ul class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a routerLink="/client/listClient">Clients</a></li>
+        <li class="breadcrumb-item active">Détails</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- /Page Header -->
+
+<!-- Loading State -->
+<div class="text-center py-5" *ngIf="isLoading">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Chargement...</span>
+  </div>
+</div>
+
+<!-- Error State -->
+<div class="alert alert-danger" *ngIf="!isLoading && errorMessage">
+  <i class="feather icon-alert-circle me-2"></i>{{ errorMessage }}
+  <div class="mt-2">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+      <i class="feather icon-arrow-left me-1"></i>Retour
+    </button>
+  </div>
+</div>
+
+<!-- Client Details -->
+<div class="row" *ngIf="!isLoading && client && !errorMessage">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">{{ client.nom }} {{ client.prenom }}</h5>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-primary btn-sm" *ngIf="canEditClient" (click)="editClient()">
+            <i class="feather icon-edit me-1"></i>Modifier
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+            <i class="feather icon-arrow-left me-1"></i>Retour
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Nom</div>
+          <div class="col-sm-8">{{ client.nom }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Prénom</div>
+          <div class="col-sm-8">{{ client.prenom }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Email</div>
+          <div class="col-sm-8">{{ client.email }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Téléphone</div>
+          <div class="col-sm-8">{{ client.telephone }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Adresse</div>
+          <div class="col-sm-8">{{ client.adresse }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Secteur d'Activité</div>
+          <div class="col-sm-8">{{ client.secteurActivite }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Catégorie</div>
+          <div class="col-sm-8">{{ client.categorieClient?.nom || 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
