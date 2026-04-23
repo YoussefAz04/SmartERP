@@ -322,7 +322,7 @@ generateSidebarData(modules: ModuleTittle[]) {
         showSubRoute: true,
         menu: [
           {
-            menuValue: 'Tableau de Bord IA',
+            menuValue: 'Intelligence Prédictive',
             hasSubRoute: false,
             showSubRoute: false,
             icon: 'cpu',
