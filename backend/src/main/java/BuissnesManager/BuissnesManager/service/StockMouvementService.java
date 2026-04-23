@@ -78,6 +78,8 @@ public class StockMouvementService {
 
         if (dto.getUtilisateurId() != null) {
             userRepo.findById(dto.getUtilisateurId()).ifPresent(mouvement::setUtilisateur);
+        } else {
+            enterpriseSecurityUtil.getCurrentUser().ifPresent(mouvement::setUtilisateur);
         }
 
         return stockMouvementRepo.save(mouvement);
