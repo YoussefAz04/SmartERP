@@ -137,6 +137,7 @@
           <span>Members</span>
         </button>
         <button class="rp-card-action rp-action-delete"
+                *ngIf="isSuperAdmin()"
                 (click)="confirmColor(data.id)"
                 title="Delete Role">
           <i class="feather icon-trash-2"></i>

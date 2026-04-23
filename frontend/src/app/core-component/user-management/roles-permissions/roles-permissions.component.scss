@@ -514,6 +514,7 @@ $shadow-xl:  0 20px 60px rgba(0,0,0,.15);
 .rp-card-footer {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
   border-top: 1.5px solid $border;
