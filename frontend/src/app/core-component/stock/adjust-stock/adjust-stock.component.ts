@@ -60,6 +60,7 @@ export class AdjustStockComponent implements OnInit {
       stockId: [null, Validators.required],
       typeMouvement: ['ENTREE', Validators.required],
       quantite: [null, [Validators.required, Validators.min(1)]],
+      localisation: [''],
       motif: ['', Validators.required],
       referenceCommande: [''],
       dateMouvement: [new Date().toISOString().substring(0, 16)]
@@ -88,9 +89,13 @@ export class AdjustStockComponent implements OnInit {
     const existing = this.stocks.find(s => s.id === id);
     if (existing) {
       this.selectedStock = existing;
+      this.adjustForm.patchValue({ localisation: existing.localisation || '' });
     } else {
       this.stockService.getStockById(id).subscribe({
-        next: (data) => { this.selectedStock = data; },
+        next: (data) => {
+          this.selectedStock = data;
+          this.adjustForm.patchValue({ localisation: data.localisation || '' });
+        },
         error: (err) => console.error('Erreur chargement stock:', err)
       });
     }
@@ -134,10 +139,11 @@ export class AdjustStockComponent implements OnInit {
         dateMouvement: this.adjustForm.get('dateMouvement')?.value
       };
 
+      const localisation = this.adjustForm.get('localisation')?.value || undefined;
       this.mouvementService.createMovement(dto).subscribe({
         next: () => {
           const updatedQty = newQty;
-          this.stockService.updateStock(dto.stockId, { quantiteDisponible: updatedQty }).subscribe({
+          this.stockService.updateStock(dto.stockId, { quantiteDisponible: updatedQty, localisation }).subscribe({
             next: () => {
               this.isSubmitting = false;
               Swal.fire('Succès', 'Stock ajusté avec succès!', 'success').then(() => {
