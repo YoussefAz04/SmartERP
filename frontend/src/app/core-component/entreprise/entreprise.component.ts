@@ -180,4 +180,27 @@ export class EntrepriseComponent implements OnInit{
   addEntreprise(): void {
     this.router.navigate(['/entreprise/addEntreprise']);
   }
+
+  connectToEntreprise(e: Entreprise): void {
+    const item = localStorage.getItem('myLSkey');
+    if (!item) {
+      this.notification.error("Session introuvable. Veuillez vous reconnecter.");
+      return;
+    }
+    try {
+      const session = JSON.parse(decodeURIComponent(escape(atob(item))));
+      session.entrepriseId = e.id;
+      session.entrepriseName = e.nom;
+      session.entreprise = { id: e.id, nom: e.nom };
+      localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(session)))));
+      if (e.id !== null && e.id !== undefined) {
+        localStorage.setItem('entrepriseId', e.id.toString());
+        localStorage.setItem('enterpriseId', e.id.toString());
+      }
+      this.notification.success(`Connecté à l'entreprise : ${e.nom}`);
+      this.router.navigate([routes.adminDashboard]);
+    } catch (err) {
+      console.error('❌ Error switching enterprise:', err);
+    }
+  }
 }

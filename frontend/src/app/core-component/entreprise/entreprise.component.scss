@@ -630,6 +630,17 @@
       transform: scale(1.1);
     }
   }
+
+  &.action-btn-connect {
+    background: #d1fae5;
+    color: #065f46;
+
+    &:hover {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #fff;
+      transform: scale(1.1);
+    }
+  }
 }
 
 // ============================================================
