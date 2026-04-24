@@ -183,7 +183,10 @@ export class EntrepriseComponent implements OnInit{
 
   connectToEntreprise(e: Entreprise): void {
     const item = localStorage.getItem('myLSkey');
-    if (!item) return;
+    if (!item) {
+      this.notification.error("Session introuvable. Veuillez vous reconnecter.");
+      return;
+    }
     try {
       const session = JSON.parse(decodeURIComponent(escape(atob(item))));
       session.entrepriseId = e.id;
