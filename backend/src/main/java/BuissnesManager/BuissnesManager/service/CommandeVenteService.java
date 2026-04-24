@@ -314,8 +314,10 @@ public class CommandeVenteService {
                 ligne.setMontantTTC(ligneDto.getMontantTTC() != null ? ligneDto.getMontantTTC() : BigDecimal.ZERO);
                 ligne.setCommandeVente(saved);
                 if (ligneDto.getArticleVenteId() != null) {
-                    ArticleVente articleVente = articleVenteRepo.findById(ligneDto.getArticleVenteId())
-                            .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé: " + ligneDto.getArticleVenteId()));
+                    final long avId = ligneDto.getArticleVenteId();
+                    ArticleVente articleVente = articleVenteRepo.findById(avId)
+                            .orElseThrow(() -> new RuntimeException(
+                                    String.format("Ligne %d: ArticleVente non trouvé: %d", lineNumber, avId)));
                     ligne.setArticleVente(articleVente);
                 }
                 ligneCommandeVenteRepository.save(ligne);
@@ -324,10 +326,11 @@ public class CommandeVenteService {
             // Keep the associated preliminary FactureDeVente in sync with the new totals
             factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
                 if ("EN_ATTENTE".equals(facture.getStatut())) {
+                    double totalTTC = saved.getMontantTTC() != null ? saved.getMontantTTC().doubleValue() : 0.0;
                     facture.setMontantHT(saved.getMontantHT() != null ? saved.getMontantHT().doubleValue() : 0.0);
                     facture.setMontantTVA(saved.getMontantTVA() != null ? saved.getMontantTVA().doubleValue() : 0.0);
-                    facture.setMontantTTC(saved.getMontantTTC() != null ? saved.getMontantTTC().doubleValue() : 0.0);
-                    facture.setMontantTotal(saved.getMontantTTC() != null ? saved.getMontantTTC().doubleValue() : 0.0);
+                    facture.setMontantTTC(totalTTC);
+                    facture.setMontantTotal(totalTTC);
                     factureDeVenteRepository.save(facture);
                 }
             });
