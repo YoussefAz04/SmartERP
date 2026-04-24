@@ -163,6 +163,9 @@
               <p class="profile-org" *ngIf="entrepriseName">
                 <i class="feather icon-briefcase"></i> {{ entrepriseName }}
               </p>
+              <p class="profile-org" *ngIf="isSuperAdmin && !entrepriseName" style="color:#f59e0b;">
+                <i class="feather icon-alert-circle"></i> Aucune entreprise sélectionnée
+              </p>
             </div>
           </div>
 
@@ -174,6 +177,10 @@
             <a [routerLink]="routes.generalSettings" class="profile-menu-item">
               <i class="feather icon-settings"></i>
               <span>Settings</span>
+            </a>
+            <a [routerLink]="['/entreprise/listEntreprise']" class="profile-menu-item" *ngIf="isSuperAdmin">
+              <i class="feather icon-refresh-cw"></i>
+              <span>Changer d'entreprise</span>
             </a>
             <div class="menu-divider"></div>
             <button class="profile-menu-item logout" (click)="logout()" type="button">

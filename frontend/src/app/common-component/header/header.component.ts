@@ -45,6 +45,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public roleName: string[] = [];
   public entrepriseName = '';
   public showProfile = false;
+  public isSuperAdmin = false;
 
   // Page tracking
   public activePath = '';
@@ -68,6 +69,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.events.subscribe((data: RouterEvent) => {
       if (data instanceof NavigationStart) {
         this.activePath = data.url.split('/')[2];
+        this.getUserAuthData();
       }
     });
   }
@@ -242,6 +244,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!currentUser) return;
     this.userName = currentUser.name || 'User';
     this.roleName = Array.isArray(currentUser.roles) ? currentUser.roles : [];
+    this.isSuperAdmin = currentUser.roleId === 0;
 
     if (currentUser.entreprise && currentUser.entreprise.nom) {
       this.entrepriseName = currentUser.entreprise.nom;
