@@ -39,7 +39,7 @@ export class ViewClientComponent implements OnInit {
       if (!raw) return;
       const session = JSON.parse(decodeURIComponent(escape(atob(raw))));
       const roles: string[] = Array.isArray(session?.roles) ? session.roles : [];
-      this.canEditClient = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
+      this.canEditClient = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN') || roles.includes('EMPLOYEE');
     } catch {
       this.canEditClient = false;
     }

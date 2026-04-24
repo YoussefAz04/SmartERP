@@ -24,7 +24,7 @@ public class FournisseurController {
     private JWTUtil jwtUtil;
 
     // ✅ ADD FOURNISSEUR
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/addFournisseur/{idCategorie}")
     public ResponseEntity<Fournisseur> addFournisseur(@RequestBody Fournisseur fournisseur, @PathVariable Long idCategorie) {
         try {
@@ -75,7 +75,7 @@ public class FournisseurController {
     }
 
     // ✅ DELETE FOURNISSEUR
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteFournisseur/{id}")
     public ResponseEntity<Map<String, Object>> deleteFournisseur(@PathVariable Long id) {
         try {
@@ -94,7 +94,7 @@ public class FournisseurController {
     }
 
     // ✅ UPDATE FOURNISSEUR
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/updateFournisseur/{id}")
     public ResponseEntity<Fournisseur> updateFournisseur(@PathVariable Long id, @RequestBody Fournisseur fournisseur) {
         try {

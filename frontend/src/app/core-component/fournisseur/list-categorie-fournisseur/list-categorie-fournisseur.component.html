@@ -16,6 +16,7 @@
         <i class="feather icon-rotate-ccw"></i> Actualiser
       </button>
       <button type="button" class="btn-hero btn-hero-primary"
+        *ngIf="canManageCategorie"
         (click)="router.navigate(['/fournisseur/addCategorieFournisseur'])">
         <i class="feather icon-plus-circle"></i> Ajouter Catégorie
       </button>
@@ -114,11 +115,13 @@
             <td>
               <div class="action-btns">
                 <button type="button" class="action-btn action-btn-edit"
+                  *ngIf="canManageCategorie"
                   (click)="router.navigate(['/fournisseur/editCategorieFournisseur', categorie.id])"
                   title="Modifier" [disabled]="isLoading">
                   <i class="feather icon-edit"></i>
                 </button>
                 <button type="button" class="action-btn action-btn-delete"
+                  *ngIf="canManageCategorie"
                   (click)="deleteCategorie(categorie.id)"
                   title="Supprimer" [disabled]="isLoading">
                   <i class="feather icon-trash-2"></i>
@@ -132,6 +135,7 @@
                 <i class="feather icon-layers empty-icon"></i>
                 <p>Aucune catégorie fournisseur trouvée</p>
                 <button type="button" class="btn-retry"
+                  *ngIf="canManageCategorie"
                   (click)="router.navigate(['/fournisseur/addCategorieFournisseur'])">
                   <i class="feather icon-plus"></i> Ajouter une catégorie
                 </button>
