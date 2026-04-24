@@ -107,7 +107,7 @@ public class ClientController {
     }
 
     // ✅ ADD CATEGORY CLIENT
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping("/addCategorieClient")
     public ResponseEntity<CategorieClient> addCategorieClient(@RequestBody CategorieClient categorieClient) {
         try {
@@ -140,7 +140,7 @@ public class ClientController {
     }
 
     // ✅ UPDATE CATEGORY CLIENT
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/updateCategorieClient/{id}")
     public ResponseEntity<CategorieClient> updateCategorieClient(
         @PathVariable Long id, 
@@ -154,7 +154,7 @@ public class ClientController {
             return ResponseEntity.status(500).build();
         }
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @DeleteMapping("/deleteCategorie/{id}")
     public ResponseEntity<Map<String, Object>> deleteCategorie(@PathVariable Long id) {
         try {

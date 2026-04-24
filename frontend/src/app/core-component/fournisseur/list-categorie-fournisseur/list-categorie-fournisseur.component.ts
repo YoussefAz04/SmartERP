@@ -16,6 +16,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
 export class ListCategorieFournisseurComponent implements OnInit {
   categories: CategorieFournisseur[] = [];
   isLoading: boolean = false;
+  canManageCategorie = false;
   protected readonly routes = routes;
   protected readonly router: Router;
 
@@ -46,7 +47,20 @@ export class ListCategorieFournisseurComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadRolePermissions();
     this.loadCategories();
+  }
+
+  loadRolePermissions(): void {
+    try {
+      const raw = localStorage.getItem('myLSkey');
+      if (!raw) return;
+      const session = JSON.parse(decodeURIComponent(escape(atob(raw))));
+      const roles: string[] = Array.isArray(session?.roles) ? session.roles : [];
+      this.canManageCategorie = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
+    } catch {
+      this.canManageCategorie = false;
+    }
   }
 
   loadCategories(): void {

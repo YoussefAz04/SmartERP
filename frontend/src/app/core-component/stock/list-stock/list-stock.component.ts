@@ -65,8 +65,9 @@ export class ListStockComponent implements OnInit {
         const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
-        this.canAdjustStock = isSuperAdmin || isAdmin;
-        this.canDeleteStock = isSuperAdmin || isAdmin;
+        const isEmployee = roles.includes('EMPLOYEE');
+        this.canAdjustStock = isSuperAdmin || isAdmin || isEmployee;
+        this.canDeleteStock = isSuperAdmin || isAdmin || isEmployee;
       } catch (error) {
         console.error('Error parsing user data:', error);
       }

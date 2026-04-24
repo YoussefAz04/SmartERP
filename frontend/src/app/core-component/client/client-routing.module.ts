@@ -18,7 +18,7 @@ const routes: Routes = [
     path: 'listCategorieClient',
     component: ListCategorieClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['ADMIN'] },
+    data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
   },{
     path: 'addClient',
     component: AddClientComponent,
@@ -28,12 +28,12 @@ const routes: Routes = [
     path: 'addCategorieClient',
     component: AddCategorieClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['ADMIN'] },
+    data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
   },{
     path: 'editClient/:id',
     component: EditClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['ADMIN'] },
+    data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
   },{
     path: 'viewClient/:id',
     component: ViewClientComponent,

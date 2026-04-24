@@ -47,7 +47,7 @@ public class StockController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping
     public ResponseEntity<Stock> createStock(@RequestBody StockDto stockDto) {
         try {
@@ -58,7 +58,7 @@ public class StockController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/{id}")
     public ResponseEntity<Stock> updateStock(@PathVariable Long id, @RequestBody StockDto stockDto) {
         try {
@@ -71,7 +71,7 @@ public class StockController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStock(@PathVariable Long id) {
         try {

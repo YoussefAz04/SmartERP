@@ -73,7 +73,7 @@ public class FactureVenteController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping
     public ResponseEntity<FactureVente> createFactureVente(@RequestBody FactureVenteDto dto) {
         try {
@@ -113,7 +113,7 @@ public class FactureVenteController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/{id}")
     public ResponseEntity<FactureVente> updateFactureVente(@PathVariable Long id, @RequestBody FactureVenteDto dto) {
         try {
@@ -137,7 +137,7 @@ public class FactureVenteController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFactureVente(@PathVariable Long id) {
         try {
