@@ -253,20 +253,10 @@ generateSidebarData(modules: ModuleTittle[]) {
       };
 
       if (userRole === 'SUPER_ADMIN') {
-        // SUPER_ADMIN is platform-level: only show platform management sections
-        // (enterprises, users, roles, permissions). All business modules are hidden.
-        // Keywords are matched against the normalized section title (ModuleTittle.moduleTittle).
-        const SUPER_ADMIN_ALLOWED_SECTION_KEYWORDS = [
-          'entreprise',   // enterprise management section
-          'utilisateur',  // French "user" – matches user management sections
-          'user',         // English "user"
-          'role',         // role management
-          'permission',   // permission management
-          'parametrage',  // settings/parameterisation
-        ];
-        const sectionTitle = normalize(moduleTitle.moduleTittle ?? '');
-        const isSectionAllowed = SUPER_ADMIN_ALLOWED_SECTION_KEYWORDS.some(kw => sectionTitle.includes(kw));
-        activeModules = isSectionAllowed ? moduleTitle.modules.filter(isModuleAllowed) : [];
+        // SUPER_ADMIN is platform-level: all sections come from the hardcoded
+        // "Administration Plateforme" block below. DB-sourced sections are hidden
+        // entirely to avoid duplicate items (e.g. Gestion des Utilisateurs).
+        activeModules = [];
       } else if (userRole === 'ADMIN') {
         // ADMIN (Enterprise Owner) sees all business modules
         activeModules = moduleTitle.modules.filter(isModuleAllowed);
