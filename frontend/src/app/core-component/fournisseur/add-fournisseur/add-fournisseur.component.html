@@ -262,7 +262,7 @@
                       min="0"
                       max="100"
                       step="0.5"
-                      [style.background]="'linear-gradient(to right, #ff9a44 0%, #ff8224 ' + tauxCurrentValue + '%, #e6eaf0 ' + tauxCurrentValue + '%, #e6eaf0 100%)'"
+                      [ngStyle]="tauxSliderStyle"
                       aria-label="Taux de livraison">
                     <div class="taux-endpoints">
                       <span>0% · Gratuit</span>
@@ -298,7 +298,7 @@
                       (mouseenter)="notationHover = s"
                       (mouseleave)="notationHover = 0"
                       [attr.aria-label]="'Note ' + s + ' étoile' + (s > 1 ? 's' : '') + ' sur 5'">
-                      &#9733;
+                      ★
                     </button>
                     <span class="star-helper" *ngIf="notationCurrentValue === 0 && notationHover === 0">
                       Cliquez pour noter
@@ -309,8 +309,8 @@
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('notation')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('notation')?.hasError('required')">La notation est requise</span>
-                    <span *ngIf="fournisseurForm.get('notation')?.hasError('min') || fournisseurForm.get('notation')?.hasError('max')">Valeur entre 1 et 5</span>
+                    <span *ngIf="fournisseurForm.get('notation')?.hasError('required')">Veuillez sélectionner au moins 1 étoile</span>
+                    <span *ngIf="fournisseurForm.get('notation')?.hasError('min') || fournisseurForm.get('notation')?.hasError('max')">Sélectionnez entre 1 et 5 étoiles</span>
                   </span>
                 </div>
               </div>
