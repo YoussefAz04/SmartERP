@@ -25,6 +25,9 @@ export class AddFournisseurComponent implements OnInit {
   isLoading = false;
   submitted = false;
 
+  readonly starValues = [1, 2, 3, 4, 5];
+  notationHover = 0;
+
   constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
@@ -43,10 +46,33 @@ export class AddFournisseurComponent implements OnInit {
       telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
-      tauxLivraison: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
-      notation: ['', [Validators.required, Validators.min(0), Validators.max(5)]],
+      tauxLivraison: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+      notation: [null, [Validators.required, Validators.min(1), Validators.max(5)]],
       categorieId: ['', Validators.required],
     });
+  }
+
+  get notationCurrentValue(): number {
+    const v = this.fournisseurForm.get('notation')?.value;
+    return v !== '' && v != null ? Number(v) : 0;
+  }
+
+  get tauxCurrentValue(): number {
+    const v = this.fournisseurForm.get('tauxLivraison')?.value;
+    return v !== '' && v != null ? Number(v) : 0;
+  }
+
+  get tauxSliderStyle(): { background: string } {
+    const pct = this.tauxCurrentValue;
+    return {
+      background: `linear-gradient(to right, #ff9a44 0%, #ff8224 ${pct}%, #e6eaf0 ${pct}%, #e6eaf0 100%)`
+    };
+  }
+
+  setNotation(val: number): void {
+    this.fournisseurForm.patchValue({ notation: val });
+    this.fournisseurForm.get('notation')?.markAsTouched();
+    this.notationHover = 0;
   }
 
   isFieldInvalid(fieldName: string): boolean {
@@ -66,7 +92,7 @@ export class AddFournisseurComponent implements OnInit {
       const formValue = this.fournisseurForm.value;
       const idCategorie = formValue.categorieId;
 
-        const fournisseurData: any = {
+      const fournisseurData: any = {
         nom: formValue.nom.trim(),
         prenom: formValue.prenom ? formValue.prenom.trim() : '',
         email: formValue.email.trim(),
@@ -78,15 +104,13 @@ export class AddFournisseurComponent implements OnInit {
       };
 
       this.fournisseurService.addFournisseur(fournisseurData, idCategorie).subscribe({
-        next: (data) => {
-          console.log('Fournisseur ajouté avec succès:', data);
+        next: () => {
           this.isLoading = false;
           this.notification.success('✓ Fournisseur ajouté avec succès!');
           this.router.navigate(['/fournisseur/listFournisseur']);
         },
         error: (err: any) => {
           this.isLoading = false;
-          console.error('Erreur:', err);
           const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter le fournisseur';
           this.notification.error('✗ Erreur: ' + errorMsg);
         }
@@ -98,13 +122,8 @@ export class AddFournisseurComponent implements OnInit {
 
   loadCategories(): void {
     this.fournisseurService.getAllCategorieFournisseurs().subscribe({
-      next: (data) => {
-        this.categories = data;
-        console.log('Catégories chargées:', data);
-      },
-      error: (err: any) => {
-        console.error('Erreur:', err);
-      }
+      next: (data) => { this.categories = data; },
+      error: () => { /* silent — categories list is empty, select will show no options */ }
     });
   }
 
