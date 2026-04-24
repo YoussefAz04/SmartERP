@@ -8,6 +8,8 @@ import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +51,11 @@ public class CommandeVenteService {
     @Autowired
     private NotificationService notificationService;
 
+    @Caching(evict = {
+        @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
+        @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
+        @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
+    })
     @Transactional
     public CommandeVente createCommande(CommandeVenteDto dto) {
         CommandeVente commande = new CommandeVente();
@@ -246,6 +253,11 @@ public class CommandeVenteService {
             "EN_ATTENTE", "CONFIRMEE", "LIVREE", "ANNULEE"
     );
 
+    @Caching(evict = {
+        @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
+        @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
+        @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
+    })
     public CommandeVente updateStatut(Long id, String statut) {
         if (!VALID_STATUTS.contains(statut)) {
             throw new RuntimeException("Statut invalide: " + statut + ". Statuts autorisés: " + VALID_STATUTS);
@@ -278,6 +290,11 @@ public class CommandeVenteService {
         return commandeVenteRepository.save(commande);
     }
 
+    @Caching(evict = {
+        @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
+        @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
+        @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
+    })
     @Transactional
     public CommandeVente updateCommande(Long id, CommandeVenteDto dto) {
         CommandeVente commande = commandeVenteRepository.findById(id)
@@ -339,6 +356,11 @@ public class CommandeVenteService {
         return saved;
     }
 
+    @Caching(evict = {
+        @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
+        @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
+        @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
+    })
     @Transactional
     public void deleteCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
@@ -377,6 +399,11 @@ public class CommandeVenteService {
         commandeVenteRepository.deleteById(id);
     }
 
+    @Caching(evict = {
+        @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
+        @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
+        @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
+    })
     @Transactional
     public FactureDeVente validerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
@@ -457,6 +484,11 @@ public class CommandeVenteService {
         return savedFacture;
     }
 
+    @Caching(evict = {
+        @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
+        @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
+        @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
+    })
     @Transactional
     public CommandeVente annulerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
@@ -494,6 +526,11 @@ public class CommandeVenteService {
         return saved;
     }
 
+    @Caching(evict = {
+        @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
+        @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
+        @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
+    })
     @Transactional
     public BonLivraison livrerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
