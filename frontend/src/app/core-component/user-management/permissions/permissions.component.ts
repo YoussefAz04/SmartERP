@@ -355,6 +355,19 @@ export class PermissionsComponent implements OnInit {
       });
     });
 
+    // Clear permissions for modules that were previously assigned but are now fully removed
+    const currentModuleIds = new Set(this.assignedModules.map(m => m.moduleId));
+    this.initialAssignedModules.forEach(module => {
+      if (!currentModuleIds.has(module.moduleId) && !grouped[module.moduleId]) {
+        grouped[module.moduleId] = {
+          create: false,
+          update: false,
+          delete: false,
+          view: false
+        };
+      }
+    });
+
     // Sauvegarder chaque module
     const savePromises = Object.entries(grouped).map(([moduleIdStr, permission]) => {
       const moduleId = +moduleIdStr;
