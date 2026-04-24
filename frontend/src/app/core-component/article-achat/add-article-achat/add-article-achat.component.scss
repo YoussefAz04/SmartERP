@@ -1,5 +1,9 @@
+// ══════════════════════════════════════════════════════════════════════════════
+// Design Tokens
+// ══════════════════════════════════════════════════════════════════════════════
 
-// ─── Design Tokens ───────────────────────────────────────────────────────────
+// Slate palette
+$slate-950: #020617;
 $slate-900: #0f172a;
 $slate-800: #1e293b;
 $slate-700: #334155;
@@ -11,40 +15,58 @@ $slate-200: #e2e8f0;
 $slate-100: #f1f5f9;
 $slate-50:  #f8fafc;
 
+// Brand – Teal/Cyan
 $teal-700:  #0e7490;
 $teal-600:  #0891b2;
 $teal-500:  #06b6d4;
 $teal-400:  #22d3ee;
+$teal-300:  #67e8f9;
 $teal-100:  #cffafe;
 $teal-50:   #ecfeff;
 
+// Green
 $green-700: #15803d;
 $green-600: #16a34a;
+$green-500: #22c55e;
 $green-100: #dcfce7;
 $green-50:  #f0fdf4;
 
-$red-600:   #dc2626;
-$red-100:   #fee2e2;
-$red-50:    #fef2f2;
-
+// Amber
+$amber-700: #b45309;
 $amber-600: #d97706;
 $amber-500: #f59e0b;
 $amber-100: #fef3c7;
 $amber-50:  #fffbeb;
 
-$radius-sm: 6px;
-$radius:    10px;
-$radius-lg: 16px;
-$radius-xl: 20px;
+// Red
+$red-600:   #dc2626;
+$red-100:   #fee2e2;
+$red-50:    #fef2f2;
 
-$shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
-$shadow:    0 4px 16px rgba(0,0,0,.08);
-$shadow-lg: 0 12px 32px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
+// Radii
+$r-xs:  4px;
+$r-sm:  8px;
+$r:     12px;
+$r-lg:  16px;
+$r-xl:  22px;
+$r-2xl: 28px;
 
-$transition:      all .22s cubic-bezier(.4,0,.2,1);
-$transition-fast: all .15s cubic-bezier(.4,0,.2,1);
+// Shadows
+$shadow-xs: 0 1px 2px rgba(0,0,0,.05);
+$shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+$shadow:    0 4px 16px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+$shadow-lg: 0 12px 40px rgba(0,0,0,.10), 0 4px 10px rgba(0,0,0,.06);
+$shadow-xl: 0 24px 60px rgba(0,0,0,.12), 0 8px 20px rgba(0,0,0,.07);
 
-// ─── Toast Notifications ─────────────────────────────────────────────────────
+// Transitions
+$t:     all .22s cubic-bezier(.4,0,.2,1);
+$t-fast: all .15s cubic-bezier(.4,0,.2,1);
+$t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Toast Notifications
+// ══════════════════════════════════════════════════════════════════════════════
 .toast-container {
   position: fixed;
   top: 24px;
@@ -52,264 +74,359 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
   z-index: 9999;
   pointer-events: none;
 
-  @media (max-width: 480px) {
-    top: 12px;
-    right: 12px;
-    left: 12px;
-  }
+  @media (max-width: 480px) { top: 12px; right: 12px; left: 12px; }
 }
 
 .toast-notification {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 16px;
-  border-radius: $radius;
+  padding: 14px 18px;
+  border-radius: $r;
   font-size: .84rem;
   font-weight: 500;
-  box-shadow: $shadow-lg;
+  box-shadow: $shadow-xl;
   pointer-events: all;
-  animation: toastIn .3s cubic-bezier(.34,1.56,.64,1);
-  min-width: 280px;
-  max-width: 400px;
+  animation: toastIn .32s cubic-bezier(.34,1.56,.64,1);
+  min-width: 290px;
+  max-width: 420px;
+  backdrop-filter: blur(10px);
 
-  @media (max-width: 480px) {
-    min-width: unset;
-    max-width: 100%;
-  }
+  @media (max-width: 480px) { min-width: unset; max-width: 100%; }
 
-  .toast-icon { display: flex; align-items: center; flex-shrink: 0; }
-  .toast-message { flex: 1; line-height: 1.4; }
+  .toast-icon    { display: flex; align-items: center; flex-shrink: 0; }
+  .toast-message { flex: 1; line-height: 1.45; }
 
   .toast-close {
     display: flex;
     align-items: center;
-    background: none;
+    background: rgba(255,255,255,.2);
     border: none;
     cursor: pointer;
-    padding: 2px;
-    border-radius: 4px;
-    opacity: .7;
+    padding: 4px;
+    border-radius: $r-xs;
+    opacity: .8;
     flex-shrink: 0;
-    transition: $transition-fast;
-    &:hover { opacity: 1; }
+    transition: $t-fast;
+    color: #fff;
+    &:hover { opacity: 1; background: rgba(255,255,255,.3); }
   }
 
   &.toast-success {
-    background: $green-600;
+    background: linear-gradient(135deg, $green-600, $green-700);
     color: #fff;
-    .toast-close { color: #fff; }
+    border: 1px solid rgba($green-500, .4);
   }
 
   &.toast-error {
-    background: $red-600;
+    background: linear-gradient(135deg, $red-600, #b91c1c);
     color: #fff;
-    .toast-close { color: #fff; }
+    border: 1px solid rgba(#f87171, .4);
   }
 }
 
-// ─── Page Wrapper (centered) ─────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Page Wrapper
+// ══════════════════════════════════════════════════════════════════════════════
 .article-add-wrapper {
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto;
-  padding: 20px 16px 40px;
-  animation: fadeInPage .4s cubic-bezier(.4,0,.2,1);
+  padding: 12px 16px 52px;
+  animation: fadeInPage .42s cubic-bezier(.4,0,.2,1);
 }
 
-// ─── Page Header ─────────────────────────────────────────────────────────────
-.page-header {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid $slate-200;
 
-  h3.page-title {
-    font-size: 1.32rem;
-    font-weight: 700;
-    color: $slate-900;
-    margin: 0 0 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+// ══════════════════════════════════════════════════════════════════════════════
+// Hero Header
+// ══════════════════════════════════════════════════════════════════════════════
+.page-hero {
+  position: relative;
+  background: linear-gradient(135deg, $teal-700 0%, $teal-600 50%, $teal-500 100%);
+  border-radius: $r-xl;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba($teal-600, .35), 0 2px 8px rgba($teal-700, .2);
+}
 
-    .title-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, $teal-600, $teal-700);
-      border-radius: $radius-sm;
-      color: #fff;
-      flex-shrink: 0;
-    }
-  }
+.hero-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: .15;
+}
+.hero-orb-1 {
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, #fff, transparent);
+  top: -80px; right: -60px;
+}
+.hero-orb-2 {
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, #fff, transparent);
+  bottom: -60px; left: 20%;
+}
 
-  .breadcrumb {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    font-size: .75rem;
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
-    .breadcrumb-item {
-      color: $slate-500;
+.hero-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
-      a {
-        color: $teal-600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: $transition-fast;
+.hero-icon-wrap {
+  width: 52px;
+  height: 52px;
+  background: rgba(255,255,255,.2);
+  border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: $r;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+}
 
-        &:hover {
-          color: $teal-700;
-          text-decoration: underline;
-        }
-      }
+.hero-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 6px;
+  letter-spacing: -.02em;
+  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
 
-      &.active { color: $slate-500; }
+// ── Breadcrumb ─────────────────────────────────────────────────────────────
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: .75rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
 
-      &:not(:last-child)::after {
-        content: "›";
-        margin-left: 6px;
-        color: $slate-300;
-        font-size: .9rem;
-      }
-    }
-  }
+.breadcrumb-link {
+  color: rgba(255,255,255,.8);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: $t-fast;
+  &:hover { color: #fff; }
+}
 
-  @media (max-width: 480px) {
-    h3.page-title {
-      font-size: 1.08rem;
-      gap: 6px;
+.breadcrumb-sep   { color: rgba(255,255,255,.45); font-size: .85rem; }
+.breadcrumb-current { color: rgba(255,255,255,.65); }
 
-      .title-icon {
-        width: 34px;
-        height: 34px;
-      }
-    }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Step Progress Bar
+// ══════════════════════════════════════════════════════════════════════════════
+.step-progress {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 14px 28px;
+  background: #fff;
+  border-radius: $r-lg;
+  border: 1px solid $slate-100;
+  box-shadow: $shadow-sm;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $teal-500, $teal-700);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba($teal-500, .4);
+  transition: $t-bounce;
+
+  .step-item:not(.step-active) & {
+    background: $slate-100;
+    color: $slate-400;
+    box-shadow: none;
   }
 }
 
-// ─── Form Card ───────────────────────────────────────────────────────────────
+.step-label {
+  font-size: .68rem;
+  font-weight: 700;
+  color: $teal-600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+
+  .step-item:not(.step-active) & { color: $slate-400; }
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, $teal-300, $teal-100);
+  max-width: 80px;
+  border-radius: 2px;
+  margin-bottom: 20px; // align with dots
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Form Card
+// ══════════════════════════════════════════════════════════════════════════════
 .form-card {
   background: #fff;
-  border-radius: $radius-xl;
-  box-shadow: $shadow-lg;
-  border: 1px solid $slate-200;
+  border-radius: $r-xl;
+  box-shadow: $shadow-xl;
+  border: 1px solid $slate-100;
   overflow: hidden;
-
-  .card-header-bar {
-    height: 5px;
-    background: linear-gradient(90deg, $teal-600, $teal-500, $teal-400);
-    display: flex;
-    align-items: center;
-    padding: 0 14px;
-    gap: 6px;
-
-    .card-header-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.45);
-      flex-shrink: 0;
-    }
-  }
 }
 
-// ─── Form Sections ───────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Form Sections
+// ══════════════════════════════════════════════════════════════════════════════
 .form-section {
-  padding: 28px 32px;
-  transition: background $transition;
+  padding: 30px 36px;
+  position: relative;
+  transition: background $t;
 
-  & + .form-section { border-top: 1px solid $slate-100; }
+  & + .form-section {
+    border-top: 1.5px solid $slate-100;
+  }
 
-  &:hover { background: rgba($slate-50, .6); }
+  &:hover { background: rgba($slate-50, .7); }
 
-  @media (max-width: 640px) { padding: 20px 18px; }
+  @media (max-width: 640px) { padding: 22px 20px; }
 }
 
+// ── Section Header ─────────────────────────────────────────────────────────
 .section-header {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1.5px solid $slate-100;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1.5px dashed $slate-200;
 }
 
 .section-text { flex: 1; min-width: 0; }
 
-.section-step {
-  font-size: .7rem;
-  font-weight: 700;
-  color: $slate-400;
-  background: $slate-100;
-  border-radius: 20px;
-  padding: 3px 10px;
-  white-space: nowrap;
-  letter-spacing: .04em;
-  flex-shrink: 0;
+.section-title {
+  font-size: .95rem;
+  font-weight: 800;
+  color: $slate-800;
+  margin: 0 0 2px;
+  letter-spacing: -.015em;
 }
 
-.section-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: $radius;
+.section-subtitle {
+  font-size: .74rem;
+  color: $slate-500;
+  margin: 0;
+}
+
+// ── Step badge ─────────────────────────────────────────────────────────────
+.step-badge {
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, $teal-50, $teal-100);
+  color: $teal-700;
+  border: 1.5px solid rgba($teal-400, .35);
+
+  &.step-badge-green {
+    background: linear-gradient(135deg, $green-50, $green-100);
+    color: $green-700;
+    border-color: rgba($green-500, .35);
+  }
+
+  &.step-badge-amber {
+    background: linear-gradient(135deg, $amber-50, $amber-100);
+    color: $amber-700;
+    border-color: rgba($amber-500, .35);
+  }
+}
+
+// ── Section Icon ───────────────────────────────────────────────────────────
+.section-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: $r;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: $transition;
+  transition: $t;
 
   &.product {
-    background: linear-gradient(135deg, $teal-50, rgba($teal-100, .6));
+    background: linear-gradient(135deg, $teal-50, $teal-100);
     color: $teal-600;
-    border: 1.5px solid rgba($teal-500, .2);
-    box-shadow: 0 2px 8px rgba($teal-500, .12);
+    border: 1.5px solid rgba($teal-400, .3);
+    box-shadow: 0 4px 12px rgba($teal-500, .15);
   }
 
   &.pricing {
-    background: linear-gradient(135deg, $green-50, rgba($green-100, .6));
+    background: linear-gradient(135deg, $green-50, $green-100);
     color: $green-600;
-    border: 1.5px solid rgba($green-600, .2);
-    box-shadow: 0 2px 8px rgba($green-600, .12);
+    border: 1.5px solid rgba($green-500, .3);
+    box-shadow: 0 4px 12px rgba($green-500, .15);
   }
 
   &.supplier {
-    background: linear-gradient(135deg, $amber-50, rgba($amber-100, .6));
+    background: linear-gradient(135deg, $amber-50, $amber-100);
     color: $amber-600;
-    border: 1.5px solid rgba($amber-500, .2);
-    box-shadow: 0 2px 8px rgba($amber-500, .12);
+    border: 1.5px solid rgba($amber-500, .3);
+    box-shadow: 0 4px 12px rgba($amber-500, .15);
+  }
+
+  .form-section:hover & {
+    transform: scale(1.06) rotate(-2deg);
+    &.product  { box-shadow: 0 6px 18px rgba($teal-500, .25); }
+    &.pricing  { box-shadow: 0 6px 18px rgba($green-500, .25); }
+    &.supplier { box-shadow: 0 6px 18px rgba($amber-500, .25); }
   }
 }
 
-.section-title {
-  font-size: .92rem;
-  font-weight: 700;
-  color: $slate-800;
-  margin: 0 0 2px;
-  letter-spacing: -.01em;
-}
 
-.section-subtitle {
-  font-size: .73rem;
-  color: $slate-500;
-  margin: 0;
-  font-weight: 400;
-}
-
-// ─── Fields Grid ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// Fields Grid
+// ══════════════════════════════════════════════════════════════════════════════
 .fields-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px 22px;
+  gap: 18px 24px;
 
-  &.two-cols { grid-template-columns: repeat(2, 1fr); }
   .full-width { grid-column: 1 / -1; }
 
   @media (max-width: 600px) {
@@ -318,31 +435,32 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
   }
 }
 
-// ─── Field Group ─────────────────────────────────────────────────────────────
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .field-label {
-  font-size: .74rem;
-  font-weight: 600;
-  color: $slate-600;
-  letter-spacing: .04em;
+  font-size: .72rem;
+  font-weight: 700;
+  color: $slate-500;
+  letter-spacing: .06em;
   text-transform: uppercase;
-  transition: color $transition-fast;
+  transition: color $t-fast;
 
   .field-group:focus-within & { color: $teal-600; }
 
   &.required::after {
     content: ' *';
     color: $red-600;
-    font-weight: 700;
   }
 }
 
-// ─── Input Wrapper ────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Input Wrapper
+// ══════════════════════════════════════════════════════════════════════════════
 .input-wrapper {
   position: relative;
   display: flex;
@@ -350,48 +468,50 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
 
   .input-icon {
     position: absolute;
-    left: 13px;
+    left: 14px;
     display: flex;
     align-items: center;
     color: $slate-400;
     pointer-events: none;
     z-index: 1;
-    transition: color $transition-fast;
-
-    &.currency {
-      font-size: .7rem;
-      font-weight: 700;
-      color: $slate-500;
-      letter-spacing: .04em;
-    }
+    transition: $t-fast;
   }
 
-  &:focus-within .input-icon { color: $teal-500; }
-  &:focus-within .input-icon.currency { color: $teal-600; }
+  .currency-badge {
+    font-size: .68rem;
+    font-weight: 800;
+    color: $slate-500;
+    letter-spacing: .06em;
+    left: 14px;
+  }
+
+  &:focus-within .input-icon     { color: $teal-500; }
+  &:focus-within .currency-badge { color: $teal-600; }
 
   &.invalid .field-input {
     border-color: $red-600;
     background: $red-50;
-    animation: shake .35s ease;
+    animation: shake .38s ease;
+
     &:focus { box-shadow: 0 0 0 3px rgba($red-600, .12); }
   }
 }
 
 .field-input {
   width: 100%;
-  height: 44px;
-  padding: 0 14px 0 42px;
+  height: 46px;
+  padding: 0 16px 0 44px;
   border: 1.5px solid $slate-200;
-  border-radius: $radius;
+  border-radius: $r;
   background: $slate-50;
   color: $slate-800;
   font-size: .875rem;
   font-family: inherit;
-  transition: $transition;
+  transition: $t;
   outline: none;
 
-  &.with-currency { padding-left: 46px; }
-  &::placeholder { color: $slate-400; }
+  &.with-currency { padding-left: 48px; }
+  &::placeholder  { color: $slate-300; }
 
   &:hover:not(:focus) {
     border-color: $slate-300;
@@ -399,9 +519,9 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
   }
 
   &:focus {
-    border-color: $teal-500;
+    border-color: $teal-400;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba($teal-500, .14);
+    box-shadow: 0 0 0 3.5px rgba($teal-400, .18);
     transform: translateY(-1px);
   }
 
@@ -410,20 +530,20 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
 
 .field-textarea {
   width: 100%;
-  padding: 12px 14px;
+  padding: 13px 16px;
   border: 1.5px solid $slate-200;
-  border-radius: $radius;
+  border-radius: $r;
   background: $slate-50;
   color: $slate-800;
   font-size: .875rem;
   font-family: inherit;
   resize: vertical;
-  transition: $transition;
+  transition: $t;
   outline: none;
-  min-height: 88px;
-  line-height: 1.5;
+  min-height: 96px;
+  line-height: 1.55;
 
-  &::placeholder { color: $slate-400; }
+  &::placeholder { color: $slate-300; }
 
   &:hover:not(:focus) {
     border-color: $slate-300;
@@ -431,13 +551,16 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
   }
 
   &:focus {
-    border-color: $teal-500;
+    border-color: $teal-400;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba($teal-500, .14);
+    box-shadow: 0 0 0 3.5px rgba($teal-400, .18);
   }
 }
 
-// ─── Select Wrapper ───────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Select Wrapper
+// ══════════════════════════════════════════════════════════════════════════════
 .select-wrapper {
   position: relative;
   display: flex;
@@ -445,48 +568,49 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
 
   .select-icon {
     position: absolute;
-    left: 13px;
+    left: 14px;
     display: flex;
     align-items: center;
     color: $slate-400;
     pointer-events: none;
     z-index: 1;
-    transition: color $transition-fast;
+    transition: $t-fast;
   }
 
   .select-chevron {
     position: absolute;
-    right: 13px;
+    right: 14px;
     display: flex;
     align-items: center;
     color: $slate-400;
     pointer-events: none;
     z-index: 1;
-    transition: $transition-fast;
+    transition: $t;
   }
 
-  &:focus-within .select-icon { color: $teal-500; }
+  &:focus-within .select-icon   { color: $teal-500; }
   &:focus-within .select-chevron { color: $teal-500; transform: rotate(180deg); }
 
   &.invalid .field-select {
     border-color: $red-600;
     background: $red-50;
-    animation: shake .35s ease;
+    animation: shake .38s ease;
+
     &:focus { box-shadow: 0 0 0 3px rgba($red-600, .12); }
   }
 }
 
 .field-select {
   width: 100%;
-  height: 44px;
-  padding: 0 42px;
+  height: 46px;
+  padding: 0 44px;
   border: 1.5px solid $slate-200;
-  border-radius: $radius;
+  border-radius: $r;
   background: $slate-50;
   color: $slate-800;
   font-size: .875rem;
   font-family: inherit;
-  transition: $transition;
+  transition: $t;
   outline: none;
   appearance: none;
   cursor: pointer;
@@ -497,43 +621,49 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
   }
 
   &:focus {
-    border-color: $teal-500;
+    border-color: $teal-400;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba($teal-500, .14);
+    box-shadow: 0 0 0 3.5px rgba($teal-400, .18);
     transform: translateY(-1px);
   }
 
   option:first-child { color: $slate-400; }
 }
 
-// ─── Field Errors ─────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Field Error
+// ══════════════════════════════════════════════════════════════════════════════
 .field-error {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: .73rem;
+  gap: 6px;
+  font-size: .72rem;
   color: $red-600;
-  font-weight: 500;
-  animation: slideDown .18s ease-out;
-  padding: 4px 8px;
+  font-weight: 600;
+  animation: slideDown .2s ease-out;
+  padding: 5px 10px;
   background: $red-50;
-  border-radius: 5px;
-  border-left: 2.5px solid $red-600;
+  border-radius: $r-sm;
+  border-left: 3px solid $red-600;
 }
 
-// ─── Form Actions ─────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Form Actions
+// ══════════════════════════════════════════════════════════════════════════════
 .form-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  padding: 20px 32px 28px;
-  border-top: 1px solid $slate-100;
-  background: linear-gradient(180deg, transparent, rgba($slate-50, .5));
+  padding: 22px 36px 30px;
+  border-top: 1.5px solid $slate-100;
+  background: linear-gradient(180deg, transparent, rgba($slate-50, .8));
 
   @media (max-width: 480px) {
     flex-direction: column-reverse;
-    padding: 16px 18px 22px;
+    padding: 18px 20px 24px;
     button { width: 100%; justify-content: center; }
   }
 }
@@ -541,17 +671,17 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
 .btn-cancel {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 22px;
-  border-radius: $radius;
+  gap: 7px;
+  padding: 11px 24px;
+  border-radius: $r;
   background: #fff;
   border: 1.5px solid $slate-200;
   color: $slate-600;
-  font-size: .865rem;
+  font-size: .875rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: $transition;
+  transition: $t;
   text-decoration: none;
 
   &:hover:not(:disabled) {
@@ -562,110 +692,112 @@ $transition-fast: all .15s cubic-bezier(.4,0,.2,1);
     transform: translateY(-1px);
   }
 
-  &:active:not(:disabled) { transform: translateY(0); }
-  &:disabled { opacity: .45; cursor: not-allowed; }
+  &:active:not(:disabled)  { transform: translateY(0); }
+  &:disabled { opacity: .4; cursor: not-allowed; }
 }
 
 .btn-submit {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 10px 28px;
-  border-radius: $radius;
-  background: linear-gradient(135deg, $teal-600, $teal-700);
+  gap: 8px;
+  padding: 11px 32px;
+  border-radius: $r;
+  background: linear-gradient(135deg, $teal-500, $teal-700);
   border: none;
   color: #fff;
-  font-size: .865rem;
-  font-weight: 600;
+  font-size: .875rem;
+  font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: $transition;
-  box-shadow: 0 4px 14px rgba($teal-600, .32);
-  min-width: 180px;
+  transition: $t;
+  box-shadow: 0 4px 18px rgba($teal-600, .38), 0 1px 4px rgba($teal-700, .2);
+  min-width: 190px;
   justify-content: center;
+  letter-spacing: .01em;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, $teal-500, $teal-600);
-    box-shadow: 0 6px 20px rgba($teal-600, .42);
+    background: linear-gradient(135deg, $teal-400, $teal-600);
+    box-shadow: 0 8px 28px rgba($teal-500, .48), 0 2px 8px rgba($teal-700, .2);
     transform: translateY(-2px);
   }
 
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 2px 8px rgba($teal-600, .25);
+    box-shadow: 0 2px 10px rgba($teal-600, .28);
   }
 
   &:disabled {
-    opacity: .6;
+    opacity: .58;
     cursor: not-allowed;
     transform: none;
   }
 }
 
-// ─── Spinner ──────────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Spinner
+// ══════════════════════════════════════════════════════════════════════════════
 .btn-spinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255,255,255,.4);
+  width: 15px;
+  height: 15px;
+  border: 2.5px solid rgba(255,255,255,.35);
   border-radius: 50%;
   border-top-color: #fff;
   animation: spin .7s linear infinite;
   flex-shrink: 0;
 }
 
-// ─── Section Entry Animation ─────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Entry Animations
+// ══════════════════════════════════════════════════════════════════════════════
 .section-animate {
-  animation: sectionFadeUp .4s cubic-bezier(.4,0,.2,1) both;
+  animation: sectionFadeUp .42s cubic-bezier(.4,0,.2,1) both;
 }
 
-// ─── Keyframes ───────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Keyframes
+// ═══════════���══════════════════════════════════════════════════════════════════
 @keyframes fadeInPage {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes sectionFadeUp {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes toastIn {
-  from { opacity: 0; transform: translateX(30px) scale(.94); }
+  from { opacity: 0; transform: translateX(32px) scale(.9); }
   to   { opacity: 1; transform: translateX(0) scale(1); }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-5px); }
+  from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60%  { transform: translateX(-4px); }
-  40%, 80%  { transform: translateX(4px); }
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-4px); }
+  40%,80%  { transform: translateX(4px); }
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-@keyframes iconPulse {
-  0%, 100% { box-shadow: 0 4px 14px rgba($teal-500, .4); }
-  50%       { box-shadow: 0 4px 20px rgba($teal-500, .6); }
-}
 
-// ─── Reduced Motion ───────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// Reduced Motion
+// ══════════════════════════════════════════════════════════════════════════════
 @media (prefers-reduced-motion: reduce) {
-  .article-add-wrapper,
-  .section-animate,
-  .toast-notification,
-  .header-icon-wrap,
-  .field-input,
-  .field-select,
-  .btn-cancel,
-  .btn-submit,
-  .btn-spinner {
+  .article-add-wrapper, .section-animate, .toast-notification,
+  .section-icon-wrap, .field-input, .field-select,
+  .btn-cancel, .btn-submit, .btn-spinner {
     animation: none !important;
     transition: none !important;
   }

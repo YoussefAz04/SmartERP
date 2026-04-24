@@ -15,7 +15,7 @@ $text-dark:      #1e293b;
 $text-medium:    #475569;
 $text-light:     #94a3b8;
 
-// ─── Page Header ──────────────────────────────────────────────────────────────
+// ─── Page Header ─────────────────────────────────────────────────────────
 .modern-page-header {
   background: linear-gradient(135deg, #042f2e 0%, #065f46 25%, #0d9488 60%, #0ea5e9 100%);
   padding: 2.5rem 2.5rem 2.75rem;
@@ -29,7 +29,6 @@ $text-light:     #94a3b8;
   overflow: hidden;
   animation: headerEnter 0.55s cubic-bezier(0.22,1,0.36,1) both;
 
-  // Animated floating blobs
   .header-blob {
     position: absolute;
     border-radius: 50%;
@@ -56,7 +55,6 @@ $text-light:     #94a3b8;
     }
   }
 
-  // Dot-grid texture
   &::before {
     content: '';
     position: absolute;
@@ -66,7 +64,6 @@ $text-light:     #94a3b8;
     pointer-events: none;
   }
 
-  // Shine sweep animation
   &::after {
     content: '';
     position: absolute;
@@ -83,7 +80,6 @@ $text-light:     #94a3b8;
     position: relative;
     z-index: 1;
 
-    // Icon with pulsing ring
     .header-icon-wrap {
       position: relative;
       flex-shrink: 0;
@@ -96,24 +92,26 @@ $text-light:     #94a3b8;
         animation: ringPulse 2.5s ease-out infinite;
       }
 
-      .header-icon {
-        width: 64px; height: 64px;
-        background: rgba(255,255,255,0.15);
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(10px);
-        border: 1.5px solid rgba(255,255,255,0.28);
-        box-shadow:
-          0 8px 24px rgba(0,0,0,0.18),
-          inset 0 1px 0 rgba(255,255,255,0.2);
-        transition: transform 0.3s ease;
+      // ── CHANGED: was rgba(255,255,255,0.15) — now a vivid teal gradient ──
+     .header-icon {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  box-shadow:
+    0 8px 24px rgba(13,148,136,0.5),
+    0 2px 8px rgba(13,148,136,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 0.3s ease;
 
-        &:hover { transform: rotate(-8deg) scale(1.08); }
+  &:hover { transform: rotate(-8deg) scale(1.08); }
 
-        i { color: white; font-size: 1.75rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-      }
+  i { color: white; font-size: 1.75rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+}
     }
 
     .header-title {
@@ -197,7 +195,6 @@ $text-light:     #94a3b8;
           i { font-size: 0.95rem; }
         }
 
-        // Ripple overlay
         &::before {
           content: '';
           position: absolute;
@@ -238,10 +235,10 @@ $text-light:     #94a3b8;
   }
 }
 
-// ─── Spinning animation ────────────────────────────────────────────────────────
+// ─── Spinning animation ──────────────────────────────────────────────────────
 .spinning { animation: spin 0.8s linear infinite; }
 
-// ─── KPI Cards ────────────────────────────────────────────────────────────────
+// ─── KPI Cards ──────────────────────────────────────────────────────────────
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -264,17 +261,12 @@ $text-light:     #94a3b8;
     &:nth-child(3) { animation: kpiEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.3s both; }
     &:nth-child(4) { animation: kpiEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s both; }
 
-    &:hover {
-      transform: translateY(-6px) scale(1.02);
-    }
+    &:hover { transform: translateY(-6px) scale(1.02); }
 
-    // Background decorative circle
     .kpi-bg-shape {
       position: absolute;
-      right: -20px;
-      bottom: -20px;
-      width: 110px;
-      height: 110px;
+      right: -20px; bottom: -20px;
+      width: 110px; height: 110px;
       border-radius: 50%;
       background: rgba(255,255,255,0.1);
       pointer-events: none;
@@ -282,21 +274,15 @@ $text-light:     #94a3b8;
     }
     &:hover .kpi-bg-shape { transform: scale(1.3); }
 
-    // Decorative top-right trend icon
     .kpi-trend {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      i {
-        font-size: 1rem;
-        color: rgba(255,255,255,0.28);
-      }
+      top: 1rem; right: 1rem;
+      i { font-size: 1rem; color: rgba(255,255,255,0.28); }
     }
 
     .kpi-icon-wrap {
       position: relative;
-      width: 54px;
-      height: 54px;
+      width: 54px; height: 54px;
       border-radius: 15px;
       background: rgba(255,255,255,0.2);
       display: flex;
@@ -306,7 +292,7 @@ $text-light:     #94a3b8;
       backdrop-filter: blur(6px);
       border: 1.5px solid rgba(255,255,255,0.3);
       box-shadow: 0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25);
-      animation: iconFloat 4s ease-in-out infinite;
+      // No iconFloat animation — avoids "self-hover" appearance
 
       .kpi-icon-ring {
         position: absolute;
@@ -349,7 +335,6 @@ $text-light:     #94a3b8;
       }
     }
 
-    // Shine sweep on hover — same treatment for every card, for consistency
     &::after {
       content: '';
       position: absolute;
@@ -362,27 +347,21 @@ $text-light:     #94a3b8;
     }
     &:hover::after { left: 130%; }
 
-    // Cohesive cool-tone palette: teal → emerald → amber (warm accent) → indigo
     &.kpi-teal {
       background: linear-gradient(135deg, #0f766e 0%, #0d9488 55%, #14b8a6 100%);
       box-shadow: 0 8px 24px rgba(13,148,136,0.42), 0 2px 6px rgba(13,148,136,0.18);
       &:hover { box-shadow: 0 16px 40px rgba(13,148,136,0.55), 0 4px 12px rgba(13,148,136,0.25); }
     }
-
     &.kpi-emerald {
       background: linear-gradient(135deg, #047857 0%, #059669 55%, #10b981 100%);
       box-shadow: 0 8px 24px rgba(5,150,105,0.42), 0 2px 6px rgba(5,150,105,0.18);
       &:hover { box-shadow: 0 16px 40px rgba(5,150,105,0.55), 0 4px 12px rgba(5,150,105,0.25); }
     }
-
     &.kpi-amber {
       background: linear-gradient(135deg, #b45309 0%, #d97706 55%, #f59e0b 100%);
       box-shadow: 0 8px 24px rgba(217,119,6,0.42), 0 2px 6px rgba(217,119,6,0.18);
       &:hover { box-shadow: 0 16px 40px rgba(217,119,6,0.55), 0 4px 12px rgba(217,119,6,0.25); }
     }
-
-    // Class name kept as `kpi-purple` for HTML compatibility; visually it's now
-    // a softer indigo/violet that blends with the cool teal/emerald palette.
     &.kpi-purple {
       background: linear-gradient(135deg, #4338ca 0%, #4f46e5 55%, #6366f1 100%);
       box-shadow: 0 8px 24px rgba(79,70,229,0.42), 0 2px 6px rgba(79,70,229,0.18);
@@ -391,7 +370,7 @@ $text-light:     #94a3b8;
   }
 }
 
-// ─── Search & Filter ──────────────────────────────────────────────────────────
+// ─── Search & Filter ────────────────────────────────────────────────────────
 .search-filter-section {
   display: flex;
   justify-content: space-between;
@@ -517,11 +496,11 @@ $text-light:     #94a3b8;
   }
 }
 
-// ─── Modern Card ──────────────────────────────────────────────────────────────
+// ─── Modern Card ────────────────────────────────────────────────────────────
 .modern-card {
   background: $surface;
   border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), 0 6px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);
   border: 1px solid $border-light;
   overflow: hidden;
   animation: slideUp 0.35s ease 0.1s both;
@@ -548,13 +527,13 @@ $text-light:     #94a3b8;
       font-weight: 700;
       font-size: 0.75rem;
 
-      &.badge-info { background: #ccfbf1; color: $primary; }
+      &.badge-info    { background: #ccfbf1; color: $primary; }
       &.badge-warning { background: #fef3c7; color: #b45309; }
     }
   }
 }
 
-// ─── Loading State ────────────────────────────────────────────────────────────
+// ─── Loading State ──────────────────────────────────────────────────────────
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -574,7 +553,7 @@ $text-light:     #94a3b8;
   p { color: $text-light; font-size: 0.875rem; margin: 0; }
 }
 
-// ─── Error State ──────────────────────────────────────────────────────────────
+// ─── Error State ────────────────────────────────────────────────────────────
 .error-state {
   display: flex;
   flex-direction: column;
@@ -604,7 +583,7 @@ $text-light:     #94a3b8;
   }
 }
 
-// ─── Table ────────────────────────────────────────────────────────────────────
+// ─── Table ──────────────────────────────────────────────────────────────────
 .table-container { overflow-x: auto; }
 
 .modern-table {
@@ -628,8 +607,8 @@ $text-light:     #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.6px;
 
-      &.amount-col { text-align: right; }
-      &.status-col { min-width: 120px; text-align: center; }
+      &.amount-col  { text-align: right; }
+      &.status-col  { min-width: 120px; text-align: center; }
       &.actions-col { min-width: 180px; text-align: center; }
     }
   }
@@ -731,24 +710,12 @@ $text-light:     #94a3b8;
             opacity: 0.7;
           }
 
-          &.status-brouillon {
-            background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;
-          }
-          &.status-en-attente {
-            background: #fffbeb; color: #b45309; border: 1px solid #fde68a;
-          }
-          &.status-confirmee {
-            background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;
-          }
-          &.status-livree {
-            background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe;
-          }
-          &.status-annulee {
-            background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;
-          }
-          &.status-default {
-            background: #f1f5f9; color: $text-medium; border: 1px solid $border;
-          }
+          &.status-brouillon   { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+          &.status-en-attente  { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+          &.status-confirmee   { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+          &.status-livree      { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+          &.status-annulee     { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+          &.status-default     { background: #f1f5f9; color: $text-medium; border: 1px solid $border; }
         }
       }
 
@@ -803,7 +770,7 @@ $text-light:     #94a3b8;
   }
 }
 
-// ─── Empty State ──────────────────────────────────────────────────────────────
+// ─── Empty State ────────────────────────────────────────────────────────────
 .empty-message {
   display: flex;
   flex-direction: column;
@@ -811,16 +778,16 @@ $text-light:     #94a3b8;
   gap: 0.6rem;
   padding: 1.5rem 0;
 
-  i    { font-size: 3rem; color: $text-light; opacity: 0.3; }
-  p    { margin: 0; font-size: 0.95rem; font-weight: 600; color: $text-medium; }
+  i     { font-size: 3rem; color: $text-light; opacity: 0.3; }
+  p     { margin: 0; font-size: 0.95rem; font-weight: 600; color: $text-medium; }
   small { font-size: 0.82rem; color: $text-light; }
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
+// ─── Modal ──────────────────────────────────────────────────────────────────
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(15,23,42,0.55);
   z-index: 1050;
   display: flex;
   align-items: center;
@@ -831,7 +798,7 @@ $text-light:     #94a3b8;
   .modal-modern {
     background: $surface;
     border-radius: 18px;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.22);
     width: 100%;
     max-width: 460px;
     margin: 1rem;
@@ -848,7 +815,7 @@ $text-light:     #94a3b8;
 
       .modal-header-icon {
         width: 44px; height: 44px;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255,255,255,0.15);
         border-radius: 11px;
         display: flex;
         align-items: center;
@@ -857,12 +824,12 @@ $text-light:     #94a3b8;
         i { font-size: 1.25rem; }
       }
 
-      h5  { margin: 0 0 0.15rem 0; font-size: 1.05rem; font-weight: 700; }
+      h5    { margin: 0 0 0.15rem; font-size: 1.05rem; font-weight: 700; }
       small { opacity: 0.8; font-size: 0.8rem; }
 
       .modal-close {
         margin-left: auto;
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255,255,255,0.12);
         border: none;
         color: white;
         width: 32px; height: 32px;
@@ -874,7 +841,7 @@ $text-light:     #94a3b8;
         transition: background 0.2s ease;
         flex-shrink: 0;
 
-        &:hover { background: rgba(255, 255, 255, 0.25); }
+        &:hover { background: rgba(255,255,255,0.25); }
       }
     }
 
@@ -914,7 +881,7 @@ $text-light:     #94a3b8;
             padding: 0.25rem 0.6rem;
             border-radius: 6px;
             font-size: 0.82rem;
-            font-family: 'SF Mono', 'Cascadia Code', monospace;
+            font-family: 'SF Mono','Cascadia Code',monospace;
             border: 1px solid #99f6e4;
           }
 
@@ -950,7 +917,7 @@ $text-light:     #94a3b8;
   }
 }
 
-// ─── Animations ───────────────────────────────────────────────────────────────
+// ─── Animations ─────────────────────────────────────────────────────────────
 @keyframes headerEnter {
   from { opacity: 0; transform: translateY(-18px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -964,9 +931,9 @@ $text-light:     #94a3b8;
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes floatBlob {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(-12px, 10px) scale(1.05); }
-  66%       { transform: translate(8px, -8px) scale(0.96); }
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33%       { transform: translate(-12px,10px) scale(1.05); }
+  66%       { transform: translate(8px,-8px) scale(0.96); }
 }
 @keyframes shineSweep {
   0%, 100% { background-position: -200% center; opacity: 0; }
@@ -974,7 +941,7 @@ $text-light:     #94a3b8;
   60%       { background-position: 200% center; opacity: 0; }
 }
 @keyframes ringPulse {
-  0%   { transform: scale(1);   opacity: 0.6; }
+  0%   { transform: scale(1);    opacity: 0.6; }
   50%  { transform: scale(1.25); opacity: 0; }
   100% { transform: scale(1.25); opacity: 0; }
 }
@@ -983,9 +950,8 @@ $text-light:     #94a3b8;
   70%  { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
   100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
 }
-@keyframes iconFloat {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-5px); }
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-12px); }
@@ -1000,56 +966,23 @@ $text-light:     #94a3b8;
   to   { opacity: 1; }
 }
 @keyframes fadeInRow {
-  from { opacity: 0; transform: translateX(-8px); }
+  from { opacity: 0; transform: translateX(-6px); }
   to   { opacity: 1; transform: translateX(0); }
 }
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
 
-// ─── Responsive ───────────────────────────────────────────────────────────────
-@media (max-width: 992px) {
+// ─── Responsive ─────────────────────────────────────────────────────────────
+@media (max-width: 1024px) {
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
+@media (max-width: 640px) {
+  .modern-page-header { padding: 1.5rem; }
+  .kpi-row { grid-template-columns: 1fr; }
+  .search-filter-section { flex-direction: column; align-items: stretch; }
+}
 
-@media (max-width: 768px) {
-  .modern-page-header {
-    padding: 1.75rem 1.5rem;
-
-    .header-content {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1.1rem;
-
-      .header-title h1 { font-size: 1.45rem; }
-
-      .header-actions {
-        width: 100%;
-        flex-wrap: wrap;
-        .btn-header-action { flex: 1; min-width: 140px; justify-content: center; }
-      }
-    }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
   }
-
-  .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-
-  .search-filter-section {
-    flex-direction: column;
-    .search-box { max-width: none; width: 100%; }
-    .filter-group {
-      width: 100%;
-      flex-direction: column;
-      .filter-select-wrapper { width: 100%; .filter-select { width: 100%; } }
-      .btn-reset { width: 100%; justify-content: center; }
-    }
-  }
-
-  .modern-table {
-    font-size: 0.8rem;
-    thead th, tbody td { padding: 0.6rem 0.5rem; }
-    .action-buttons-row { flex-wrap: wrap; gap: 0.25rem; }
-  }
-
-  .modal-modern { width: 95%; }
 }

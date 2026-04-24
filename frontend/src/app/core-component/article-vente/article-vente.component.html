@@ -1,15 +1,21 @@
 <router-outlet></router-outlet>
 
-<!-- Hero Header -->
+<!-- ══ HERO ═════════════════════════════════════════════════ -->
 <div class="vente-hero-header">
-  <div class="hero-orb"></div>
+  <span class="hero-shimmer-bar"></span>
+  <div class="hero-orb orb-a"></div>
+  <div class="hero-orb orb-b"></div>
+  <div class="hero-dot-grid"></div>
   <div class="hero-content">
-    <div>
+    <div class="hero-left">
       <span class="hero-badge">
         <i class="feather icon-shopping-cart"></i> Gestion des Ventes
       </span>
       <h1 class="hero-title">Articles Vente</h1>
-      <p class="hero-subtitle">{{ totalCount }} article(s) dans le catalogue de vente</p>
+      <p class="hero-subtitle">
+        <i class="feather icon-layers"></i>
+        {{ totalCount }} article(s) dans le catalogue de vente
+      </p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="exportCSV()">
@@ -22,7 +28,7 @@
   </div>
 </div>
 
-<!-- KPI Cards -->
+<!-- ══ KPI CARDS ════════════════════════════════════════════ -->
 <div class="row mb-4">
   <div class="col-xl-3 col-sm-6 mb-4">
     <div class="kpi-card kpi-teal kpi-delay-1">
@@ -32,73 +38,58 @@
           <div class="kpi-label">Total Articles</div>
           <span class="kpi-trend"><i class="feather icon-trending-up"></i> Catalogue</span>
         </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-shopping-cart"></i>
-        </div>
+        <div class="kpi-icon-wrap"><i class="feather icon-shopping-cart"></i></div>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-list me-1"></i> Voir tous les articles
-      </div>
+      <div class="kpi-footer"><i class="feather icon-list me-1"></i> Voir tous les articles</div>
     </div>
   </div>
   <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-slate kpi-delay-2">
+    <div class="kpi-card kpi-indigo kpi-delay-2">
       <div class="kpi-body">
         <div>
           <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
           <div class="kpi-label">Prix Moyen Vente</div>
           <span class="kpi-trend"><i class="feather icon-tag"></i> DT</span>
         </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-tag"></i>
-        </div>
+        <div class="kpi-icon-wrap"><i class="feather icon-tag"></i></div>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-bar-chart-2 me-1"></i> Moyenne catalogue
-      </div>
+      <div class="kpi-footer"><i class="feather icon-bar-chart-2 me-1"></i> Moyenne catalogue</div>
     </div>
   </div>
   <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-warning kpi-delay-3">
+    <div class="kpi-card kpi-amber kpi-delay-3">
       <div class="kpi-body">
         <div>
           <div class="kpi-number">{{ avgMarkup | number:'1.1-1' }}%</div>
           <div class="kpi-label">Markup Moyen</div>
           <span class="kpi-trend"><i class="feather icon-percent"></i> Marge</span>
         </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-percent"></i>
-        </div>
+        <div class="kpi-icon-wrap"><i class="feather icon-percent"></i></div>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-trending-up me-1"></i> Rentabilité moyenne
-      </div>
+      <div class="kpi-footer"><i class="feather icon-trending-up me-1"></i> Rentabilité moyenne</div>
     </div>
   </div>
   <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-success kpi-delay-4">
+    <div class="kpi-card kpi-emerald kpi-delay-4">
       <div class="kpi-body">
         <div>
           <div class="kpi-number">{{ totalValue | number:'1.0-0' }}</div>
           <div class="kpi-label">Valeur Totale</div>
           <span class="kpi-trend"><i class="feather icon-dollar-sign"></i> DT</span>
         </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-dollar-sign"></i>
-        </div>
+        <div class="kpi-icon-wrap"><i class="feather icon-dollar-sign"></i></div>
       </div>
-      <div class="kpi-footer">
-        <i class="feather icon-activity me-1"></i> Portefeuille valorisé
-      </div>
+      <div class="kpi-footer"><i class="feather icon-activity me-1"></i> Portefeuille valorisé</div>
     </div>
   </div>
 </div>
 
-<!-- Filter Card -->
+<!-- ══ FILTER CARD ══════════════════════════════════════════ -->
 <div class="filter-card mb-4">
   <div class="filter-header">
-    <i class="feather icon-filter"></i>
+    <i class="feather icon-sliders"></i>
     Filtres &amp; Recherche
+    <span class="filter-header-line"></span>
   </div>
   <div class="filter-body">
     <div class="row g-3 align-items-end">
@@ -151,11 +142,11 @@
   </div>
 </div>
 
-<!-- Articles Table -->
+<!-- ══ TABLE PANEL ══════════════════════════════════════════ -->
 <div class="modern-panel">
   <div class="panel-header panel-header-vente">
     <h5 class="panel-title">
-      <i class="feather icon-shopping-cart"></i>
+      <span class="panel-title-icon"><i class="feather icon-shopping-cart"></i></span>
       Liste des Articles Vente
       <span class="panel-badge">{{ filteredList.length }}</span>
     </h5>
@@ -172,24 +163,27 @@
           <tr>
             <th class="col-check">
               <label class="custom-checkbox">
-                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()" aria-label="Sélectionner tous les articles">
+                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()" aria-label="Sélectionner tous">
                 <span class="checkmark"></span>
               </label>
             </th>
             <th class="sortable" (click)="setSort('nom')">
-              Nom <i class="feather sort-icon" [class.icon-chevron-up]="sortField==='nom' && sortAsc"
+              Nom <i class="feather sort-icon"
+                [class.icon-chevron-up]="sortField==='nom' && sortAsc"
                 [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
                 [class.icon-chevrons-up]="sortField!=='nom'"></i>
             </th>
             <th class="sortable" (click)="setSort('prixUnitaire')">
-              Prix Unitaire <i class="feather sort-icon" [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
+              Prix Unitaire <i class="feather sort-icon"
+                [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
                 [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
                 [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
             </th>
             <th>Unité</th>
             <th>SKU</th>
             <th class="sortable" (click)="setSort('markup')">
-              Markup (%) <i class="feather sort-icon" [class.icon-chevron-up]="sortField==='markup' && sortAsc"
+              Markup (%) <i class="feather sort-icon"
+                [class.icon-chevron-up]="sortField==='markup' && sortAsc"
                 [class.icon-chevron-down]="sortField==='markup' && !sortAsc"
                 [class.icon-chevrons-up]="sortField!=='markup'"></i>
             </th>
@@ -212,49 +206,38 @@
                   <div class="article-name">
                     <div class="article-avatar">{{ a.nom.charAt(0).toUpperCase() }}</div>
                     <div>
-                      <strong>{{ a.nom }}</strong>
+                      <strong class="art-nm">{{ a.nom }}</strong>
                       @if (a.description) {
-                        <div style="font-size:11px; color:#9ca3af; white-space:normal; max-width:180px;">{{ a.description }}</div>
+                        <div class="art-desc">{{ a.description }}</div>
                       }
                     </div>
                   </div>
                 </td>
+                <td><span class="price-badge">{{ (a.prixUnitaire ?? 0) | number:'1.2-2' }} DT</span></td>
                 <td>
-                  <span class="price-badge">{{ (a.prixUnitaire ?? 0) | number:'1.2-2' }} DT</span>
+                  @if (a.unite) { <span class="unit-pill">{{ a.unite }}</span> }
+                  @else { <span class="text-muted">—</span> }
                 </td>
                 <td>
-                  @if (a.unite) {
-                    <span class="unit-pill">{{ a.unite }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
-                </td>
-                <td>
-                  @if (a.sku) {
-                    <span class="sku-code">{{ a.sku }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  @if (a.sku) { <span class="sku-code">{{ a.sku }}</span> }
+                  @else { <span class="text-muted">—</span> }
                 </td>
                 <td>
                   @if (a.markup != null) {
-                    <span class="markup-badge" [class.markup-high]="(a.markup ?? 0) >= 30"
+                    <span class="markup-badge"
+                      [class.markup-high]="(a.markup ?? 0) >= 30"
                       [class.markup-mid]="(a.markup ?? 0) >= 10 && (a.markup ?? 0) < 30"
                       [class.markup-low]="(a.markup ?? 0) < 10">
                       <i class="feather icon-percent"></i> {{ a.markup }}%
                     </span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  } @else { <span class="text-muted">—</span> }
                 </td>
                 <td>
                   @if (a.articleAchat?.nom) {
                     <span class="article-ref-badge">
                       <i class="feather icon-link"></i> {{ a.articleAchat?.nom }}
                     </span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  } @else { <span class="text-muted">—</span> }
                 </td>
                 <td class="date-cell">{{ a.createdAt | date:'dd/MM/yy' }}</td>
                 <td>
@@ -284,4 +267,3 @@
     </div>
   </div>
 </div>
-

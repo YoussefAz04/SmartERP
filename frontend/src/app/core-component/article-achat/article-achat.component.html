@@ -1,213 +1,246 @@
 <router-outlet></router-outlet>
 
-<!-- Hero Header -->
-<div class="achat-hero-header">
-  <div class="hero-orb"></div>
-  <div class="hero-content">
-    <div>
+<!-- ══════════════════════════════════════════
+     HERO HEADER
+     ══════════════════════════════════════════ -->
+<div class="aa-hero">
+  <span class="aa-hero__orb aa-hero__orb--a" aria-hidden="true"></span>
+  <span class="aa-hero__orb aa-hero__orb--b" aria-hidden="true"></span>
+  <span class="aa-hero__orb aa-hero__orb--c" aria-hidden="true"></span>
+  <span class="aa-hero__grid"               aria-hidden="true"></span>
+
+  <div class="aa-hero__inner">
+    <div class="aa-hero__left">
       <span class="hero-badge">
-        <i class="feather icon-shopping-bag"></i> Gestion des Achats
+        <i class="feather icon-shopping-bag"></i>
+        Gestion des Achats
       </span>
       <h1 class="hero-title">Articles Achat</h1>
-      <p class="hero-subtitle">{{ totalCount }} article(s) dans le catalogue d'achat</p>
+      <p class="hero-sub">
+        <i class="feather icon-package"></i>
+        {{ totalCount }} article(s) dans le catalogue d'achat
+      </p>
     </div>
+
     <div class="hero-actions">
-      <button type="button" class="btn-hero btn-hero-outline" (click)="exportCSV()">
-        <i class="feather icon-download"></i> Exporter CSV
+      <button type="button" class="btn-outline-hero" (click)="exportCSV()">
+        <i class="feather icon-download"></i>
+        Exporter CSV
       </button>
-      <button *ngIf="canCreateArticle" type="button" class="btn-hero btn-hero-primary" (click)="addArticle()">
-        <i class="feather icon-plus-circle"></i> Ajouter Article
+      <button *ngIf="canCreateArticle" type="button" class="btn-primary-hero" (click)="addArticle()">
+        <i class="feather icon-plus-circle"></i>
+        Ajouter Article
       </button>
     </div>
   </div>
 </div>
 
-<!-- KPI Cards -->
-<div class="row mb-4">
-  <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-primary kpi-delay-1">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ totalCount }}</div>
-          <div class="kpi-label">Total Articles</div>
-          <span class="kpi-trend"><i class="feather icon-trending-up"></i> Catalogue</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-shopping-bag"></i>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <i class="feather icon-list me-1"></i> Voir tous les articles
-      </div>
+<!-- ══════════════════════════════════════════
+     KPI CARDS
+     ══════════════════════════════════════════ -->
+<div class="kpi-grid">
+
+  <!-- Total Articles -->
+  <div class="kpi-card kpi-card--indigo kpi-d1">
+    <span class="kpi-sheen" aria-hidden="true"></span>
+    <span class="kpi-blob"  aria-hidden="true"></span>
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap"><i class="feather icon-shopping-bag"></i></div>
+      <span class="kpi-chip"><i class="feather icon-trending-up"></i> Catalogue</span>
+    </div>
+    <div class="kpi-number">{{ totalCount }}</div>
+    <div class="kpi-label">Total Articles</div>
+    <div class="kpi-footer">
+      <i class="feather icon-list"></i> Voir tous les articles
     </div>
   </div>
-  <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-slate kpi-delay-2">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
-          <div class="kpi-label">Prix Moyen Achat</div>
-          <span class="kpi-trend"><i class="feather icon-tag"></i> DT</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-tag"></i>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <i class="feather icon-bar-chart-2 me-1"></i> Moyenne catalogue
-      </div>
+
+  <!-- Prix Moyen -->
+  <div class="kpi-card kpi-card--teal kpi-d2">
+    <span class="kpi-sheen" aria-hidden="true"></span>
+    <span class="kpi-blob"  aria-hidden="true"></span>
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap"><i class="feather icon-tag"></i></div>
+      <span class="kpi-chip"><i class="feather icon-tag"></i> DT</span>
+    </div>
+    <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
+    <div class="kpi-label">Prix Moyen Achat</div>
+    <div class="kpi-footer">
+      <i class="feather icon-bar-chart-2"></i> Moyenne catalogue
     </div>
   </div>
-  <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-success kpi-delay-3">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ uniqueFournisseurs.length }}</div>
-          <div class="kpi-label">Fournisseurs Actifs</div>
-          <span class="kpi-trend"><i class="feather icon-users"></i> Partenaires</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-users"></i>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <i class="feather icon-user me-1"></i> Réseau fournisseurs
-      </div>
+
+  <!-- Fournisseurs -->
+  <div class="kpi-card kpi-card--emerald kpi-d3">
+    <span class="kpi-sheen" aria-hidden="true"></span>
+    <span class="kpi-blob"  aria-hidden="true"></span>
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap"><i class="feather icon-users"></i></div>
+      <span class="kpi-chip"><i class="feather icon-users"></i> Partenaires</span>
+    </div>
+    <div class="kpi-number">{{ uniqueFournisseurs.length }}</div>
+    <div class="kpi-label">Fournisseurs Actifs</div>
+    <div class="kpi-footer">
+      <i class="feather icon-user"></i> Réseau fournisseurs
     </div>
   </div>
-  <div class="col-xl-3 col-sm-6 mb-4">
-    <div class="kpi-card kpi-warning kpi-delay-4">
-      <div class="kpi-body">
-        <div>
-          <div class="kpi-number">{{ totalValue | number:'1.0-0' }}</div>
-          <div class="kpi-label">Valeur Totale Stock</div>
-          <span class="kpi-trend"><i class="feather icon-dollar-sign"></i> DT</span>
-        </div>
-        <div class="kpi-icon-wrap">
-          <i class="feather icon-dollar-sign"></i>
-        </div>
-      </div>
-      <div class="kpi-footer">
-        <i class="feather icon-trending-up me-1"></i> Inventaire valorisé
-      </div>
+
+  <!-- Valeur Stock -->
+  <div class="kpi-card kpi-card--amber kpi-d4">
+    <span class="kpi-sheen" aria-hidden="true"></span>
+    <span class="kpi-blob"  aria-hidden="true"></span>
+    <div class="kpi-top">
+      <div class="kpi-icon-wrap"><i class="feather icon-dollar-sign"></i></div>
+      <span class="kpi-chip"><i class="feather icon-dollar-sign"></i> DT</span>
+    </div>
+    <div class="kpi-number">{{ totalValue | number:'1.0-0' }}</div>
+    <div class="kpi-label">Valeur Totale Stock</div>
+    <div class="kpi-footer">
+      <i class="feather icon-trending-up"></i> Inventaire valorisé
     </div>
   </div>
+
 </div>
 
-<!-- Filter Card -->
-<div class="filter-card mb-4">
-  <div class="filter-header">
-    <i class="feather icon-filter"></i>
-    Filtres &amp; Recherche
+<!-- ══════════════════════════════════════════
+     FILTER BAR
+     ══════════════════════════════════════════ -->
+<div class="filter-card">
+  <div class="filter-card__header">
+    <span class="filter-title-icon"><i class="feather icon-sliders"></i></span>
+    <span class="filter-title">Filtres &amp; Recherche</span>
+    <span class="filter-active-count" *ngIf="searchTerm || minPrice || maxPrice || selectedFournisseur">
+      Filtres actifs
+    </span>
   </div>
-  <div class="filter-body">
-    <div class="row g-3 align-items-end">
-      <div class="col-md-3">
+
+  <div class="filter-card__body">
+    <div class="filter-grid">
+
+      <div class="filter-group filter-group--wide">
         <label class="filter-label">Recherche</label>
-        <div class="filter-input-group">
-          <i class="feather icon-search filter-input-icon"></i>
-          <input type="text" class="filter-input" placeholder="Nom, SKU, description..."
-            [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
+        <div class="filter-input-wrap">
+          <i class="feather icon-search filter-icon"></i>
+          <input type="text" class="filter-input" placeholder="Nom, SKU, description…"
+                 [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
         </div>
       </div>
-      <div class="col-md-2">
-        <label class="filter-label">Prix min</label>
-        <div class="filter-input-group">
-          <i class="feather icon-trending-down filter-input-icon"></i>
+
+      <div class="filter-group">
+        <label class="filter-label">Prix Min</label>
+        <div class="filter-input-wrap">
+          <i class="feather icon-trending-down filter-icon"></i>
           <input type="number" class="filter-input" placeholder="0"
-            [(ngModel)]="minPrice" (ngModelChange)="applyFilters()">
+                 [(ngModel)]="minPrice" (ngModelChange)="applyFilters()">
         </div>
       </div>
-      <div class="col-md-2">
-        <label class="filter-label">Prix max</label>
-        <div class="filter-input-group">
-          <i class="feather icon-trending-up filter-input-icon"></i>
+
+      <div class="filter-group">
+        <label class="filter-label">Prix Max</label>
+        <div class="filter-input-wrap">
+          <i class="feather icon-trending-up filter-icon"></i>
           <input type="number" class="filter-input" placeholder="∞"
-            [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
+                 [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
         </div>
       </div>
-      <div class="col-md-3">
+
+      <div class="filter-group">
         <label class="filter-label">Fournisseur</label>
-        <div class="filter-input-group">
-          <i class="feather icon-user filter-input-icon"></i>
-          <select class="filter-input" [(ngModel)]="selectedFournisseur" (ngModelChange)="applyFilters()">
+        <div class="filter-input-wrap">
+          <i class="feather icon-user filter-icon"></i>
+          <select class="filter-input filter-select"
+                  [(ngModel)]="selectedFournisseur" (ngModelChange)="applyFilters()">
             <option value="">Tous les fournisseurs</option>
             @for (f of uniqueFournisseurs; track f) {
               <option [value]="f">{{ f }}</option>
             }
           </select>
+          <i class="feather icon-chevron-down filter-chevron"></i>
         </div>
       </div>
-      <div class="col-md-2">
-        <button type="button" class="btn-reset w-100" (click)="resetFilters()">
-          <i class="feather icon-refresh-cw"></i> Réinitialiser
+
+      <div class="filter-group filter-group--action">
+        <label class="filter-label">&nbsp;</label>
+        <button type="button" class="btn-reset" (click)="resetFilters()">
+          <i class="feather icon-refresh-cw"></i>
+          Réinitialiser
         </button>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- Articles Table -->
-<div class="modern-panel">
-  <div class="panel-header panel-header-primary">
-    <h5 class="panel-title">
-      <i class="feather icon-shopping-bag"></i>
+<!-- ══════════════════════════════════════════
+     TABLE PANEL
+     ══════════════════════════════════════════ -->
+<div class="table-panel">
+
+  <div class="table-panel__header">
+    <div class="table-panel__title">
+      <span class="panel-icon-wrap"><i class="feather icon-shopping-bag"></i></span>
       Liste des Articles Achat
       <span class="panel-badge">{{ filteredList.length }}</span>
-    </h5>
-    @if (selectedIds.size > 0) {
-      <button *ngIf="canDeleteArticle" type="button" class="btn-bulk-delete" (click)="bulkDelete()">
-        <i class="feather icon-trash-2"></i> Supprimer ({{ selectedIds.size }})
-      </button>
-    }
+    </div>
+    <div class="table-panel__right">
+      @if (selectedIds.size > 0) {
+        <button *ngIf="canDeleteArticle" type="button" class="btn-bulk-delete" (click)="bulkDelete()">
+          <i class="feather icon-trash-2"></i>
+          Supprimer ({{ selectedIds.size }})
+        </button>
+      }
+    </div>
   </div>
-  <div class="panel-body">
-    <div class="table-responsive">
-      <table class="achat-table">
+
+  <div class="table-panel__body">
+    <div class="table-scroll">
+      <table class="aa-table">
         <thead>
           <tr>
-            <th class="col-check">
-              <label class="custom-checkbox">
-                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()" aria-label="Sélectionner tous les articles">
-                <span class="checkmark"></span>
+            <th class="th-check">
+              <label class="cb-wrap">
+                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()">
+                <span class="cb-box"></span>
               </label>
             </th>
             <th class="sortable" (click)="setSort('nom')">
-              Nom <i class="feather sort-icon" [class.icon-chevron-up]="sortField==='nom' && sortAsc"
-                [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='nom'"></i>
+              Nom
+              <i class="feather sort-icon"
+                 [class.icon-chevron-up]="sortField==='nom' && sortAsc"
+                 [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
+                 [class.icon-chevrons-up]="sortField!=='nom'"></i>
             </th>
             <th class="sortable" (click)="setSort('prixUnitaire')">
-              Prix Unitaire <i class="feather sort-icon" [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
-                [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
-                [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
+              Prix Unit.
+              <i class="feather sort-icon"
+                 [class.icon-chevron-up]="sortField==='prixUnitaire' && sortAsc"
+                 [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
+                 [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
             </th>
             <th>Unité</th>
             <th>SKU</th>
             <th>Fournisseur</th>
             <th>Catégorie</th>
-            <th class="sortable" (click)="setSort('createdAt')">Créé le</th>
-            <th class="text-center">Actions</th>
+            <th>Créé le</th>
+            <th class="th-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           @if (filteredList && filteredList.length > 0) {
             @for (a of filteredList; track a.id) {
-              <tr [class.row-selected]="isSelected(a.id)">
-                <td class="col-check">
-                  <label class="custom-checkbox">
-                    <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)" [attr.aria-label]="'Sélectionner ' + a.nom">
-                    <span class="checkmark"></span>
+              <tr [class.row-selected]="isSelected(a.id)" class="aa-row">
+                <td class="td-check">
+                  <label class="cb-wrap">
+                    <input type="checkbox" [checked]="isSelected(a.id)" (change)="toggleSelect(a.id)">
+                    <span class="cb-box"></span>
                   </label>
                 </td>
                 <td>
-                  <div class="article-name">
-                    <div class="article-avatar">{{ a.nom.charAt(0).toUpperCase() }}</div>
+                  <div class="art-name-cell">
+                    <div class="art-avatar">{{ a.nom.charAt(0).toUpperCase() }}</div>
                     <div>
-                      <strong>{{ a.nom }}</strong>
-                      @if (a.description) {
-                        <div style="font-size:11px; color:#9ca3af; white-space:normal; max-width:180px;">{{ a.description }}</div>
-                      }
+                      <div class="art-name">{{ a.nom }}</div>
+                      <div class="art-desc" *ngIf="a.description">{{ a.description }}</div>
                     </div>
                   </div>
                 </td>
@@ -215,42 +248,35 @@
                   <span class="price-badge">{{ (a.prixUnitaire ?? 0) | number:'1.2-2' }} DT</span>
                 </td>
                 <td>
-                  @if (a.unite) {
-                    <span class="unit-pill">{{ a.unite }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  <span *ngIf="a.unite" class="unit-pill">{{ a.unite }}</span>
+                  <span *ngIf="!a.unite" class="cell-empty">—</span>
                 </td>
                 <td>
-                  @if (a.sku) {
-                    <span class="sku-code">{{ a.sku }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  <span *ngIf="a.sku" class="sku-chip">{{ a.sku }}</span>
+                  <span *ngIf="!a.sku" class="cell-empty">—</span>
                 </td>
                 <td>
-                  @if (a.fournisseur?.nom) {
-                    <span class="supplier-badge">
-                      <i class="feather icon-user"></i> {{ a.fournisseur?.nom }}
-                    </span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  <span *ngIf="a.fournisseur?.nom" class="supplier-pill">
+                    <i class="feather icon-user"></i>
+                    {{ a.fournisseur?.nom }}
+                  </span>
+                  <span *ngIf="!a.fournisseur?.nom" class="cell-empty">—</span>
                 </td>
                 <td>
-                  @if (a.categorieArticle?.nom) {
-                    <span class="category-pill">{{ a.categorieArticle?.nom }}</span>
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
+                  <span *ngIf="a.categorieArticle?.nom" class="category-pill">
+                    {{ a.categorieArticle?.nom }}
+                  </span>
+                  <span *ngIf="!a.categorieArticle?.nom" class="cell-empty">—</span>
                 </td>
                 <td class="date-cell">{{ a.createdAt | date:'dd/MM/yy' }}</td>
-                <td>
+                <td class="th-center">
                   <div class="action-btns">
-                    <button *ngIf="canEditArticle" type="button" class="action-btn action-btn-edit" (click)="editArticle(a.id)" title="Modifier">
-                      <i class="feather icon-edit"></i>
+                    <button *ngIf="canEditArticle" type="button"
+                            class="act-btn act-btn--edit" (click)="editArticle(a.id)" title="Modifier">
+                      <i class="feather icon-edit-2"></i>
                     </button>
-                    <button *ngIf="canDeleteArticle" type="button" class="action-btn action-btn-delete" (click)="deleteArticle(a.id)" title="Supprimer">
+                    <button *ngIf="canDeleteArticle" type="button"
+                            class="act-btn act-btn--delete" (click)="deleteArticle(a.id)" title="Supprimer">
                       <i class="feather icon-trash-2"></i>
                     </button>
                   </div>
@@ -261,8 +287,16 @@
             <tr>
               <td colspan="9">
                 <div class="empty-state">
-                  <i class="feather icon-shopping-bag empty-icon"></i>
-                  <p>@if (isLoading) { Chargement en cours... } @else { Aucun article d'achat trouvé }</p>
+                  <div class="empty-icon-wrap">
+                    <i class="feather icon-shopping-bag"></i>
+                  </div>
+                  <p class="empty-title">
+                    @if (isLoading) { Chargement en cours… }
+                    @else { Aucun article d'achat trouv�� }
+                  </p>
+                  <span class="empty-hint" *ngIf="!isLoading">
+                    Essayez de modifier vos filtres ou d'ajouter un article
+                  </span>
                 </div>
               </td>
             </tr>

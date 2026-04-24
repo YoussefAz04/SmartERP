@@ -1,271 +1,332 @@
-<!-- Page Header -->
-<div class="page-header">
-  <div class="row">
-    <div class="col">
-      <h3 class="page-title">
-        <span class="title-icon"><i class="feather icon-sliders"></i></span>
-        Ajustement de Stock
-      </h3>
-      <ul class="breadcrumb">
-        <li class="breadcrumb-item">
-          <a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a>
-        </li>
-        <li class="breadcrumb-item">
-          <a routerLink="/stock/list">Stocks</a>
-        </li>
-        <li class="breadcrumb-item active">Ajustement</li>
-      </ul>
-    </div>
-  </div>
-</div>
+<!-- ── Page Wrapper ─────────────────────────────────────────────────── -->
+<div class="adj-wrapper">
 
-<!-- Form Card -->
-<div class="row">
-  <div class="col-md-12">
-    <div class="card form-card">
-
-      <!-- Card Header -->
-      <div class="card-header">
-        <div class="header-content">
-          <div class="header-icon">
-            <i class="feather icon-sliders"></i>
-          </div>
-          <div>
-            <h5 class="card-title">Formulaire d'ajustement</h5>
-            <p class="card-subtitle">Entrée, sortie ou correction de stock</p>
-          </div>
+  <!-- ── Hero Header ──────────────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-icon-wrap">
+          <i class="feather icon-sliders"></i>
+        </div>
+        <div>
+          <h1 class="hero-title">Ajustement de Stock</h1>
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a routerLink="/dashboard" class="bc-link">
+              <i class="feather icon-home"></i> Dashboard
+            </a>
+            <span class="bc-sep">›</span>
+            <a routerLink="/stock/list" class="bc-link">Stocks</a>
+            <span class="bc-sep">›</span>
+            <span class="bc-current">Ajustement</span>
+          </nav>
         </div>
       </div>
-
-      <div class="card-body">
-        @if (isLoading) {
-          <div class="loading-state">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p>Chargement des stocks...</p>
-          </div>
-        } @else {
-          <form [formGroup]="adjustForm" (ngSubmit)="onSubmit()" novalidate>
-
-            <!-- Section: Sélection du stock -->
-            <div class="form-section">
-              <div class="section-header">
-                <i class="feather icon-archive"></i>
-                Sélection du stock
-              </div>
-
-              <div class="input-blocks">
-                <label class="form-label" for="stockId">
-                  Sélectionner un stock <span class="text-danger">*</span>
-                </label>
-                <div class="input-wrapper">
-                  <i class="feather icon-archive input-icon"></i>
-                  <select id="stockId" class="form-select" formControlName="stockId"
-                    [class.is-invalid]="isFieldInvalid('stockId')">
-                    <option [ngValue]="null">-- Choisir un stock --</option>
-                    @for (stock of stocks; track stock.id) {
-                      <option [value]="stock.id">{{ getStockLabel(stock) }}</option>
-                    }
-                  </select>
-                </div>
-                <div class="error-message" *ngIf="isFieldInvalid('stockId')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span>Veuillez sélectionner un stock.</span>
-                </div>
-              </div>
-
-              @if (selectedStock) {
-                <div class="stock-info-card">
-                  <div class="stock-info-row">
-                    <div class="stock-info-item">
-                      <span class="info-label"><i class="feather icon-package"></i> Article</span>
-                      <span class="info-value">{{ selectedStock.articleAchat?.nom || 'N/A' }}</span>
-                    </div>
-                    <div class="stock-info-item">
-                      <span class="info-label"><i class="feather icon-map-pin"></i> Localisation</span>
-                      <span class="info-value">{{ selectedStock.localisation || 'N/A' }}</span>
-                    </div>
-                    <div class="stock-info-item">
-                      <span class="info-label"><i class="feather icon-layers"></i> Quantité actuelle</span>
-                      <span class="qty-badge"
-                        [class.qty-ok]="quantiteActuelle >= 5"
-                        [class.qty-low]="quantiteActuelle > 0 && quantiteActuelle < 5"
-                        [class.qty-zero]="quantiteActuelle === 0">
-                        {{ quantiteActuelle }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
-
-            <!-- Section: Type d'ajustement -->
-            <div class="form-section">
-              <div class="section-header">
-                <i class="feather icon-refresh-cw"></i>
-                Type d'ajustement
-              </div>
-              <div class="type-selector">
-                <div class="type-card"
-                  [class.active-entree]="adjustForm.get('typeMouvement')?.value === 'ENTREE'"
-                  (click)="adjustForm.patchValue({typeMouvement: 'ENTREE'})">
-                  <input type="radio" formControlName="typeMouvement" value="ENTREE" class="d-none">
-                  <div class="type-icon entree"><i class="feather icon-arrow-down-circle"></i></div>
-                  <div class="type-label entree">ENTRÉE</div>
-                  <div class="type-desc">Ajouter au stock</div>
-                </div>
-                <div class="type-card"
-                  [class.active-sortie]="adjustForm.get('typeMouvement')?.value === 'SORTIE'"
-                  (click)="adjustForm.patchValue({typeMouvement: 'SORTIE'})">
-                  <input type="radio" formControlName="typeMouvement" value="SORTIE" class="d-none">
-                  <div class="type-icon sortie"><i class="feather icon-arrow-up-circle"></i></div>
-                  <div class="type-label sortie">SORTIE</div>
-                  <div class="type-desc">Retirer du stock</div>
-                </div>
-                <div class="type-card"
-                  [class.active-ajustement]="adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT'"
-                  (click)="adjustForm.patchValue({typeMouvement: 'AJUSTEMENT'})">
-                  <input type="radio" formControlName="typeMouvement" value="AJUSTEMENT" class="d-none">
-                  <div class="type-icon ajustement"><i class="feather icon-sliders"></i></div>
-                  <div class="type-label ajustement">AJUSTEMENT</div>
-                  <div class="type-desc">Corriger à une valeur exacte</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Section: Détails du mouvement -->
-            <div class="form-section">
-              <div class="section-header">
-                <i class="feather icon-edit-3"></i>
-                Détails du mouvement
-              </div>
-              <div class="row">
-
-                <!-- Quantity -->
-                <div class="col-lg-6">
-                  <div class="input-blocks">
-                    <label class="form-label">
-                      @if (adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT') {
-                        Nouvelle quantité exacte
-                      } @else {
-                        Quantité à {{ adjustForm.get('typeMouvement')?.value === 'ENTREE' ? 'ajouter' : 'retirer' }}
-                      }
-                      <span class="text-danger">*</span>
-                    </label>
-                    <div class="input-wrapper">
-                      <i class="feather icon-hash input-icon"></i>
-                      <input type="number" class="form-control" formControlName="quantite"
-                        placeholder="0" min="0"
-                        [class.is-invalid]="isFieldInvalid('quantite')">
-                    </div>
-                    <div class="error-message" *ngIf="isFieldInvalid('quantite')">
-                      <i class="feather icon-alert-circle"></i>
-                      <span *ngIf="adjustForm.get('quantite')?.hasError('required')">La quantité est requise.</span>
-                      <span *ngIf="adjustForm.get('quantite')?.hasError('min')">La quantité doit être positive.</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- New Total Preview -->
-                @if (selectedStock && adjustForm.get('quantite')?.value) {
-                  <div class="col-lg-6">
-                    <div class="input-blocks">
-                      <label class="form-label">Nouvelle quantité totale</label>
-                      <div class="qty-preview"
-                        [class.qty-ok]="quantiteNouvelle >= 5"
-                        [class.qty-low]="quantiteNouvelle > 0 && quantiteNouvelle < 5"
-                        [class.qty-zero]="quantiteNouvelle <= 0">
-                        <span class="qty-number">{{ quantiteNouvelle }}</span>
-                        @if (quantiteNouvelle < 0) {
-                          <span class="qty-warning">
-                            <i class="feather icon-alert-triangle"></i> Résultat négatif!
-                          </span>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                }
-
-                <!-- Date -->
-                <div class="col-lg-6">
-                  <div class="input-blocks">
-                    <label class="form-label">Date du mouvement</label>
-                    <div class="input-wrapper">
-                      <i class="feather icon-calendar input-icon"></i>
-                      <input type="datetime-local" class="form-control" formControlName="dateMouvement">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Localisation -->
-                <div class="col-lg-6">
-                  <div class="input-blocks">
-                    <label class="form-label">Localisation (optionnel)</label>
-                    <div class="input-wrapper">
-                      <i class="feather icon-map-pin input-icon"></i>
-                      <input type="text" class="form-control" formControlName="localisation"
-                        placeholder="Ex: Warehouse A1 - Rack 3, Zone B...">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Reference -->
-                <div class="col-lg-6">
-                  <div class="input-blocks">
-                    <label class="form-label">Référence document (optionnel)</label>
-                    <div class="input-wrapper">
-                      <i class="feather icon-file-text input-icon"></i>
-                      <input type="text" class="form-control" formControlName="referenceCommande"
-                        placeholder="Ex: BC-2024-001, FAC-001...">
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- Section: Motif -->
-            <div class="form-section">
-              <div class="section-header">
-                <i class="feather icon-message-square"></i>
-                Motif
-              </div>
-              <div class="input-blocks">
-                <label class="form-label">
-                  Motif / Raison <span class="text-danger">*</span>
-                </label>
-                <div class="input-wrapper">
-                  <i class="feather icon-message-square input-icon textarea-icon"></i>
-                  <textarea class="form-control" formControlName="motif" rows="3"
-                    placeholder="Décrivez la raison de cet ajustement..."
-                    [class.is-invalid]="isFieldInvalid('motif')"></textarea>
-                </div>
-                <div class="error-message" *ngIf="isFieldInvalid('motif')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span>Le motif est obligatoire.</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Form Actions -->
-            <div class="form-actions">
-              <button type="button" class="btn btn-cancel" (click)="cancel()">
-                <i class="feather icon-x"></i>
-                Annuler
-              </button>
-              <button type="submit" class="btn btn-submit" [disabled]="isSubmitting">
-                @if (isSubmitting) {
-                  <span class="spinner" aria-hidden="true"></span>
-                  Enregistrement...
-                } @else {
-                  <i class="feather icon-check"></i>
-                  Enregistrer l'ajustement
-                }
-              </button>
-            </div>
-
-          </form>
-        }
-      </div>
     </div>
   </div>
+
+  <!-- ── Step Progress ────────────────────────────────────────────── -->
+  <div class="step-progress">
+    <div class="step-item">
+      <div class="step-dot step-dot-purple">
+        <i class="feather icon-archive"></i>
+      </div>
+      <span class="step-label">Sélection</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-dot step-dot-blue">
+        <i class="feather icon-refresh-cw"></i>
+      </div>
+      <span class="step-label">Type</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-dot step-dot-indigo">
+        <i class="feather icon-edit-3"></i>
+      </div>
+      <span class="step-label">Détails</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-dot step-dot-slate">
+        <i class="feather icon-message-square"></i>
+      </div>
+      <span class="step-label">Motif</span>
+    </div>
+  </div>
+
+  <!-- ── Form Card ────────────────────────────────────────────────── -->
+  <div class="form-card">
+
+    @if (isLoading) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Chargement des stocks...</p>
+      </div>
+    } @else {
+      <form [formGroup]="adjustForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- ── Section 1 : Sélection du stock ──────────────────────── -->
+        <div class="form-section sec-animate" style="animation-delay:.05s">
+          <div class="section-header">
+            <div class="sec-icon-wrap sec-purple">
+              <i class="feather icon-archive"></i>
+            </div>
+            <div class="sec-text">
+              <h2 class="sec-title">Sélection du stock</h2>
+              <p class="sec-sub">Choisissez le stock à ajuster</p>
+            </div>
+            <span class="step-badge step-badge-purple">1 / 4</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label required" for="stockId">Sélectionner un stock</label>
+            <div class="select-wrap" [class.invalid]="isFieldInvalid('stockId')">
+              <i class="feather icon-archive field-icon"></i>
+              <select id="stockId" class="field-select" formControlName="stockId"
+                      [class.is-invalid]="isFieldInvalid('stockId')">
+                <option [ngValue]="null">— Choisir un stock —</option>
+                @for (stock of stocks; track stock.id) {
+                  <option [value]="stock.id">{{ getStockLabel(stock) }}</option>
+                }
+              </select>
+              <i class="feather icon-chevron-down select-chevron"></i>
+            </div>
+            <div class="field-error" *ngIf="isFieldInvalid('stockId')">
+              <i class="feather icon-alert-circle"></i>
+              <span>Veuillez sélectionner un stock.</span>
+            </div>
+          </div>
+
+          @if (selectedStock) {
+            <div class="stock-info-card sec-animate">
+              <div class="stock-info-header">
+                <i class="feather icon-info"></i>
+                Informations du stock sélectionné
+              </div>
+              <div class="stock-info-grid">
+                <div class="stock-info-item">
+                  <span class="si-label"><i class="feather icon-package"></i> Article</span>
+                  <span class="si-value">{{ selectedStock.articleAchat?.nom || 'N/A' }}</span>
+                </div>
+                <div class="stock-info-item">
+                  <span class="si-label"><i class="feather icon-map-pin"></i> Localisation</span>
+                  <span class="si-value">{{ selectedStock.localisation || 'N/A' }}</span>
+                </div>
+                <div class="stock-info-item">
+                  <span class="si-label"><i class="feather icon-layers"></i> Quantité actuelle</span>
+                  <span class="qty-pill"
+                    [class.qty-ok]="quantiteActuelle >= 5"
+                    [class.qty-low]="quantiteActuelle > 0 && quantiteActuelle < 5"
+                    [class.qty-zero]="quantiteActuelle === 0">
+                    {{ quantiteActuelle }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- ── Section 2 : Type d'ajustement ──────────────────────── -->
+        <div class="form-section sec-animate" style="animation-delay:.10s">
+          <div class="section-header">
+            <div class="sec-icon-wrap sec-blue">
+              <i class="feather icon-refresh-cw"></i>
+            </div>
+            <div class="sec-text">
+              <h2 class="sec-title">Type d'ajustement</h2>
+              <p class="sec-sub">Choisissez l'opération à effectuer</p>
+            </div>
+            <span class="step-badge step-badge-blue">2 / 4</span>
+          </div>
+
+          <div class="type-selector">
+            <!-- ENTRÉE -->
+            <div class="type-card"
+              [class.active-entree]="adjustForm.get('typeMouvement')?.value === 'ENTREE'"
+              (click)="adjustForm.patchValue({typeMouvement: 'ENTREE'})">
+              <input type="radio" formControlName="typeMouvement" value="ENTREE" class="sr-only">
+              <div class="type-icon-wrap entree">
+                <i class="feather icon-arrow-down-circle"></i>
+              </div>
+              <div class="type-badge entree">ENTRÉE</div>
+              <div class="type-desc">Ajouter au stock</div>
+              <div class="type-check entree">
+                <i class="feather icon-check"></i>
+              </div>
+            </div>
+
+            <!-- SORTIE -->
+            <div class="type-card"
+              [class.active-sortie]="adjustForm.get('typeMouvement')?.value === 'SORTIE'"
+              (click)="adjustForm.patchValue({typeMouvement: 'SORTIE'})">
+              <input type="radio" formControlName="typeMouvement" value="SORTIE" class="sr-only">
+              <div class="type-icon-wrap sortie">
+                <i class="feather icon-arrow-up-circle"></i>
+              </div>
+              <div class="type-badge sortie">SORTIE</div>
+              <div class="type-desc">Retirer du stock</div>
+              <div class="type-check sortie">
+                <i class="feather icon-check"></i>
+              </div>
+            </div>
+
+            <!-- AJUSTEMENT -->
+            <div class="type-card"
+              [class.active-ajustement]="adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT'"
+              (click)="adjustForm.patchValue({typeMouvement: 'AJUSTEMENT'})">
+              <input type="radio" formControlName="typeMouvement" value="AJUSTEMENT" class="sr-only">
+              <div class="type-icon-wrap ajustement">
+                <i class="feather icon-sliders"></i>
+              </div>
+              <div class="type-badge ajustement">AJUSTEMENT</div>
+              <div class="type-desc">Corriger à une valeur exacte</div>
+              <div class="type-check ajustement">
+                <i class="feather icon-check"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 3 : Détails du mouvement ───────────────────── -->
+        <div class="form-section sec-animate" style="animation-delay:.15s">
+          <div class="section-header">
+            <div class="sec-icon-wrap sec-indigo">
+              <i class="feather icon-edit-3"></i>
+            </div>
+            <div class="sec-text">
+              <h2 class="sec-title">Détails du mouvement</h2>
+              <p class="sec-sub">Quantité, date et localisation</p>
+            </div>
+            <span class="step-badge step-badge-indigo">3 / 4</span>
+          </div>
+
+          <div class="fields-grid">
+
+            <!-- Quantité -->
+            <div class="field-group">
+              <label class="field-label required">
+                @if (adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT') {
+                  Nouvelle quantité exacte
+                } @else {
+                  Quantité à {{ adjustForm.get('typeMouvement')?.value === 'ENTREE' ? 'ajouter' : 'retirer' }}
+                }
+              </label>
+              <div class="input-wrap" [class.invalid]="isFieldInvalid('quantite')">
+                <i class="feather icon-hash field-icon"></i>
+                <input type="number" class="field-input" formControlName="quantite"
+                       placeholder="0" min="0"
+                       [class.is-invalid]="isFieldInvalid('quantite')">
+              </div>
+              <div class="field-error" *ngIf="isFieldInvalid('quantite')">
+                <i class="feather icon-alert-circle"></i>
+                <span *ngIf="adjustForm.get('quantite')?.hasError('required')">La quantité est requise.</span>
+                <span *ngIf="adjustForm.get('quantite')?.hasError('min')">La quantité doit être positive.</span>
+              </div>
+            </div>
+
+            <!-- Nouvelle quantité totale preview -->
+            @if (selectedStock && adjustForm.get('quantite')?.value) {
+              <div class="field-group">
+                <label class="field-label">Nouvelle quantité totale</label>
+                <div class="qty-preview"
+                  [class.qty-ok]="quantiteNouvelle >= 5"
+                  [class.qty-low]="quantiteNouvelle > 0 && quantiteNouvelle < 5"
+                  [class.qty-zero]="quantiteNouvelle <= 0">
+                  <span class="qty-number">{{ quantiteNouvelle }}</span>
+                  <span class="qty-unit">unités</span>
+                  @if (quantiteNouvelle < 0) {
+                    <span class="qty-warning">
+                      <i class="feather icon-alert-triangle"></i> Résultat négatif !
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Date -->
+            <div class="field-group">
+              <label class="field-label">Date du mouvement</label>
+              <div class="input-wrap">
+                <i class="feather icon-calendar field-icon"></i>
+                <input type="datetime-local" class="field-input" formControlName="dateMouvement">
+              </div>
+            </div>
+
+            <!-- Localisation -->
+            <div class="field-group">
+              <label class="field-label">Localisation <span class="optional-tag">optionnel</span></label>
+              <div class="input-wrap">
+                <i class="feather icon-map-pin field-icon"></i>
+                <input type="text" class="field-input" formControlName="localisation"
+                       placeholder="Ex: Entrepôt A1 – Rayon 3, Zone B...">
+              </div>
+            </div>
+
+            <!-- Référence document -->
+            <div class="field-group">
+              <label class="field-label">Référence document <span class="optional-tag">optionnel</span></label>
+              <div class="input-wrap">
+                <i class="feather icon-file-text field-icon"></i>
+                <input type="text" class="field-input" formControlName="referenceCommande"
+                       placeholder="Ex: BC-2024-001, FAC-001...">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Section 4 : Motif ────────────────────────────────────── -->
+        <div class="form-section sec-animate" style="animation-delay:.20s">
+          <div class="section-header">
+            <div class="sec-icon-wrap sec-slate">
+              <i class="feather icon-message-square"></i>
+            </div>
+            <div class="sec-text">
+              <h2 class="sec-title">Motif</h2>
+              <p class="sec-sub">Raison obligatoire de l'ajustement</p>
+            </div>
+            <span class="step-badge step-badge-slate">4 / 4</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label required">Motif / Raison</label>
+            <div class="input-wrap" [class.invalid]="isFieldInvalid('motif')">
+              <i class="feather icon-message-square field-icon textarea-icon"></i>
+              <textarea class="field-textarea" formControlName="motif" rows="3"
+                        placeholder="Décrivez la raison de cet ajustement..."
+                        [class.is-invalid]="isFieldInvalid('motif')"></textarea>
+            </div>
+            <div class="field-error" *ngIf="isFieldInvalid('motif')">
+              <i class="feather icon-alert-circle"></i>
+              <span>Le motif est obligatoire.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Form Actions ──────────────────────────────────────────── -->
+        <div class="form-actions sec-animate" style="animation-delay:.25s">
+          <button type="button" class="btn-cancel" (click)="cancel()">
+            <i class="feather icon-x"></i>
+            Annuler
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+            @if (isSubmitting) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              Enregistrement...
+            } @else {
+              <i class="feather icon-check"></i>
+              Enregistrer l'ajustement
+            }
+          </button>
+        </div>
+
+      </form>
+    }
+
+  </div>
+
 </div>

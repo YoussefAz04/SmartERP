@@ -1,70 +1,104 @@
-<div class="commande-add-wrapper">
-  <!-- Enterprise Selection Alert -->
-  <div class="enterprise-alert enterprise-alert--warning" *ngIf="!currentEntrepriseId && entreprises.length > 0">
-    <div class="enterprise-alert__icon">
+<div class="ca-wrapper">
+
+  <!-- ── Enterprise Banner ──────────────────────────────────────────────── -->
+  <div class="enterprise-banner banner-warning" *ngIf="!currentEntrepriseId && entreprises.length > 0">
+    <div class="banner-icon-wrap banner-icon-warn">
       <i class="feather icon-alert-triangle"></i>
     </div>
-    <div class="enterprise-alert__content">
+    <div class="banner-body">
       <strong>Sélectionnez une entreprise</strong>
-      <select class="enterprise-select" #enterpriseSelect (change)="changeEnterprise(+enterpriseSelect.value)">
-        <option value="">-- Choisir une entreprise --</option>
+      <select class="enterprise-select" #enterpriseSelect
+              (change)="changeEnterprise(+enterpriseSelect.value)">
+        <option value="">— Choisir une entreprise —</option>
         <option *ngFor="let e of entreprises" [value]="e.id">{{ e.nom }}</option>
       </select>
     </div>
   </div>
 
-  <!-- Current Enterprise Display -->
-  <div class="enterprise-alert enterprise-alert--success" *ngIf="currentEntrepriseId">
-    <div class="enterprise-alert__icon">
+  <div class="enterprise-banner banner-success" *ngIf="currentEntrepriseId">
+    <div class="banner-icon-wrap banner-icon-ok">
       <i class="feather icon-check-circle"></i>
     </div>
-    <div class="enterprise-alert__content">
-      Entreprise sélectionnée: <strong>{{ selectedEntrepriseName }}</strong>
+    <div class="banner-body">
+      Entreprise sélectionnée :&nbsp;<strong>{{ selectedEntrepriseName }}</strong>
     </div>
   </div>
 
-  <!-- Page Header -->
-  <div class="page-header">
-    <div class="row">
-      <div class="col">
-        <h3 class="page-title">
-          <span class="title-icon"><i class="feather icon-shopping-cart"></i></span>
-          {{ isEditMode ? 'Modifier Commande Achat' : 'Nouvelle Commande Achat' }}
-        </h3>
-        <ul class="breadcrumb">
-          <li class="breadcrumb-item">
-            <a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a>
-          </li>
-          <li class="breadcrumb-item">
-            <a routerLink="/commande-achat/list">Commandes Achat</a>
-          </li>
-          <li class="breadcrumb-item active">{{ isEditMode ? 'Modifier' : 'Ajouter' }}</li>
-        </ul>
+  <!-- ── Hero Header ──────────────────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-icon-wrap">
+          <i class="feather icon-shopping-cart"></i>
+        </div>
+        <div>
+          <h1 class="hero-title">
+            {{ isEditMode ? 'Modifier Commande Achat' : 'Nouvelle Commande Achat' }}
+          </h1>
+          <nav class="breadcrumb" aria-label="breadcrumb">
+            <a routerLink="/dashboard" class="bc-link">
+              <i class="feather icon-home"></i> Dashboard
+            </a>
+            <span class="bc-sep">›</span>
+            <a routerLink="/commande-achat/list" class="bc-link">Commandes Achat</a>
+            <span class="bc-sep">›</span>
+            <span class="bc-current">{{ isEditMode ? 'Modifier' : 'Ajouter' }}</span>
+          </nav>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- ── Step Progress ──────────────────────────────────────────────────── -->
+  <div class="step-progress">
+    <div class="step-item">
+      <div class="step-dot step-indigo">
+        <i class="feather icon-file-text"></i>
+      </div>
+      <span class="step-label">Informations</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-dot step-violet">
+        <i class="feather icon-package"></i>
+      </div>
+      <span class="step-label">Articles</span>
+    </div>
+  </div>
+
+  <!-- ── Error Alert ────────────────────────────────────────────────────── -->
+  <div class="error-alert sec-animate" *ngIf="errorMessage">
+    <div class="error-icon-wrap">
+      <i class="feather icon-alert-octagon"></i>
+    </div>
+    <span>{{ errorMessage }}</span>
+  </div>
+
   <form [formGroup]="commandeForm" (ngSubmit)="onSubmit()">
-    <!-- General Information Card -->
-    <div class="form-card section-animate">
-      <div class="card-header-bar"></div>
+
+    <!-- ── Card 1 : Informations Générales ─────────────────────────────── -->
+    <div class="form-card sec-animate" style="animation-delay:.05s">
       <div class="form-section">
         <div class="section-header">
-          <div class="section-icon info">
+          <div class="sec-icon-wrap sec-indigo">
             <i class="feather icon-file-text"></i>
           </div>
-          <div class="section-text">
-            <h3 class="section-title">Informations Générales</h3>
-            <p class="section-subtitle">Renseignez les détails principaux de la commande</p>
+          <div class="sec-text">
+            <h2 class="sec-title">Informations Générales</h2>
+            <p class="sec-sub">Renseignez les détails principaux de la commande</p>
           </div>
-          <span class="section-step">ÉTAPE 1</span>
+          <span class="step-badge step-badge-indigo">Étape 1</span>
         </div>
 
+        <!-- Row 1 : Référence | Date Commande | Date Livraison -->
         <div class="fields-grid three-cols">
           <div class="field-group">
             <label class="field-label required">Référence</label>
-            <div class="input-wrapper" [class.invalid]="isFieldInvalid('reference')">
-              <span class="input-icon"><i class="feather icon-hash"></i></span>
+            <div class="input-wrap" [class.invalid]="isFieldInvalid('reference')">
+              <i class="feather icon-hash field-icon"></i>
               <input type="text" class="field-input" formControlName="reference" placeholder="CA-0001">
             </div>
             <div class="field-error" *ngIf="isFieldInvalid('reference')">
@@ -74,8 +108,8 @@
 
           <div class="field-group">
             <label class="field-label required">Date Commande</label>
-            <div class="input-wrapper" [class.invalid]="isFieldInvalid('dateCommande')">
-              <span class="input-icon"><i class="feather icon-calendar"></i></span>
+            <div class="input-wrap" [class.invalid]="isFieldInvalid('dateCommande')">
+              <i class="feather icon-calendar field-icon"></i>
               <input type="date" class="field-input" formControlName="dateCommande">
             </div>
             <div class="field-error" *ngIf="isFieldInvalid('dateCommande')">
@@ -84,124 +118,141 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">Date Livraison Prévue</label>
-            <div class="input-wrapper">
-              <span class="input-icon"><i class="feather icon-truck"></i></span>
+            <label class="field-label">Date Livraison Prévue <span class="optional-tag">optionnel</span></label>
+            <div class="input-wrap">
+              <i class="feather icon-truck field-icon"></i>
               <input type="date" class="field-input" formControlName="dateLivraisonPrevue">
             </div>
           </div>
         </div>
 
-        <div class="fields-grid two-cols" style="margin-top: 16px;">
+        <!-- Row 2 : Fournisseur | Notes -->
+        <div class="fields-grid two-cols mt-16">
           <div class="field-group">
             <label class="field-label required">Fournisseur</label>
-            <div class="select-wrapper">
-              <span class="select-icon"><i class="feather icon-users"></i></span>
+            <div class="select-wrap" [class.invalid]="isFieldInvalid('fournisseurId')">
+              <i class="feather icon-users field-icon"></i>
               <select class="field-select" formControlName="fournisseurId">
-                <option value="">-- Sélectionner un fournisseur --</option>
+                <option value="">— Sélectionner un fournisseur —</option>
                 <option *ngFor="let f of fournisseurs" [value]="f.id">{{ f.nom }}</option>
               </select>
-              <span class="select-chevron"><i class="feather icon-chevron-down"></i></span>
+              <i class="feather icon-chevron-down select-chevron"></i>
+            </div>
+            <div class="field-error" *ngIf="isFieldInvalid('fournisseurId')">
+              <i class="feather icon-alert-circle"></i> Le fournisseur est obligatoire
             </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label">Notes</label>
-            <textarea class="field-textarea" formControlName="note" rows="2" placeholder="Ajouter des notes..."></textarea>
+            <label class="field-label">Notes <span class="optional-tag">optionnel</span></label>
+            <textarea class="field-textarea" formControlName="note" rows="2"
+                      placeholder="Ajouter des notes ou instructions..."></textarea>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Articles Card -->
-    <div class="form-card section-animate" style="animation-delay: .1s;">
-      <div class="card-header-bar articles"></div>
+    <!-- ── Card 2 : Articles ─────────────────────────────────────────────── -->
+    <div class="form-card sec-animate" style="animation-delay:.12s">
       <div class="form-section">
         <div class="section-header">
-          <div class="section-icon articles">
+          <div class="sec-icon-wrap sec-violet">
             <i class="feather icon-package"></i>
           </div>
-          <div class="section-text">
-            <h3 class="section-title">Articles (Lignes de Commande)</h3>
-            <p class="section-subtitle">Ajoutez les articles à commander</p>
+          <div class="sec-text">
+            <h2 class="sec-title">Articles <span class="sec-title-light">(Lignes de Commande)</span></h2>
+            <p class="sec-sub">Ajoutez les articles à commander</p>
           </div>
-          <span class="section-step">ÉTAPE 2</span>
+          <span class="step-badge step-badge-violet">Étape 2</span>
           <button type="button" class="btn-add-article" (click)="addLigne()">
-            <i class="feather icon-plus"></i>
+            <i class="feather icon-plus-circle"></i>
             Ajouter un article
           </button>
         </div>
 
-        <div class="table-container">
-          <table class="modern-table" formArrayName="lignes">
+        <div class="table-shell">
+          <table class="ca-table" formArrayName="lignes">
             <thead>
               <tr>
-                <th>Article Achat</th>
-                <th>Quantité</th>
-                <th>Prix Unit. HT</th>
-                <th>TVA (%)</th>
-                <th class="amount-col">Montant HT</th>
-                <th class="amount-col">Montant TTC</th>
-                <th class="actions-col"></th>
+                <th class="col-article">Article Achat</th>
+                <th class="col-qty">Quantité</th>
+                <th class="col-price">Prix Unit. HT</th>
+                <th class="col-tva">TVA (%)</th>
+                <th class="col-ht text-right">Montant HT</th>
+                <th class="col-ttc text-right">Montant TTC</th>
+                <th class="col-action"></th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let ligne of lignesArray.controls; let i = index" [formGroupName]="i" class="table-row">
+              <tr *ngFor="let ligne of lignesArray.controls; let i = index"
+                  [formGroupName]="i" class="ca-row">
                 <td>
-                  <select class="table-select" formControlName="articleAchatId"
+                  <select class="tbl-select" formControlName="articleAchatId"
                           (change)="onArticleChange(i)"
                           [compareWith]="compareNumbers">
-                    <option [value]="null">-- Article --</option>
+                    <option [value]="null">— Article —</option>
                     <option *ngFor="let a of articles" [ngValue]="a.id">{{ a.nom }}</option>
                   </select>
                 </td>
                 <td>
-                  <input type="number" class="table-input" formControlName="quantite"
+                  <input type="number" class="tbl-input" formControlName="quantite"
                          min="0.01" step="0.01"
                          (change)="calculateLineAmount(i); calculateTotals()">
                 </td>
                 <td>
-                  <input type="number" class="table-input" formControlName="prixUnitaireHT"
+                  <input type="number" class="tbl-input" formControlName="prixUnitaireHT"
                          min="0" step="0.01"
                          (change)="calculateLineAmount(i); calculateTotals()">
                 </td>
                 <td>
-                  <input type="number" class="table-input compact" formControlName="tva"
+                  <input type="number" class="tbl-input tbl-compact" formControlName="tva"
                          min="0" max="100" step="0.1"
                          (change)="calculateLineAmount(i); calculateTotals()">
                 </td>
-                <td class="amount-cell">
-                  <input type="number" class="table-input readonly" formControlName="montantHT" readonly>
+                <td class="text-right">
+                  <input type="number" class="tbl-input tbl-readonly" formControlName="montantHT" readonly>
                 </td>
-                <td class="amount-cell highlight">
-                  <input type="number" class="table-input readonly" formControlName="montantTTC" readonly>
+                <td class="text-right">
+                  <input type="number" class="tbl-input tbl-readonly tbl-highlight" formControlName="montantTTC" readonly>
                 </td>
-                <td class="actions-cell">
-                  <button type="button" class="btn-delete" (click)="removeLigne(i)">
+                <td class="text-center">
+                  <button type="button" class="btn-row-delete" (click)="removeLigne(i)" title="Supprimer">
                     <i class="feather icon-trash-2"></i>
                   </button>
                 </td>
               </tr>
-              <tr *ngIf="lignesArray.length === 0" class="empty-row">
+
+              <!-- Empty state -->
+              <tr *ngIf="lignesArray.length === 0">
                 <td colspan="7">
                   <div class="empty-state">
-                    <i class="feather icon-inbox"></i>
-                    <p>Aucun article ajouté</p>
-                    <span>Cliquez sur "Ajouter un article" pour commencer</span>
+                    <div class="empty-icon-wrap">
+                      <i class="feather icon-inbox"></i>
+                    </div>
+                    <p class="empty-title">Aucun article ajouté</p>
+                    <span class="empty-hint">Cliquez sur <strong>Ajouter un article</strong> pour commencer</span>
                   </div>
                 </td>
               </tr>
             </tbody>
+
+            <!-- Totals footer -->
             <tfoot *ngIf="lignesArray.length > 0">
-              <tr class="totals-row">
-                <td colspan="4" class="totals-label">Totaux :</td>
-                <td class="totals-value">{{ totalHT | number:'1.2-2' }}</td>
-                <td class="totals-value highlight">{{ totalTTC | number:'1.2-2' }}</td>
+              <tr class="tfoot-row tfoot-sub">
+                <td colspan="4" class="tfoot-label">Montant TVA :</td>
+                <td colspan="2" class="tfoot-value">{{ totalTVA | number:'1.2-2' }} <span class="tfoot-currency">DT</span></td>
                 <td></td>
               </tr>
-              <tr class="totals-row sub">
-                <td colspan="4" class="totals-label">Montant TVA :</td>
-                <td colspan="2" class="totals-value">{{ totalTVA | number:'1.2-2' }}</td>
+              <tr class="tfoot-row tfoot-ht">
+                <td colspan="4" class="tfoot-label">Total HT :</td>
+                <td colspan="2" class="tfoot-value">{{ totalHT | number:'1.2-2' }} <span class="tfoot-currency">DT</span></td>
+                <td></td>
+              </tr>
+              <tr class="tfoot-row tfoot-ttc">
+                <td colspan="4" class="tfoot-label tfoot-label-big">Total TTC :</td>
+                <td colspan="2" class="tfoot-value tfoot-value-big">
+                  {{ totalTTC | number:'1.2-2' }} <span class="tfoot-currency">DT</span>
+                </td>
                 <td></td>
               </tr>
             </tfoot>
@@ -210,23 +261,18 @@
       </div>
     </div>
 
-    <!-- Error Message -->
-    <div class="error-alert" *ngIf="errorMessage">
-      <i class="feather icon-alert-octagon"></i>
-      <span>{{ errorMessage }}</span>
-    </div>
-
-    <!-- Actions -->
-    <div class="form-actions section-animate" style="animation-delay: .2s;">
+    <!-- ── Form Actions ─────────────────────────────────────────────────���── -->
+    <div class="form-actions sec-animate" style="animation-delay:.20s">
       <button type="button" class="btn-cancel" (click)="onCancel()">
         <i class="feather icon-x"></i>
         Annuler
       </button>
       <button type="submit" class="btn-submit" [disabled]="isLoading">
-        <span *ngIf="isLoading" class="btn-spinner"></span>
+        <span *ngIf="isLoading" class="btn-spinner" aria-hidden="true"></span>
         <i *ngIf="!isLoading" class="feather icon-save"></i>
         {{ isEditMode ? 'Enregistrer les modifications' : 'Créer la commande' }}
       </button>
     </div>
+
   </form>
 </div>
