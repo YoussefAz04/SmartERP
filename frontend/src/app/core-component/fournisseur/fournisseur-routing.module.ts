@@ -12,12 +12,12 @@ import { RoleGuard } from '../../core/guard/role/role.guard';
 const routes: Routes = [
   { path: '', redirectTo: 'listFournisseur', pathMatch: 'full' },
   { path: 'listFournisseur', component: FournisseurComponent },
-  { path: 'listCategorieFournisseur', component: ListCategorieFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] } },
-  { path: 'addFournisseur', component: AddFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] } },
-  { path: 'addCategorieFournisseur', component: AddCategorieFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] } },
+  { path: 'listCategorieFournisseur', component: ListCategorieFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['ADMIN'] } },
+  { path: 'addFournisseur', component: AddFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['ADMIN'] } },
+  { path: 'addCategorieFournisseur', component: AddCategorieFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['ADMIN'] } },
   { path: 'viewFournisseur/:id', component: ViewFournisseurComponent },
-  { path: 'editFournisseur/:id', component: EditFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] } },
-  { path: 'editCategorieFournisseur/:id', component: EditCategorieFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] } },
+  { path: 'editFournisseur/:id', component: EditFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['ADMIN'] } },
+  { path: 'editCategorieFournisseur/:id', component: EditCategorieFournisseurComponent, canActivate: [RoleGuard], data: { requiredRoles: ['ADMIN'] } },
 ];
 
 @NgModule({

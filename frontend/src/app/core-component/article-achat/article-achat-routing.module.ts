@@ -8,8 +8,8 @@ import { RoleGuard } from '../../core/guard/role/role.guard';
 const routes: Routes = [
   { path: '', redirectTo: 'listArticleAchat', pathMatch: 'full' },
   { path: 'listArticleAchat', component: ArticleAchatComponent },
-  { path: 'add', component: AddArticleAchatComponent, canActivate: [RoleGuard], data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] } },
-  { path: 'edit/:id', component: EditArticleAchatComponent, canActivate: [RoleGuard], data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] } },
+  { path: 'add', component: AddArticleAchatComponent, canActivate: [RoleGuard], data: { requiredRoles: ['ADMIN'] } },
+  { path: 'edit/:id', component: EditArticleAchatComponent, canActivate: [RoleGuard], data: { requiredRoles: ['ADMIN'] } },
 ];
 
 @NgModule({

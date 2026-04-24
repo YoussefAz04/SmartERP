@@ -24,7 +24,7 @@ public class FournisseurController {
     private JWTUtil jwtUtil;
 
     // ✅ ADD FOURNISSEUR
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping("/addFournisseur/{idCategorie}")
     public ResponseEntity<Fournisseur> addFournisseur(@RequestBody Fournisseur fournisseur, @PathVariable Long idCategorie) {
         try {
@@ -75,7 +75,7 @@ public class FournisseurController {
     }
 
     // ✅ DELETE FOURNISSEUR
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @DeleteMapping("/deleteFournisseur/{id}")
     public ResponseEntity<Map<String, Object>> deleteFournisseur(@PathVariable Long id) {
         try {
@@ -94,7 +94,7 @@ public class FournisseurController {
     }
 
     // ✅ UPDATE FOURNISSEUR
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/updateFournisseur/{id}")
     public ResponseEntity<Fournisseur> updateFournisseur(@PathVariable Long id, @RequestBody Fournisseur fournisseur) {
         try {
@@ -106,7 +106,7 @@ public class FournisseurController {
     }
 
     // ✅ ADD CATEGORIE FOURNISSEUR
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/addCategorieFournisseur")
     public ResponseEntity<CategorieFournisseur> addCategorieFournisseur(@RequestBody CategorieFournisseur categorie) {
         try {
@@ -139,7 +139,7 @@ public class FournisseurController {
     }
 
     // ✅ DELETE CATEGORIE FOURNISSEUR
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteCategorieFournisseur/{id}")
     public ResponseEntity<Map<String, Object>> deleteCategorieFournisseur(@PathVariable Long id) {
         try {
@@ -158,7 +158,7 @@ public class FournisseurController {
     }
 
     // ✅ UPDATE CATEGORIE FOURNISSEUR
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/updateCategorieFournisseur/{id}")
     public ResponseEntity<CategorieFournisseur> updateCategorieFournisseur(@PathVariable Long id, @RequestBody CategorieFournisseur categorie) {
         try {

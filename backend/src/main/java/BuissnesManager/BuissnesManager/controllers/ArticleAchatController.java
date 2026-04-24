@@ -58,7 +58,7 @@ public class ArticleAchatController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addArticleAchat(@RequestBody ArticleAchat articleAchat) {
         try {
@@ -71,7 +71,7 @@ public class ArticleAchatController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Article> updateArticleAchat(@PathVariable Long id,
                                                       @RequestBody ArticleAchat articleAchat) {
@@ -85,7 +85,7 @@ public class ArticleAchatController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteArticleAchat(@PathVariable Long id) {
         try {
