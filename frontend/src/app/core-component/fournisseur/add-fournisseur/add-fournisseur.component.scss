@@ -40,7 +40,7 @@ $shadow-lg: 0 20px 40px rgba(9, 44, 76, 0.08), 0 8px 16px rgba(9, 44, 76, 0.04);
 
 $ease: cubic-bezier(0.4, 0, 0.2, 1);
 
-// Host wrapper — provides consistent breathing room on any screen
+// Host wrapper
 :host {
   display: block;
   padding: clamp(12px, 2vw, 28px) clamp(8px, 2vw, 24px);
@@ -48,57 +48,92 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 // ==========================================================================
-// Page Header
+// Page Header – enhanced gradient card
 // ==========================================================================
 .page-header {
   position: relative;
-  background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+  background: linear-gradient(135deg, #eef3fb 0%, #f7f9fc 100%);
   border: 1px solid $border;
   border-radius: $radius-lg;
-  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.5vw, 28px);
+  padding: clamp(18px, 2.5vw, 28px) clamp(20px, 3vw, 32px);
   margin-bottom: clamp(18px, 2.5vw, 26px);
   box-shadow: $shadow-sm;
   overflow: hidden;
 
-  // Subtle gradient accent bar
+  // Orange left accent bar
   &::before {
     content: "";
     position: absolute;
     inset: 0 auto 0 0;
-    width: 4px;
+    width: 5px;
     background: linear-gradient(180deg, $primary 0%, $primary-dark 100%);
     border-radius: $radius-lg 0 0 $radius-lg;
   }
 
-  .row { display: flex; align-items: center; }
-  .col { flex: 1; min-width: 0; }
-
-  h3.page-title {
-    font-size: clamp(18px, 2vw, 22px);
-    font-weight: 700;
-    color: $ink;
-    margin: 0 0 8px 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    letter-spacing: -0.01em;
-
-    .title-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, $primary, $primary-dark);
-      border-radius: $radius-md;
-      color: #fff;
-      box-shadow: 0 6px 14px rgba(255, 154, 68, 0.35);
-
-      i { font-size: 18px; }
-    }
+  // Decorative radial glow in top-right corner
+  .ph-glow {
+    position: absolute;
+    top: -70px;
+    right: -70px;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, rgba(255, 154, 68, 0.16) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
   }
 
-  // Clean breadcrumb — own separators only, prevents overlap with any global bootstrap styles
+  .ph-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .ph-icon-box {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba($primary, 0.32);
+
+    i { font-size: 24px; color: #fff; }
+  }
+
+  .ph-text { flex: 1; min-width: 0; }
+
+  .ph-badge-wrap {
+    flex-shrink: 0;
+    @media (max-width: 480px) { display: none; }
+  }
+
+  .new-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    box-shadow: 0 4px 12px rgba($primary, 0.28);
+    i { font-size: 12px; }
+  }
+
+  h3.page-title {
+    font-size: clamp(17px, 2vw, 21px);
+    font-weight: 700;
+    color: $ink;
+    margin: 0 0 7px 0;
+    letter-spacing: -0.01em;
+  }
+
   .breadcrumb {
     list-style: none;
     padding: 0;
@@ -106,7 +141,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px 10px;
+    gap: 4px 8px;
     font-size: 12.5px;
     background: transparent;
 
@@ -114,9 +149,8 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
       color: $muted;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
 
-      // Remove any default Bootstrap "/" separator
       &::before { content: none !important; }
       padding-left: 0 !important;
 
@@ -128,7 +162,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
         gap: 4px;
         font-weight: 500;
         transition: color 0.2s $ease;
-        i { font-size: 13px; }
+        i { font-size: 12px; }
         &:hover { color: $primary-dark; }
       }
 
@@ -136,7 +170,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
         content: "›" !important;
         color: $border-strong;
         font-size: 14px;
-        margin-right: 4px;
+        margin-right: 3px;
       }
 
       &.active { color: $ink-soft; font-weight: 500; }
@@ -183,6 +217,11 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
       i { font-size: 24px; color: $primary; }
     }
 
+    .header-text {
+      flex: 1;
+      min-width: 0;
+    }
+
     .card-title {
       font-size: clamp(16px, 1.8vw, 18px);
       font-weight: 700;
@@ -196,10 +235,60 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
       color: rgba(255, 255, 255, 0.78);
       margin: 0;
     }
+
+    .star-req { color: #ff6b6b; }
   }
 
   .card-body {
     padding: clamp(18px, 2.5vw, 30px);
+  }
+}
+
+// ==========================================================================
+// Step progress strip (inside card-header)
+// ==========================================================================
+.step-strip {
+  display: flex;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+
+    .step-dot {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.75);
+      transition: all 0.25s $ease;
+    }
+
+    span {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.65);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 10px 24px;
+    border-radius: 999px;
   }
 }
 
@@ -231,6 +320,22 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
     margin-bottom: 18px;
     padding-bottom: 12px;
     border-bottom: 1px dashed $border;
+
+    // Numbered circle badge
+    .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba($primary, 0.3);
+    }
 
     i {
       display: inline-flex;
@@ -277,6 +382,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 
   .text-danger { color: $danger; margin-left: 2px; }
 
@@ -314,7 +420,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
     color: $muted;
     font-size: 15px;
     pointer-events: none;
-    transition: color 0.2s $ease, transform 0.2s $ease;
+    transition: color 0.2s $ease;
     z-index: 1;
   }
 
@@ -405,6 +511,178 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 // ==========================================================================
+// Taux Livraison – range slider
+// ==========================================================================
+.taux-live-badge {
+  margin-left: auto;
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba($primary, 0.28);
+}
+
+.taux-slider-wrap {
+  background: $bg-section;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  padding: 14px 16px 10px;
+  transition: border-color 0.2s $ease, box-shadow 0.2s $ease;
+
+  &.invalid-wrap {
+    border-color: $danger;
+    background: $danger-soft;
+  }
+
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 4px $primary-ring;
+  }
+}
+
+.taux-endpoints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: $muted;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.form-range-custom {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  margin: 4px 0;
+  display: block;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba($primary, 0.4), 0 0 0 3px #fff;
+    border: none;
+    transition: transform 0.15s $ease, box-shadow 0.15s $ease;
+
+    &:hover { transform: scale(1.2); box-shadow: 0 4px 14px rgba($primary, 0.5), 0 0 0 3px #fff; }
+  }
+
+  &::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba($primary, 0.4);
+    border: 3px solid #fff;
+  }
+
+  &::-webkit-slider-runnable-track { border-radius: 999px; }
+  &::-moz-range-track { background: $border; border-radius: 999px; height: 6px; }
+
+  &:focus {
+    &::-webkit-slider-thumb { box-shadow: 0 0 0 4px $primary-ring, 0 0 0 6px #fff; }
+  }
+}
+
+// ==========================================================================
+// Notation – star rating input
+// ==========================================================================
+.notation-hint {
+  font-size: 11.5px;
+  color: $primary;
+  font-weight: 700;
+  background: $primary-soft;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.star-rating-input {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 14px;
+  background: $bg-section;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  transition: border-color 0.2s $ease, box-shadow 0.2s $ease;
+  min-height: 46px;
+  flex-wrap: wrap;
+
+  &:hover { border-color: $border-strong; }
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 4px $primary-ring;
+  }
+  &.invalid-stars {
+    border-color: $danger;
+    background: $danger-soft;
+  }
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 30px;
+  line-height: 1;
+  padding: 0 3px;
+  color: #d1d9e3;
+  transition: color 0.15s $ease, transform 0.15s $ease;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  &.filled { color: $primary; }
+
+  &.hovered {
+    color: $primary-dark;
+    transform: scale(1.2);
+  }
+
+  &:hover {
+    color: $primary-dark;
+    transform: scale(1.15);
+  }
+
+  &:focus {
+    outline: 2px solid $primary-ring;
+    border-radius: 4px;
+  }
+
+  &:active:not(:disabled) { transform: scale(0.95); }
+}
+
+.star-helper {
+  font-size: 12px;
+  color: $muted;
+  margin-left: 6px;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.star-hover-label {
+  font-size: 12px;
+  color: $primary;
+  font-weight: 600;
+  margin-left: 6px;
+  white-space: nowrap;
+  animation: fadeIn 0.15s $ease;
+}
+
+// ==========================================================================
 // Actions
 // ==========================================================================
 .form-actions {
@@ -455,7 +733,7 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
 .btn-submit {
   background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
   color: #fff;
-  min-width: 150px;
+  min-width: 180px;
   justify-content: center;
   box-shadow: 0 8px 20px rgba(255, 154, 68, 0.35);
 
@@ -499,6 +777,11 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 
 // ==========================================================================
@@ -518,13 +801,16 @@ $ease: cubic-bezier(0.4, 0, 0.2, 1);
   .form-control, .form-select { padding: 10px 12px; font-size: 13px; }
   .input-wrapper .form-control, .input-wrapper .form-select { padding-left: 38px; }
   .error-message { font-size: 11.5px; }
+  .step-strip .step-item span { display: none; }
+  .star-btn { font-size: 26px; }
 }
 
 // ==========================================================================
 // Accessibility
 // ==========================================================================
 @media (prefers-reduced-motion: reduce) {
-  .error-message, .form-control, .form-select, .btn, .spinner, .form-section {
+  .error-message, .form-control, .form-select, .btn, .spinner, .form-section,
+  .star-btn, .star-hover-label {
     animation: none !important;
     transition: none !important;
   }
