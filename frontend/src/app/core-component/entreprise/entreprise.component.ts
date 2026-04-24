@@ -187,20 +187,32 @@ export class EntrepriseComponent implements OnInit{
       this.notification.error("Session introuvable. Veuillez vous reconnecter.");
       return;
     }
-    try {
-      const session = JSON.parse(decodeURIComponent(escape(atob(item))));
-      session.entrepriseId = e.id;
-      session.entrepriseName = e.nom;
-      session.entreprise = { id: e.id, nom: e.nom };
-      localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(session)))));
-      if (e.id !== null && e.id !== undefined) {
-        localStorage.setItem('entrepriseId', e.id.toString());
-        localStorage.setItem('enterpriseId', e.id.toString());
-      }
-      this.notification.success(`Connecté à l'entreprise : ${e.nom}`);
-      this.router.navigate([routes.adminDashboard]);
-    } catch (err) {
-      console.error('❌ Error switching enterprise:', err);
+    if (e.id === null || e.id === undefined) {
+      this.notification.error("ID entreprise invalide.");
+      return;
     }
+    this.entrepriseService.switchEntreprise(e.id).subscribe({
+      next: (response) => {
+        try {
+          const session = JSON.parse(decodeURIComponent(escape(atob(item))));
+          session.token = response.token;
+          session.entrepriseId = response.entrepriseId;
+          session.entrepriseName = response.entrepriseName;
+          session.entreprise = { id: response.entrepriseId, nom: response.entrepriseName };
+          localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(session)))));
+          localStorage.setItem('entrepriseId', String(response.entrepriseId));
+          localStorage.setItem('enterpriseId', String(response.entrepriseId));
+          this.notification.success(`Connecté à l'entreprise : ${e.nom}`);
+          this.router.navigate([routes.adminDashboard]);
+        } catch (err) {
+          console.error('❌ Error storing new session:', err);
+          this.notification.error("Erreur lors de la mise à jour de la session.");
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error switching enterprise:', err);
+        this.notification.error("Erreur lors du changement d'entreprise.");
+      }
+    });
   }
 }
