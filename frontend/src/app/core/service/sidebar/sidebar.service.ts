@@ -358,6 +358,15 @@ generateSidebarData(modules: ModuleTittle[]) {
             route: 'user-management',
             base1: 'user-management',
             subMenus: []
+          },
+          {
+            menuValue: 'Rôles & Permissions',
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'shield',
+            route: 'user-management/roles-permissions',
+            base1: 'user-management',
+            subMenus: []
           }
         ]
       });
