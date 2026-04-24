@@ -17,6 +17,11 @@ const routes: Routes = [
     data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
     children: [
       {
+        path: '',
+        redirectTo: 'users',
+        pathMatch: 'full',
+      },
+      {
         path: 'roles-permissions',
         component: RolesPermissionsComponent,
       },
