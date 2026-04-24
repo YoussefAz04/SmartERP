@@ -4,7 +4,7 @@
     
    <!-- LEFT: Logo Section -->
 <div class="header-section header-logo-section">
-  <a [routerLink]="routes.adminDashboard" class="logo-brand">
+  <a [routerLink]="isSuperAdmin ? ['/entreprise/listEntreprise'] : routes.adminDashboard" class="logo-brand">
     <div class="logo-wrapper">
       <svg class="logo-icon" width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
