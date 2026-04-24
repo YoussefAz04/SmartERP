@@ -241,6 +241,75 @@ public class AuthController {
     }
 
     /**
+     * Switch enterprise context for SUPER_ADMIN
+     * POST /api/auth/switch-enterprise?enterpriseId=X
+     */
+    @PostMapping("/switch-enterprise")
+    public ResponseEntity<?> switchEnterprise(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestParam Long enterpriseId) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token required");
+        }
+
+        String token = authHeader.substring(7);
+
+        if (!jwtUtil.isTokenValid(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        // Only SUPER_ADMIN may switch enterprise
+        List<String> roles = jwtUtil.extractRoles(token);
+        boolean isSuperAdmin = roles.stream()
+                .anyMatch(r -> r.equalsIgnoreCase("SUPER_ADMIN") || r.equalsIgnoreCase("ROLE_SUPER_ADMIN"));
+        if (!isSuperAdmin) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only SUPER_ADMIN can switch enterprise");
+        }
+
+        String username = jwtUtil.getUsernameFromToken(token);
+        Optional<User> userOptional = userRepo.findByUsername(username);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+        }
+        User user = userOptional.get();
+
+        Optional<Entreprise> entrepriseOptional = entrepriseRepo.findById(enterpriseId);
+        if (entrepriseOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Enterprise not found");
+        }
+        Entreprise entreprise = entrepriseOptional.get();
+
+        String newToken = jwtUtil.generateTokenWithEnterprise(user, entrepriseId, entreprise.getNom());
+
+        List<PermissionDto> permissionDtoList = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            permissionDtoList.addAll(permissionService.getPermissionsByRole(role.getId()));
+        }
+
+        Response response = new Response();
+        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setEmail(user.getEmail());
+        response.setName(user.getUsername());
+        response.setToken(newToken);
+        response.setEnabled(user.isEnabled());
+
+        List<String> roleNames = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            roleNames.add(role.getName().toUpperCase());
+        }
+        response.setRoles(roleNames);
+        response.setPermission(permissionDtoList);
+        response.setRoleId(0); // SUPER_ADMIN
+        response.setEntrepriseId(enterpriseId);
+        response.setEntrepriseName(entreprise.getNom());
+
+        System.out.println("✅ Super admin switched to enterprise: " + entreprise.getNom() + " (ID: " + enterpriseId + ")");
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Refresh user permissions
      * POST /api/auth/refreshPermissionDtoList
      */

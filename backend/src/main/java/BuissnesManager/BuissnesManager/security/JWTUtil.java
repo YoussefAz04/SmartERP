@@ -167,6 +167,38 @@ public class JWTUtil {
     }
 
     /**
+     * Generate a JWT token for a user but with an overridden enterprise context.
+     * Used exclusively by the super-admin enterprise-switch endpoint.
+     */
+    public String generateTokenWithEnterprise(User user, Long enterpriseId, String enterpriseName) {
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put("id", user.getId());
+        claims.put("username", user.getUsername());
+        claims.put("email", user.getEmail());
+
+        claims.put("enterpriseId", enterpriseId);
+        claims.put("entrepriseId", enterpriseId);
+        claims.put("enterpriseName", enterpriseName != null ? enterpriseName : "");
+
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            List<String> roleNames = user.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toList());
+            claims.put("roles", roleNames);
+        }
+
+        long now = System.currentTimeMillis();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
      * Check if token is valid
      */
     public boolean isTokenValid(String token) {
