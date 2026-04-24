@@ -1,4 +1,3 @@
-
 // Indigo
 $in-700: #3730a3;
 $in-600: #4338ca;
@@ -8,16 +7,17 @@ $in-300: #a5b4fc;
 $in-100: #e0e7ff;
 $in-50:  #eef2ff;
 
-// Violet  ← ADD THIS BLOCK
+// Violet
 $vi-700: #6d28d9;
 $vi-600: #7c3aed;
 $vi-500: #8b5cf6;
 $vi-50:  #f5f3ff;
 
+// Teal
 $te-700: #0e7490;
 $te-600: #0891b2;
 $te-500: #06b6d4;
-$te-400: #22d3ee;   
+$te-400: #22d3ee;
 $te-300: #67e8f9;
 $te-100: #cffafe;
 $te-50:  #ecfeff;
@@ -26,7 +26,7 @@ $te-50:  #ecfeff;
 $em-700: #047857;
 $em-600: #059669;
 $em-500: #10b981;
-$em-400: #34d399;   // ← ADD THIS
+$em-400: #34d399;
 $em-100: #d1fae5;
 $em-50:  #ecfdf5;
 
@@ -34,7 +34,7 @@ $em-50:  #ecfdf5;
 $am-700: #b45309;
 $am-600: #d97706;
 $am-500: #f59e0b;
-$am-400: #fbbf24;   // ← ADD THIS
+$am-400: #fbbf24;
 $am-100: #fef3c7;
 $am-50:  #fffbeb;
 
@@ -53,7 +53,7 @@ $sl-50:  #f8fafc;
 $red:    #dc2626;
 $red-50: #fef2f2;
 
-// ── Tokens ─────────────────────────────────────────────────────────────────
+// ── Tokens ───────────────────────────────────────────────────
 $r-xs: 4px;
 $r-sm: 8px;
 $r:    12px;
@@ -65,13 +65,11 @@ $sh:    0 4px 18px rgba(0,0,0,.09);
 $sh-lg: 0 12px 36px rgba(0,0,0,.12);
 $sh-xl: 0 24px 56px rgba(0,0,0,.15);
 
-$t:    all .22s cubic-bezier(.4,0,.2,1);
-$t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
+$t:   all .22s cubic-bezier(.4,0,.2,1);
+$t-b: all .36s cubic-bezier(.34,1.56,.64,1);
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Keyframes
-// ══════════════════════════════════════════════════════════════════════════════
+// ── Keyframes ────────────────────────────────────────────────
 @keyframes fadeInDown {
   from { opacity:0; transform:translateY(-18px); }
   to   { opacity:1; transform:translateY(0); }
@@ -97,13 +95,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   0%,100% { background-position:0% 50%; }
   50%     { background-position:100% 50%; }
 }
-@keyframes shimmerSweep {
-  to { left: 130%; }
-}
-@keyframes iconFloat {
-  0%,100% { transform:translateY(0); }
-  50%     { transform:translateY(-5px); }
-}
 @keyframes scaleInY {
   from { transform:scaleY(0); }
   to   { transform:scaleY(1); }
@@ -114,9 +105,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// HERO HEADER
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ HERO HEADER ══════════════════════════════════════════════
 .aa-hero {
   position: relative;
   background: linear-gradient(135deg, #050d1f 0%, #0a1535 35%, #0c2040 65%, #0d2845 100%);
@@ -127,7 +116,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   animation: fadeInDown .55s cubic-bezier(.22,1,.36,1);
   box-shadow: 0 10px 44px rgba(5,13,31,.55), 0 2px 10px rgba($in-500,.18);
 
-  // Rainbow top bar
   &::before {
     content: '';
     position: absolute;
@@ -238,7 +226,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   @media (max-width: 640px) { flex-direction: column; width: 100%; }
 }
 
-// ── Hero Buttons ────────────────────────────────────────────────────────────
 .btn-outline-hero {
   display: inline-flex;
   align-items: center;
@@ -261,6 +248,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0,0,0,.25);
   }
+  &:active { transform: translateY(0); }
 }
 
 .btn-primary-hero {
@@ -288,9 +276,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// KPI CARDS
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ KPI CARDS ════════════════════════════════════════════════
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
@@ -311,7 +297,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   transition: $t-b;
   isolation: isolate;
 
-  // Top shimmer bar
+  // Top animated bar
   &::before {
     content: '';
     position: absolute;
@@ -325,46 +311,46 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   &:hover {
     transform: translateY(-8px) scale(1.02);
     .kpi-icon-wrap { transform: rotate(-8deg) scale(1.12); }
-    .kpi-sheen { left: 135%; }
-    .kpi-blob  { opacity: .35; transform: scale(1.2); }
+    .kpi-sheen     { left: 135%; transition: left .9s cubic-bezier(.25,.8,.25,1); } // ✅ transition only on hover
+    .kpi-blob      { opacity: .35; transform: scale(1.2); }
   }
 
-  // ── Colour variants ────────────────────────────────────────────────────
+  // ── Colour variants ──────────────────────────────────────
   &--indigo {
     background: linear-gradient(135deg, #1d1e6a 0%, #2d2ca0 50%, #4338ca 100%);
     box-shadow: 0 8px 32px rgba($in-600,.38), 0 2px 8px rgba($in-700,.25);
     &::before { background: linear-gradient(90deg, $in-300, $in-500, $in-300); }
     .kpi-icon-wrap { background: rgba($in-300,.18); border-color: rgba($in-300,.3); }
-    .kpi-blob  { background: radial-gradient(circle, $in-400 0%, transparent 70%); }
-    .kpi-chip  { background: rgba($in-300,.2); border-color: rgba($in-300,.35); }
+    .kpi-blob      { background: radial-gradient(circle, $in-400 0%, transparent 70%); }
+    .kpi-chip      { background: rgba($in-300,.2); border-color: rgba($in-300,.35); }
   }
   &--teal {
     background: linear-gradient(135deg, #053340 0%, #0a5568 50%, #0891b2 100%);
     box-shadow: 0 8px 32px rgba($te-600,.38), 0 2px 8px rgba($te-700,.25);
     &::before { background: linear-gradient(90deg, $te-300, $te-500, $te-300); }
     .kpi-icon-wrap { background: rgba($te-300,.18); border-color: rgba($te-300,.3); }
-    .kpi-blob  { background: radial-gradient(circle, $te-400 0%, transparent 70%); }
-    .kpi-chip  { background: rgba($te-300,.2); border-color: rgba($te-300,.35); }
+    .kpi-blob      { background: radial-gradient(circle, $te-400 0%, transparent 70%); }
+    .kpi-chip      { background: rgba($te-300,.2); border-color: rgba($te-300,.35); }
   }
   &--emerald {
     background: linear-gradient(135deg, #032917 0%, #065f32 50%, #059669 100%);
     box-shadow: 0 8px 32px rgba($em-600,.38), 0 2px 8px rgba($em-700,.25);
     &::before { background: linear-gradient(90deg, #6ee7b7, $em-500, #6ee7b7); }
     .kpi-icon-wrap { background: rgba(#6ee7b7,.18); border-color: rgba(#6ee7b7,.3); }
-    .kpi-blob  { background: radial-gradient(circle, $em-400 0%, transparent 70%); }
-    .kpi-chip  { background: rgba(#6ee7b7,.2); border-color: rgba(#6ee7b7,.35); }
+    .kpi-blob      { background: radial-gradient(circle, $em-400 0%, transparent 70%); }
+    .kpi-chip      { background: rgba(#6ee7b7,.2); border-color: rgba(#6ee7b7,.35); }
   }
   &--amber {
     background: linear-gradient(135deg, #431407 0%, #92400e 50%, #d97706 100%);
     box-shadow: 0 8px 32px rgba($am-600,.38), 0 2px 8px rgba($am-700,.25);
     &::before { background: linear-gradient(90deg, #fcd34d, $am-500, #fcd34d); }
     .kpi-icon-wrap { background: rgba(#fde68a,.18); border-color: rgba(#fde68a,.3); }
-    .kpi-blob  { background: radial-gradient(circle, $am-400 0%, transparent 70%); }
-    .kpi-chip  { background: rgba(#fde68a,.2); border-color: rgba(#fde68a,.35); }
+    .kpi-blob      { background: radial-gradient(circle, $am-400 0%, transparent 70%); }
+    .kpi-chip      { background: rgba(#fde68a,.2); border-color: rgba(#fde68a,.35); }
   }
 }
 
-// Shine sweep
+// ✅ FIX 1: Sheen – NO transition by default, only fires on real hover (set above in &:hover)
 .kpi-sheen {
   position: absolute;
   top: 0; left: -70%;
@@ -373,7 +359,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   transform: skewX(-22deg);
   pointer-events: none;
   z-index: 1;
-  transition: left .9s cubic-bezier(.25,.8,.25,1);
+  transition: none; // ✅ prevents fire on page load
 }
 
 // Decorative blob
@@ -397,6 +383,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   position: relative; z-index: 1;
 }
 
+// ✅ FIX 2: Removed `animation: iconFloat` – was causing continuous up/down movement
 .kpi-icon-wrap {
   width: 54px; height: 54px;
   border-radius: 14px;
@@ -405,10 +392,11 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   justify-content: center;
   border: 1px solid transparent;
   backdrop-filter: blur(8px);
-  transition: $t-b;
+  transition: $t-b; // only responds to real hover via parent .kpi-card:hover
   i { font-size: 22px; color: #fff; }
 }
 
+// ✅ FIX 3: Removed `animation: badgePop` – was causing scale pop on load
 .kpi-chip {
   display: inline-flex;
   align-items: center;
@@ -432,6 +420,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   margin-bottom: 6px;
   letter-spacing: -.8px;
   text-shadow: 0 2px 10px rgba(0,0,0,.25);
+  // ✅ No transition – removed letter-spacing transition that caused jitter
 }
 
 .kpi-label {
@@ -449,31 +438,28 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 11px 0;
   border-top: 1px solid rgba(255,255,255,.12);
   font-size: 12px;
   font-weight: 600;
   color: rgba(255,255,255,.7);
   margin: 0 -24px;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding: 11px 24px;
   backdrop-filter: blur(4px);
   background: rgba(0,0,0,.15);
   transition: $t;
+  cursor: pointer;
   i { font-size: 13px; }
   &:hover { background: rgba(0,0,0,.25); color: #fff; }
 }
 
-// Delays
+// Entrance delays
 .kpi-d1 { animation: fadeInUp .5s cubic-bezier(.22,1,.36,1) .1s both; }
 .kpi-d2 { animation: fadeInUp .5s cubic-bezier(.22,1,.36,1) .2s both; }
 .kpi-d3 { animation: fadeInUp .5s cubic-bezier(.22,1,.36,1) .3s both; }
 .kpi-d4 { animation: fadeInUp .5s cubic-bezier(.22,1,.36,1) .4s both; }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// FILTER CARD
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ FILTER CARD ══════════════════════════════════════════════
 .filter-card {
   background: #fff;
   border-radius: $r-xl;
@@ -495,9 +481,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
     border-bottom: 1.5px solid $sl-200;
   }
 
-  &__body {
-    padding: 20px 26px;
-  }
+  &__body { padding: 20px 26px; }
 }
 
 .filter-title-icon {
@@ -634,9 +618,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TABLE PANEL
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ TABLE PANEL ══════════════════════════════════════════════
 .table-panel {
   border-radius: $r-xl;
   overflow: hidden;
@@ -733,9 +715,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TABLE
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ TABLE ════════════════════════════════════════════════════
 .table-scroll { overflow-x: auto; }
 
 .aa-table {
@@ -765,7 +745,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
       .sort-icon { font-size: 11px; margin-left: 4px; opacity: .55; }
     }
 
-    &.th-check { width: 48px; text-align: center; }
+    &.th-check  { width: 48px; text-align: center; }
     &.th-center { text-align: center; }
   }
 
@@ -775,7 +755,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
     border-bottom: 1px solid $sl-100;
     color: $sl-700;
     transition: background .15s ease;
-
     &.td-check { text-align: center; }
   }
 
@@ -809,9 +788,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 
-// ════════════════════════════════════════════��═════════════════════════════════
-// Custom Checkbox
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ CUSTOM CHECKBOX ══════════════════════════════════════════
 .cb-wrap {
   display: inline-flex;
   align-items: center;
@@ -856,11 +833,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Cell components
-// ══════════════════════════════════════════════════════════════════════════════
-
-// Article name cell
+// ══ CELL COMPONENTS ══════════════════════════════════════════
 .art-name-cell {
   display: flex;
   align-items: center;
@@ -886,7 +859,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 .art-name { font-weight: 700; color: $sl-800; font-size: 13.5px; }
 .art-desc { font-size: 11px; color: $sl-400; margin-top: 2px; max-width: 180px; }
 
-// Price badge
 .price-badge {
   display: inline-block;
   padding: 4px 11px;
@@ -899,7 +871,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   white-space: nowrap;
 }
 
-// Unit pill
 .unit-pill {
   display: inline-block;
   padding: 3px 10px;
@@ -913,7 +884,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   border: 1px solid $sl-200;
 }
 
-// SKU chip
 .sku-chip {
   display: inline-block;
   padding: 3px 9px;
@@ -927,7 +897,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   box-shadow: 0 2px 6px rgba(5,13,31,.35);
 }
 
-// Supplier pill
 .supplier-pill {
   display: inline-flex;
   align-items: center;
@@ -943,7 +912,6 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   i { font-size: 11px; }
 }
 
-// Category pill
 .category-pill {
   display: inline-block;
   padding: 4px 12px;
@@ -956,16 +924,11 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
   white-space: nowrap;
 }
 
-// Date
-.date-cell { color: $sl-400 !important; font-size: 12px; white-space: nowrap; }
-
-// Empty cell
+.date-cell  { color: $sl-400 !important; font-size: 12px; white-space: nowrap; }
 .cell-empty { color: $sl-300; font-size: 13px; }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Action Buttons
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ ACTION BUTTONS ════════════════════════════════════════════
 .action-btns { display: flex; gap: 6px; justify-content: center; }
 
 .act-btn {
@@ -1007,9 +970,7 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Empty State
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ EMPTY STATE ══════════════════════════════════════════════
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -1033,22 +994,18 @@ $t-b:  all .36s cubic-bezier(.34,1.56,.64,1);
 .empty-hint  { font-size: 13px; color: $sl-400; text-align: center; }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Responsive
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ RESPONSIVE ════════════════════════════════════════════════
 @media (max-width: 768px) {
-  .aa-hero { padding: 24px 20px; .hero-title { font-size: 1.5rem; } }
+  .aa-hero {
+    padding: 24px 20px;
+    .hero-title { font-size: 1.5rem; }
+  }
   .table-panel__header { padding: 14px 18px; }
   .aa-table th, .aa-table td { padding: 11px 12px; }
   .filter-card__body { padding: 16px 18px; }
 }
 
-// Missing var fix
-$vi-50: #f5f3ff;
-
-// ══════════════════════════════════════════════════════════════════════════════
-// Reduced Motion
-// ══════════════════════════════════════════════════════════════════════════════
+// ══ REDUCED MOTION ════════════════════════════════════════════
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
