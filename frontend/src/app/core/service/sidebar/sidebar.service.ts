@@ -244,32 +244,32 @@ generateSidebarData(modules: ModuleTittle[]) {
     const data = filteredModules.map((moduleTitle: ModuleTittle) => {
       let activeModules: Module[];
 
+      // Shared helper: returns true when a module item passes all exclusion filters.
+      const isModuleAllowed = (mod: Module): boolean => {
+        const t = normalize(mod.title ?? '');
+        if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
+        if (excludedKeywords.some(kw => t.includes(normalize(kw)))) return false;
+        return true;
+      };
+
       if (userRole === 'SUPER_ADMIN') {
-        // SUPER_ADMIN is platform-level: only show enterprise and user management sections.
-        // Business modules (articles, stock, commandes, factures, etc.) are hidden.
-        const superAdminAllowedSectionKeywords = [
-          'entreprise', 'utilisateur', 'user', 'role', 'permission', 'parametrage',
+        // SUPER_ADMIN is platform-level: only show platform management sections
+        // (enterprises, users, roles, permissions). All business modules are hidden.
+        // Keywords are matched against the normalized section title (ModuleTittle.moduleTittle).
+        const SUPER_ADMIN_ALLOWED_SECTION_KEYWORDS = [
+          'entreprise',   // enterprise management section
+          'utilisateur',  // French "user" – matches user management sections
+          'user',         // English "user"
+          'role',         // role management
+          'permission',   // permission management
+          'parametrage',  // settings/parameterisation
         ];
         const sectionTitle = normalize(moduleTitle.moduleTittle ?? '');
-        const isSectionAllowed = superAdminAllowedSectionKeywords.some(kw => sectionTitle.includes(kw));
-        if (!isSectionAllowed) {
-          activeModules = [];
-        } else {
-          activeModules = moduleTitle.modules.filter((mod: Module) => {
-            const t = normalize(mod.title ?? '');
-            if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
-            if (excludedKeywords.some(kw => t.includes(normalize(kw)))) return false;
-            return true;
-          });
-        }
+        const isSectionAllowed = SUPER_ADMIN_ALLOWED_SECTION_KEYWORDS.some(kw => sectionTitle.includes(kw));
+        activeModules = isSectionAllowed ? moduleTitle.modules.filter(isModuleAllowed) : [];
       } else if (userRole === 'ADMIN') {
         // ADMIN (Enterprise Owner) sees all business modules
-        activeModules = moduleTitle.modules.filter((mod: Module) => {
-          const t = normalize(mod.title ?? '');
-          if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
-          if (excludedKeywords.some(kw => t.includes(normalize(kw)))) return false;
-          return true;
-        });
+        activeModules = moduleTitle.modules.filter(isModuleAllowed);
       } else {
         // EMPLOYEE: show allowed sections (Articles Achat/Vente view-only, Clients,
         // Fournisseurs, Stock, Commandes Achat/Vente, Factures Achat/Vente, Entreprise).
@@ -284,17 +284,7 @@ generateSidebarData(modules: ModuleTittle[]) {
         ];
         const sectionTitle = normalize(moduleTitle.moduleTittle ?? '');
         const isSectionAllowed = employeeAllowedSectionKeywords.some(kw => sectionTitle.includes(kw));
-
-        if (!isSectionAllowed) {
-          activeModules = [];
-        } else {
-          activeModules = moduleTitle.modules.filter((mod: Module) => {
-            const t = normalize(mod.title ?? '');
-            if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
-            if (excludedKeywords.some(kw => t.includes(normalize(kw)))) return false;
-            return true;
-          });
-        }
+        activeModules = isSectionAllowed ? moduleTitle.modules.filter(isModuleAllowed) : [];
       }
 
       return {
