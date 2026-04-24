@@ -278,6 +278,7 @@ public class CommandeVenteService {
         return commandeVenteRepository.save(commande);
     }
 
+    @Transactional
     public CommandeVente updateCommande(Long id, CommandeVenteDto dto) {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
@@ -289,7 +290,50 @@ public class CommandeVenteService {
         if (dto.getMontantTVA() != null) commande.setMontantTVA(dto.getMontantTVA());
         if (dto.getMontantTTC() != null) commande.setMontantTTC(dto.getMontantTTC());
         if (dto.getNote() != null) commande.setNote(dto.getNote());
-        return commandeVenteRepository.save(commande);
+        CommandeVente saved = commandeVenteRepository.save(commande);
+
+        // Replace order lines when the DTO includes them
+        if (dto.getLignes() != null) {
+            ligneCommandeVenteRepository.deleteByCommandeVenteId(id);
+            for (int idx = 0; idx < dto.getLignes().size(); idx++) {
+                final int lineNumber = idx + 1;
+                LigneCommandeVenteDto ligneDto = dto.getLignes().get(idx);
+                if (ligneDto.getQuantite() == null || ligneDto.getQuantite().compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new RuntimeException(
+                            String.format("Ligne %d: La quantité doit être supérieure à 0.", lineNumber));
+                }
+                if (ligneDto.getPrixUnitaireHT() == null || ligneDto.getPrixUnitaireHT().compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new RuntimeException(
+                            String.format("Ligne %d: Le prix unitaire HT doit être supérieur à 0.", lineNumber));
+                }
+                LigneCommandeVente ligne = new LigneCommandeVente();
+                ligne.setQuantite(ligneDto.getQuantite());
+                ligne.setPrixUnitaireHT(ligneDto.getPrixUnitaireHT());
+                ligne.setTva(ligneDto.getTva() != null ? ligneDto.getTva() : BigDecimal.ZERO);
+                ligne.setMontantHT(ligneDto.getMontantHT() != null ? ligneDto.getMontantHT() : BigDecimal.ZERO);
+                ligne.setMontantTTC(ligneDto.getMontantTTC() != null ? ligneDto.getMontantTTC() : BigDecimal.ZERO);
+                ligne.setCommandeVente(saved);
+                if (ligneDto.getArticleVenteId() != null) {
+                    ArticleVente articleVente = articleVenteRepo.findById(ligneDto.getArticleVenteId())
+                            .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé: " + ligneDto.getArticleVenteId()));
+                    ligne.setArticleVente(articleVente);
+                }
+                ligneCommandeVenteRepository.save(ligne);
+            }
+
+            // Keep the associated preliminary FactureDeVente in sync with the new totals
+            factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
+                if ("EN_ATTENTE".equals(facture.getStatut())) {
+                    facture.setMontantHT(saved.getMontantHT() != null ? saved.getMontantHT().doubleValue() : 0.0);
+                    facture.setMontantTVA(saved.getMontantTVA() != null ? saved.getMontantTVA().doubleValue() : 0.0);
+                    facture.setMontantTTC(saved.getMontantTTC() != null ? saved.getMontantTTC().doubleValue() : 0.0);
+                    facture.setMontantTotal(saved.getMontantTTC() != null ? saved.getMontantTTC().doubleValue() : 0.0);
+                    factureDeVenteRepository.save(facture);
+                }
+            });
+        }
+
+        return saved;
     }
 
     @Transactional
