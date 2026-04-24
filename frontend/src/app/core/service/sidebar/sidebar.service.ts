@@ -244,8 +244,26 @@ generateSidebarData(modules: ModuleTittle[]) {
     const data = filteredModules.map((moduleTitle: ModuleTittle) => {
       let activeModules: Module[];
 
-      if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
-        // ADMIN and SUPER_ADMIN see all modules (not filtered by status)
+      if (userRole === 'SUPER_ADMIN') {
+        // SUPER_ADMIN is platform-level: only show enterprise and user management sections.
+        // Business modules (articles, stock, commandes, factures, etc.) are hidden.
+        const superAdminAllowedSectionKeywords = [
+          'entreprise', 'utilisateur', 'user', 'role', 'permission', 'parametrage',
+        ];
+        const sectionTitle = normalize(moduleTitle.moduleTittle ?? '');
+        const isSectionAllowed = superAdminAllowedSectionKeywords.some(kw => sectionTitle.includes(kw));
+        if (!isSectionAllowed) {
+          activeModules = [];
+        } else {
+          activeModules = moduleTitle.modules.filter((mod: Module) => {
+            const t = normalize(mod.title ?? '');
+            if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
+            if (excludedKeywords.some(kw => t.includes(normalize(kw)))) return false;
+            return true;
+          });
+        }
+      } else if (userRole === 'ADMIN') {
+        // ADMIN (Enterprise Owner) sees all business modules
         activeModules = moduleTitle.modules.filter((mod: Module) => {
           const t = normalize(mod.title ?? '');
           if (excludedModuleItemTitles.some(excluded => t === normalize(excluded))) return false;
@@ -311,9 +329,9 @@ generateSidebarData(modules: ModuleTittle[]) {
       };
     }).filter((section: any) => section.menu && section.menu.length > 0);
 
-    // AI Intelligence section is only visible to ADMIN and SUPER_ADMIN, not EMPLOYEE
+    // AI Intelligence section is only visible to ADMIN (enterprise-level), not SUPER_ADMIN or EMPLOYEE
     const result: any[] = [...data];
-    if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+    if (userRole === 'ADMIN') {
       result.push({
         tittle: 'Intelligence Artificielle',
         showAsTab: false,
@@ -328,6 +346,37 @@ generateSidebarData(modules: ModuleTittle[]) {
             icon: 'cpu',
             base1: 'ai-intelligence',
             route: 'ai-intelligence',
+            subMenus: []
+          }
+        ]
+      });
+    }
+
+    // Platform Administration section is only visible to SUPER_ADMIN
+    if (userRole === 'SUPER_ADMIN') {
+      result.push({
+        tittle: 'Administration Plateforme',
+        showAsTab: false,
+        separateRoute: false,
+        hasSubRoute: false,
+        showSubRoute: true,
+        menu: [
+          {
+            menuValue: 'Gestion des Entreprises',
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'briefcase',
+            route: 'entreprise',
+            base1: 'entreprise',
+            subMenus: []
+          },
+          {
+            menuValue: 'Gestion des Utilisateurs',
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'users',
+            route: 'user-management',
+            base1: 'user-management',
             subMenus: []
           }
         ]

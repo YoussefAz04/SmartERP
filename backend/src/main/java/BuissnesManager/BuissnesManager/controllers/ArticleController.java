@@ -69,7 +69,7 @@ public class ArticleController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Article> createArticle(@RequestBody ArticleDto articleDto) {
         try {
@@ -80,7 +80,7 @@ public class ArticleController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Article> updateArticle(@PathVariable Long id, @RequestBody ArticleDto articleDto) {
         try {
@@ -111,7 +111,7 @@ public class ArticleController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
         try {

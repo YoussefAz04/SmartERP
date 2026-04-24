@@ -18,7 +18,7 @@ public class FactureController {
 
 
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("addFacture/{idDocument}")
     public ResponseEntity<?> ajouterFacture(@PathVariable Long idDocument) throws Exception {
         try {
@@ -46,7 +46,7 @@ public class FactureController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("updateFactureAchat/{id}")
     public ResponseEntity<FactureAchat> updateFactureAchat(
             @PathVariable Long id,
@@ -59,7 +59,7 @@ public class FactureController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("deleteFactureAchat/{id}")
     public ResponseEntity<?> deleteFactureAchat(@PathVariable Long id) {
         try {

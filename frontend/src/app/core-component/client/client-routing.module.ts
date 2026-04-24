@@ -18,22 +18,22 @@ const routes: Routes = [
     path: 'listCategorieClient',
     component: ListCategorieClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+    data: { requiredRoles: ['ADMIN'] },
   },{
     path: 'addClient',
     component: AddClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
+    data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
   },{
     path: 'addCategorieClient',
     component: AddCategorieClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+    data: { requiredRoles: ['ADMIN'] },
   },{
     path: 'editClient/:id',
     component: EditClientComponent,
     canActivate: [RoleGuard],
-    data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+    data: { requiredRoles: ['ADMIN'] },
   },{
     path: 'viewClient/:id',
     component: ViewClientComponent,

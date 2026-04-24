@@ -135,11 +135,19 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           setTimeout(() => {
-            const fallback = () => this.router.navigate([routes.dashboard]);
-            this.router.navigate([routes.adminDashboard])
-              .then((success) => { if (!success) fallback(); })
-              .catch(fallback)
-              .finally(() => { this.loading = false; });
+            const isSuperAdmin = (response.roles ?? []).includes('SUPER_ADMIN');
+            if (isSuperAdmin) {
+              // SUPER_ADMIN is platform-level: land on enterprise management, not the business dashboard
+              this.router.navigate(['/entreprise'])
+                .catch(() => { window.location.href = '/entreprise'; })
+                .finally(() => { this.loading = false; });
+            } else {
+              const fallback = () => this.router.navigate([routes.dashboard]);
+              this.router.navigate([routes.adminDashboard])
+                .then((success) => { if (!success) fallback(); })
+                .catch(fallback)
+                .finally(() => { this.loading = false; });
+            }
           }, 300);
         } catch (err) {
           console.error('❌ Error saving session:', err);

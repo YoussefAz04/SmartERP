@@ -19,7 +19,7 @@ public class FactureDeVenteController {
     @Autowired
     private FactureDeVenteService factureDeVenteService;
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("ajouterFacture")
     public ResponseEntity<FactureDeVente> ajouterFacture(@RequestBody FactureDeVente facture) {
         FactureDeVente savedFacture = factureDeVenteService.ajouterFactureDeVente(facture);
@@ -38,7 +38,7 @@ public class FactureDeVenteController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("updateFacture/{id}")
     public ResponseEntity<FactureDeVente> updateFacture(@PathVariable Long id,
                                                         @RequestBody FactureDeVente updatedFacture) {
@@ -50,7 +50,7 @@ public class FactureDeVenteController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("deleteFacture/{id}")
     public ResponseEntity<Void> deleteFacture(@PathVariable Long id) {
         try {
@@ -63,7 +63,7 @@ public class FactureDeVenteController {
 
 
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("affecterFactureClient/{idFacture}/{idClient}")
 
     public ResponseEntity<Void> affecterFactureClient(

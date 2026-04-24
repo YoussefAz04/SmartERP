@@ -66,7 +66,7 @@ public class StockMouvementController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<StockMouvement> createMouvement(@RequestBody StockMouvementDto dto) {
         try {
@@ -77,7 +77,7 @@ public class StockMouvementController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMouvement(@PathVariable Long id) {
         try {
