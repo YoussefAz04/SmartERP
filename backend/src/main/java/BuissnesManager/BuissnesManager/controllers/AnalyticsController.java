@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.AiDashboardDto;
 import BuissnesManager.BuissnesManager.dto.ForecastDto;
+import BuissnesManager.BuissnesManager.dto.PredictionAccuracyDto;
 import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
 import BuissnesManager.BuissnesManager.dto.RecommendationDto;
 import BuissnesManager.BuissnesManager.dto.SalesAnalysisDto;
@@ -9,7 +10,10 @@ import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.AiDashboardService;
 import BuissnesManager.BuissnesManager.service.AnalyticService;
 import BuissnesManager.BuissnesManager.service.ForecastService;
+import BuissnesManager.BuissnesManager.service.PredictionLogService;
 import BuissnesManager.BuissnesManager.service.RecommendationService;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +44,9 @@ public class AnalyticsController {
     private RecommendationService recommendationService;
 
     @Autowired
+    private PredictionLogService predictionLogService;
+
+    @Autowired
     private JWTUtil jwtUtil;
 
     private Long extractEntrepriseId(String authHeader) {
@@ -66,6 +73,15 @@ public class AnalyticsController {
                         .body("Impossible de déterminer l'entreprise depuis le token.");
             }
             AiDashboardDto dashboard = aiDashboardService.getAiDashboard(entrepriseId);
+            // Log the freshly-issued forecast so we can later compare it to
+            // the real CA. Idempotent per (entreprise, predictionMonth, horizon).
+            try {
+                if (dashboard != null && dashboard.getForecast() != null) {
+                    predictionLogService.recordForecast(entrepriseId, dashboard.getForecast());
+                }
+            } catch (RuntimeException logEx) {
+                log.warn("Prediction logging skipped: {}", logEx.toString());
+            }
             return ResponseEntity.ok(dashboard);
         } catch (Exception e) {
             log.error("AI dashboard failed", e);
@@ -102,6 +118,11 @@ public class AnalyticsController {
                         .body("Impossible de déterminer l'entreprise depuis le token.");
             }
             ForecastDto forecast = forecastService.generateForecast(entrepriseId);
+            try {
+                predictionLogService.recordForecast(entrepriseId, forecast);
+            } catch (RuntimeException logEx) {
+                log.warn("Prediction logging skipped: {}", logEx.toString());
+            }
             return ResponseEntity.ok(forecast);
         } catch (Exception e) {
             log.error("Forecast generation failed", e);
@@ -143,6 +164,44 @@ public class AnalyticsController {
             log.error("Recommendations generation failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur lors de la génération des recommandations.");
+        }
+    }
+
+    @GetMapping("/predictions")
+    public ResponseEntity<?> getPredictionHistory(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long entrepriseId = extractEntrepriseId(authHeader);
+            if (entrepriseId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Impossible de déterminer l'entreprise depuis le token.");
+            }
+            PredictionAccuracyDto history = predictionLogService.getHistory(entrepriseId);
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            log.error("Prediction history failed", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors du chargement de l'historique des prédictions.");
+        }
+    }
+
+    @PostMapping("/predictions/reconcile")
+    public ResponseEntity<?> reconcilePredictions(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long entrepriseId = extractEntrepriseId(authHeader);
+            if (entrepriseId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Impossible de déterminer l'entreprise depuis le token.");
+            }
+            int settled = predictionLogService.reconcile(entrepriseId);
+            Map<String, Object> body = new HashMap<>();
+            body.put("settled", settled);
+            return ResponseEntity.ok(body);
+        } catch (Exception e) {
+            log.error("Prediction reconciliation failed", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de la réconciliation des prédictions.");
         }
     }
 }

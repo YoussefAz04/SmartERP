@@ -1017,6 +1017,24 @@
 .badge-moyenne { background: #fff9e8; color: #c68d18; }
 .badge-basse,
 .badge-info { background: #ebfaf3; color: #08b27f; }
+.badge-success { background: #ebfaf3; color: #08b27f; }
+.badge-warning { background: #fff5eb; color: #f08733; }
+.badge-danger { background: #fff0f4; color: #f14e7b; }
+
+.prediction-log-card {
+  .prediction-subtitle {
+    margin: -4px 0 14px;
+    color: #475569;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    em { color: #0f172a; font-style: normal; font-weight: 600; }
+  }
+  .btn-refresh-sm {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+  }
+  .intel-table { margin-top: 10px; }
+}
 
 .rec-title {
   margin: 0 0 10px;

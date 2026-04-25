@@ -16,6 +16,7 @@ import {
 import {
   AiDashboard,
   AiIntelligenceService,
+  PredictionAccuracy,
   Recommendation,
 } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
 import { routes } from 'src/app/core/helpers/routes';
@@ -52,6 +53,9 @@ export class AiDashboardComponent implements OnInit {
   private static readonly CRITICAL_RECOMMENDATION_PENALTY = 15;
 
   public dashboard: AiDashboard | null = null;
+  public predictionAccuracy: PredictionAccuracy | null = null;
+  public predictionLoading = false;
+  public predictionReconciling = false;
   public loading = true;
   public error = false;
   public isRefreshing = false;
@@ -67,6 +71,45 @@ export class AiDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboard();
+    this.loadPredictionHistory();
+  }
+
+  loadPredictionHistory(): void {
+    this.predictionLoading = true;
+    this.aiService.getPredictionHistory().subscribe({
+      next: (data) => {
+        this.predictionAccuracy = data;
+        this.predictionLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur historique prédictions:', err);
+        this.predictionLoading = false;
+      },
+    });
+  }
+
+  reconcilePredictions(): void {
+    if (this.predictionReconciling) return;
+    this.predictionReconciling = true;
+    this.aiService.reconcilePredictions().subscribe({
+      next: () => {
+        this.predictionReconciling = false;
+        this.loadPredictionHistory();
+      },
+      error: (err) => {
+        console.error('Erreur réconciliation:', err);
+        this.predictionReconciling = false;
+      },
+    });
+  }
+
+  /** Bootstrap class for an error-row badge based on percent error magnitude. */
+  predictionErrorClass(percentError: number | null): string {
+    if (percentError == null) return 'badge-info';
+    const abs = Math.abs(percentError);
+    if (abs <= 0.10) return 'badge-success';
+    if (abs <= 0.25) return 'badge-warning';
+    return 'badge-danger';
   }
 
   loadDashboard(): void {
@@ -91,6 +134,7 @@ export class AiDashboardComponent implements OnInit {
   refresh(): void {
     this.isRefreshing = true;
     this.loadDashboard();
+    this.loadPredictionHistory();
   }
 
   buildCharts(): void {
@@ -237,8 +281,10 @@ export class AiDashboardComponent implements OnInit {
 
   formatCurrency(value: number): string {
     if (!value) return '0';
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + 'M';
-    if (value >= 1_000) return (value / 1_000).toFixed(1) + 'k';
+    const abs = Math.abs(value);
+    const sign = value < 0 ? '-' : '';
+    if (abs >= 1_000_000) return sign + (abs / 1_000_000).toFixed(1) + 'M';
+    if (abs >= 1_000) return sign + (abs / 1_000).toFixed(1) + 'k';
     return value.toFixed(2);
   }
 
