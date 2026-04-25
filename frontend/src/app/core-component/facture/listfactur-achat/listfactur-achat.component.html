@@ -21,6 +21,12 @@
           <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
           <span>Actualiser</span>
         </button>
+        <input type="file" #pdfImportInput accept="application/pdf"
+               (change)="onImportPdfSelected($event)" style="display: none;" />
+        <button class="btn-header btn-refresh" (click)="pdfImportInput.click()" [disabled]="importing">
+          <i class="feather icon-upload-cloud" [class.spinning]="importing"></i>
+          <span>{{ importing ? 'Import...' : 'Importer PDF' }}</span>
+        </button>
       </div>
     </div>
   </div>

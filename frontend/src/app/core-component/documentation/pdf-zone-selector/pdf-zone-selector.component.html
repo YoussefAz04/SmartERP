@@ -7,9 +7,11 @@
 
     <select [(ngModel)]="typeDeDocument" class="form-control" id="typeDeDocument">
       <option value="">-- Sélectionner le type de document --</option>
+      <option value="FACTURE_ACHAT">Facture d'achat</option>
+      <option value="FACTURE_VENTE">Facture de vente</option>
       <option value="CIN">Carte d'identité</option>
       <option value="RECU">Reçu</option>
-      <option value="FACTURE">Facture</option>
+      <option value="FACTURE">Facture (générique)</option>
       <!-- etc. -->
     </select>
 
