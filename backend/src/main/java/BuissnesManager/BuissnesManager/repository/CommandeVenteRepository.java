@@ -40,19 +40,20 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
     /**
      * Top-selling products aggregated by ArticleVente.
      *
-     * The seed data only populates the underlying Article (articleAchat) with a name –
-     * ArticleVente.nom can legitimately be NULL for records created before the entity
-     * gained a `nom` column. We therefore COALESCE over articleVente.nom, the linked
-     * articleAchat.nom, and finally a synthetic fallback so every product row gets a
-     * distinguishable, human-readable label in the AI dashboard.
+     * Uses an explicit INNER JOIN on articleVente (replaces the IS NOT NULL filter) and
+     * a LEFT JOIN on articleAchat so that ArticleVente rows whose article_achat_id is NULL
+     * (e.g. records created via the original SQL seed script that used the old `article_id`
+     * column) are still included instead of being silently dropped by an implicit INNER JOIN.
+     * COALESCE resolves the display name: articleVente.nom → articleAchat.nom → synthetic id.
      */
-    @Query("SELECT COALESCE(NULLIF(lc.articleVente.nom, ''), NULLIF(lc.articleVente.articleAchat.nom, ''), CONCAT('Produit #', lc.articleVente.id)), " +
+    @Query("SELECT COALESCE(NULLIF(av.nom, ''), NULLIF(aa.nom, ''), CONCAT('Produit #', av.id)), " +
            "COALESCE(SUM(lc.quantite), 0), " +
            "COALESCE(SUM(lc.montantTTC), 0) " +
            "FROM LigneCommandeVente lc " +
+           "JOIN lc.articleVente av " +
+           "LEFT JOIN av.articleAchat aa " +
            "WHERE lc.commandeVente.entreprise.id = :entrepriseId " +
-           "AND lc.articleVente IS NOT NULL " +
-           "GROUP BY lc.articleVente.id, lc.articleVente.nom, lc.articleVente.articleAchat.nom " +
+           "GROUP BY av.id, av.nom, aa.nom " +
            "ORDER BY SUM(lc.quantite) DESC")
     List<Object[]> getTopProducts(@Param("entrepriseId") Long entrepriseId);
 
