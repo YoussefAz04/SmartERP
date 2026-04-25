@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -173,7 +172,7 @@ public class FactureOcrService {
         BigDecimal montantTVA = parseAmount(raw.get("montantTVA"));
         BigDecimal montantTTC = parseAmount(raw.get("montantTTC"));
         BigDecimal remise = parseAmount(raw.get("remise"));
-        payload.put("referance", lower(raw.get("referanc"), raw.get("referance")));
+        payload.put("referance", firstNonBlank(raw.get("referanc"), raw.get("referance")));
         payload.put("dateAchat", firstNonBlank(parseDateIso(raw.get("date")), raw.get("date")));
         payload.put("montantHT", montantHT);
         payload.put("montantTVA", montantTVA);
@@ -201,7 +200,7 @@ public class FactureOcrService {
         BigDecimal montantTVA = parseAmount(raw.get("montantTVA"));
         BigDecimal montantTTC = parseAmount(raw.get("montantTTC"));
         BigDecimal remise = parseAmount(raw.get("remise"));
-        payload.put("referance", lower(raw.get("referanc"), raw.get("referance")));
+        payload.put("referance", firstNonBlank(raw.get("referanc"), raw.get("referance")));
         // The legacy add-facture-de-vente form uses dateAchat as the date control name.
         payload.put("dateAchat", firstNonBlank(parseDateIso(raw.get("date")), raw.get("date")));
         payload.put("montantHT", montantHT);
@@ -241,12 +240,4 @@ public class FactureOcrService {
         if (b != null && !b.trim().isEmpty()) return b.trim();
         return null;
     }
-    /** Return the first non-blank value (kept lower-case label intentional for clarity). */
-    private static String lower(String a, String b) {
-        return firstNonBlank(a, b);
-    }
-
-    // referenced to keep Locale import non-unused if any future formatter needs it
-    @SuppressWarnings("unused")
-    private static final Locale LOCALE = Locale.FRANCE;
 }
