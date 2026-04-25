@@ -78,21 +78,33 @@ DELETE FROM [dbo].[commande_achat]        WHERE [id]                BETWEEN 1404
 DELETE FROM [dbo].[ligne_commande_vente] WHERE [commande_vente_id] BETWEEN 14076 AND 14090
 DELETE FROM [dbo].[commande_vente]        WHERE [id]                BETWEEN 14076 AND 14090
 
+-- Additional FirstTechnology (id 14) data introduced in section 11
+DELETE FROM [dbo].[ligne_commande_achat] WHERE [commande_achat_id] BETWEEN 14051 AND 14060
+DELETE FROM [dbo].[commande_achat]        WHERE [id]                BETWEEN 14051 AND 14060
+DELETE FROM [dbo].[ligne_commande_vente] WHERE [commande_vente_id] BETWEEN 14091 AND 14110
+DELETE FROM [dbo].[commande_vente]        WHERE [id]                BETWEEN 14091 AND 14110
+
 DELETE FROM [dbo].[stock]         WHERE [id] BETWEEN 706  AND 710
 DELETE FROM [dbo].[stock]         WHERE [id] BETWEEN 1206 AND 1210
 DELETE FROM [dbo].[stock]         WHERE [id] BETWEEN 1406 AND 1410
+DELETE FROM [dbo].[stock]         WHERE [id] BETWEEN 1411 AND 1415
 
 DELETE FROM [dbo].[article_vente] WHERE [id] BETWEEN 706  AND 710
 DELETE FROM [dbo].[article_vente] WHERE [id] BETWEEN 1206 AND 1210
 DELETE FROM [dbo].[article_vente] WHERE [id] BETWEEN 1406 AND 1410
+DELETE FROM [dbo].[article_vente] WHERE [id] BETWEEN 1411 AND 1415
 
 DELETE FROM [dbo].[article]       WHERE [id] BETWEEN 706  AND 710
 DELETE FROM [dbo].[article]       WHERE [id] BETWEEN 1206 AND 1210
 DELETE FROM [dbo].[article]       WHERE [id] BETWEEN 1406 AND 1410
+DELETE FROM [dbo].[article]       WHERE [id] BETWEEN 1411 AND 1415
 
 DELETE FROM [dbo].[prediction_log]
  WHERE [entreprise_id] IN (7,12)
    AND [prediction_month] BETWEEN '2026-02-01' AND '2026-05-01'
+DELETE FROM [dbo].[prediction_log]
+ WHERE [entreprise_id] = 14
+   AND [prediction_month] BETWEEN '2026-05-01' AND '2026-08-01'
 GO
 
 -- ============================================================
@@ -529,20 +541,229 @@ GO
 -- 10. SUMMARY
 -- ============================================================
 PRINT N'Extras seed loaded:'
-PRINT N'  - 15 new articles  (5 per enterprise: Noxus / Eranow / FirstTechnology)'
-PRINT N'  - 15 new article_vente rows + 15 new stock rows'
-PRINT N'  - 30 extra commande_achat (10 per enterprise)'
-PRINT N'  - 45 extra commande_vente (15 per enterprise)'
-PRINT N'  - 24 prediction_log rows (12 each for Noxus and Eranow), actuals filled at runtime'
+PRINT N'  - 20 new articles  (5 per enterprise + 5 extra for FirstTechnology)'
+PRINT N'  - 20 new article_vente rows + 20 new stock rows'
+PRINT N'  - 40 extra commande_achat (10 per enterprise + 10 extra for FirstTechnology)'
+PRINT N'  - 65 extra commande_vente (15 per enterprise + 20 extra for FirstTechnology)'
+PRINT N'  - 36 prediction_log rows (12 each for Noxus, Eranow, FirstTechnology), actuals filled at runtime'
+GO
+
+-- ============================================================
+-- 11. ADDITIONAL DATA – FirstTechnology (id 14) ONLY
+--
+-- Adds 5 more articles (FT-011..FT-015) with article_vente + stock,
+-- 10 more commande_achat and 20 more commande_vente referencing them,
+-- plus 12 prediction_log rows so the "Historique : Prédictions vs CA Réel"
+-- panel is no longer empty for enterprise 14.
+--
+-- prediction_month range here (2026-05-01 .. 2026-08-01) is intentionally
+-- outside the firsttechnology_enterprise_14_ai_seed.sql range
+-- (2025-05-01 .. 2026-04-01), so this section is safe whether or not the
+-- per-enterprise AI seed has been applied.
+-- ============================================================
+
+-- 11.a Articles 1411..1415
+SET IDENTITY_INSERT [dbo].[article] ON
+INSERT [dbo].[article] ([id],[reference],[nom],[description],[prix_achat],[prix_vente],[actif],[categorie_article_id],[mesure_id],[tva_id],[entreprise_id],[created_at],[updated_at]) VALUES
+(1411,N'FT-011',N'Routeur Wi-Fi 6E Pro',N'Routeur tri-bande Wi-Fi 6E AX11000, 8 antennes, QoS, VPN serveur intégré',240.00,380.00,1,14,1,2,14,GETDATE(),GETDATE()),
+(1412,N'FT-012',N'NAS 4 Baies Réseau',N'Serveur NAS 4 baies 2.5GbE, RAID 0/1/5/6/10, snapshots, sauvegarde cloud',480.00,720.00,1,14,1,2,14,GETDATE(),GETDATE()),
+(1413,N'FT-013',N'Vidéoprojecteur Full HD',N'Vidéoprojecteur Full HD 4500 lumens, HDMI/USB-C, correction trapèze auto',360.00,540.00,1,14,1,2,14,GETDATE(),GETDATE()),
+(1414,N'FT-014',N'Scanner Documentaire ADF',N'Scanner recto-verso 60ppm, chargeur ADF 80 feuilles, OCR multilingue',290.00,450.00,1,14,1,2,14,GETDATE(),GETDATE()),
+(1415,N'FT-015',N'Casque Réunion VoIP USB',N'Casque stéréo USB-A/USB-C avec micro antibruit, certifié Teams/Zoom',80.00,130.00,1,14,1,2,14,GETDATE(),GETDATE())
+SET IDENTITY_INSERT [dbo].[article] OFF
+GO
+
+-- 11.b article_vente
+SET IDENTITY_INSERT [dbo].[article_vente] ON
+INSERT [dbo].[article_vente] ([id],[article_id],[prix_vente_special],[description_vente],[created_at],[updated_at]) VALUES
+(1411,1411,360.00,N'Tarif Routeur Wi-Fi 6E intégrateurs réseau',GETDATE(),GETDATE()),
+(1412,1412,690.00,N'Remise NAS 4 baies parc serveurs',GETDATE(),GETDATE()),
+(1413,1413,510.00,N'Tarif Vidéoprojecteur salles formation',GETDATE(),GETDATE()),
+(1414,1414,420.00,N'Promotion Scanner ADF parcs bureautiques',GETDATE(),GETDATE()),
+(1415,1415,118.00,N'Tarif Casque VoIP centres d''appel lot >= 10',GETDATE(),GETDATE())
+SET IDENTITY_INSERT [dbo].[article_vente] OFF
+GO
+
+-- 11.c stock
+SET IDENTITY_INSERT [dbo].[stock] ON
+INSERT [dbo].[stock] ([id],[article_id],[entreprise_id],[quantite_disponible],[quantite_minimale],[quantite_maximale],[emplacement],[created_at],[updated_at]) VALUES
+(1411,1411,14, 55.000, 8.000, 180.000,N'Entrepôt Principal – Étagère IT-F1',GETDATE(),GETDATE()),
+(1412,1412,14, 30.000, 5.000, 100.000,N'Entrepôt Principal – Étagère IT-F2',GETDATE(),GETDATE()),
+(1413,1413,14, 40.000, 6.000, 130.000,N'Entrepôt Principal – Étagère IT-G1',GETDATE(),GETDATE()),
+(1414,1414,14, 50.000, 8.000, 160.000,N'Entrepôt Secondaire – Bac IT-G2',GETDATE(),GETDATE()),
+(1415,1415,14,180.000,25.000, 600.000,N'Entrepôt Principal – Étagère IT-H1',GETDATE(),GETDATE())
+SET IDENTITY_INSERT [dbo].[stock] OFF
+GO
+
+-- 11.d Extra commande_achat 14051..14060 (April 2026)
+-- Templates HT:
+--   GA: 3×1411(240) + 2×1413(360)         = 1440.00  TVA  273.60  TTC 1713.60
+--   GB: 2×1412(480) + 4×1415( 80)         = 1280.00  TVA  243.20  TTC 1523.20
+--   GC: 4×1414(290) + 5×1415( 80)         = 1560.00  TVA  296.40  TTC 1856.40
+--   GD: 2×1411(240) + 1×1412(480)         =  960.00  TVA  182.40  TTC 1142.40
+--   GE: 3×1413(360) + 3×1414(290)         = 1950.00  TVA  370.50  TTC 2320.50
+SET IDENTITY_INSERT [dbo].[commande_achat] ON
+INSERT [dbo].[commande_achat] ([id],[reference],[date_commande],[date_livraison_prevue],[statut],[montant_ht],[montant_tva],[montant_ttc],[fournisseur_id],[entreprise_id],[created_at],[updated_at]) VALUES
+(14051,N'CA-FT-2026-051','2026-04-02','2026-04-10',N'RECUE',     1440.00,273.60,1713.60,141,14,GETDATE(),GETDATE()),
+(14052,N'CA-FT-2026-052','2026-04-04','2026-04-12',N'RECUE',     1280.00,243.20,1523.20,142,14,GETDATE(),GETDATE()),
+(14053,N'CA-FT-2026-053','2026-04-06','2026-04-14',N'RECUE',     1560.00,296.40,1856.40,143,14,GETDATE(),GETDATE()),
+(14054,N'CA-FT-2026-054','2026-04-08','2026-04-16',N'RECUE',      960.00,182.40,1142.40,144,14,GETDATE(),GETDATE()),
+(14055,N'CA-FT-2026-055','2026-04-10','2026-04-18',N'RECUE',     1950.00,370.50,2320.50,141,14,GETDATE(),GETDATE()),
+(14056,N'CA-FT-2026-056','2026-04-12','2026-04-20',N'CONFIRMEE', 1440.00,273.60,1713.60,142,14,GETDATE(),GETDATE()),
+(14057,N'CA-FT-2026-057','2026-04-14','2026-04-22',N'CONFIRMEE', 1280.00,243.20,1523.20,143,14,GETDATE(),GETDATE()),
+(14058,N'CA-FT-2026-058','2026-04-16','2026-04-24',N'CONFIRMEE', 1560.00,296.40,1856.40,144,14,GETDATE(),GETDATE()),
+(14059,N'CA-FT-2026-059','2026-04-18',NULL,        N'EN_ATTENTE', 960.00,182.40,1142.40,141,14,GETDATE(),GETDATE()),
+(14060,N'CA-FT-2026-060','2026-04-20',NULL,        N'BROUILLON', 1950.00,370.50,2320.50,142,14,GETDATE(),GETDATE())
+SET IDENTITY_INSERT [dbo].[commande_achat] OFF
+GO
+
+-- 11.e ligne_commande_achat for 14051..14060
+INSERT [dbo].[ligne_commande_achat] ([commande_achat_id],[article_id],[quantite],[prix_unitaire_ht],[taux_tva],[montant_ht],[montant_ttc],[created_at],[updated_at]) VALUES
+(14051,1411,3.000,240.00,19.00, 720.00, 856.80,GETDATE(),GETDATE()),
+(14051,1413,2.000,360.00,19.00, 720.00, 856.80,GETDATE(),GETDATE()),
+(14052,1412,2.000,480.00,19.00, 960.00,1142.40,GETDATE(),GETDATE()),
+(14052,1415,4.000, 80.00,19.00, 320.00, 380.80,GETDATE(),GETDATE()),
+(14053,1414,4.000,290.00,19.00,1160.00,1380.40,GETDATE(),GETDATE()),
+(14053,1415,5.000, 80.00,19.00, 400.00, 476.00,GETDATE(),GETDATE()),
+(14054,1411,2.000,240.00,19.00, 480.00, 571.20,GETDATE(),GETDATE()),
+(14054,1412,1.000,480.00,19.00, 480.00, 571.20,GETDATE(),GETDATE()),
+(14055,1413,3.000,360.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14055,1414,3.000,290.00,19.00, 870.00,1035.30,GETDATE(),GETDATE()),
+(14056,1411,3.000,240.00,19.00, 720.00, 856.80,GETDATE(),GETDATE()),
+(14056,1413,2.000,360.00,19.00, 720.00, 856.80,GETDATE(),GETDATE()),
+(14057,1412,2.000,480.00,19.00, 960.00,1142.40,GETDATE(),GETDATE()),
+(14057,1415,4.000, 80.00,19.00, 320.00, 380.80,GETDATE(),GETDATE()),
+(14058,1414,4.000,290.00,19.00,1160.00,1380.40,GETDATE(),GETDATE()),
+(14058,1415,5.000, 80.00,19.00, 400.00, 476.00,GETDATE(),GETDATE()),
+(14059,1411,2.000,240.00,19.00, 480.00, 571.20,GETDATE(),GETDATE()),
+(14059,1412,1.000,480.00,19.00, 480.00, 571.20,GETDATE(),GETDATE()),
+(14060,1413,3.000,360.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14060,1414,3.000,290.00,19.00, 870.00,1035.30,GETDATE(),GETDATE())
+GO
+
+-- 11.f Extra commande_vente 14091..14110 (Apr–May 2026)
+-- Templates HT (vente prices 380/720/540/450/130):
+--   H1: 4×1411(380) + 2×1413(540)         = 2600.00  TVA  494.00  TTC 3094.00
+--   H2: 2×1412(720) + 6×1415(130)         = 2220.00  TVA  421.80  TTC 2641.80
+--   H3: 4×1414(450) + 5×1415(130)         = 2450.00  TVA  465.50  TTC 2915.50
+--   H4: 3×1411(380) + 2×1412(720)         = 2580.00  TVA  490.20  TTC 3070.20
+--   H5: 2×1413(540) + 4×1414(450)         = 2880.00  TVA  547.20  TTC 3427.20
+SET IDENTITY_INSERT [dbo].[commande_vente] ON
+INSERT [dbo].[commande_vente] ([id],[reference],[date_commande],[date_livraison_prevue],[statut],[montant_ht],[montant_tva],[montant_ttc],[client_id],[entreprise_id],[created_at],[updated_at]) VALUES
+(14091,N'CV-FT-2026-091','2026-04-03','2026-04-09',N'LIVREE',    2600.00,494.00,3094.00,141,14,GETDATE(),GETDATE()),
+(14092,N'CV-FT-2026-092','2026-04-04','2026-04-10',N'LIVREE',    2220.00,421.80,2641.80,142,14,GETDATE(),GETDATE()),
+(14093,N'CV-FT-2026-093','2026-04-06','2026-04-12',N'LIVREE',    2450.00,465.50,2915.50,143,14,GETDATE(),GETDATE()),
+(14094,N'CV-FT-2026-094','2026-04-07','2026-04-13',N'LIVREE',    2580.00,490.20,3070.20,144,14,GETDATE(),GETDATE()),
+(14095,N'CV-FT-2026-095','2026-04-09','2026-04-15',N'LIVREE',    2880.00,547.20,3427.20,141,14,GETDATE(),GETDATE()),
+(14096,N'CV-FT-2026-096','2026-04-11','2026-04-17',N'LIVREE',    2600.00,494.00,3094.00,142,14,GETDATE(),GETDATE()),
+(14097,N'CV-FT-2026-097','2026-04-13','2026-04-19',N'LIVREE',    2220.00,421.80,2641.80,143,14,GETDATE(),GETDATE()),
+(14098,N'CV-FT-2026-098','2026-04-15','2026-04-21',N'LIVREE',    2450.00,465.50,2915.50,144,14,GETDATE(),GETDATE()),
+(14099,N'CV-FT-2026-099','2026-04-16','2026-04-22',N'LIVREE',    2580.00,490.20,3070.20,141,14,GETDATE(),GETDATE()),
+(14100,N'CV-FT-2026-100','2026-04-18','2026-04-24',N'LIVREE',    2880.00,547.20,3427.20,142,14,GETDATE(),GETDATE()),
+(14101,N'CV-FT-2026-101','2026-04-20','2026-04-26',N'LIVREE',    2600.00,494.00,3094.00,143,14,GETDATE(),GETDATE()),
+(14102,N'CV-FT-2026-102','2026-04-22','2026-04-28',N'LIVREE',    2220.00,421.80,2641.80,144,14,GETDATE(),GETDATE()),
+(14103,N'CV-FT-2026-103','2026-04-23','2026-04-29',N'CONFIRMEE', 2450.00,465.50,2915.50,141,14,GETDATE(),GETDATE()),
+(14104,N'CV-FT-2026-104','2026-04-24','2026-04-30',N'CONFIRMEE', 2580.00,490.20,3070.20,142,14,GETDATE(),GETDATE()),
+(14105,N'CV-FT-2026-105','2026-04-25','2026-05-01',N'CONFIRMEE', 2880.00,547.20,3427.20,143,14,GETDATE(),GETDATE()),
+(14106,N'CV-FT-2026-106','2026-04-26','2026-05-02',N'CONFIRMEE', 2600.00,494.00,3094.00,144,14,GETDATE(),GETDATE()),
+(14107,N'CV-FT-2026-107','2026-04-27','2026-05-03',N'CONFIRMEE', 2220.00,421.80,2641.80,141,14,GETDATE(),GETDATE()),
+(14108,N'CV-FT-2026-108','2026-04-28',NULL,        N'EN_ATTENTE',2450.00,465.50,2915.50,142,14,GETDATE(),GETDATE()),
+(14109,N'CV-FT-2026-109','2026-04-29',NULL,        N'EN_ATTENTE',2580.00,490.20,3070.20,143,14,GETDATE(),GETDATE()),
+(14110,N'CV-FT-2026-110','2026-04-30',NULL,        N'BROUILLON', 2880.00,547.20,3427.20,144,14,GETDATE(),GETDATE())
+SET IDENTITY_INSERT [dbo].[commande_vente] OFF
+GO
+
+-- 11.g ligne_commande_vente for 14091..14110
+INSERT [dbo].[ligne_commande_vente] ([commande_vente_id],[article_id],[quantite],[prix_unitaire_ht],[taux_tva],[montant_ht],[montant_ttc],[created_at],[updated_at]) VALUES
+(14091,1411,4.000,380.00,19.00,1520.00,1808.80,GETDATE(),GETDATE()),
+(14091,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14092,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14092,1415,6.000,130.00,19.00, 780.00, 928.20,GETDATE(),GETDATE()),
+(14093,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE()),
+(14093,1415,5.000,130.00,19.00, 650.00, 773.50,GETDATE(),GETDATE()),
+(14094,1411,3.000,380.00,19.00,1140.00,1356.60,GETDATE(),GETDATE()),
+(14094,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14095,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14095,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE()),
+(14096,1411,4.000,380.00,19.00,1520.00,1808.80,GETDATE(),GETDATE()),
+(14096,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14097,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14097,1415,6.000,130.00,19.00, 780.00, 928.20,GETDATE(),GETDATE()),
+(14098,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE()),
+(14098,1415,5.000,130.00,19.00, 650.00, 773.50,GETDATE(),GETDATE()),
+(14099,1411,3.000,380.00,19.00,1140.00,1356.60,GETDATE(),GETDATE()),
+(14099,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14100,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14100,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE()),
+(14101,1411,4.000,380.00,19.00,1520.00,1808.80,GETDATE(),GETDATE()),
+(14101,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14102,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14102,1415,6.000,130.00,19.00, 780.00, 928.20,GETDATE(),GETDATE()),
+(14103,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE()),
+(14103,1415,5.000,130.00,19.00, 650.00, 773.50,GETDATE(),GETDATE()),
+(14104,1411,3.000,380.00,19.00,1140.00,1356.60,GETDATE(),GETDATE()),
+(14104,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14105,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14105,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE()),
+(14106,1411,4.000,380.00,19.00,1520.00,1808.80,GETDATE(),GETDATE()),
+(14106,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14107,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14107,1415,6.000,130.00,19.00, 780.00, 928.20,GETDATE(),GETDATE()),
+(14108,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE()),
+(14108,1415,5.000,130.00,19.00, 650.00, 773.50,GETDATE(),GETDATE()),
+(14109,1411,3.000,380.00,19.00,1140.00,1356.60,GETDATE(),GETDATE()),
+(14109,1412,2.000,720.00,19.00,1440.00,1713.60,GETDATE(),GETDATE()),
+(14110,1413,2.000,540.00,19.00,1080.00,1285.20,GETDATE(),GETDATE()),
+(14110,1414,4.000,450.00,19.00,1800.00,2142.00,GETDATE(),GETDATE())
+GO
+
+-- 11.h prediction_log seed for FirstTechnology (id 14)
+-- 4 issuances (May / Jun / Jul / Aug 2026) × 3 horizons = 12 rows.
+-- actual_value left NULL on purpose: PredictionLogService.reconcile() runs
+-- on every GET /api/analytics/predictions and fills it from commande_vente.
+INSERT [dbo].[prediction_log]
+    ([entreprise_id],[prediction_date],[prediction_month],[target_month],[horizon_months],
+     [predicted_value],[lower_bound],[upper_bound],[confidence_score],
+     [methodology],[model_name],
+     [actual_value],[absolute_error],[percent_error],[within_interval],[settled_at],
+     [created_at],[updated_at])
+VALUES
+(14,'2026-05-02','2026-05-01','2026-06-01',1,128000.00,117000.00,139000.00,0.91,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-05-02','2026-05-01','2026-07-01',2,134000.00,118000.00,150000.00,0.84,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-05-02','2026-05-01','2026-08-01',3,138000.00,117000.00,159000.00,0.74,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-06-02','2026-06-01','2026-07-01',1,133000.00,121000.00,145000.00,0.91,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-06-02','2026-06-01','2026-08-01',2,140000.00,124000.00,156000.00,0.84,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-06-02','2026-06-01','2026-09-01',3,144000.00,122000.00,166000.00,0.74,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-07-02','2026-07-01','2026-08-01',1,138000.00,125000.00,151000.00,0.91,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-07-02','2026-07-01','2026-09-01',2,145000.00,128000.00,162000.00,0.84,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-07-02','2026-07-01','2026-10-01',3,150000.00,127000.00,173000.00,0.74,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-08-02','2026-08-01','2026-09-01',1,142000.00,129000.00,155000.00,0.91,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-08-02','2026-08-01','2026-10-01',2,149000.00,131000.00,167000.00,0.84,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE()),
+(14,'2026-08-02','2026-08-01','2026-11-01',3,154000.00,131000.00,177000.00,0.74,N'OLS regression sur historique CA (lag-1, tendance, saison sin/cos), intervalles à 90 % via résidus bootstrap. Modèle entraîné mensuellement.',N'ML-Forecast OLS+Seasonal v1.3',NULL,NULL,NULL,NULL,NULL,GETDATE(),GETDATE())
+GO
+
+PRINT N'FirstTechnology (id=14) extras applied:'
+PRINT N'  - 5 new articles (FT-011..FT-015) + article_vente + stock'
+PRINT N'  - 10 extra commande_achat (14051..14060)'
+PRINT N'  - 20 extra commande_vente (14091..14110)'
+PRINT N'  - 12 prediction_log rows (issuances 2026-05..2026-08)'
 GO
 
 SELECT
     (SELECT COUNT(*) FROM [dbo].[article]
        WHERE [id] IN (706,707,708,709,710,1206,1207,1208,1209,1210,1406,1407,1408,1409,1410)) AS new_articles,
+    (SELECT COUNT(*) FROM [dbo].[article]
+       WHERE [id] BETWEEN 1411 AND 1415)                       AS new_articles_ft14_extra,
     (SELECT COUNT(*) FROM [dbo].[commande_achat]
        WHERE [id] BETWEEN 7041 AND 7050 OR [id] BETWEEN 12041 AND 12050 OR [id] BETWEEN 14041 AND 14050) AS new_commande_achat,
+    (SELECT COUNT(*) FROM [dbo].[commande_achat]
+       WHERE [id] BETWEEN 14051 AND 14060)                     AS new_commande_achat_ft14_extra,
     (SELECT COUNT(*) FROM [dbo].[commande_vente]
        WHERE [id] BETWEEN 7076 AND 7090 OR [id] BETWEEN 12076 AND 12090 OR [id] BETWEEN 14076 AND 14090) AS new_commande_vente,
+    (SELECT COUNT(*) FROM [dbo].[commande_vente]
+       WHERE [id] BETWEEN 14091 AND 14110)                     AS new_commande_vente_ft14_extra,
     (SELECT COUNT(*) FROM [dbo].[prediction_log]
-       WHERE [entreprise_id] IN (7,12) AND [prediction_month] BETWEEN '2026-02-01' AND '2026-05-01') AS new_prediction_log_rows
+       WHERE [entreprise_id] IN (7,12) AND [prediction_month] BETWEEN '2026-02-01' AND '2026-05-01') AS new_prediction_log_rows,
+    (SELECT COUNT(*) FROM [dbo].[prediction_log]
+       WHERE [entreprise_id] = 14 AND [prediction_month] BETWEEN '2026-05-01' AND '2026-08-01') AS new_prediction_log_rows_ft14
 GO
