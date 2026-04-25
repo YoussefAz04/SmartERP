@@ -9,12 +9,55 @@
 --           log rows (27 settled, 9 pending) for entreprise_id = 14.
 -- Run AFTER the main file: firsttechnology_enterprise_14_seed.sql
 -- SAFE TO RE-RUN: DELETE ranges scope to this seed's IDs only.
+--
+-- NOTE on prerequisites:
+--   The [dbo].[prediction_log] table is normally created automatically by
+--   Hibernate (ddl-auto=update) the first time the backend boots with the
+--   PredictionLog entity. To make this script runnable BEFORE the backend
+--   has booted with that entity, section 1 below creates the table on the
+--   fly if it is missing. The shape exactly mirrors PredictionLog.java.
 -- ============================================================
 USE [BusinessManager]
 GO
 
 -- ============================================================
--- 1. CLEAN UP PREVIOUS RUN (this seed only)
+-- 1a. ENSURE prediction_log TABLE EXISTS (mirror of PredictionLog entity)
+-- ============================================================
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'prediction_log' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+    CREATE TABLE [dbo].[prediction_log] (
+        [id]                BIGINT IDENTITY(1,1) NOT NULL,
+        [entreprise_id]     BIGINT          NOT NULL,
+        [prediction_date]   DATE            NOT NULL,
+        [prediction_month]  DATE            NOT NULL,
+        [target_month]      DATE            NOT NULL,
+        [horizon_months]    INT             NOT NULL,
+        [predicted_value]   DECIMAL(18,4)   NULL,
+        [lower_bound]       DECIMAL(18,4)   NULL,
+        [upper_bound]       DECIMAL(18,4)   NULL,
+        [confidence_score]  FLOAT           NULL,
+        [methodology]       NVARCHAR(512)   NULL,
+        [model_name]        NVARCHAR(128)   NULL,
+        [actual_value]      DECIMAL(18,4)   NULL,
+        [absolute_error]    DECIMAL(18,4)   NULL,
+        [percent_error]     FLOAT           NULL,
+        [within_interval]   BIT             NULL,
+        [settled_at]        DATETIME2(6)    NULL,
+        [created_at]        DATETIME2(6)    NOT NULL DEFAULT GETDATE(),
+        [updated_at]        DATETIME2(6)    NOT NULL DEFAULT GETDATE(),
+        CONSTRAINT [PK_prediction_log] PRIMARY KEY CLUSTERED ([id] ASC),
+        CONSTRAINT [uk_prediction_log_entreprise_target_horizon] UNIQUE
+            ([entreprise_id],[prediction_month],[target_month],[horizon_months]),
+        CONSTRAINT [FK_prediction_log_entreprise] FOREIGN KEY ([entreprise_id])
+            REFERENCES [dbo].[entreprise]([id])
+    )
+    CREATE NONCLUSTERED INDEX [idx_prediction_log_entreprise]   ON [dbo].[prediction_log] ([entreprise_id])
+    CREATE NONCLUSTERED INDEX [idx_prediction_log_target_month] ON [dbo].[prediction_log] ([target_month])
+END
+GO
+
+-- ============================================================
+-- 1b. CLEAN UP PREVIOUS RUN (this seed only)
 -- ============================================================
 DELETE FROM [dbo].[ligne_commande_vente] WHERE [commande_vente_id] BETWEEN 14101 AND 14299
 DELETE FROM [dbo].[commande_vente]        WHERE [id]                BETWEEN 14101 AND 14299
@@ -641,4 +684,18 @@ PRINT N'FirstTechnology (id=14) AI seed loaded:'
 PRINT N'  - 182 historical sales orders (Apr 2025 – Dec 2025)'
 PRINT N'  - 364 ligne_commande_vente rows'
 PRINT N'  - 36 prediction_log rows (27 settled, 9 pending)'
+GO
+
+-- Live counts (so you immediately see whether the rows actually landed):
+SELECT
+    (SELECT COUNT(*) FROM [dbo].[commande_vente]
+       WHERE [id] BETWEEN 14101 AND 14299)                   AS commande_vente_rows,
+    (SELECT COUNT(*) FROM [dbo].[ligne_commande_vente]
+       WHERE [commande_vente_id] BETWEEN 14101 AND 14299)    AS ligne_commande_vente_rows,
+    (SELECT COUNT(*) FROM [dbo].[prediction_log]
+       WHERE [entreprise_id] = 14)                           AS prediction_log_rows,
+    (SELECT COUNT(*) FROM [dbo].[prediction_log]
+       WHERE [entreprise_id] = 14 AND [actual_value] IS NOT NULL) AS prediction_log_settled,
+    (SELECT COUNT(*) FROM [dbo].[prediction_log]
+       WHERE [entreprise_id] = 14 AND [actual_value] IS NULL)     AS prediction_log_pending
 GO
