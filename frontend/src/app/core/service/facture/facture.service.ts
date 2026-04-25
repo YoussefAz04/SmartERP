@@ -34,4 +34,21 @@ export class FactureService {
     return this.http.delete(`${this.apiUrl}/deleteFactureAchat/${id}`);
   }
 
+  /**
+   * Importer une facture d'achat depuis un PDF en utilisant les zones OCR
+   * sauvegardées (typeDeDocument = "FACTURE_ACHAT").
+   */
+  importFromPdf(file: File): Observable<Record<string, unknown>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<Record<string, unknown>>(`${this.apiUrl}/import-pdf`, formData);
+  }
+
+  /** Importer + sauvegarder en une étape la facture d'achat extraite. */
+  saveFromPdf(file: File): Observable<Record<string, unknown>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<Record<string, unknown>>(`${this.apiUrl}/save-from-pdf`, formData);
+  }
+
 }
