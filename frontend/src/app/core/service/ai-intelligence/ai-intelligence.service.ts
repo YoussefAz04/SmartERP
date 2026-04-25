@@ -184,6 +184,40 @@ export interface AiDashboard {
   supplierPerformance?: SupplierPerformance[];
 }
 
+export interface PredictionLog {
+  id: number;
+  predictionDate: string;
+  predictionMonth: string;
+  targetMonth: string;
+  targetMonthLabel: string;
+  horizonMonths: number;
+  predictedValue: number;
+  lowerBound: number | null;
+  upperBound: number | null;
+  confidenceScore: number | null;
+  methodology: string | null;
+  modelName: string | null;
+  actualValue: number | null;
+  absoluteError: number | null;
+  percentError: number | null;
+  withinInterval: boolean | null;
+  status: 'PENDING' | 'SETTLED';
+  settledAt: string | null;
+  createdAt: string;
+}
+
+export interface PredictionAccuracy {
+  totalPredictions: number;
+  settledPredictions: number;
+  pendingPredictions: number;
+  mae: number | null;
+  mape: number | null;
+  smape: number | null;
+  bias: number | null;
+  intervalCoverage: number | null;
+  history: PredictionLog[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -232,5 +266,13 @@ export class AiIntelligenceService {
 
   getRecommendations(): Observable<Recommendation[]> {
     return this.http.get<Recommendation[]>(`${this.baseUrl}/recommendations`, { headers: this.getHeaders() });
+  }
+
+  getPredictionHistory(): Observable<PredictionAccuracy> {
+    return this.http.get<PredictionAccuracy>(`${this.baseUrl}/predictions`, { headers: this.getHeaders() });
+  }
+
+  reconcilePredictions(): Observable<{ settled: number }> {
+    return this.http.post<{ settled: number }>(`${this.baseUrl}/predictions/reconcile`, {}, { headers: this.getHeaders() });
   }
 }
