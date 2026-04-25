@@ -366,8 +366,9 @@ public class AiDashboardService {
 
         // Build status breakdown map: supplierId -> list of StatusCountDto
         Map<Long, List<AiDashboardDto.StatusCountDto>> statusMap = new HashMap<>();
-        // Also count cancelled orders per supplier for the rating features.
+        // Also count cancelled/delivered orders per supplier for the rating features.
         Map<Long, Long> cancelledMap = new HashMap<>();
+        Map<Long, Long> deliveredMap = new HashMap<>();
         Map<Long, Long> totalMap = new HashMap<>();
         for (Object[] row : statusRows) {
             Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
@@ -379,6 +380,9 @@ public class AiDashboardService {
                 totalMap.merge(supplierId, count, Long::sum);
                 if ("ANNULEE".equalsIgnoreCase(status) || "CANCELLED".equalsIgnoreCase(status)) {
                     cancelledMap.merge(supplierId, count, Long::sum);
+                }
+                if ("LIVREE".equalsIgnoreCase(status) || "DELIVERED".equalsIgnoreCase(status)) {
+                    deliveredMap.merge(supplierId, count, Long::sum);
                 }
             }
         }
@@ -392,14 +396,17 @@ public class AiDashboardService {
             Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
             Long orderCount = row[3] != null ? ((Number) row[3]).longValue() : 0L;
             Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
-            Double deliveryRate = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
-            double cancelled = cancelledMap.getOrDefault(supplierId, 0L);
             double totalForSupplier = totalMap.getOrDefault(supplierId, orderCount);
+            double delivered = deliveredMap.getOrDefault(supplierId, 0L);
+            double cancelled = cancelledMap.getOrDefault(supplierId, 0L);
+            // Compute delivery rate as percentage of delivered vs non-cancelled orders
+            double nonCancelled = totalForSupplier - cancelled;
+            double deliveryRate = nonCancelled > 0 ? (delivered / nonCancelled) * 100.0 : 0.0;
             double cancelledRatio = totalForSupplier > 0 ? cancelled / totalForSupplier : 0.0;
             selectedRows.add(row);
             inputs.add(new SupplierRatingEngine.Input(
                     orderCount, totalSpend,
-                    normaliseDeliveryRate(deliveryRate),
+                    deliveryRate / 100.0,
                     cancelledRatio));
         }
         List<SupplierRatingEngine.Output> ratings = supplierRatingEngine.rate(inputs);
@@ -412,7 +419,12 @@ public class AiDashboardService {
             String supplierName = prenom.isEmpty() ? nom : nom + " " + prenom;
             Long orderCount = row[3] != null ? ((Number) row[3]).longValue() : 0L;
             Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
-            Double deliveryRate = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
+            // Compute delivery rate dynamically from actual order statuses
+            double totalForSupplier = totalMap.getOrDefault(supplierId, orderCount);
+            double delivered = deliveredMap.getOrDefault(supplierId, 0L);
+            double cancelled = cancelledMap.getOrDefault(supplierId, 0L);
+            double nonCancelled = totalForSupplier - cancelled;
+            double deliveryRate = nonCancelled > 0 ? (delivered / nonCancelled) * 100.0 : 0.0;
             // Replace the legacy persisted `notation` with the ML peer-group
             // rating so the dashboard reflects real-time relative performance.
             Double rating = ratings.get(i).ratingStars;
@@ -422,25 +434,12 @@ public class AiDashboardService {
             dto.setSupplierName(supplierName.trim());
             dto.setOrderCount(orderCount);
             dto.setTotalSpend(Math.round(totalSpend * 100.0) / 100.0);
-            dto.setDeliveryRate(deliveryRate);
+            dto.setDeliveryRate(Math.round(deliveryRate * 10.0) / 10.0);
             dto.setRating(rating);
             dto.setStatusBreakdown(statusMap.getOrDefault(supplierId, new ArrayList<>()));
             result.add(dto);
         }
 
         return result;
-    }
-
-    /**
-     * Normalise supplier delivery-rate to the [0, 1] range expected by
-     * {@link SupplierRatingEngine}. The legacy column stores values either
-     * as a percentage (0–100) or a fraction (0–1) depending on the data
-     * source, so we detect the scale heuristically.
-     */
-    private static double normaliseDeliveryRate(double raw) {
-        if (raw > 1.0 && raw <= 100.0) return raw / 100.0;
-        if (raw < 0.0) return 0.0;
-        if (raw > 1.0) return 1.0;
-        return raw;
     }
 }
