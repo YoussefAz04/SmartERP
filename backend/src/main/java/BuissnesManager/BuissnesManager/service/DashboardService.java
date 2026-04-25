@@ -7,6 +7,7 @@ import BuissnesManager.BuissnesManager.dto.TopProductDto;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
 import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
+import BuissnesManager.BuissnesManager.repository.DetaisFactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.repository.FactureAchatRepo;
 import BuissnesManager.BuissnesManager.repository.FactureVenteRepository;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
@@ -42,6 +43,13 @@ public class DashboardService {
 
     @Autowired
     private FactureAchatRepo factureAchatRepo;
+
+    /**
+     * Optional fallback for top-product aggregation. See AnalyticService for
+     * details — used when no LigneCommandeVente rows exist for the enterprise.
+     */
+    @Autowired(required = false)
+    private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
 
     public DashboardStatsDto getDashboardStats(Long entrepriseId) {
         DashboardStatsDto stats = new DashboardStatsDto();
@@ -160,6 +168,19 @@ public class DashboardService {
 
         // --- Top Products ---
         List<Object[]> topProductsRaw = commandeVenteRepository.getTopProducts(entrepriseId);
+        // Fallback to free-text invoice details if no commande lines exist —
+        // keeps the home dashboard's Top Products tile populated when sales
+        // were entered as standalone factures.
+        if (topProductsRaw.isEmpty() && detaisFactureDeVenteRepo != null) {
+            try {
+                List<Object[]> fallback = detaisFactureDeVenteRepo.getTopProductsFromFactures(entrepriseId);
+                if (fallback != null && !fallback.isEmpty()) {
+                    topProductsRaw = fallback;
+                }
+            } catch (Exception ignored) {
+                // Best-effort fallback — never break the dashboard.
+            }
+        }
         List<TopProductDto> topProducts = new ArrayList<>();
         int productLimit = Math.min(10, topProductsRaw.size());
         for (int i = 0; i < productLimit; i++) {

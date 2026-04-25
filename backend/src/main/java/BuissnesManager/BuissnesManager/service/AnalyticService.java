@@ -5,6 +5,7 @@ import BuissnesManager.BuissnesManager.dto.MonthlySalesDto;
 import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
 import BuissnesManager.BuissnesManager.dto.SalesAnalysisDto;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
+import BuissnesManager.BuissnesManager.repository.DetaisFactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
 import BuissnesManager.BuissnesManager.service.ml.FeatureScaler;
 import BuissnesManager.BuissnesManager.service.ml.LoessSmoother;
@@ -34,6 +35,18 @@ public class AnalyticService {
 
     @Autowired
     private StockRepository stockRepository;
+
+    /**
+     * Optional fallback source for top-products aggregation. Older parts of the
+     * application persist sales as standalone {@code FactureDeVente}s with a
+     * single {@link DetailsFactureDeVente} (free-text {@code article} label),
+     * never creating {@code LigneCommandeVente} rows. When that is the case
+     * the primary structured query returns nothing and the dashboards display
+     * an empty "Top Produits" panel even though revenue is non-zero. This
+     * repository is consulted as a fallback in that situation.
+     */
+    @Autowired(required = false)
+    private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
 
     private static final String[] MONTH_NAMES_FR = {
         "Jan", "Fév", "Mars", "Avr", "Mai", "Juin",
@@ -177,6 +190,24 @@ public class AnalyticService {
                key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public ProductIntelligenceDto analyzeProducts(Long entrepriseId) {
         List<Object[]> topRaw = commandeVenteRepository.getTopProducts(entrepriseId);
+
+        // Fallback: when no structured commande-line data exists for this
+        // enterprise (e.g. sales were entered as standalone factures with a
+        // free-text article label), aggregate from DetailsFactureDeVente so
+        // the dashboards still surface the user's most-sold products instead
+        // of rendering an empty "Top Produits" panel.
+        if (topRaw.isEmpty() && detaisFactureDeVenteRepo != null) {
+            try {
+                List<Object[]> fallback = detaisFactureDeVenteRepo.getTopProductsFromFactures(entrepriseId);
+                if (fallback != null && !fallback.isEmpty()) {
+                    topRaw = fallback;
+                }
+            } catch (Exception e) {
+                // Fallback is best-effort — never let it break the dashboard.
+                log.warn("Top-products fallback (DetailsFactureDeVente) failed for entreprise {}: {}",
+                        entrepriseId, e.getMessage());
+            }
+        }
 
         double totalRevenue = 0.0;
         List<ProductIntelligenceDto.ProductPerformanceDto> products = new ArrayList<>();
