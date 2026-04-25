@@ -61,13 +61,13 @@ public class PredictionLog {
     @Column(name = "horizon_months", nullable = false)
     private Integer horizonMonths;
 
-    @Column(name = "predicted_value", precision = 18, scale = 4)
+    @Column(name = "predicted_value")
     private Double predictedValue;
 
-    @Column(name = "lower_bound", precision = 18, scale = 4)
+    @Column(name = "lower_bound")
     private Double lowerBound;
 
-    @Column(name = "upper_bound", precision = 18, scale = 4)
+    @Column(name = "upper_bound")
     private Double upperBound;
 
     @Column(name = "confidence_score")
@@ -81,11 +81,11 @@ public class PredictionLog {
 
     /** Actual realised CA for the target month. Filled by reconciliation once the
      * month is over. */
-    @Column(name = "actual_value", precision = 18, scale = 4)
+    @Column(name = "actual_value")
     private Double actualValue;
 
     /** |predicted − actual|. Filled at reconciliation. */
-    @Column(name = "absolute_error", precision = 18, scale = 4)
+    @Column(name = "absolute_error")
     private Double absoluteError;
 
     /** |predicted − actual| / max(|actual|, ε). Filled at reconciliation. */
