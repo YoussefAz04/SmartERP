@@ -4,7 +4,7 @@
 -- Purpose : Two complementary fixes for the AI Intelligence dashboard.
 --   1. The "Historique : Prédictions vs CA Réel" panel was empty for
 --      enterprises other than FirstTechnology (id 14). This script seeds
---      a 12-row prediction_log history (Feb–Apr 2026 issuances × 3
+--      a 12-row prediction_log history (Feb–May 2026 issuances × 3
 --      horizons) for Noxus (id 7) and Eranow (id 12). actual_value is
 --      left NULL on purpose: PredictionLogService.reconcile() runs on
 --      every GET /api/analytics/predictions and fills in the real CA
