@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Stores every AI forecast issued for an enterprise and reconciles each
@@ -210,7 +211,12 @@ public class PredictionLogService {
     /**
      * Returns the prediction history + accuracy summary for an enterprise.
      * Auto-runs reconciliation first so the summary always reflects whatever
-     * months have closed.
+     * months have closed. If no prediction_log rows exist yet for the
+     * enterprise (e.g. fresh deployment, missed seed, ftadmin bound to a
+     * different entreprise than the one the seed targeted), we synthesize a
+     * rolling-origin backtest from the enterprise's actual {@code commande_vente}
+     * history so the dashboard always shows real, comparable numbers instead
+     * of an empty placeholder.
      */
     @Transactional
     public PredictionAccuracyDto getHistory(Long entrepriseId) {
@@ -218,6 +224,21 @@ public class PredictionLogService {
 
         List<PredictionLog> rows = predictionLogRepository
                 .findByEntrepriseIdOrderByTargetMonthDescHorizonMonthsAsc(entrepriseId);
+
+        if (rows.isEmpty()) {
+            try {
+                int created = backfillFromCommandeVente(entrepriseId);
+                if (created > 0) {
+                    rows = predictionLogRepository
+                            .findByEntrepriseIdOrderByTargetMonthDescHorizonMonthsAsc(entrepriseId);
+                }
+            } catch (RuntimeException ex) {
+                // The endpoint must never fail because of a synthetic-history
+                // issue; just log and fall through to an empty summary.
+                log.warn("Prediction backfill failed for entreprise {}: {}",
+                        entrepriseId, ex.toString());
+            }
+        }
 
         List<PredictionLogDto> history = new ArrayList<>(rows.size());
         for (PredictionLog row : rows) {
@@ -281,6 +302,178 @@ public class PredictionLogService {
         } catch (RuntimeException ex) {
             log.warn("Scheduled prediction reconciliation failed: {}", ex.toString());
         }
+    }
+
+    /* --------------------- synthetic backtest backfill --------------------- */
+
+    /** Minimum prior months required before the simple backfill model is usable. */
+    private static final int BACKFILL_MIN_PRIOR_MONTHS = 3;
+    /** How many calendar months back we scan when sourcing sales history. */
+    private static final int BACKFILL_LOOKBACK_MONTHS = 24;
+    /** Confidence levels by horizon (1, 2, 3 months ahead). Mirrors the live model. */
+    private static final double[] BACKFILL_CONFIDENCE = { 0.85, 0.78, 0.70 };
+    /** Z-score for a ~80 % prediction interval (kept narrow so coverage stays meaningful). */
+    private static final double BACKFILL_INTERVAL_Z = 1.28;
+    private static final String BACKFILL_METHODOLOGY =
+            "Backtest rétrospectif (moyenne mobile 3 mois + tendance, ajustement saisonnier annuel " +
+            "lorsque disponible). Généré automatiquement à partir du CA réel quand l'historique " +
+            "des prédictions est vide.";
+    private static final String BACKFILL_MODEL_NAME = "Auto-backfill v1";
+
+    /**
+     * Synthesizes a rolling-origin backtest history for an enterprise that has
+     * no recorded predictions yet. For every issuance month with at least
+     * {@link #BACKFILL_MIN_PRIOR_MONTHS} months of prior sales data, we build
+     * a 3-month moving-average + linear-trend forecast for horizons 1, 2 and 3
+     * and reconcile it against the real CA. Rows are saved through the regular
+     * repository so they merge naturally with future live predictions logged
+     * by {@link #recordForecast(Long, ForecastDto)}.
+     *
+     * @return number of new rows inserted (never updates existing rows).
+     */
+    @Transactional
+    public int backfillFromCommandeVente(Long entrepriseId) {
+        if (entrepriseId == null) return 0;
+        Optional<Entreprise> entrepriseOpt = entrepriseRepo.findById(entrepriseId);
+        if (entrepriseOpt.isEmpty()) return 0;
+        Entreprise entreprise = entrepriseOpt.get();
+
+        // Build a contiguous monthly-CA series ending last month (we can only
+        // backtest months that are already closed).
+        LocalDate today = LocalDate.now();
+        YearMonth firstMonth = YearMonth.from(today).minusMonths(BACKFILL_LOOKBACK_MONTHS);
+        YearMonth lastMonth = YearMonth.from(today).minusMonths(1);
+
+        TreeMap<YearMonth, Double> series = new TreeMap<>();
+        Map<Integer, double[]> yearCache = new HashMap<>();
+        for (YearMonth ym = firstMonth; !ym.isAfter(lastMonth); ym = ym.plusMonths(1)) {
+            double[] year = yearCache.computeIfAbsent(ym.getYear(),
+                    y -> loadMonthly(entrepriseId, y));
+            series.put(ym, year[ym.getMonthValue() - 1]);
+        }
+
+        // We need at least MIN_PRIOR + 1 months: enough prior history to fit a
+        // model AND at least one closed target month to score against.
+        long nonZero = series.values().stream().filter(v -> v > 0).count();
+        if (nonZero < BACKFILL_MIN_PRIOR_MONTHS + 1) {
+            return 0;
+        }
+
+        List<YearMonth> orderedMonths = new ArrayList<>(series.keySet());
+        int created = 0;
+
+        // Walk forward. For each issuance month i (1-based count of prior data
+        // available), generate predictions for horizons 1..3 whose target
+        // month is also in the closed-out window.
+        for (int i = BACKFILL_MIN_PRIOR_MONTHS; i < orderedMonths.size(); i++) {
+            YearMonth predictionYm = orderedMonths.get(i);
+            // Last 3 actuals before the issuance month form the moving-average baseline.
+            double a3 = series.get(orderedMonths.get(i - 3));
+            double a2 = series.get(orderedMonths.get(i - 2));
+            double a1 = series.get(orderedMonths.get(i - 1));
+            // Skip issuance months where the entire prior window is empty:
+            // a model with no signal would just emit 0-vs-actual rows that add
+            // noise to the dashboard without any analytical value.
+            if (a1 + a2 + a3 <= 0.0) {
+                continue;
+            }
+            double baseline = (a1 + a2 + a3) / 3.0;
+            double trend = (a1 - a3) / 2.0;
+            double residualStd = stdDev(new double[] { a3, a2, a1 }, baseline);
+
+            for (int h = 1; h <= 3; h++) {
+                int targetIdx = i + h;
+                if (targetIdx >= orderedMonths.size()) break;
+                YearMonth targetYm = orderedMonths.get(targetIdx);
+
+                // Optional seasonal adjustment from last year's same month.
+                double seasonal = 1.0;
+                YearMonth prevYearYm = targetYm.minusYears(1);
+                Double prevYearValue = series.get(prevYearYm);
+                if (prevYearValue != null && prevYearValue > 0 && baseline > 0) {
+                    double yoyBaseline = avgPriorYearWindow(series, prevYearYm);
+                    if (yoyBaseline > 0) {
+                        seasonal = clamp(prevYearValue / yoyBaseline, 0.6, 1.5);
+                    }
+                }
+
+                double rawPredicted = (baseline + h * trend) * seasonal;
+                double predicted = Math.max(0.0, rawPredicted);
+                // Intervals widen with sqrt(h), like the live forecast service.
+                double width = BACKFILL_INTERVAL_Z * residualStd * Math.sqrt(h);
+                double lower = Math.max(0.0, predicted - width);
+                double upper = Math.max(predicted, predicted + width);
+
+                LocalDate predictionMonth = predictionYm.atDay(1);
+                LocalDate targetMonth = targetYm.atDay(1);
+
+                Optional<PredictionLog> existing = predictionLogRepository
+                        .findByEntrepriseIdAndPredictionMonthAndTargetMonthAndHorizonMonths(
+                                entrepriseId, predictionMonth, targetMonth, h);
+                if (existing.isPresent()) {
+                    continue;
+                }
+
+                PredictionLog row = new PredictionLog();
+                row.setEntreprise(entreprise);
+                // Use the 2nd of the issuance month as a stable "issued on" date
+                // (matches the convention used in the SQL seed scripts).
+                row.setPredictionDate(predictionMonth.plusDays(1));
+                row.setPredictionMonth(predictionMonth);
+                row.setTargetMonth(targetMonth);
+                row.setHorizonMonths(h);
+                row.setPredictedValue(round2(predicted));
+                row.setLowerBound(round2(lower));
+                row.setUpperBound(round2(upper));
+                row.setConfidenceScore(BACKFILL_CONFIDENCE[h - 1]);
+                row.setMethodology(truncate(BACKFILL_METHODOLOGY, 512));
+                row.setModelName(truncate(BACKFILL_MODEL_NAME, 128));
+
+                Double actual = series.get(targetYm);
+                if (actual != null) {
+                    applyActual(row, actual);
+                }
+
+                try {
+                    predictionLogRepository.save(row);
+                    created++;
+                } catch (RuntimeException ex) {
+                    log.warn("Failed to backfill prediction (entreprise={}, target={}, horizon={}): {}",
+                            entrepriseId, targetMonth, h, ex.toString());
+                }
+            }
+        }
+        if (created > 0) {
+            log.info("Backfilled {} synthetic prediction rows for entreprise {}", created, entrepriseId);
+        }
+        return created;
+    }
+
+    /** Average of the three months centred on {@code ym} (or the available subset). */
+    private static double avgPriorYearWindow(TreeMap<YearMonth, Double> series, YearMonth ym) {
+        double sum = 0.0;
+        int n = 0;
+        for (int delta = -1; delta <= 1; delta++) {
+            Double v = series.get(ym.plusMonths(delta));
+            if (v != null) { sum += v; n++; }
+        }
+        return n == 0 ? 0.0 : sum / n;
+    }
+
+    private static double stdDev(double[] values, double mean) {
+        if (values.length < 2) return 0.0;
+        double s = 0.0;
+        for (double v : values) {
+            double d = v - mean;
+            s += d * d;
+        }
+        return Math.sqrt(s / values.length);
+    }
+
+    private static double clamp(double v, double lo, double hi) {
+        if (v < lo) return lo;
+        if (v > hi) return hi;
+        return v;
     }
 
     /* ----------------------------- helpers ----------------------------- */
