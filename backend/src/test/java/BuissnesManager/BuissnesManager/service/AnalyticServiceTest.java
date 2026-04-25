@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
 import BuissnesManager.BuissnesManager.dto.SalesAnalysisDto;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
+import BuissnesManager.BuissnesManager.repository.DetaisFactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class AnalyticServiceTest {
 
     @Mock
     private StockRepository stockRepository;
+
+    @Mock
+    private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
 
     @InjectMocks
     private AnalyticService service;
@@ -126,6 +130,8 @@ class AnalyticServiceTest {
                 .thenReturn(Collections.emptyList());
         when(commandeVenteRepository.getCategoryPerformance(anyLong()))
                 .thenReturn(Collections.emptyList());
+        when(detaisFactureDeVenteRepo.getTopProductsFromFactures(anyLong()))
+                .thenReturn(Collections.emptyList());
         when(stockRepository.getTotalSKUs(anyLong())).thenReturn(0L);
 
         ProductIntelligenceDto dto = service.analyzeProducts(1L);
@@ -134,6 +140,35 @@ class AnalyticServiceTest {
         assertTrue(dto.getTopProducts().isEmpty());
         assertTrue(dto.getSlowMovingProducts().isEmpty());
         assertEquals(0, dto.getTotalProducts());
+    }
+
+    @Test
+    void analyzeProductsFallsBackToFactureDetailsWhenCommandeLinesEmpty() {
+        // No commande-line data — simulates an enterprise that records sales
+        // as standalone factures (with a free-text article label) instead of
+        // structured commandes.
+        when(commandeVenteRepository.getTopProducts(anyLong()))
+                .thenReturn(Collections.emptyList());
+        when(commandeVenteRepository.getCategoryPerformance(anyLong()))
+                .thenReturn(Collections.emptyList());
+        when(stockRepository.getTotalSKUs(anyLong())).thenReturn(3L);
+
+        List<Object[]> fallback = new ArrayList<>();
+        fallback.add(new Object[]{"Laptop Pro", 12L, 24000.0});
+        fallback.add(new Object[]{"Tablette",   8L, 6400.0});
+        fallback.add(new Object[]{"Souris",     5L, 250.0});
+        when(detaisFactureDeVenteRepo.getTopProductsFromFactures(anyLong()))
+                .thenReturn(fallback);
+
+        ProductIntelligenceDto dto = service.analyzeProducts(7L);
+
+        assertNotNull(dto);
+        assertEquals(3, dto.getTopProducts().size());
+        assertEquals("Laptop Pro", dto.getTopProducts().get(0).getProductName());
+        assertEquals(1, dto.getTopProducts().get(0).getRank());
+        // Revenue share should reflect the fallback aggregation (24000 / 30650).
+        assertTrue(dto.getTopProducts().get(0).getRevenueShare() > 70.0,
+                "primary fallback product should dominate the revenue share");
     }
 
     @Test
