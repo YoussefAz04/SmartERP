@@ -106,8 +106,9 @@ export class AiDashboardComponent implements OnInit {
   /** Bootstrap class for an error-row badge based on percent error magnitude. */
   predictionErrorClass(percentError: number | null): string {
     if (percentError == null) return 'badge-info';
-    if (percentError <= 0.10) return 'badge-success';
-    if (percentError <= 0.25) return 'badge-warning';
+    const abs = Math.abs(percentError);
+    if (abs <= 0.10) return 'badge-success';
+    if (abs <= 0.25) return 'badge-warning';
     return 'badge-danger';
   }
 
