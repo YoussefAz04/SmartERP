@@ -2,6 +2,9 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
 import BuissnesManager.BuissnesManager.dto.SalesAnalysisDto;
+import BuissnesManager.BuissnesManager.entity.Article;
+import BuissnesManager.BuissnesManager.entity.ArticleVente;
+import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.DetaisFactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
@@ -34,6 +37,9 @@ class AnalyticServiceTest {
 
     @Mock
     private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
+
+    @Mock
+    private ArticleVenteRepo articleVenteRepo;
 
     @InjectMocks
     private AnalyticService service;
@@ -132,6 +138,8 @@ class AnalyticServiceTest {
                 .thenReturn(Collections.emptyList());
         when(detaisFactureDeVenteRepo.getTopProductsFromFactures(anyLong()))
                 .thenReturn(Collections.emptyList());
+        when(articleVenteRepo.findByEntrepriseId(anyLong()))
+                .thenReturn(Collections.emptyList());
         when(stockRepository.getTotalSKUs(anyLong())).thenReturn(0L);
 
         ProductIntelligenceDto dto = service.analyzeProducts(1L);
@@ -140,6 +148,58 @@ class AnalyticServiceTest {
         assertTrue(dto.getTopProducts().isEmpty());
         assertTrue(dto.getSlowMovingProducts().isEmpty());
         assertEquals(0, dto.getTotalProducts());
+    }
+
+    @Test
+    void analyzeProductsFallsBackToCatalogueWhenNoSales() {
+        // Enterprise has built a catalogue (via purchases) but has not yet
+        // recorded a single sale. The dashboard must still surface the
+        // catalogue so the "Intelligence Produits" and "Articles à Rotation
+        // Lente" panels are not left empty.
+        when(commandeVenteRepository.getTopProducts(anyLong()))
+                .thenReturn(Collections.emptyList());
+        when(commandeVenteRepository.getCategoryPerformance(anyLong()))
+                .thenReturn(Collections.emptyList());
+        when(detaisFactureDeVenteRepo.getTopProductsFromFactures(anyLong()))
+                .thenReturn(Collections.emptyList());
+        when(stockRepository.getTotalSKUs(anyLong())).thenReturn(3L);
+
+        List<ArticleVente> catalogue = new ArrayList<>();
+        catalogue.add(buildArticleVente(1L, "Clavier", 8));
+        catalogue.add(buildArticleVente(2L, "Écran", 25));
+        catalogue.add(buildArticleVente(3L, "Câble", 3));
+        when(articleVenteRepo.findByEntrepriseId(anyLong())).thenReturn(catalogue);
+
+        ProductIntelligenceDto dto = service.analyzeProducts(11L);
+
+        assertNotNull(dto);
+        // All catalogue items surface as "top products" with zero sales.
+        assertEquals(3, dto.getTopProducts().size());
+        // Highest-stock first: Écran (25) > Clavier (8) > Câble (3).
+        assertEquals("Écran", dto.getTopProducts().get(0).getProductName());
+        assertEquals(0L, (long) dto.getTopProducts().get(0).getQuantitySold());
+        assertEquals(0.0, dto.getTopProducts().get(0).getRevenue(), 0.0001);
+        assertEquals("NOUVEAU", dto.getTopProducts().get(0).getPerformanceLabel());
+
+        // Slow-movers panel must list the highest-stock items as biggest risk.
+        assertFalse(dto.getSlowMovingProducts().isEmpty());
+        assertEquals("Écran", dto.getSlowMovingProducts().get(0).getProductName());
+        assertEquals("LENT", dto.getSlowMovingProducts().get(0).getPerformanceLabel());
+        // The "LENT" label on slow-movers must NOT bleed back into the
+        // top-products list (defensive copy).
+        assertEquals("NOUVEAU", dto.getTopProducts().get(0).getPerformanceLabel());
+    }
+
+    private ArticleVente buildArticleVente(Long id, String nom, int stock) {
+        ArticleVente av = new ArticleVente();
+        av.setId(id);
+        av.setNom(nom);
+        av.setQuantite(stock);
+        Article achat = new Article();
+        achat.setId(id);
+        achat.setNom(nom);
+        av.setArticleAchat(achat);
+        return av;
     }
 
     @Test

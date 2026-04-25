@@ -4,6 +4,8 @@ import BuissnesManager.BuissnesManager.dto.ModelMetricsDto;
 import BuissnesManager.BuissnesManager.dto.MonthlySalesDto;
 import BuissnesManager.BuissnesManager.dto.ProductIntelligenceDto;
 import BuissnesManager.BuissnesManager.dto.SalesAnalysisDto;
+import BuissnesManager.BuissnesManager.entity.ArticleVente;
+import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.DetaisFactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
@@ -47,6 +49,19 @@ public class AnalyticService {
      */
     @Autowired(required = false)
     private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
+
+    /**
+     * Optional final fallback for the product-intelligence panels. When an
+     * enterprise has no sales-side history yet (no {@code LigneCommandeVente}
+     * rows and no {@link DetailsFactureDeVente} rows) the dashboard would
+     * otherwise render two prominently-empty panels ("Intelligence Produits"
+     * and "Articles à Rotation Lente") even though the user has built a
+     * catalogue. Surfacing the catalogue with zero-sales rows turns those
+     * panels into actionable hints (highlighting the highest-stock items as
+     * the biggest "stock-at-risk" exposure) instead of dead-ends.
+     */
+    @Autowired(required = false)
+    private ArticleVenteRepo articleVenteRepo;
 
     private static final String[] MONTH_NAMES_FR = {
         "Jan", "Fév", "Mars", "Avr", "Mai", "Juin",
@@ -219,6 +234,41 @@ public class AnalyticService {
             totalRevenue += rev;
         }
 
+        // Catalogue fallback: when neither structured commandes nor facture
+        // details surfaced any product, populate the panels from the
+        // {@link ArticleVente} catalogue (qty=0, revenue=0) sorted by on-hand
+        // stock DESC so the highest-stock items lead. This keeps the
+        // dashboards informative for enterprises that have only built their
+        // catalogue / received purchases but not yet recorded any sale.
+        boolean catalogueFallback = false;
+        if (products.isEmpty() && articleVenteRepo != null) {
+            try {
+                List<ArticleVente> catalogue = articleVenteRepo.findByEntrepriseId(entrepriseId);
+                if (catalogue != null && !catalogue.isEmpty()) {
+                    catalogue.sort(Comparator.comparingInt(
+                        (ArticleVente av) -> av.getQuantite() != null ? av.getQuantite() : 0
+                    ).reversed());
+                    for (ArticleVente av : catalogue) {
+                        String name = av.getNom();
+                        if (name == null || name.isBlank()) {
+                            if (av.getArticleAchat() != null && av.getArticleAchat().getNom() != null) {
+                                name = av.getArticleAchat().getNom();
+                            }
+                        }
+                        if (name == null || name.isBlank()) {
+                            name = "Produit #" + av.getId();
+                        }
+                        products.add(new ProductIntelligenceDto.ProductPerformanceDto(name, 0L, 0.0));
+                    }
+                    catalogueFallback = true;
+                }
+            } catch (Exception e) {
+                // Catalogue fallback is best-effort — never let it break the dashboard.
+                log.warn("Catalogue fallback (ArticleVente) failed for entreprise {}: {}",
+                        entrepriseId, e.getMessage());
+            }
+        }
+
         // Calculate revenue share and rank
         for (int i = 0; i < products.size(); i++) {
             ProductIntelligenceDto.ProductPerformanceDto p = products.get(i);
@@ -238,7 +288,14 @@ public class AnalyticService {
             clusterLabels = clusterProductsByPerformance(products);
         }
 
-        if (clusterLabels != null) {
+        if (catalogueFallback) {
+            // No sales history: every product is "new" with respect to sales.
+            // Skip clustering / arbitrary TOP-BON-NORMAL splits which would be
+            // meaningless on a uniform zero-revenue list.
+            for (ProductIntelligenceDto.ProductPerformanceDto p : products) {
+                p.setPerformanceLabel("NOUVEAU");
+            }
+        } else if (clusterLabels != null) {
             String[] tierNames = {"TOP", "BON", "LENT"};
             for (int i = 0; i < products.size(); i++) {
                 int tier = clusterLabels[i];
@@ -268,7 +325,27 @@ public class AnalyticService {
 
         // Slow moving: products with lowest sales (bottom 5 from total, if enough data)
         List<ProductIntelligenceDto.ProductPerformanceDto> slowMoving = new ArrayList<>();
-        if (clusterLabels != null) {
+        if (catalogueFallback) {
+            // No sales recorded yet: every catalogue item with on-hand stock
+            // is, by definition, a slow-mover. The catalogue was already
+            // sorted by stock DESC above, so the top-N entries are the
+            // biggest "stock-at-risk" exposure (most invested capital sitting
+            // idle) — exactly what the panel is meant to surface.
+            // Use defensive *copies* of the DTOs so labelling them "LENT"
+            // here doesn't bleed into the "NOUVEAU" tags shown on the same
+            // instances in the top-products panel.
+            int slowCount = Math.min(5, products.size());
+            for (int i = 0; i < slowCount; i++) {
+                ProductIntelligenceDto.ProductPerformanceDto src = products.get(i);
+                ProductIntelligenceDto.ProductPerformanceDto copy =
+                    new ProductIntelligenceDto.ProductPerformanceDto(
+                        src.getProductName(), src.getQuantitySold(), src.getRevenue());
+                copy.setRank(src.getRank());
+                copy.setRevenueShare(src.getRevenueShare());
+                copy.setPerformanceLabel("LENT");
+                slowMoving.add(copy);
+            }
+        } else if (clusterLabels != null) {
             // When clustering was used, "slow movers" are the products the ML
             // model assigned to the lowest-revenue cluster (label index 2).
             // Sort ascending by revenue and keep up to 5 for display.
