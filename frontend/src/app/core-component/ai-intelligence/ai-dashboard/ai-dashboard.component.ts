@@ -160,8 +160,23 @@ export class AiDashboardComponent implements OnInit {
     if (!products?.length) return;
     const top5 = products.slice(0, 5);
 
+    // Prefer revenue; fall back to quantitySold (e.g. stock qty) when all
+    // revenues are 0 — this happens for enterprises that have catalogue items
+    // but no recorded sales yet. If both are zero, leave series empty so the
+    // "Aucune donnée produit" placeholder is displayed instead of a blank chart.
+    const revenues = top5.map((p) => Math.round(p.revenue));
+    const hasRevenue = revenues.some((v) => v > 0);
+    let seriesValues: number[];
+    if (hasRevenue) {
+      seriesValues = revenues;
+    } else {
+      const quantities = top5.map((p) => Math.round(p.quantitySold ?? 0));
+      if (!quantities.some((v) => v > 0)) return;
+      seriesValues = quantities;
+    }
+
     this.productChartOptions = {
-      series: top5.map((p) => Math.round(p.revenue)),
+      series: seriesValues,
       chart: { type: 'donut', height: 300 },
       labels: top5.map((p) => p.productName),
       colors: ['#4361EE', '#F72585', '#06d6a0', '#ef476f', '#ffd166'],
