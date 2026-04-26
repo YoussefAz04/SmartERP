@@ -385,7 +385,9 @@ public class AiDashboardService {
                 if ("ANNULEE".equalsIgnoreCase(status) || "CANCELLED".equalsIgnoreCase(status)) {
                     cancelledMap.merge(supplierId, count, Long::sum);
                 }
-                if ("LIVREE".equalsIgnoreCase(status) || "DELIVERED".equalsIgnoreCase(status)) {
+                // CommandeAchat uses "RECUE" (received) as its terminal status;
+                // "LIVREE"/"DELIVERED" are kept for forward compatibility.
+                if ("RECUE".equalsIgnoreCase(status) || "LIVREE".equalsIgnoreCase(status) || "DELIVERED".equalsIgnoreCase(status)) {
                     deliveredMap.merge(supplierId, count, Long::sum);
                 }
             }
