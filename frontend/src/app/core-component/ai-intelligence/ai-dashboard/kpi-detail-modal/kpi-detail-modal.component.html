@@ -222,6 +222,35 @@
               </p>
             </div>
           </div>
+          <div class="ml-metrics" *ngIf="kpiDetails.forecast.selectedModel">
+            <p class="modal-subtitle mt-3"><i class="fas fa-robot me-2 text-primary"></i>Diagnostics ML</p>
+            <div class="overview-grid">
+              <div class="overview-card">
+                <span class="ov-label">Modèle sélectionné</span>
+                <span class="ov-value">{{ kpiDetails.forecast.selectedModel }}</span>
+              </div>
+              <div class="overview-card" *ngIf="kpiDetails.forecast.crossValidatedMape != null">
+                <span class="ov-label">MAPE (validation croisée)</span>
+                <span class="ov-value" [class.text-success]="kpiDetails.forecast.crossValidatedMape! <= 0.15"
+                                       [class.text-warning]="kpiDetails.forecast.crossValidatedMape! > 0.15 && kpiDetails.forecast.crossValidatedMape! <= 0.30"
+                                       [class.text-danger]="kpiDetails.forecast.crossValidatedMape! > 0.30">
+                  {{ (kpiDetails.forecast.crossValidatedMape! * 100) | number:'1.1-1' }}%
+                </span>
+              </div>
+              <div class="overview-card" *ngIf="kpiDetails.forecast.crossValidatedSmape != null">
+                <span class="ov-label">sMAPE (validation croisée)</span>
+                <span class="ov-value" [class.text-success]="kpiDetails.forecast.crossValidatedSmape! <= 0.15"
+                                       [class.text-warning]="kpiDetails.forecast.crossValidatedSmape! > 0.15 && kpiDetails.forecast.crossValidatedSmape! <= 0.30"
+                                       [class.text-danger]="kpiDetails.forecast.crossValidatedSmape! > 0.30">
+                  {{ (kpiDetails.forecast.crossValidatedSmape! * 100) | number:'1.1-1' }}%
+                </span>
+              </div>
+              <div class="overview-card" *ngIf="kpiDetails.forecast.crossValidatedRmse != null">
+                <span class="ov-label">RMSE (validation croisée)</span>
+                <span class="ov-value">{{ kpiDetails.forecast.crossValidatedRmse | number:'1.0-0' }} TND</span>
+              </div>
+            </div>
+          </div>
         </div>
 
       </ng-container>

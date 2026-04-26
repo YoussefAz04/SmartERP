@@ -352,6 +352,10 @@ public class AiDashboardService {
             forecastDetails.setPredictedNext3Months(forecast.getPredictedNext3Months());
             forecastDetails.setPredictedNext6Months(forecast.getPredictedNext6Months());
             forecastDetails.setMethodology(forecast.getMethodology());
+            forecastDetails.setSelectedModel(forecast.getSelectedModel());
+            forecastDetails.setCrossValidatedMape(forecast.getCrossValidatedMape());
+            forecastDetails.setCrossValidatedSmape(forecast.getCrossValidatedSmape());
+            forecastDetails.setCrossValidatedRmse(forecast.getCrossValidatedRmse());
         }
         details.setForecast(forecastDetails);
 

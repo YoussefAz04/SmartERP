@@ -16,7 +16,6 @@ import {
 import {
   AiDashboard,
   AiIntelligenceService,
-  PredictionAccuracy,
   Recommendation,
 } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
 import { routes } from 'src/app/core/helpers/routes';
@@ -53,9 +52,6 @@ export class AiDashboardComponent implements OnInit {
   private static readonly CRITICAL_RECOMMENDATION_PENALTY = 15;
 
   public dashboard: AiDashboard | null = null;
-  public predictionAccuracy: PredictionAccuracy | null = null;
-  public predictionLoading = false;
-  public predictionReconciling = false;
   public loading = true;
   public error = false;
   public isRefreshing = false;
@@ -71,45 +67,6 @@ export class AiDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboard();
-    this.loadPredictionHistory();
-  }
-
-  loadPredictionHistory(): void {
-    this.predictionLoading = true;
-    this.aiService.getPredictionHistory().subscribe({
-      next: (data) => {
-        this.predictionAccuracy = data;
-        this.predictionLoading = false;
-      },
-      error: (err) => {
-        console.error('Erreur historique prédictions:', err);
-        this.predictionLoading = false;
-      },
-    });
-  }
-
-  reconcilePredictions(): void {
-    if (this.predictionReconciling) return;
-    this.predictionReconciling = true;
-    this.aiService.reconcilePredictions().subscribe({
-      next: () => {
-        this.predictionReconciling = false;
-        this.loadPredictionHistory();
-      },
-      error: (err) => {
-        console.error('Erreur réconciliation:', err);
-        this.predictionReconciling = false;
-      },
-    });
-  }
-
-  /** Bootstrap class for an error-row badge based on percent error magnitude. */
-  predictionErrorClass(percentError: number | null): string {
-    if (percentError == null) return 'badge-info';
-    const abs = Math.abs(percentError);
-    if (abs <= 0.10) return 'badge-success';
-    if (abs <= 0.25) return 'badge-warning';
-    return 'badge-danger';
   }
 
   loadDashboard(): void {
@@ -134,7 +91,6 @@ export class AiDashboardComponent implements OnInit {
   refresh(): void {
     this.isRefreshing = true;
     this.loadDashboard();
-    this.loadPredictionHistory();
   }
 
   buildCharts(): void {
@@ -298,6 +254,9 @@ export class AiDashboardComponent implements OnInit {
 
   navigateFromRecommendation(rec: Recommendation): void {
     switch (rec.type) {
+      case 'ML_RISQUE_STOCK':
+        this.router.navigate([routes.stockList]);
+        break;
       case 'STOCK_CRITIQUE':
         this.router.navigate([routes.stockList]);
         break;
@@ -308,15 +267,22 @@ export class AiDashboardComponent implements OnInit {
         this.router.navigate([routes.commandeVenteList]);
         break;
       case 'PRODUIT_STAR':
+      case 'OPPORTUNITE':
+      case 'PRODUITS_LENTS':
         this.router.navigate([routes.articleVenteList]);
         break;
       case 'MARGE_FAIBLE':
+      case 'MARGE_CORRECTE':
       case 'BONNE_PERFORMANCE':
+      case 'RATIO_ACHATS':
         this.router.navigate([routes.articleAchatList]);
         break;
       case 'LIVRAISON_RETARD':
       case 'LIVRAISON_OK':
         this.router.navigate([routes.commandeAchatList]);
+        break;
+      case 'CONCENTRATION_CLIENT':
+        this.router.navigate([routes.commandeVenteList]);
         break;
       case 'DONNEES_INSUFFISANTES':
         this.router.navigate([routes.addCommandeAchat]);
