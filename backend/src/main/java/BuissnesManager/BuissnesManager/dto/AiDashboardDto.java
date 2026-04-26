@@ -223,6 +223,10 @@ public class AiDashboardDto {
         private Double predictedNext3Months;
         private Double predictedNext6Months;
         private String methodology;
+        private String selectedModel;
+        private Double crossValidatedMape;
+        private Double crossValidatedSmape;
+        private Double crossValidatedRmse;
 
         public ForecastDetailsDto() {}
 
@@ -236,6 +240,14 @@ public class AiDashboardDto {
         public void setPredictedNext6Months(Double predictedNext6Months) { this.predictedNext6Months = predictedNext6Months; }
         public String getMethodology() { return methodology; }
         public void setMethodology(String methodology) { this.methodology = methodology; }
+        public String getSelectedModel() { return selectedModel; }
+        public void setSelectedModel(String selectedModel) { this.selectedModel = selectedModel; }
+        public Double getCrossValidatedMape() { return crossValidatedMape; }
+        public void setCrossValidatedMape(Double crossValidatedMape) { this.crossValidatedMape = crossValidatedMape; }
+        public Double getCrossValidatedSmape() { return crossValidatedSmape; }
+        public void setCrossValidatedSmape(Double crossValidatedSmape) { this.crossValidatedSmape = crossValidatedSmape; }
+        public Double getCrossValidatedRmse() { return crossValidatedRmse; }
+        public void setCrossValidatedRmse(Double crossValidatedRmse) { this.crossValidatedRmse = crossValidatedRmse; }
     }
 
     public static class NameValueDto {

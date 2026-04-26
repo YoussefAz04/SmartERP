@@ -164,6 +164,10 @@ export interface ForecastDetails {
   predictedNext3Months: number;
   predictedNext6Months: number;
   methodology: string;
+  selectedModel?: string;
+  crossValidatedMape?: number | null;
+  crossValidatedSmape?: number | null;
+  crossValidatedRmse?: number | null;
 }
 
 export interface KpiDetails {
