@@ -385,7 +385,7 @@ public class AiDashboardService {
                 if ("ANNULEE".equalsIgnoreCase(status) || "CANCELLED".equalsIgnoreCase(status)) {
                     cancelledMap.merge(supplierId, count, Long::sum);
                 }
-                if ("LIVREE".equalsIgnoreCase(status) || "DELIVERED".equalsIgnoreCase(status)) {
+                if ("LIVREE".equalsIgnoreCase(status) || "DELIVERED".equalsIgnoreCase(status) || "RECUE".equalsIgnoreCase(status)) {
                     deliveredMap.merge(supplierId, count, Long::sum);
                 }
             }
