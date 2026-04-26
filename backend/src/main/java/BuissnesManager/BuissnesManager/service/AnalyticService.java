@@ -258,8 +258,8 @@ public class AnalyticService {
                         if (name == null || name.isBlank()) {
                             name = "Produit #" + av.getId();
                         }
-                        long stockQty = av.getQuantite() != null ? av.getQuantite().longValue() : 0L;
-                        products.add(new ProductIntelligenceDto.ProductPerformanceDto(name, stockQty, 0.0));
+                        long stockQuantity = av.getQuantite() != null ? av.getQuantite().longValue() : 0L;
+                        products.add(new ProductIntelligenceDto.ProductPerformanceDto(name, stockQuantity, 0.0));
                     }
                     catalogueFallback = true;
                 }
