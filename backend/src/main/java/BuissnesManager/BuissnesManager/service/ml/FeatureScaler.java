@@ -1,34 +1,14 @@
 package BuissnesManager.BuissnesManager.service.ml;
 
-/**
- * Small utility for standardising feature matrices before feeding them to
- * distance- or regularisation-sensitive learners (K-Means, Ridge, ElasticNet,
- * Logistic Regression, Isolation Forest …).
- *
- * <p>Two scaling modes are supported:
- * <ul>
- *   <li><b>Z-score</b> — subtract column mean, divide by sample standard
- *       deviation. Standard choice when the feature distribution is
- *       approximately symmetric / normal.</li>
- *   <li><b>Robust (median + MAD)</b> — subtract the column median and divide
- *       by its median absolute deviation scaled by 1.4826 (the robust-Gaussian
- *       consistency constant). Much less sensitive to outliers, which matters
- *       for business data where a handful of huge orders or zero-stock rows
- *       would otherwise dominate a z-score.</li>
- * </ul>
- *
- * <p>All scalers replace a zero or non-finite scale with {@code 1.0} so the
- * output is never {@code NaN}/{@code Infinity}. This keeps downstream Smile
- * learners happy — several of them throw on any non-finite feature.
- */
+
 public final class FeatureScaler {
 
     private FeatureScaler() {}
 
-    /** Mode selector for {@link #scale(double[][], Mode)}. */
+    /** Mode selector for {*/
     public enum Mode { Z_SCORE, ROBUST }
 
-    /** Statistics captured per column during {@link #fit(double[][], Mode)}. */
+    /** Statistics captured per column during */
     public static final class Stats {
         public final double[] center;
         public final double[] scale;

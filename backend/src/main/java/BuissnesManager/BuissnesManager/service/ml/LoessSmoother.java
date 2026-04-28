@@ -1,26 +1,5 @@
 package BuissnesManager.BuissnesManager.service.ml;
 
-/**
- * Minimal locally-weighted linear regression (LOESS / LOWESS) smoother. Used
- * as a drop-in replacement for the simple moving-average trend line in the
- * monthly-sales chart: unlike a moving average it doesn't lag the series by
- * {@code window/2} months and it tracks the local slope rather than the local
- * mean, which matters at the edges of a short 12-month series.
- *
- * <p>Implementation notes:
- * <ul>
- *   <li>Tricube kernel <code>w = (1 - (d/dmax)^3)^3</code> — the canonical LOESS
- *       weight function.</li>
- *   <li>Degree-1 local polynomial (local weighted <i>linear</i> regression),
- *       which is the classic LOWESS choice and avoids the numerical
- *       instabilities of higher-degree fits on small samples.</li>
- *   <li>Closed-form weighted normal equations on (1, x) — just a 2×2 solve
- *       per point, so a 12-month smoothing costs microseconds.</li>
- * </ul>
- *
- * <p>No Smile API is used directly because Smile 3.1.1 doesn't ship a LOESS
- * regressor; the maths is short enough to own.
- */
 public final class LoessSmoother {
 
     private LoessSmoother() {}

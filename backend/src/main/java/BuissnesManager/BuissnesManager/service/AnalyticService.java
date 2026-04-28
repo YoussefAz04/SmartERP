@@ -38,28 +38,11 @@ public class AnalyticService {
     @Autowired
     private StockRepository stockRepository;
 
-    /**
-     * Optional fallback source for top-products aggregation. Older parts of the
-     * application persist sales as standalone {@code FactureDeVente}s with a
-     * single {@link DetailsFactureDeVente} (free-text {@code article} label),
-     * never creating {@code LigneCommandeVente} rows. When that is the case
-     * the primary structured query returns nothing and the dashboards display
-     * an empty "Top Produits" panel even though revenue is non-zero. This
-     * repository is consulted as a fallback in that situation.
-     */
+    
     @Autowired(required = false)
     private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
 
-    /**
-     * Optional final fallback for the product-intelligence panels. When an
-     * enterprise has no sales-side history yet (no {@code LigneCommandeVente}
-     * rows and no {@link DetailsFactureDeVente} rows) the dashboard would
-     * otherwise render two prominently-empty panels ("Intelligence Produits"
-     * and "Articles à Rotation Lente") even though the user has built a
-     * catalogue. Surfacing the catalogue with zero-sales rows turns those
-     * panels into actionable hints (highlighting the highest-stock items as
-     * the biggest "stock-at-risk" exposure) instead of dead-ends.
-     */
+   
     @Autowired(required = false)
     private ArticleVenteRepo articleVenteRepo;
 
@@ -68,12 +51,7 @@ public class AnalyticService {
         "Juil", "Août", "Sept", "Oct", "Nov", "Déc"
     };
 
-    /**
-     * Minimum catalogue size before we attempt K-Means clustering. Below this
-     * threshold the three-cluster split would be arbitrary (3 clusters on
-     * fewer than ~15 points typically just reproduces a trivial sort), so we
-     * fall back to simple rank-based rules instead.
-     */
+ 
     private static final int MIN_KMEANS_PRODUCTS = 15;
 
     /** Number of clusters used for product performance tiers: TOP, BON, LENT. */
@@ -85,25 +63,10 @@ public class AnalyticService {
     /** Fixed seed so clustering is deterministic between requests. */
     private static final long KMEANS_SEED = 42L;
 
-    /**
-     * Number of independent K-Means restarts. K-Means converges to a local
-     * optimum that depends on the initial centroids; running the algorithm
-     * N times and keeping the partition with the lowest within-cluster
-     * distortion (sum of squared distances to the assigned centroid) is the
-     * standard way to get a more robust, higher-quality fit. Smile's own
-     * {@code KMeans.fit} already uses k-means++ seeding, but restarting is
-     * still worth it on small product catalogues where a single bad init
-     * could glue two tiers together.
-     */
+  
     private static final int KMEANS_RESTARTS = 8;
 
-    /**
-     * Cross-module cache key: {@code (entrepriseId, dayOfYear)}. Heavy ML
-     * work (LOESS, bootstrap CI, K-Means + silhouette grid-search) is stable
-     * within a calendar day for a given enterprise, so repeated calls from
-     * the Angular dashboard reuse the same DTO instead of retraining every
-     * time the user switches tabs.
-     */
+   
     @Cacheable(cacheNames = "salesAnalysis",
                key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
     public SalesAnalysisDto analyzeSales(Long entrepriseId) {
@@ -142,10 +105,7 @@ public class AnalyticService {
             }
         }
 
-        // Growth rate via bootstrapped log-OLS regression on the active month
-        // series. The slope β of log(y) ~ α + β·t (t in 0..n-1) is the monthly
-        // log-growth rate; annualised = exp(12β) − 1. We bootstrap the active
-        // months with replacement to also surface a 95% confidence interval.
+     
         GrowthEstimate growth = estimateAnnualGrowth(values);
         double growthRate = growth.pointEstimatePercent;
         if (firstHalfFallbackNeeded(values)) {
@@ -162,9 +122,6 @@ public class AnalyticService {
             }
         }
 
-        // LOESS trend line — a locally-weighted linear regression that tracks
-        // the local slope of the series instead of lagging it like a 3-month
-        // moving average. Bandwidth 0.5 is the standard default.
         List<Double> trendLine = computeLoessTrend(values);
 
         // Anomaly flags — z-score on the residuals of the LOESS fit. Any
@@ -234,12 +191,7 @@ public class AnalyticService {
             totalRevenue += rev;
         }
 
-        // Catalogue fallback: when neither structured commandes nor facture
-        // details surfaced any product, populate the panels from the
-        // {@link ArticleVente} catalogue (qty=0, revenue=0) sorted by on-hand
-        // stock DESC so the highest-stock items lead. This keeps the
-        // dashboards informative for enterprises that have only built their
-        // catalogue / received purchases but not yet recorded any sale.
+
         boolean catalogueFallback = false;
         if (products.isEmpty() && articleVenteRepo != null) {
             try {
@@ -277,13 +229,7 @@ public class AnalyticService {
             p.setRevenueShare(totalRevenue > 0 ? Math.round((p.getRevenue() / totalRevenue) * 1000.0) / 10.0 : 0.0);
         }
 
-        // === K-Means clustering (Smile) for product performance tiers ===
-        // With a reasonably-sized catalogue (>= MIN_KMEANS_PRODUCTS items) we
-        // cluster products on (revenue, quantity) using K-Means(k=3) and label
-        // clusters TOP / BON / LENT in decreasing order of mean revenue. This
-        // replaces arbitrary top-N / bottom-N thresholds with data-driven tiers.
-        // For smaller catalogues the simple rank-based rule (below) is kept
-        // because K-Means is underdetermined with so few points.
+  
         int[] clusterLabels = null;
         if (products.size() >= MIN_KMEANS_PRODUCTS) {
             clusterLabels = clusterProductsByPerformance(products);
@@ -317,24 +263,14 @@ public class AnalyticService {
             }
         }
 
-        // Defensive copies: subList returns a *view* of the backing list, so
-        // later mutation of `products` (e.g. tagging slow-movers with the "LENT"
-        // performance label below) would leak back into the top-products slice
-        // and corrupt the ranking sent to the frontend.
+    
         List<ProductIntelligenceDto.ProductPerformanceDto> topProducts =
             new ArrayList<>(products.subList(0, Math.min(10, products.size())));
 
         // Slow moving: products with lowest sales (bottom 5 from total, if enough data)
         List<ProductIntelligenceDto.ProductPerformanceDto> slowMoving = new ArrayList<>();
         if (catalogueFallback) {
-            // No sales recorded yet: every catalogue item with on-hand stock
-            // is, by definition, a slow-mover. The catalogue was already
-            // sorted by stock DESC above, so the top-N entries are the
-            // biggest "stock-at-risk" exposure (most invested capital sitting
-            // idle) — exactly what the panel is meant to surface.
-            // Use defensive *copies* of the DTOs so labelling them "LENT"
-            // here doesn't bleed into the "NOUVEAU" tags shown on the same
-            // instances in the top-products panel.
+ 
             int slowCount = Math.min(5, products.size());
             for (int i = 0; i < slowCount; i++) {
                 ProductIntelligenceDto.ProductPerformanceDto src = products.get(i);
@@ -347,9 +283,7 @@ public class AnalyticService {
                 slowMoving.add(copy);
             }
         } else if (clusterLabels != null) {
-            // When clustering was used, "slow movers" are the products the ML
-            // model assigned to the lowest-revenue cluster (label index 2).
-            // Sort ascending by revenue and keep up to 5 for display.
+    
             for (int i = 0; i < products.size(); i++) {
                 if (clusterLabels[i] == 2) {
                     slowMoving.add(products.get(i));
@@ -360,8 +294,7 @@ public class AnalyticService {
             if (slowMoving.size() > 5) {
                 slowMoving = new ArrayList<>(slowMoving.subList(0, 5));
             }
-            // Defensive copy not strictly needed — slowMoving contains the same
-            // objects as `products` — but we ensure the label is consistent.
+  
             for (ProductIntelligenceDto.ProductPerformanceDto p : slowMoving) {
                 p.setPerformanceLabel("LENT");
             }
@@ -424,28 +357,7 @@ public class AnalyticService {
         return result;
     }
 
-    /**
-     * Clusters products into performance tiers via Smile's {@link KMeans}
-     * on a feature vector of (revenue, quantity, log-avg-unit-price). The
-     * number of clusters {@code k} is selected automatically over
-     * {@link #KMEANS_K_CANDIDATES} using the mean silhouette coefficient
-     * — a standard unsupervised criterion ([-1, 1], higher is better) that
-     * rewards tight, well-separated clusters.
-     *
-     * <p>The clusters returned by the algorithm carry arbitrary numeric
-     * labels. To keep the frontend contract stable (3 display tiers:
-     * TOP / BON / LENT) we remap each cluster to the display tier whose
-     * mean revenue falls into the corresponding tercile:
-     * <ul>
-     *   <li>top-third mean-revenue clusters → <b>0 (TOP)</b></li>
-     *   <li>middle-third → <b>1 (BON)</b></li>
-     *   <li>bottom-third → <b>2 (LENT)</b></li>
-     * </ul>
-     * The returned array is aligned with the input list so caller can look
-     * up the tier of product i in O(1). Returns {@code null} when clustering
-     * fails for any numerical reason so the caller can gracefully fall back
-     * to rule-based labelling.
-     */
+   
     int[] clusterProductsByPerformance(List<ProductIntelligenceDto.ProductPerformanceDto> products) {
         int n = products.size();
         if (n < KMEANS_K) return null;
@@ -456,11 +368,7 @@ public class AnalyticService {
         for (int i = 0; i < n; i++) {
             revenues[i] = products.get(i).getRevenue();
             quantities[i] = products.get(i).getQuantitySold();
-            // Engineered feature: log-average unit price. Distinguishes a
-            // product selling a handful of high-value items from one selling
-            // many low-value items at a similar total revenue. log1p makes
-            // the feature robust to zero quantities and compresses the long
-            // tail of very-expensive items.
+       
             double qty = Math.max(1.0, quantities[i]);
             avgOrderValues[i] = Math.log1p(Math.max(0.0, revenues[i]) / qty);
         }
@@ -522,11 +430,7 @@ public class AnalyticService {
             return Double.compare(mb, ma); // descending
         });
         int[] remap = new int[bestK];
-        // Tercile mapping: ceil(k/3) best-ranked clusters → TOP (display tier 0),
-        // the worst ceil(k/3) → LENT (2), everything in between → BON (1).
-        // For k=3 this degenerates to the identity (rank==tier), which is the
-        // intuitive mapping; for other k we keep three display tiers so the
-        // frontend doesn't need to grow new categories.
+       
         int topSize = (int) Math.ceil(bestK / 3.0);
         int lentStart = bestK - topSize;
         for (int rank = 0; rank < bestK; rank++) {
@@ -548,17 +452,7 @@ public class AnalyticService {
         return tiers;
     }
 
-    /**
-     * Mean silhouette coefficient. For each point <i>i</i>:
-     * <ul>
-     *   <li>a(i) = mean distance to other points in the same cluster</li>
-     *   <li>b(i) = min over other clusters of the mean distance to their points</li>
-     *   <li>s(i) = (b − a) / max(a, b), in [−1, 1]</li>
-     * </ul>
-     * A higher mean s(i) indicates tighter, better-separated clusters.
-     * Pure Java because Smile 3.1.1 ships silhouette only as part of its
-     * (not bundled) validation metric DataFrame API.
-     */
+    
     static double meanSilhouette(double[][] features, int[] labels, int k) {
         int n = features.length;
         if (n <= 1 || labels == null || labels.length != n) return 0.0;
@@ -602,19 +496,7 @@ public class AnalyticService {
     }
 
 
-    /**
-     * Runs K-Means {@code restarts} times with different initialisations and
-     * returns the partition with the lowest within-cluster distortion. Smile's
-     * {@code KMeans.distortion} field holds the sum of squared distances from
-     * each point to its assigned centroid — the classic K-Means objective —
-     * so "best distortion" means "tightest clusters".
-     *
-     * <p>This is the standard multi-restart pattern for K-Means. A single
-     * run is known to get stuck in local optima, especially on small
-     * datasets; averaging over {@code N} runs would destroy the discrete
-     * labelling, but taking the best run is always strictly better than a
-     * single run.
-     */
+ 
     static KMeans bestOfNKMeans(double[][] features, int k, int restarts) {
         KMeans best = null;
         for (int i = 0; i < restarts; i++) {
@@ -656,13 +538,7 @@ public class AnalyticService {
         }
     }
 
-    /**
-     * Estimates the annualised growth rate (in percent) by fitting
-     * {@code log(y) ~ α + β·t} on the non-zero monthly values and
-     * returning <code>(exp(12·β) − 1) × 100</code>. The 95% confidence
-     * interval comes from a bootstrap over the indices, which makes the
-     * estimate robust to single-month outliers.
-     */
+    
     GrowthEstimate estimateAnnualGrowth(List<Double> values) {
         List<double[]> pts = new ArrayList<>();
         for (int i = 0; i < values.size(); i++) {
@@ -758,11 +634,7 @@ public class AnalyticService {
 
     /* ============================= LOESS trend ============================= */
 
-    /**
-     * LOESS-based trend line with a 0.5-length bandwidth. Uses tricube
-     * weighting and a degree-1 local fit, which tracks the slope of the
-     * series and does not lag the way a 3-month moving average does.
-     */
+   
     List<Double> computeLoessTrend(List<Double> values) {
         double[] y = new double[values.size()];
         for (int i = 0; i < values.size(); i++) y[i] = values.get(i);
@@ -776,12 +648,7 @@ public class AnalyticService {
 
     /* ========================= Anomaly detection ========================= */
 
-    /**
-     * Flags monthly observations whose residual against the LOESS trend
-     * exceeds ±2 standard deviations — a standard z-score outlier rule.
-     * Returns one boolean per input month (same length as {@code values});
-     * returns an empty list when there isn't enough signal to compute a std.
-     */
+    
     List<Boolean> detectAnomalies(List<Double> values, List<Double> trend) {
         int n = values.size();
         if (trend == null || trend.size() != n) return new ArrayList<>();

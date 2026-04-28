@@ -525,7 +525,7 @@ $t-b: all .36s cubic-bezier(.34,1.56,.64,1);
 }
 
 .filter-group { display: flex; flex-direction: column; gap: 6px; }
-.filter-group--wide { /* already in grid */ }
+
 .filter-group--action { justify-content: flex-end; }
 
 .filter-label {

@@ -12,17 +12,7 @@ import smile.regression.RidgeRegression;
 
 import java.util.Properties;
 
-/**
- * Uniform predictor façade over Smile's linear and tree-based regression
- * families so {@link MlForecastEngine} can treat them interchangeably in
- * cross-validation and in the recursive forecast loop.
- *
- * <p>Why this exists: Smile 3.1.1 exposes {@code LinearModel}
- * (OLS / Ridge / LASSO / ElasticNet) and {@code RandomForest} as unrelated
- * classes with slightly different predict signatures. The adapters below
- * hide that heterogeneity behind {@link #predict(double[])} / fitted /
- * residuals / r² so the engine only has to reason about a common interface.
- */
+
 public interface Predictor {
 
     /** Human-readable name of the underlying learner. */
@@ -51,28 +41,14 @@ public interface Predictor {
                 RidgeRegression.fit(Formula.lhs("y"), df, lambda), schema);
     }
 
-    /**
-     * Factory: fit an {@link ElasticNet} with L1 and L2 penalties. On small
-     * samples ElasticNet blends Ridge's stability and LASSO's feature
-     * selection, which is often the sweet spot for engineered lag/seasonal
-     * features that are partly correlated.
-     */
+ 
     static Predictor fitElasticNet(DataFrame df, StructType schema,
                                    double lambda1, double lambda2) {
         return new LinearAdapter("ElasticNet",
                 ElasticNet.fit(Formula.lhs("y"), df, lambda1, lambda2), schema);
     }
 
-    /**
-     * Factory: fit a {@link RandomForest}. Tree ensembles pick up
-     * non-linear interactions the linear family can't, yet stay well-behaved
-     * on small samples when the number of trees is modest.
-     *
-     * @param ntrees    number of trees in the forest
-     * @param maxDepth  maximum depth per tree
-     * @param mtry      number of features to sample at each split; ≤ 0 lets
-     *                  Smile default to sqrt(p)
-     * @param seed      RNG seed for reproducibility
+  
      */
     static Predictor fitRandomForest(DataFrame df, StructType schema,
                                      int ntrees, int maxDepth, int mtry, long seed) {
