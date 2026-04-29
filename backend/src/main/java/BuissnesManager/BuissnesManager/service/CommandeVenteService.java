@@ -133,13 +133,6 @@ public class CommandeVenteService {
             }
         }
 
-        // NOTE: Stock is NOT reserved at draft creation. A draft order
-        // (EN_ATTENTE) has no effect on stock. Reservation happens when the
-        // order is confirmed via validerCommande(), and the reserved stock is
-        // consumed (moved to "vendue") when the order is delivered via
-        // livrerCommande(). This mirrors a standard ERP order-to-cash flow.
-
-        // ✅ AUTO-CREATE preliminary FactureDeVente (EN_ATTENTE) so it appears in the factures list immediately
         FactureDeVente factureDeVente = new FactureDeVente();
         factureDeVente.setDateAchat(saved.getDateCommande() != null ? saved.getDateCommande().toString() : LocalDate.now().toString());
         factureDeVente.setMontantHT(dto.getMontantHT() != null ? dto.getMontantHT().doubleValue() : 0.0);
@@ -190,11 +183,7 @@ public class CommandeVenteService {
         return commandes;
     }
 
-    /**
-     * Recalculates montantHT, montantTVA, montantTTC from line items
-     * when these fields are null or zero.
-     * @return true if the commande was modified and needs saving
-     */
+    
     private boolean recalculateTotalsIfMissing(CommandeVente commande) {
         boolean hasMissingAmounts = commande.getMontantHT() == null
                 || commande.getMontantTVA() == null
@@ -273,9 +262,7 @@ public class CommandeVenteService {
         if ("LIVREE".equals(currentStatut)) {
             throw new RuntimeException("Une commande livrée ne peut être modifiée que via l'annulation.");
         }
-        // Lifecycle transitions with side effects (facture creation, stock moves, bon de livraison)
-        // must go through the dedicated methods, not a raw status set — otherwise we would
-        // skip stock decrement on delivery or skip releasing reservations on cancellation.
+        
         if ("CONFIRMEE".equals(statut) && !"CONFIRMEE".equals(currentStatut)) {
             throw new RuntimeException("Utilisez l'endpoint de validation (/valider) pour confirmer une commande.");
         }
@@ -366,9 +353,7 @@ public class CommandeVenteService {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
-        // Release stock reservations only if the order is currently CONFIRMEE
-        // (i.e. stock was reserved but not yet consumed). EN_ATTENTE drafts
-        // never reserved stock, and LIVREE orders already consumed it.
+      
         if ("CONFIRMEE".equals(commande.getStatut())) {
             try {
                 stockAutomationService.annulerReservationStock(id, commande.getReference());

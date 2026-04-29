@@ -50,9 +50,6 @@ public class CommandeAchatService {
     private StockAutomationService stockAutomationService;
 
     @Autowired
-    private EntityManager entityManager;
-
-    @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
     @Autowired
