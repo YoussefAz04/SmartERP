@@ -58,7 +58,7 @@ public class StockMouvementController {
     }
 
     @GetMapping("/user/{utilisateurId}")
-    public ResponseEntity<List<StockMouvement>> getMouvementsByUser(@PathVariable Long utilisateurId) {
+    public ResponseEntity<List<StockMouvement>> getMouvementsByUser(@PathVariable  Long utilisateurId) {
         try {
             return ResponseEntity.ok(stockMouvementService.getMouvementsByUser(utilisateurId));
         } catch (Exception e) {
