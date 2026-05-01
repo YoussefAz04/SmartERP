@@ -49,8 +49,6 @@ export type DonutChartOptions = {
   styleUrl: './ai-dashboard.component.scss',
 })
 export class AiDashboardComponent implements OnInit {
-  private static readonly CRITICAL_RECOMMENDATION_PENALTY = 15;
-
   public dashboard: AiDashboard | null = null;
   public loading = true;
   public error = false;
@@ -232,22 +230,6 @@ export class AiDashboardComponent implements OnInit {
     if (score >= 65) return 'Élevée';
     if (score >= 45) return 'Moyenne';
     return 'À renforcer';
-  }
-
-  get confidenceLevelClass(): string {
-    const score = this.dashboard?.forecast?.confidenceScore ?? 0;
-    if (score >= 80) return 'quality-strong';
-    if (score >= 65) return 'quality-good';
-    if (score >= 45) return 'quality-medium';
-    return 'quality-low';
-  }
-
-  get aiQualityScore(): number {
-    const confidence = this.dashboard?.forecast?.confidenceScore ?? 0;
-    const recommendationCount = this.dashboard?.recommendations?.length ?? 0;
-    const criticalRatio = recommendationCount > 0 ? this.criticalRecs.length / recommendationCount : 0;
-    const quality = confidence - (criticalRatio * AiDashboardComponent.CRITICAL_RECOMMENDATION_PENALTY);
-    return Math.max(0, Math.min(100, Math.round(quality)));
   }
 
   formatCurrency(value: number): string {

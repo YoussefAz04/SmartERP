@@ -71,10 +71,21 @@ public class MlForecastEngine {
 
     /** Ridge shrinkage strength for the L2 candidate. */
     static final double RIDGE_LAMBDA = 0.5;
+    /** Additional Ridge λ values explored alongside {@link #RIDGE_LAMBDA}. The
+     *  candidate with the lowest blended walk-forward score is kept — this
+     *  effectively performs a tiny λ grid-search per series. */
+    static final double[] RIDGE_LAMBDA_GRID = { 0.1, 0.5, 1.5, 5.0 };
     /** ElasticNet L1 penalty (LASSO part). */
     static final double ELASTIC_LAMBDA1 = 0.1;
     /** ElasticNet L2 penalty (Ridge part). */
     static final double ELASTIC_LAMBDA2 = 0.3;
+    /** Additional ElasticNet (λ1, λ2) pairs explored to widen regularisation
+     *  search. Same grid-search rationale as {@link #RIDGE_LAMBDA_GRID}. */
+    static final double[][] ELASTIC_LAMBDA_GRID = {
+            { 0.05, 0.15 },
+            { 0.10, 0.30 },
+            { 0.30, 0.60 },
+    };
 
     /** Maximum walk-forward CV folds. */
     private static final int MAX_CV_FOLDS = 4;
@@ -171,13 +182,24 @@ public class MlForecastEngine {
 
         // Candidate learners. RandomForest is only enabled when we have
         // enough samples to grow a non-trivial ensemble without over-fitting.
+        // For Ridge / ElasticNet we register several (λ) candidates so the
+        // walk-forward CV can pick the best regularisation strength per
+        // series instead of relying on a single hand-picked value.
         List<ModelCandidate> candidates = new ArrayList<>();
         candidates.add(new ModelCandidate("OLS",
                 (df, schema) -> Predictor.fitOls(df, schema)));
-        candidates.add(new ModelCandidate("Ridge",
-                (df, schema) -> Predictor.fitRidge(df, schema, RIDGE_LAMBDA)));
-        candidates.add(new ModelCandidate("ElasticNet",
-                (df, schema) -> Predictor.fitElasticNet(df, schema, ELASTIC_LAMBDA1, ELASTIC_LAMBDA2)));
+        for (double lambda : RIDGE_LAMBDA_GRID) {
+            candidates.add(new ModelCandidate(
+                    String.format(java.util.Locale.ROOT, "Ridge(λ=%.2f)", lambda),
+                    (df, schema) -> Predictor.fitRidge(df, schema, lambda)));
+        }
+        for (double[] lp : ELASTIC_LAMBDA_GRID) {
+            final double l1 = lp[0];
+            final double l2 = lp[1];
+            candidates.add(new ModelCandidate(
+                    String.format(java.util.Locale.ROOT, "ElasticNet(λ1=%.2f,λ2=%.2f)", l1, l2),
+                    (df, schema) -> Predictor.fitElasticNet(df, schema, l1, l2)));
+        }
         if (history.length >= RF_MIN_SAMPLES) {
             int mtry = Math.max(1, spec.nFeatures / 2);
             candidates.add(new ModelCandidate("RandomForest",
