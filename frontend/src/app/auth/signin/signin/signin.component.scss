@@ -62,8 +62,8 @@
 .login-modern-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   background: radial-gradient(circle at 30% 20%, #1e1b4b 0%, #0f172a 45%, #020617 100%);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
@@ -88,7 +88,7 @@
   align-items: center;
   justify-content: center;
   padding: clamp(2rem, 4vw, 3.5rem) clamp(1.75rem, 4vw, 3rem);
-  overflow: hidden;
+  overflow-y: auto;
 
   @media (max-width: 992px) {
     display: none;
