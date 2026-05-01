@@ -16,7 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Permission {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permission_seq")
+    @SequenceGenerator(name = "permission_seq", sequenceName = "permission_seq", allocationSize = 1)
     private Long id ;
     @Column(name = "can_create")
     private boolean create;
