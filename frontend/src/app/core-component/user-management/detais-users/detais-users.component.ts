@@ -7,6 +7,8 @@ import { UserDTO } from '../../../model/userDTO.model';
 import { ResponseDto } from '../../../model/reponseDto.model';
 import { PermissionDto } from '../../../model/permissionDto.model';
 import { NotificationService } from '../../../shared/notification/notification.service';
+import { RoleService } from '../../../core/service/role/role.service';
+import { Role } from '../../../model/role.model';
 
 @Component({
   selector: 'app-detais-users',
@@ -20,8 +22,13 @@ export class DetaisUsersComponent implements OnInit {
   isLoading = true;
   userId!: number;
   isSubmitting = false;
-  rolesString: string = '';
-  
+  selectedRoleNames: string[] = [];
+  availableRoles: Role[] = [];
+  rolesLoading = true;
+  rolesLoadError = false;
+  isSuperAdmin = false;
+  isAdmin = false;
+
   permissionUsers: PermissionDto = {
     create: false,
     view: false,
@@ -33,12 +40,14 @@ export class DetaisUsersComponent implements OnInit {
   constructor(private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
-    private notification: NotificationService) {}
+    private notification: NotificationService,
+    private roleService: RoleService) {}
 
   ngOnInit(): void {
     this.userId = this.route.snapshot.params['id'];
-    this.loadUserDetails();
     this.getUserAuthData();
+    this.loadRoles();
+    this.loadUserDetails();
   }
 
   loadUserDetails(): void {
@@ -46,7 +55,7 @@ export class DetaisUsersComponent implements OnInit {
     this.userService.getUserById(this.userId).subscribe({
       next: (data) => {
         this.user = data;
-        this.rolesString = data.roles?.join(', ') ?? '';
+        this.selectedRoleNames = data.roles ? [...data.roles] : [];
         this.isLoading = false;
       },
       error: (err: any) => {
@@ -55,6 +64,44 @@ export class DetaisUsersComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  loadRoles(): void {
+    this.rolesLoading = true;
+    this.rolesLoadError = false;
+    this.roleService.getAllRoles().subscribe({
+      next: (roles) => {
+        if (this.isAdmin && !this.isSuperAdmin) {
+          this.availableRoles = roles.filter(r =>
+            r.roleType === 'EMPLOYEE' || r.roleType === 'ADMIN'
+          );
+        } else {
+          this.availableRoles = roles;
+        }
+        this.rolesLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Error loading roles:', err);
+        this.rolesLoading = false;
+        this.rolesLoadError = true;
+      }
+    });
+  }
+
+  isRoleSelected(roleName: string): boolean {
+    return this.selectedRoleNames.includes(roleName);
+  }
+
+  toggleRole(roleName: string): void {
+    if (!this.availableRoles.some(r => r.name === roleName)) {
+      return;
+    }
+    const idx = this.selectedRoleNames.indexOf(roleName);
+    if (idx >= 0) {
+      this.selectedRoleNames.splice(idx, 1);
+    } else {
+      this.selectedRoleNames.push(roleName);
+    }
   }
 
   onSubmit(): void {
@@ -70,10 +117,7 @@ export class DetaisUsersComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    this.user.roles = this.rolesString
-      .split(',')
-      .map(r => r.trim())
-      .filter(r => r.length > 0);
+    this.user.roles = [...this.selectedRoleNames];
 
     this.userService.updateUser(this.userId, this.user).subscribe({
       next: (response: any) => {
@@ -99,6 +143,10 @@ export class DetaisUsersComponent implements OnInit {
     if (item) {
       try {
         const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
+
+        const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
+        this.isSuperAdmin = roles.includes('SUPER_ADMIN');
+        this.isAdmin = roles.includes('ADMIN');
 
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           currentUser.permission.forEach(per => {
