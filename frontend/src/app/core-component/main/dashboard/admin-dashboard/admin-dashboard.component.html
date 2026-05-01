@@ -1,21 +1,12 @@
 <!-- ====================================================
-     DASHBOARD – Modern Glassmorphism Layout
+     DASHBOARD – Clean, professional layout
      ==================================================== -->
 
 <div class="dashboard-shell">
-  <!-- Animated background mesh -->
-  <div class="bg-mesh" aria-hidden="true">
-    <span class="bg-orb bg-orb--1"></span>
-    <span class="bg-orb bg-orb--2"></span>
-    <span class="bg-orb bg-orb--3"></span>
-  </div>
 
   <!-- Header -->
   <div class="db-header fade-in">
-    <!-- Decorative animated orbs -->
-    <span class="db-header__glow db-header__glow--a" aria-hidden="true"></span>
-    <span class="db-header__glow db-header__glow--b" aria-hidden="true"></span>
-    <span class="db-header__grid" aria-hidden="true"></span>
+    <span class="db-header__accent" aria-hidden="true"></span>
     <div class="db-header__inner">
       <div>
         <p class="db-header__eyebrow">Vue d'ensemble</p>
@@ -67,8 +58,6 @@
 
       <!-- Clients Card -->
       <div class="stat-card stat-card--blue" (click)="onStatCardClick($event, '/client/listClient')">
-        <span class="stat-card__sheen" aria-hidden="true"></span>
-        <span class="stat-card__blob" aria-hidden="true"></span>
         <div class="stat-card__icon">
           <i class="feather icon-users"></i>
         </div>
@@ -86,8 +75,6 @@
 
       <!-- Fournisseurs Card -->
       <div class="stat-card stat-card--orange" (click)="onStatCardClick($event, '/fournisseur/listFournisseur')">
-        <span class="stat-card__sheen" aria-hidden="true"></span>
-        <span class="stat-card__blob" aria-hidden="true"></span>
         <div class="stat-card__icon">
           <i class="feather icon-truck"></i>
         </div>
@@ -105,8 +92,6 @@
 
       <!-- Articles Card -->
       <div class="stat-card stat-card--green" (click)="onStatCardClick($event, '/article-achat/listArticleAchat')">
-        <span class="stat-card__sheen" aria-hidden="true"></span>
-        <span class="stat-card__blob" aria-hidden="true"></span>
         <div class="stat-card__icon">
           <i class="feather icon-package"></i>
         </div>
