@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -76,9 +77,29 @@ public class PermissionService {
 
     @Transactional(readOnly = true)
     public List<PermissionDto> getPermissionsByUser(Long userId) {
-        return permissionRepo.findAllByUserId(userId).stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+        List<Permission> userPermissions = permissionRepo.findAllByUserId(userId);
+        if (!userPermissions.isEmpty()) {
+            return userPermissions.stream().map(this::toDto).collect(Collectors.toList());
+        }
+        // Fall back to role-based permissions, mirroring the login/refresh behaviour.
+        // Merge per module so that a user with multiple roles gets the union of their grants.
+        User user = userRepo.findById(userId).orElse(null);
+        if (user == null || user.getRoles() == null) {
+            return new ArrayList<>();
+        }
+        java.util.Map<Long, PermissionDto> merged = new java.util.LinkedHashMap<>();
+        for (Role role : user.getRoles()) {
+            for (PermissionDto p : getPermissionsByRole(role.getId())) {
+                merged.merge(p.getModuleId(), p, (existing, incoming) -> {
+                    existing.setCreate(existing.isCreate() || incoming.isCreate());
+                    existing.setUpdate(existing.isUpdate() || incoming.isUpdate());
+                    existing.setView(existing.isView() || incoming.isView());
+                    existing.setDelete(existing.isDelete() || incoming.isDelete());
+                    return existing;
+                });
+            }
+        }
+        return new ArrayList<>(merged.values());
     }
 
     @Transactional(readOnly = true)
@@ -114,6 +135,8 @@ public class PermissionService {
                 permissionRepo.save(permission);
             }
         }
+    }
+
     @Transactional
     public void updateUserPermissions(Long userId, List<ModulePermissionRequest> permissions) {
         User user = userRepo.findById(userId)
