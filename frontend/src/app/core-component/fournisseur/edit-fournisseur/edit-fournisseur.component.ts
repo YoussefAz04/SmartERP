@@ -11,7 +11,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
   standalone: true,
   imports: [CommonModule, NgForOf, ReactiveFormsModule, RouterLink],
   templateUrl: './edit-fournisseur.component.html',
-  styleUrl: './edit-fournisseur.component.scss'
+  styleUrl: './edit-fournisseur.component.css'
 })
 export class EditFournisseurComponent implements OnInit {
   fournisseurForm!: FormGroup;

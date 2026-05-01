@@ -21,7 +21,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
     RouterLink
   ],
   templateUrl: './add-client.component.html',
-  styleUrl: './add-client.component.scss'
+  styleUrl: './add-client.component.css'
 })
 export class AddClientComponent implements OnInit{
   clientForm!: FormGroup;

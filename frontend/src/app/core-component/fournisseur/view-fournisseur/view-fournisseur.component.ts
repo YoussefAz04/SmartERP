@@ -11,7 +11,7 @@ import { FactureAchat } from '../../../model/FactureAchat.model';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './view-fournisseur.component.html',
-  styleUrl: './view-fournisseur.component.scss'
+  styleUrl: './view-fournisseur.component.css'
 })
 export class ViewFournisseurComponent implements OnInit {
   fournisseur: Fournisseur | null = null;

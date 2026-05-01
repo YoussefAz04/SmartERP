@@ -20,7 +20,7 @@ import { NotificationService } from '../../shared/notification/notification.serv
     FormsModule
   ],
   templateUrl: './fournisseur.component.html',
-  styleUrl: './fournisseur.component.scss'
+  styleUrl: './fournisseur.component.css'
 })
 export class FournisseurComponent implements OnInit, AfterViewInit {
   fournisseurList: Fournisseur[] = [];

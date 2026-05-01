@@ -15,7 +15,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
     CommonModule
   ],
   templateUrl: './add-categorie-fournisseur.component.html',
-  styleUrl: './add-categorie-fournisseur.component.scss'
+  styleUrl: './add-categorie-fournisseur.component.css'
 })
 export class AddCategorieFournisseurComponent implements OnInit {
   categorieFournisseurForm!: FormGroup;

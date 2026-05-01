@@ -11,7 +11,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './list-categorie-fournisseur.component.html',
-  styleUrl: './list-categorie-fournisseur.component.scss'
+  styleUrl: './list-categorie-fournisseur.component.css'
 })
 export class ListCategorieFournisseurComponent implements OnInit {
   categories: CategorieFournisseur[] = [];

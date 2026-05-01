@@ -17,7 +17,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
     RouterLink
   ],
   templateUrl: './add-fournisseur.component.html',
-  styleUrl: './add-fournisseur.component.scss'
+  styleUrl: './add-fournisseur.component.css'
 })
 export class AddFournisseurComponent implements OnInit {
   fournisseurForm!: FormGroup;
