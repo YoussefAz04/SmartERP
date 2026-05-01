@@ -363,6 +363,15 @@ public class AuthController {
                 permissionDtoList.addAll(permissionService.getPermissionsByRole(role.getId()));
             }
 
+            // Per-user permissions (set when creating an employee) take priority over
+            // role-level defaults — mirrors the login flow. When present they completely
+            // replace the role-level list because per-employee grants are intentionally
+            // more restrictive than the role defaults.
+            List<PermissionDto> userPermissions = permissionService.getPermissionsByUser(userId);
+            if (!userPermissions.isEmpty()) {
+                permissionDtoList = userPermissions;
+            }
+
             System.out.println("✅ Permissions refreshed for user: " + userId);
             return ResponseEntity.ok(permissionDtoList);
         } catch (Exception e) {
