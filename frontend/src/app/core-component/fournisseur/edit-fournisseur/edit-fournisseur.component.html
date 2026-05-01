@@ -1,16 +1,24 @@
-<!-- Page Header -->
+<!-- ── Page Header ────────────────────────────────────────────── -->
 <div class="page-header">
-  <div class="row">
-    <div class="col">
-      <h3 class="page-title">
-        <span class="title-icon"><i class="feather icon-edit-3"></i></span>
-        Modifier un Fournisseur
-      </h3>
+  <div class="ph-glow"></div>
+  <div class="ph-inner">
+    <div class="ph-icon-box">
+      <i class="feather icon-edit-3"></i>
+    </div>
+    <div class="ph-text">
+      <h3 class="page-title">Modifier un Fournisseur</h3>
       <ul class="breadcrumb">
-        <li class="breadcrumb-item"><a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a></li>
-        <li class="breadcrumb-item"><a routerLink="/fournisseur/listFournisseur">Fournisseurs</a></li>
+        <li class="breadcrumb-item">
+          <a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/fournisseur/listFournisseur">Fournisseurs</a>
+        </li>
         <li class="breadcrumb-item active">Modifier</li>
       </ul>
+    </div>
+    <div class="ph-badge-wrap">
+      <span class="edit-badge"><i class="feather icon-edit-3"></i> Modifier</span>
     </div>
   </div>
 </div>
@@ -25,17 +33,36 @@
 <div class="row" *ngIf="!errorMessage">
   <div class="col-md-12">
     <div class="card form-card">
+
+      <!-- Card header with step progress -->
       <div class="card-header">
         <div class="header-content">
           <div class="header-icon">
             <i class="feather icon-edit-3"></i>
           </div>
-          <div>
-            <h5 class="card-title">Modifier le Fournisseur</h5>
+          <div class="header-text">
+            <h5 class="card-title">Modifier Le Fournisseur</h5>
             <p class="card-subtitle">Mettez à jour les informations puis enregistrez les modifications</p>
           </div>
         </div>
+        <div class="step-strip">
+          <div class="step-item">
+            <div class="step-dot">1</div>
+            <span>Identité</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step-item">
+            <div class="step-dot">2</div>
+            <span>Contact</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step-item">
+            <div class="step-dot">3</div>
+            <span>Commercial</span>
+          </div>
+        </div>
       </div>
+
       <div class="card-body">
         <!-- Loading State -->
         <div class="loading-state" *ngIf="isLoading && !fournisseurForm.dirty">
@@ -45,9 +72,10 @@
 
         <form [formGroup]="fournisseurForm" (ngSubmit)="onSubmit()" novalidate *ngIf="!(isLoading && !fournisseurForm.dirty)">
 
-          <!-- Section: Informations Personnelles -->
+          <!-- ── Section 1: Informations Personnelles ──────── -->
           <div class="form-section">
             <div class="section-header">
+              <span class="section-num">1</span>
               <i class="feather icon-user"></i>
               <span>Informations Personnelles</span>
             </div>
@@ -78,7 +106,7 @@
               <!-- Prenom Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Prénom</label>
+                  <label class="form-label">Prénom <span class="optional-badge">Optionnel</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-user input-icon"></i>
                     <input
@@ -91,6 +119,18 @@
                 </div>
               </div>
 
+            </div>
+          </div>
+
+          <!-- ── Section 2: Coordonnées ──────────────────── -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="section-num">2</span>
+              <i class="feather icon-phone"></i>
+              <span>Coordonnées</span>
+            </div>
+            <div class="row">
+
               <!-- Telephone Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
@@ -101,7 +141,7 @@
                       type="tel"
                       class="form-control"
                       formControlName="telephone"
-                      placeholder="Ex: 20000000"
+                      placeholder="Ex: +216 20 000 000"
                       [class.is-invalid]="isFieldInvalid('telephone')"
                       aria-label="Téléphone du fournisseur">
                   </div>
@@ -112,17 +152,6 @@
                   </span>
                 </div>
               </div>
-
-            </div>
-          </div>
-
-          <!-- Section: Coordonnées -->
-          <div class="form-section">
-            <div class="section-header">
-              <i class="feather icon-mail"></i>
-              <span>Coordonnées</span>
-            </div>
-            <div class="row">
 
               <!-- Email Field -->
               <div class="col-lg-6">
@@ -171,7 +200,7 @@
               <!-- Secteur Activite Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Secteur d'Activité</label>
+                  <label class="form-label">Secteur d'Activité <span class="optional-badge">Optionnel</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-briefcase input-icon"></i>
                     <input
@@ -187,10 +216,11 @@
             </div>
           </div>
 
-          <!-- Section: Informations Commerciales -->
+          <!-- ── Section 3: Informations Commerciales ──────── -->
           <div class="form-section">
             <div class="section-header">
-              <i class="feather icon-tag"></i>
+              <span class="section-num">3</span>
+              <i class="feather icon-package"></i>
               <span>Informations Commerciales</span>
             </div>
             <div class="row">
@@ -294,7 +324,7 @@
             <button type="submit" class="btn btn-submit" [disabled]="!fournisseurForm.valid || isLoading">
               <span class="spinner" *ngIf="isLoading"></span>
               <i class="feather icon-save" *ngIf="!isLoading"></i>
-              <span>{{ isLoading ? 'En cours...' : 'Enregistrer' }}</span>
+              <span>{{ isLoading ? 'En cours...' : 'Enregistrer les Modifications' }}</span>
             </button>
           </div>
 
