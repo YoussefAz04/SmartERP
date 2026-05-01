@@ -149,7 +149,7 @@
                         [checked]="isModuleSelected(module.id)"
                         (change)="toggleModule(module.id)">
                       <span class="module-toggle__slider"></span>
-                      <span class="module-card__name">{{ module.title }}</span>
+                      <span class="module-card__name">{{ getModuleDisplayTitle(module) }}</span>
                     </label>
                     <div class="module-shortcuts" *ngIf="isModuleSelected(module.id)">
                       <button
