@@ -67,6 +67,13 @@ public class FactureDeVenteController {
 
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @GetMapping("client/{clientId}")
+    public ResponseEntity<List<FactureDeVente>> getFacturesByClient(@PathVariable Long clientId) {
+        return ResponseEntity.ok(factureDeVenteService.getFacturesByClient(clientId));
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("affecterFactureClient/{idFacture}/{idClient}")
 
     public ResponseEntity<Void> affecterFactureClient(
