@@ -84,3 +84,78 @@
     </div>
   </div>
 </div>
+
+<!-- Historique des achats du client -->
+<div class="row" *ngIf="!isLoading && client && !errorMessage">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+          <i class="feather icon-shopping-cart me-2"></i>Historique des achats
+        </h5>
+        <span class="badge bg-primary" *ngIf="!isLoadingHistory && !historyError">
+          {{ facturesHistory.length }} facture(s)
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="text-center py-3" *ngIf="isLoadingHistory">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+        </div>
+
+        <div class="alert alert-danger" *ngIf="!isLoadingHistory && historyError">
+          <i class="feather icon-alert-circle me-2"></i>{{ historyError }}
+        </div>
+
+        <div class="alert alert-info mb-0" *ngIf="!isLoadingHistory && !historyError && facturesHistory.length === 0">
+          <i class="feather icon-info me-2"></i>Aucun achat enregistré pour ce client.
+        </div>
+
+        <div class="table-responsive" *ngIf="!isLoadingHistory && !historyError && facturesHistory.length > 0">
+          <table class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Référence</th>
+                <th>Date</th>
+                <th class="text-end">Montant HT</th>
+                <th class="text-end">TVA</th>
+                <th class="text-end">Montant TTC</th>
+                <th>Mode paiement</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let f of facturesHistory">
+                <td>{{ f.referance || '-' }}</td>
+                <td>{{ f.dateAchat || '-' }}</td>
+                <td class="text-end">{{ (f.montantHT || 0) | number:'1.2-2' }}</td>
+                <td class="text-end">{{ (f.montantTVA || 0) | number:'1.2-2' }}</td>
+                <td class="text-end fw-bold">{{ (f.montantTTC || 0) | number:'1.2-2' }}</td>
+                <td>{{ f.modePaiement || '-' }}</td>
+                <td>
+                  <span class="badge"
+                    [ngClass]="{
+                      'bg-success': f.statut === 'PAYEE',
+                      'bg-warning text-dark': f.statut === 'EN_ATTENTE' || f.statut === 'PARTIELLEMENT_PAYEE',
+                      'bg-danger': f.statut === 'ANNULEE',
+                      'bg-secondary': !f.statut
+                    }">
+                    {{ f.statut || 'N/A' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" class="text-end fw-bold">Total TTC</td>
+                <td class="text-end fw-bold">{{ totalAchatsTTC() | number:'1.2-2' }}</td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

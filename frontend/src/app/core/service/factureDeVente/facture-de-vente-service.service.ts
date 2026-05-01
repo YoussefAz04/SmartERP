@@ -268,6 +268,11 @@ export class FactureDeVenteServiceService {
     return this.http.put<string>(`${this.baseUrl}/affecterFactureClient/${idFacture}/${idClient}`, null);
   }
 
+  /** Récupérer l'historique des factures de vente (achats) d'un client. */
+  getFacturesByClient(clientId: number): Observable<FactureVente[]> {
+    return this.http.get<FactureVente[]>(`${this.baseUrl}/client/${clientId}`);
+  }
+
 
 
 

@@ -71,6 +71,15 @@ public class FactureController {
         }
     }
 
+    @GetMapping("/fournisseur/{fournisseurId}")
+    public ResponseEntity<?> getFacturesByFournisseur(@PathVariable Long fournisseurId) {
+        try {
+            return ResponseEntity.ok(factureAchatRepo.findByFournisseurId(fournisseurId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("updateFactureAchat/{id}")
     public ResponseEntity<FactureAchat> updateFactureAchat(

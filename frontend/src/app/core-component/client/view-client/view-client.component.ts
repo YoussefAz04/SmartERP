@@ -3,6 +3,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ClientService } from '../../../core/service/client/client.service';
 import { Client } from '../../../model/client.model';
+import { FactureDeVenteServiceService } from '../../../core/service/factureDeVente/facture-de-vente-service.service';
+import { FactureVente } from '../../../model/FactureDeVente.model';
 
 @Component({
   selector: 'app-view-client',
@@ -17,8 +19,13 @@ export class ViewClientComponent implements OnInit {
   errorMessage = '';
   canEditClient = false;
 
+  facturesHistory: FactureVente[] = [];
+  isLoadingHistory = false;
+  historyError = '';
+
   constructor(
     private clientService: ClientService,
+    private factureVenteService: FactureDeVenteServiceService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -28,6 +35,7 @@ export class ViewClientComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
       this.loadClient(id);
+      this.loadHistory(id);
     } else {
       this.errorMessage = 'ID client invalide';
     }
@@ -58,6 +66,26 @@ export class ViewClientComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  loadHistory(id: number): void {
+    this.isLoadingHistory = true;
+    this.historyError = '';
+    this.factureVenteService.getFacturesByClient(id).subscribe({
+      next: (data) => {
+        this.facturesHistory = Array.isArray(data) ? data : [];
+        this.isLoadingHistory = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement de l\'historique des achats:', err);
+        this.historyError = 'Erreur lors du chargement de l\'historique des achats';
+        this.isLoadingHistory = false;
+      }
+    });
+  }
+
+  totalAchatsTTC(): number {
+    return (this.facturesHistory || []).reduce((sum, f) => sum + (Number(f.montantTTC) || 0), 0);
   }
 
   editClient(): void {
