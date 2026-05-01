@@ -100,4 +100,8 @@ public class FactureDeVenteService {
                 .orElseThrow(() -> new RuntimeException("Client non trouvé avec l'id : " + idClient)));
         factureDeVenteRepo.save(factureDeVente);
     }
+
+    public List<FactureDeVente> getFacturesByClient(Long clientId) {
+        return factureDeVenteRepo.findByClientId(clientId);
+    }
 }
