@@ -2,6 +2,7 @@
 
 <!-- Hero Header with integrated stats -->
 <div class="cat-hero-header">
+  <div class="hero-scanline"></div>
   <div class="hero-orb hero-orb-1"></div>
   <div class="hero-orb hero-orb-2"></div>
   <div class="hero-orb hero-orb-3"></div>
@@ -118,7 +119,7 @@
             <tr>
               <td>
                 <div class="cat-name-cell">
-                  <div class="cat-avatar">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
+                  <div class="cat-avatar" [attr.data-letter]="(f.nom || '?').charAt(0).toUpperCase()">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
                   <div class="cat-name-info">
                     <strong>{{ f.nom }}</strong>
                     <span class="cat-meta">{{ f.ville || f.pays || ('Fournisseur #' + f.id) }}</span>
@@ -148,8 +149,18 @@
                 </span>
                 <span class="text-muted" *ngIf="!f.categorieFournisseur?.nom">—</span>
               </td>
-              <td class="date-cell">{{ f.createdAt | date:'dd/MM/yyyy' }}</td>
-              <td class="date-cell">{{ f.updatedAt | date:'dd/MM/yyyy' }}</td>
+              <td class="date-cell">
+                <span class="date-badge">
+                  <i class="feather icon-calendar"></i>
+                  {{ f.createdAt | date:'dd/MM/yyyy' }}
+                </span>
+              </td>
+              <td class="date-cell">
+                <span class="date-badge">
+                  <i class="feather icon-edit-2"></i>
+                  {{ f.updatedAt | date:'dd/MM/yyyy' }}
+                </span>
+              </td>
               <td>
                 <div class="action-btns">
                   <button
