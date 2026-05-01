@@ -115,7 +115,7 @@
         </thead>
         <tbody>
           @for (f of filteredFournisseurs; track f.id; let i = $index) {
-            <tr [style.animation-delay]="(i * 0.05) + 's'">
+            <tr>
               <td>
                 <div class="cat-name-cell">
                   <div class="cat-avatar">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
