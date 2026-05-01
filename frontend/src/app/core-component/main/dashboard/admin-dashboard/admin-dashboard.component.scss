@@ -579,11 +579,14 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
   }
 
   // ── Card variants (gradient backgrounds matching article-achat)
+  // Note: class names --amber/--violet kept for HTML template compatibility;
+  //       gradient colors match the article-achat kpi-card palette.
   &--indigo {
     background: linear-gradient(145deg, #1e1b74 0%, #3730a3 60%, #4f46e5 100%);
     box-shadow: 0 6px 22px rgba(#1e1b74,.42);
   }
   &--amber {
+    // teal gradient (matching article-achat kpi-card--teal)
     background: linear-gradient(145deg, #0b5f73 0%, #0e7490 60%, #0891b2 100%);
     box-shadow: 0 6px 22px rgba(#0b5f73,.4);
   }
@@ -592,6 +595,7 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
     box-shadow: 0 6px 22px rgba(#064e3b,.4);
   }
   &--violet {
+    // blue gradient (matching article-achat kpi-card--amber)
     background: linear-gradient(145deg, #1e3a8a 0%, #1d4ed8 60%, #2563eb 100%);
     box-shadow: 0 6px 22px rgba(#1e3a8a,.42);
   }
