@@ -1043,5 +1043,12 @@ $t-b: all .38s cubic-bezier(.34,1.56,.64,1);
     animation-duration: .01ms !important;
     transition-duration: .01ms !important;
   }
-  .btn-primary-hero { transform: none !important; }
+  .btn-primary-hero {
+    animation: none !important;
+    transform: none !important;
+  }
+  .aa-hero::after,
+  .aa-hero__orb {
+    animation: none !important;
+  }
 }
