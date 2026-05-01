@@ -7,7 +7,9 @@ import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.CategorieClientRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
+import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
+import BuissnesManager.BuissnesManager.repository.FactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,12 @@ public class ClientService {
 
     @Autowired
     private CategorieClientRepo categorieClientRepo;
+
+    @Autowired
+    private FactureDeVenteRepo factureDeVenteRepo;
+
+    @Autowired
+    private CommandeVenteRepository commandeVenteRepository;
 
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
@@ -87,6 +95,9 @@ public class ClientService {
             av.setClient(null);
         }
         articleVenteRepo.saveAll(relatedArticles);
+        // Nullify client FK in facture_de_vente and commande_vente in a single query each
+        factureDeVenteRepo.detachClient(id);
+        commandeVenteRepository.detachClient(id);
         clientRepo.deleteById(id);
     }
 

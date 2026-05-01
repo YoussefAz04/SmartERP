@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,10 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
     List<CommandeVente> findByStatut(String statut);
     List<CommandeVente> findByEntrepriseIdAndStatut(Long entrepriseId, String statut);
     List<CommandeVente> findByClientId(Long clientId);
+
+    @Modifying
+    @Query("UPDATE CommandeVente c SET c.client = null WHERE c.client.id = :clientId")
+    void detachClient(@Param("clientId") Long clientId);
 
     @Query("SELECT c FROM CommandeVente c WHERE c.entreprise.id = :entrepriseId AND c.dateCommande BETWEEN :debut AND :fin")
     List<CommandeVente> findByEntrepriseIdAndDateRange(@Param("entrepriseId") Long entrepriseId, @Param("debut") LocalDate debut, @Param("fin") LocalDate fin);

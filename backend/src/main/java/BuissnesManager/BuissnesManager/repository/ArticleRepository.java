@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.entity.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,6 +32,12 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query("SELECT a FROM Article a WHERE a.entreprise.id = :entrepriseId AND a.categorieArticle.id = :categorieId")
     List<Article> findByEntrepriseIdAndCategorieId(@Param("entrepriseId") Long entrepriseId, @Param("categorieId") Long categorieId);
+
+    List<Article> findByFournisseurId(Long fournisseurId);
+
+    @Modifying
+    @Query("UPDATE Article a SET a.fournisseur = null WHERE a.fournisseur.id = :fournisseurId")
+    void detachFournisseur(@Param("fournisseurId") Long fournisseurId);
 
     @Query("SELECT DISTINCT a FROM LigneCommandeAchat l INNER JOIN l.article a LEFT JOIN FETCH a.fournisseur LEFT JOIN FETCH a.categorieArticle LEFT JOIN FETCH a.mesure WHERE l.commandeAchat.fournisseur.id = :fournisseurId")
     List<Article> findArticlesOrderedFromFournisseur(@Param("fournisseurId") Long fournisseurId);
