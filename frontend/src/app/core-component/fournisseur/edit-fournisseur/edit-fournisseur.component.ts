@@ -46,7 +46,7 @@ export class EditFournisseurComponent implements OnInit {
       nom: ['', [Validators.required, Validators.minLength(2)]],
       prenom: [''],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.required, Validators.pattern(/^[\d\+\-\s\(\)\.]{8,}$/)]],
+      telephone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)\.]{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       secteurActivite: [''],
       tauxLivraison: [0, [Validators.min(0), Validators.max(100)]],
