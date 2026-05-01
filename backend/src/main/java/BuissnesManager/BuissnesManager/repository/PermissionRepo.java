@@ -18,4 +18,8 @@ public interface PermissionRepo extends JpaRepository<Permission,Long> {
 
 
     Permission findByModuleIdAndRoleId(Long idModule,Long idRole);
+
+    List<Permission> findAllByUserId(Long userId);
+
+    Permission findByModuleIdAndUserId(Long moduleId, Long userId);
 }

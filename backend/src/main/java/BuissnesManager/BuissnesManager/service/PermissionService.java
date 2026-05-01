@@ -50,29 +50,35 @@ public class PermissionService {
         return permissionRepo.save(permission);
     }
 
+    private PermissionDto toDto(Permission permission) {
+        PermissionDto dto = new PermissionDto();
+        dto.setId(permission.getId());
+        dto.setCreate(permission.isCreate());
+        dto.setDelete(permission.isDelete());
+        dto.setUpdate(permission.isUpdate());
+        dto.setView(permission.isView());
+        if (permission.getModule() != null) {
+            dto.setModuleId(permission.getModule().getId());
+            dto.setModuleTitle(permission.getModule().getTitle());
+        }
+        if (permission.getRole() != null) {
+            dto.setRoleId(permission.getRole().getId());
+        }
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PermissionDto> getPermissionsByUser(Long userId) {
+        return permissionRepo.findAllByUserId(userId).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public List<PermissionDto> getPermissionsByRole(Long idRole) {
-        List<Permission> permissions = permissionRepo.findAllByRoleId(idRole);
-
-        return permissions.stream().map(permission -> {
-            PermissionDto dto = new PermissionDto();
-            dto.setId(permission.getId());
-            dto.setCreate(permission.isCreate());
-            dto.setDelete(permission.isDelete());
-            dto.setUpdate(permission.isUpdate());
-            dto.setView(permission.isView());
-
-            if (permission.getModule() != null) {
-                dto.setModuleId(permission.getModule().getId());
-                dto.setModuleTitle(permission.getModule().getTitle()); // Assure-toi que `getTitle()` existe
-            }
-
-            if (permission.getRole() != null) {
-                dto.setRoleId(permission.getRole().getId());
-            }
-
-            return dto;
-        }).collect(Collectors.toList());
+        return permissionRepo.findAllByRoleId(idRole).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
     @Transactional
     public void assignModulePermissionsToRole(Long roleId, List<Long> moduleIds) {

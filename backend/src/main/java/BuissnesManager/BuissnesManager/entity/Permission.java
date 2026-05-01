@@ -39,6 +39,11 @@ public class Permission {
      @ManyToOne()
      private Role role ;
 
+     @JsonIgnore
+     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+     @JoinColumn(name = "user_id")
+     private User user ;
+
 
 
 

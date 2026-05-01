@@ -261,20 +261,11 @@ generateSidebarData(modules: ModuleTittle[]) {
         // ADMIN (Enterprise Owner) sees all business modules
         activeModules = moduleTitle.modules.filter(isModuleAllowed);
       } else {
-        // EMPLOYEE: show allowed sections (Articles Achat/Vente view-only, Clients,
-        // Fournisseurs, Stock, Commandes Achat/Vente, Factures Achat/Vente, Entreprise).
-        // Filter by section title keywords rather than by DB permission IDs (which may be unset).
-        const employeeAllowedSectionKeywords = [
-          'article achat', 'article vente',
-          'client', 'fournisseur',
-          'stock',
-          'achat', 'vente',
-          'comptabilite', 'facture',
-          'entreprise',
-        ];
-        const sectionTitle = normalize(moduleTitle.moduleTittle ?? '');
-        const isSectionAllowed = employeeAllowedSectionKeywords.some(kw => sectionTitle.includes(kw));
-        activeModules = isSectionAllowed ? moduleTitle.modules.filter(isModuleAllowed) : [];
+        // EMPLOYEE: show only the modules explicitly granted via permissions assigned
+        // at employee creation. permittedModuleIds contains the Module IDs from the session.
+        activeModules = moduleTitle.modules.filter(
+          (mod: Module) => permittedModuleIds.has(mod.id) && isModuleAllowed(mod)
+        );
       }
 
       return {

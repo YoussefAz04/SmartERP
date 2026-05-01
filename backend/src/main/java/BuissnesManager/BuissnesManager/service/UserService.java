@@ -88,14 +88,21 @@ public class UserService {
                 Long moduleId = mp.getModuleId();
                 Module module = moduleRepo.findById(moduleId)
                         .orElseThrow(() -> new RuntimeException("Module non trouvé: " + moduleId));
-                if (permissionRepo.findByModuleIdAndRoleId(moduleId, employeeRole.getId()) == null) {
+                Permission existing = permissionRepo.findByModuleIdAndUserId(moduleId, savedUser.getId());
+                if (existing != null) {
+                    existing.setCreate(mp.isCreate());
+                    existing.setUpdate(mp.isUpdate());
+                    existing.setDelete(mp.isDelete());
+                    existing.setView(mp.isView());
+                    permissionRepo.save(existing);
+                } else {
                     Permission permission = new Permission();
                     permission.setCreate(mp.isCreate());
                     permission.setUpdate(mp.isUpdate());
                     permission.setDelete(mp.isDelete());
                     permission.setView(mp.isView());
                     permission.setModule(module);
-                    permission.setRole(employeeRole);
+                    permission.setUser(savedUser);
                     permissionRepo.save(permission);
                 }
             }
@@ -103,14 +110,14 @@ public class UserService {
             for (Long moduleId : request.getModuleIds()) {
                 Module module = moduleRepo.findById(moduleId)
                         .orElseThrow(() -> new RuntimeException("Module non trouvé: " + moduleId));
-                if (permissionRepo.findByModuleIdAndRoleId(moduleId, employeeRole.getId()) == null) {
+                if (permissionRepo.findByModuleIdAndUserId(moduleId, savedUser.getId()) == null) {
                     Permission permission = new Permission();
                     permission.setCreate(true);
                     permission.setUpdate(true);
                     permission.setDelete(true);
                     permission.setView(true);
                     permission.setModule(module);
-                    permission.setRole(employeeRole);
+                    permission.setUser(savedUser);
                     permissionRepo.save(permission);
                 }
             }
