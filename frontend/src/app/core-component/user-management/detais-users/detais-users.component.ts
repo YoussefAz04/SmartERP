@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { UserService } from '../../../auth/service/user/user.service';
 import { UserDTO } from '../../../model/userDTO.model';
 import { ResponseDto } from '../../../model/reponseDto.model';
@@ -9,6 +10,16 @@ import { PermissionDto } from '../../../model/permissionDto.model';
 import { NotificationService } from '../../../shared/notification/notification.service';
 import { RoleService } from '../../../core/service/role/role.service';
 import { Role } from '../../../model/role.model';
+import { ModuleService } from '../../../core/service/Module/module.service';
+import { Module } from '../../../model/module.model';
+import { PermissionService, ModulePermissionRequest } from '../../../core/service/permission/permission.service';
+
+interface ModulePermissionFlags {
+  create: boolean;
+  update: boolean;
+  view: boolean;
+  delete: boolean;
+}
 
 @Component({
   selector: 'app-detais-users',
@@ -22,12 +33,19 @@ export class DetaisUsersComponent implements OnInit {
   isLoading = true;
   userId!: number;
   isSubmitting = false;
+
+  // Roles
   selectedRoleNames: string[] = [];
   availableRoles: Role[] = [];
   rolesLoading = true;
   rolesLoadError = false;
   isSuperAdmin = false;
   isAdmin = false;
+
+  // Module permissions (only for ADMIN, not SUPER_ADMIN)
+  modules: Module[] = [];
+  modulePermissions: Map<number, ModulePermissionFlags> = new Map();
+  readonly permissionTypes: (keyof ModulePermissionFlags)[] = ['create', 'view', 'update', 'delete'];
 
   permissionUsers: PermissionDto = {
     create: false,
@@ -37,33 +55,105 @@ export class DetaisUsersComponent implements OnInit {
     moduleTitle: ''
   } as PermissionDto;
 
-  constructor(private userService: UserService,
+  private readonly excludedModuleTitles = [
+    'bon reception', 'bon de reception', 'bons reception', 'bons de reception',
+    'bon livraison', 'bon de livraison', 'bons livraison', 'bons de livraison',
+    'categorie depense',
+    'select zone',
+    'departement', 'departemen',
+    'module titre', 'module', 'sous module',
+  ];
+
+  private readonly excludedKeywords = [
+    'departement', 'departemen',
+    'bon de reception', 'bon reception', 'bons de reception', 'bons reception',
+    'bon de livraison', 'bon livraison', 'bons de livraison', 'bons livraison',
+  ];
+
+  private readonly moduleDisplayNames: { [key: string]: string } = {
+    'gestion de Client': 'Clients',
+    'gestion de Categorie Client': 'Catégories Clients',
+    'gestion de Fournisseur': 'Fournisseurs',
+    'gestion de Categorie Fournisseur': 'Catégories Fournisseurs',
+    'gestion Article Achat': 'Articles Achat',
+    'gestion Article Vente': 'Articles Vente',
+    'gestion Stock': 'Stock',
+    'Commande Achat': 'Commandes Achat',
+    'Commande Vente': 'Commandes Vente',
+  };
+
+  constructor(
+    private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
     private notification: NotificationService,
-    private roleService: RoleService) {}
+    private roleService: RoleService,
+    private moduleService: ModuleService,
+    private permissionService: PermissionService
+  ) {}
 
   ngOnInit(): void {
     this.userId = this.route.snapshot.params['id'];
     this.getUserAuthData();
     this.loadRoles();
-    this.loadUserDetails();
+    this.loadUserData();
   }
 
-  loadUserDetails(): void {
+  // ----------------------------------------------------------------
+  // Data loading
+  // ----------------------------------------------------------------
+
+  loadUserData(): void {
     this.isLoading = true;
-    this.userService.getUserById(this.userId).subscribe({
-      next: (data) => {
-        this.user = data;
-        this.selectedRoleNames = data.roles ? [...data.roles] : [];
-        this.isLoading = false;
-      },
-      error: (err: any) => {
-        console.error('Error loading user:', err);
-        this.notification.error('Erreur lors du chargement de l\'utilisateur');
-        this.isLoading = false;
+    if (this.isSuperAdmin) {
+      // SUPER_ADMIN: only load user details (no module permissions needed)
+      this.userService.getUserById(this.userId).subscribe({
+        next: (data) => {
+          this.user = data;
+          this.selectedRoleNames = data.roles ? [...data.roles] : [];
+          this.isLoading = false;
+        },
+        error: (err: any) => {
+          console.error('Error loading user:', err);
+          this.notification.error('Erreur lors du chargement de l\'utilisateur');
+          this.isLoading = false;
+        }
+      });
+    } else {
+      // ADMIN: load user + modules + permissions in parallel
+      forkJoin({
+        user: this.userService.getUserById(this.userId),
+        modules: this.moduleService.getAllModules(),
+        permissions: this.permissionService.getPermissionsByUser(this.userId)
+      }).subscribe({
+        next: ({ user, modules, permissions }) => {
+          this.user = user;
+          this.selectedRoleNames = user.roles ? [...user.roles] : [];
+          this.modules = modules.filter(m => this.isModuleAllowed(m));
+          this.buildModulePermissions(permissions);
+          this.isLoading = false;
+        },
+        error: (err: any) => {
+          console.error('Error loading user data:', err);
+          this.notification.error('Erreur lors du chargement des données');
+          this.isLoading = false;
+        }
+      });
+    }
+  }
+
+  private buildModulePermissions(permissions: PermissionDto[]): void {
+    this.modulePermissions = new Map();
+    for (const p of permissions) {
+      if (p.moduleId) {
+        this.modulePermissions.set(p.moduleId, {
+          create: p.create,
+          update: p.update,
+          view: p.view,
+          delete: p.delete
+        });
       }
-    });
+    }
   }
 
   loadRoles(): void {
@@ -88,6 +178,79 @@ export class DetaisUsersComponent implements OnInit {
     });
   }
 
+  // ----------------------------------------------------------------
+  // Module permission helpers (same as add-user)
+  // ----------------------------------------------------------------
+
+  private normalizeTitle(s: string): string {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  private isModuleAllowed(module: Module): boolean {
+    const t = this.normalizeTitle(module.title ?? '');
+    if (this.excludedModuleTitles.some(excluded => t === this.normalizeTitle(excluded))) return false;
+    if (this.excludedKeywords.some(kw => t.includes(this.normalizeTitle(kw)))) return false;
+    return true;
+  }
+
+  getModuleDisplayTitle(module: Module): string {
+    return this.moduleDisplayNames[module.title] || module.title;
+  }
+
+  isModuleSelected(moduleId: number): boolean {
+    const flags = this.modulePermissions.get(moduleId);
+    return !!flags && (flags.create || flags.update || flags.view || flags.delete);
+  }
+
+  toggleModule(moduleId: number): void {
+    if (this.isModuleSelected(moduleId)) {
+      this.modulePermissions.delete(moduleId);
+    } else {
+      this.modulePermissions.set(moduleId, { create: true, update: true, view: true, delete: true });
+    }
+  }
+
+  getModuleFlags(moduleId: number): ModulePermissionFlags {
+    return this.modulePermissions.get(moduleId) ?? { create: false, update: false, view: false, delete: false };
+  }
+
+  hasPermission(moduleId: number, type: keyof ModulePermissionFlags): boolean {
+    return !!this.modulePermissions.get(moduleId)?.[type];
+  }
+
+  togglePermission(moduleId: number, type: keyof ModulePermissionFlags): void {
+    const current = this.modulePermissions.get(moduleId)
+      ?? { create: false, update: false, view: false, delete: false };
+    const next: ModulePermissionFlags = { ...current, [type]: !current[type] };
+    if (!next.create && !next.update && !next.view && !next.delete) {
+      this.modulePermissions.delete(moduleId);
+    } else {
+      this.modulePermissions.set(moduleId, next);
+    }
+  }
+
+  setModuleFullAccess(moduleId: number): void {
+    this.modulePermissions.set(moduleId, { create: true, update: true, view: true, delete: true });
+  }
+
+  setModuleReadOnly(moduleId: number): void {
+    this.modulePermissions.set(moduleId, { create: false, update: false, view: true, delete: false });
+  }
+
+  isModuleFullAccess(moduleId: number): boolean {
+    const f = this.modulePermissions.get(moduleId);
+    return !!f && f.create && f.update && f.view && f.delete;
+  }
+
+  isModuleReadOnly(moduleId: number): boolean {
+    const f = this.modulePermissions.get(moduleId);
+    return !!f && !f.create && !f.update && f.view && !f.delete;
+  }
+
+  // ----------------------------------------------------------------
+  // Role helpers
+  // ----------------------------------------------------------------
+
   isRoleSelected(roleName: string): boolean {
     return this.selectedRoleNames.includes(roleName);
   }
@@ -104,6 +267,10 @@ export class DetaisUsersComponent implements OnInit {
     }
   }
 
+  // ----------------------------------------------------------------
+  // Submit
+  // ----------------------------------------------------------------
+
   onSubmit(): void {
     if (!this.user || !this.userId) {
       this.notification.error('❌ Données utilisateur manquantes');
@@ -116,21 +283,48 @@ export class DetaisUsersComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-
     this.user.roles = [...this.selectedRoleNames];
 
-    this.userService.updateUser(this.userId, this.user).subscribe({
-      next: (response: any) => {
-        this.isSubmitting = false;
-        this.notification.success('✓ Utilisateur mis à jour avec succès');
-        this.router.navigate(['/user-management/users']);
-      },
-      error: (err: any) => {
-        this.isSubmitting = false;
-        const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
-        this.notification.error('✗ Erreur lors de la mise à jour: ' + errorMsg);
+    // Build the module permissions payload
+    const modulePerms: ModulePermissionRequest[] = [];
+    this.modulePermissions.forEach((flags, moduleId) => {
+      if (flags.create || flags.update || flags.view || flags.delete) {
+        modulePerms.push({ moduleId, ...flags });
       }
     });
+
+    if (this.isSuperAdmin) {
+      // SUPER_ADMIN: only update user info (no module permissions)
+      this.userService.updateUser(this.userId, this.user).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.notification.success('✓ Utilisateur mis à jour avec succès');
+          this.router.navigate(['/user-management/users']);
+        },
+        error: (err: any) => {
+          this.isSubmitting = false;
+          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+          this.notification.error('✗ Erreur lors de la mise à jour: ' + errorMsg);
+        }
+      });
+    } else {
+      // ADMIN: update user info AND permissions
+      forkJoin({
+        user: this.userService.updateUser(this.userId, this.user),
+        permissions: this.permissionService.updateUserPermissions(this.userId, modulePerms)
+      }).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.notification.success('✓ Utilisateur mis à jour avec succès');
+          this.router.navigate(['/user-management/users']);
+        },
+        error: (err: any) => {
+          this.isSubmitting = false;
+          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+          this.notification.error('✗ Erreur lors de la mise à jour: ' + errorMsg);
+        }
+      });
+    }
   }
 
   goBack(): void {

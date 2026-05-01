@@ -66,6 +66,57 @@
               }
             </div>
 
+            <!-- Module Permissions (ADMIN only, not shown to SUPER_ADMIN) -->
+            @if (!isSuperAdmin && modules.length > 0) {
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Permissions par module</label>
+                <p class="text-muted small mb-2">
+                  Activez un module et choisissez les actions autorisées pour cet utilisateur.
+                </p>
+                <div class="du-modules-grid">
+                  @for (module of modules; track module.id) {
+                    <div class="du-module-card" [class.du-module-card--active]="isModuleSelected(module.id)">
+                      <div class="du-module-header">
+                        <label class="du-module-toggle" [for]="'mod-' + module.id">
+                          <input class="du-module-toggle__checkbox" type="checkbox"
+                                 [id]="'mod-' + module.id"
+                                 [checked]="isModuleSelected(module.id)"
+                                 (change)="toggleModule(module.id)">
+                          <span class="du-module-toggle__slider"></span>
+                          <span class="du-module-name">{{ getModuleDisplayTitle(module) }}</span>
+                        </label>
+                        @if (isModuleSelected(module.id)) {
+                          <div class="du-shortcuts">
+                            <button type="button" class="du-shortcut-btn"
+                                    [class.du-shortcut-btn--active]="isModuleFullAccess(module.id)"
+                                    (click)="setModuleFullAccess(module.id)">Full</button>
+                            <button type="button" class="du-shortcut-btn du-shortcut-btn--read"
+                                    [class.du-shortcut-btn--active-read]="isModuleReadOnly(module.id)"
+                                    (click)="setModuleReadOnly(module.id)">Read-only</button>
+                          </div>
+                        }
+                      </div>
+                      @if (isModuleSelected(module.id)) {
+                        <div class="du-module-perms">
+                          @for (perm of permissionTypes; track perm) {
+                            <label class="du-perm-badge"
+                                   [class.du-perm-badge--on]="hasPermission(module.id, perm)"
+                                   [for]="'mod-' + module.id + '-' + perm">
+                              <input type="checkbox" class="du-perm-badge__input"
+                                     [id]="'mod-' + module.id + '-' + perm"
+                                     [checked]="hasPermission(module.id, perm)"
+                                     (change)="togglePermission(module.id, perm)">
+                              {{ perm | titlecase }}
+                            </label>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
             <!-- Entreprise -->
             <div class="mb-3">
               <label for="entrepriseNom" class="form-label">Entreprise</label>

@@ -1,0 +1,120 @@
+/* ── Module permissions grid ─────────────────────────────────────── */
+
+.du-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.du-module-card {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #fafbfc;
+  transition: border-color .2s, box-shadow .2s;
+
+  &--active {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.08);
+    background: #fff;
+  }
+}
+
+.du-module-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.du-module-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+
+  &__checkbox { display: none; }
+
+  &__slider {
+    width: 36px;
+    height: 20px;
+    background: #cbd5e1;
+    border-radius: 999px;
+    position: relative;
+    flex-shrink: 0;
+    transition: background .2s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .2s;
+    }
+  }
+
+  &__checkbox:checked + .du-module-toggle__slider {
+    background: #6366f1;
+    &::after { transform: translateX(16px); }
+  }
+}
+
+.du-module-name {
+  font-size: .85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.du-shortcuts {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.du-shortcut-btn {
+  font-size: .7rem;
+  padding: 2px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: background .15s;
+
+  &:hover { background: #e5e7eb; }
+
+  &--active { background: #6366f1; color: #fff; border-color: #6366f1; }
+  &--read { }
+  &--active-read { background: #059669; color: #fff; border-color: #059669; }
+}
+
+.du-module-perms {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.du-perm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .75rem;
+  padding: 3px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  cursor: pointer;
+  background: #f3f4f6;
+  transition: background .15s, border-color .15s, color .15s;
+
+  &__input { display: none; }
+
+  &--on {
+    background: #eef2ff;
+    border-color: #6366f1;
+    color: #4f46e5;
+    font-weight: 600;
+  }
+}
