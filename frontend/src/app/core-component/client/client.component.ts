@@ -158,20 +158,16 @@ export class ClientComponent implements OnInit, AfterViewInit {
         const isEmployee = roles.includes('EMPLOYEE');
         const canByRole = isSuperAdmin || isAdmin;
 
-        // EMPLOYEE has full CED access to clients and categorie clients
-        if (isEmployee && !canByRole) {
-          this.canCreateClient = true;
-          this.canEditClient = true;
-          this.canDeleteClient = true;
-          this.permissionClient = { create: true, view: true, update: true, delete: true, moduleTitle: 'gestion de Client' } as PermissionDto;
-          this.cdr.detectChanges();
-          return;
-        }
+        // Match the exact module title used by this page (accent- and case-insensitive)
+        // to avoid cross-matching the "Catégories Clients" permission row.
+        const normalize = (s: string | undefined | null) =>
+          (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        const targetTitle = normalize('gestion de Client');
 
         let clientPermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           const clientPerm = currentUser.permission.find((p: PermissionDto) =>
-            p.moduleTitle?.toLowerCase().includes('client')
+            normalize(p.moduleTitle) === targetTitle
           );
           if (clientPerm) {
             clientPermissionFound = true;

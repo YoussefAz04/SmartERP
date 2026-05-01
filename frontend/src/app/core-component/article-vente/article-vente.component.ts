@@ -54,22 +54,18 @@ export class ArticleVenteComponent implements OnInit {
         const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
         const isSuperAdmin = roles.includes('SUPER_ADMIN');
         const isAdmin = roles.includes('ADMIN');
-        const isEmployee = roles.includes('EMPLOYEE');
         const canByRole = isSuperAdmin || isAdmin;
 
-        // EMPLOYEE always has read-only access regardless of DB permissions
-        if (isEmployee && !canByRole) {
-          this.canCreateArticle = false;
-          this.canEditArticle = false;
-          this.canDeleteArticle = false;
-          this.cdr.detectChanges();
-          return;
-        }
+        // Match the exact module title used by this page (accent- and case-insensitive)
+        // to avoid cross-matching other "vente" permission rows (e.g. Commande Vente).
+        const normalize = (s: string | undefined | null) =>
+          (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        const targetTitle = normalize('gestion Article Vente');
 
         let ventePermissionFound = false;
         if (currentUser?.permission && Array.isArray(currentUser.permission)) {
           const ventePerm = currentUser.permission.find((p: any) =>
-            p.moduleTitle?.toLowerCase().includes('vente')
+            normalize(p.moduleTitle) === targetTitle
           );
           if (ventePerm) {
             ventePermissionFound = true;

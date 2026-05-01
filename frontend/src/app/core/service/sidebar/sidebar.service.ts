@@ -94,7 +94,10 @@ export class SidebarService {
 
   /**
    * Returns the set of module IDs that the current EMPLOYEE user has access to,
-   * based on the permissions stored in the session.
+   * based on the permissions stored in the session. Only modules where the user
+   * has been granted `view: true` are returned — modules with only create/update/
+   * delete (and no view) are intentionally hidden from the sidebar so the user is
+   * never directed to a page they cannot read.
    */
   private getUserPermissionModuleIds(): Set<number> {
     const session = this.getSession();
@@ -102,9 +105,8 @@ export class SidebarService {
     const permissions: any[] = Array.isArray(session.permission) ? session.permission : [];
     return new Set(
       permissions
-        .map((p: any) => p.moduleId)
-        .filter((id: any) => id != null)
-        .map((id: any) => Number(id))
+        .filter((p: any) => p && p.view === true && p.moduleId != null)
+        .map((p: any) => Number(p.moduleId))
     );
   }
 
