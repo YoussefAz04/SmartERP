@@ -101,6 +101,49 @@ export class AddUserComponent implements OnInit {
     });
   }
 
+  // Titles excluded from the module permissions list (mirrors sidebar service logic)
+  private readonly excludedModuleTitles = [
+    'bon reception', 'bon de reception', 'bons reception', 'bons de reception',
+    'bon livraison', 'bon de livraison', 'bons livraison', 'bons de livraison',
+    'categorie depense',
+    'select zone',
+    'departement', 'departemen',
+    'module titre', 'module', 'sous module',
+  ];
+
+  private readonly excludedKeywords = [
+    'departement', 'departemen',
+    'bon de reception', 'bon reception', 'bons de reception', 'bons reception',
+    'bon de livraison', 'bon livraison', 'bons de livraison', 'bons livraison',
+  ];
+
+  private readonly moduleDisplayNames: { [key: string]: string } = {
+    'gestion de Client': 'Clients',
+    'gestion de Categorie Client': 'Catégories Clients',
+    'gestion de Fournisseur': 'Fournisseurs',
+    'gestion de Categorie Fournisseur': 'Catégories Fournisseurs',
+    'gestion Article Achat': 'Articles Achat',
+    'gestion Article Vente': 'Articles Vente',
+    'gestion Stock': 'Stock',
+    'Commande Achat': 'Commandes Achat',
+    'Commande Vente': 'Commandes Vente',
+  };
+
+  private normalizeTitle(s: string): string {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  private isModuleAllowed(module: Module): boolean {
+    const t = this.normalizeTitle(module.title ?? '');
+    if (this.excludedModuleTitles.some(excluded => t === this.normalizeTitle(excluded))) return false;
+    if (this.excludedKeywords.some(kw => t.includes(this.normalizeTitle(kw)))) return false;
+    return true;
+  }
+
+  getModuleDisplayTitle(module: Module): string {
+    return this.moduleDisplayNames[module.title] || module.title;
+  }
+
   loadModules(): void {
     // Module permissions are only relevant for ADMIN-created employees; skip for SUPER_ADMIN
     if (this.isSuperAdmin) {
@@ -108,7 +151,7 @@ export class AddUserComponent implements OnInit {
     }
     this.moduleService.getAllModules().subscribe({
       next: (modules) => {
-        this.modules = modules;
+        this.modules = modules.filter(m => this.isModuleAllowed(m));
       },
       error: (err: any) => {
         console.error('Error loading modules:', err);
