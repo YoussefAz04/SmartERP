@@ -102,6 +102,10 @@ export class AddUserComponent implements OnInit {
   }
 
   loadModules(): void {
+    // Module permissions are only relevant for ADMIN-created employees; skip for SUPER_ADMIN
+    if (this.isSuperAdmin) {
+      return;
+    }
     this.moduleService.getAllModules().subscribe({
       next: (modules) => {
         this.modules = modules;

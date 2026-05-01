@@ -123,8 +123,8 @@
               </div>
             </div>
 
-            <!-- Section 2: Module Permissions -->
-            <div class="form-section" *ngIf="modules.length > 0">
+            <!-- Section 2: Module Permissions (ADMIN only, hidden from SUPER_ADMIN) -->
+            <div class="form-section" *ngIf="modules.length > 0 && !isSuperAdmin">
               <h3 class="form-section__title">
                 <span class="form-section__num">2</span>
                 Module Permissions
