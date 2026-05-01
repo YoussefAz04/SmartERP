@@ -28,6 +28,7 @@ export class UserService {
     phone?: string;
     enterpriseId?: number | null;
     moduleIds: number[];
+    modulePermissions?: { moduleId: number; create: boolean; update: boolean; view: boolean; delete: boolean }[];
   }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/create-employee`, request);
   }

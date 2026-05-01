@@ -10,6 +10,17 @@ import { Module } from '../../../model/module.model';
 import { Entreprise } from '../../../model/entreprise.model';
 import { NotificationService } from '../../../shared/notification/notification.service';
 
+interface ModulePermissionFlags {
+  create: boolean;
+  update: boolean;
+  view: boolean;
+  delete: boolean;
+}
+
+interface ModulePermissionPayload extends ModulePermissionFlags {
+  moduleId: number;
+}
+
 interface CreateEmployeeRequest {
   username: string;
   email: string;
@@ -17,6 +28,7 @@ interface CreateEmployeeRequest {
   phone?: string;
   enterpriseId?: number | null;
   moduleIds: number[];
+  modulePermissions: ModulePermissionPayload[];
 }
 
 /** Extends the base Entreprise model with fields that may be included in API list responses */
@@ -40,7 +52,9 @@ export class AddUserComponent implements OnInit {
   currentEnterpriseId: number | null = null;
 
   modules: Module[] = [];
-  selectedModuleIds: Set<number> = new Set();
+  /** Per-module CRUD flags keyed by moduleId. A module is "selected" iff at least one flag is true. */
+  modulePermissions: Map<number, ModulePermissionFlags> = new Map();
+  readonly permissionTypes: (keyof ModulePermissionFlags)[] = ['create', 'view', 'update', 'delete'];
 
   enterprises: EntrepriseListItem[] = [];
   selectedEnterpriseId: number | null = null;
@@ -99,15 +113,55 @@ export class AddUserComponent implements OnInit {
   }
 
   toggleModule(moduleId: number): void {
-    if (this.selectedModuleIds.has(moduleId)) {
-      this.selectedModuleIds.delete(moduleId);
+    if (this.isModuleSelected(moduleId)) {
+      // Module currently has at least one flag -> clear all (deselect).
+      this.modulePermissions.delete(moduleId);
     } else {
-      this.selectedModuleIds.add(moduleId);
+      // Default to full CRUD when the module is enabled.
+      this.modulePermissions.set(moduleId, { create: true, update: true, view: true, delete: true });
     }
   }
 
   isModuleSelected(moduleId: number): boolean {
-    return this.selectedModuleIds.has(moduleId);
+    const flags = this.modulePermissions.get(moduleId);
+    return !!flags && (flags.create || flags.update || flags.view || flags.delete);
+  }
+
+  getModuleFlags(moduleId: number): ModulePermissionFlags {
+    return this.modulePermissions.get(moduleId) ?? { create: false, update: false, view: false, delete: false };
+  }
+
+  hasPermission(moduleId: number, type: keyof ModulePermissionFlags): boolean {
+    return !!this.modulePermissions.get(moduleId)?.[type];
+  }
+
+  togglePermission(moduleId: number, type: keyof ModulePermissionFlags): void {
+    const current = this.modulePermissions.get(moduleId)
+      ?? { create: false, update: false, view: false, delete: false };
+    const next: ModulePermissionFlags = { ...current, [type]: !current[type] };
+    if (!next.create && !next.update && !next.view && !next.delete) {
+      this.modulePermissions.delete(moduleId);
+    } else {
+      this.modulePermissions.set(moduleId, next);
+    }
+  }
+
+  setModuleFullAccess(moduleId: number): void {
+    this.modulePermissions.set(moduleId, { create: true, update: true, view: true, delete: true });
+  }
+
+  setModuleReadOnly(moduleId: number): void {
+    this.modulePermissions.set(moduleId, { create: false, update: false, view: true, delete: false });
+  }
+
+  isModuleFullAccess(moduleId: number): boolean {
+    const f = this.modulePermissions.get(moduleId);
+    return !!f && f.create && f.update && f.view && f.delete;
+  }
+
+  isModuleReadOnly(moduleId: number): boolean {
+    const f = this.modulePermissions.get(moduleId);
+    return !!f && !f.create && !f.update && f.view && !f.delete;
   }
 
   loadEnterprises(): void {
@@ -162,13 +216,21 @@ export class AddUserComponent implements OnInit {
     this.isSubmitting = true;
     const formValue = this.addUserForm.value;
 
+    const modulePermissionsList: ModulePermissionPayload[] = [];
+    this.modulePermissions.forEach((flags, moduleId) => {
+      if (flags.create || flags.update || flags.view || flags.delete) {
+        modulePermissionsList.push({ moduleId, ...flags });
+      }
+    });
+
     const request: CreateEmployeeRequest = {
       username: formValue.username,
       email: formValue.email,
       password: formValue.password,
       phone: formValue.phone || undefined,
       enterpriseId: this.isSuperAdmin ? this.selectedEnterpriseId! : this.currentEnterpriseId,
-      moduleIds: Array.from(this.selectedModuleIds)
+      moduleIds: modulePermissionsList.map(mp => mp.moduleId),
+      modulePermissions: modulePermissionsList
     };
 
     this.userService.createEmployeeUser(request).subscribe({

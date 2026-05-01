@@ -9,6 +9,7 @@ public class CreateEmployeeRequest {
     private String phone;
     private Long enterpriseId;
     private List<Long> moduleIds;
+    private List<ModulePermissionRequest> modulePermissions;
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -27,4 +28,7 @@ public class CreateEmployeeRequest {
 
     public List<Long> getModuleIds() { return moduleIds; }
     public void setModuleIds(List<Long> moduleIds) { this.moduleIds = moduleIds; }
+
+    public List<ModulePermissionRequest> getModulePermissions() { return modulePermissions; }
+    public void setModulePermissions(List<ModulePermissionRequest> modulePermissions) { this.modulePermissions = modulePermissions; }
 }
