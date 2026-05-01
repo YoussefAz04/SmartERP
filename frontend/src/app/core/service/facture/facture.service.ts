@@ -22,6 +22,11 @@ export class FactureService {
     return this.http.get<FactureAchat>(url);
   }
 
+  /** Récupérer l'historique des factures d'achat d'un fournisseur. */
+  getFacturesByFournisseur(fournisseurId: number): Observable<FactureAchat[]> {
+    return this.http.get<FactureAchat[]>(`${this.apiUrl}/fournisseur/${fournisseurId}`);
+  }
+
   updateFactureAchat(id: number, facture: FactureAchat): Observable<FactureAchat> {
     return this.http.put<FactureAchat>(`${this.apiUrl}/updateFactureAchat/${id}`, facture);
   }
