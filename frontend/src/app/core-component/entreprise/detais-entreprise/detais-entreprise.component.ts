@@ -18,7 +18,7 @@ import {NotificationService} from "../../../shared/notification/notification.ser
     RouterLink
   ],
   templateUrl: './detais-entreprise.component.html',
-  styleUrl: './detais-entreprise.component.scss'
+  styleUrl: './detais-entreprise.component.css'
 })
 export class DetaisEntrepriseComponent implements OnInit{
 

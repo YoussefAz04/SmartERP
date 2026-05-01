@@ -23,7 +23,7 @@ import { NotificationService } from '../../shared/notification/notification.serv
     FormsModule
   ],
   templateUrl: './entreprise.component.html',
-  styleUrl: './entreprise.component.scss'
+  styleUrl: './entreprise.component.css'
 })
 export class EntrepriseComponent implements OnInit{
 
