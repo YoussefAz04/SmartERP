@@ -944,3 +944,18 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Notation stars in list */
+.rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.rating-stars .star-on {
+  color: #f59e0b;
+}
+.rating-stars .star-off {
+  color: #e2e8f0;
+}

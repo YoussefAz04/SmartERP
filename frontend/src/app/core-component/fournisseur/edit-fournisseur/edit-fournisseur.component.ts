@@ -21,6 +21,9 @@ export class EditFournisseurComponent implements OnInit {
   errorMessage = '';
   fournisseurId!: number;
 
+  readonly starValues = [1, 2, 3, 4, 5];
+  notationHover = 0;
+
   constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
@@ -41,11 +44,38 @@ export class EditFournisseurComponent implements OnInit {
   initializeForm(): void {
     this.fournisseurForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
+      prenom: ['', [Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
+      secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
+      tauxLivraison: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+      notation: [null, [Validators.required, Validators.min(1), Validators.max(5)]],
       categorieId: ['', Validators.required],
     });
+  }
+
+  get notationCurrentValue(): number {
+    const v = this.fournisseurForm.get('notation')?.value;
+    return v !== '' && v != null ? Number(v) : 0;
+  }
+
+  get tauxCurrentValue(): number {
+    const v = this.fournisseurForm.get('tauxLivraison')?.value;
+    return v !== '' && v != null ? Number(v) : 0;
+  }
+
+  get tauxSliderStyle(): { background: string } {
+    const pct = this.tauxCurrentValue;
+    return {
+      background: `linear-gradient(to right, #ff9a44 0%, #ff8224 ${pct}%, #e6eaf0 ${pct}%, #e6eaf0 100%)`
+    };
+  }
+
+  setNotation(val: number): void {
+    this.fournisseurForm.patchValue({ notation: val });
+    this.fournisseurForm.get('notation')?.markAsTouched();
+    this.notationHover = 0;
   }
 
   loadFournisseur(): void {
@@ -54,9 +84,13 @@ export class EditFournisseurComponent implements OnInit {
       next: (data) => {
         this.fournisseurForm.patchValue({
           nom: data.nom,
+          prenom: data.prenom || '',
           email: data.email,
           telephone: data.telephone,
           adresse: data.adresse,
+          secteurActivite: data.secteurActivite || '',
+          tauxLivraison: data.tauxLivraison ?? 0,
+          notation: data.notation ?? null,
           categorieId: data.categorieFournisseur?.id || '',
         });
         this.isLoading = false;
@@ -98,9 +132,13 @@ export class EditFournisseurComponent implements OnInit {
 
       const fournisseurData: any = {
         nom: formValue.nom.trim(),
+        prenom: formValue.prenom ? formValue.prenom.trim() : '',
         email: formValue.email.trim(),
         telephone: formValue.telephone.trim(),
         adresse: formValue.adresse.trim(),
+        secteurActivite: formValue.secteurActivite ? formValue.secteurActivite.trim() : '',
+        tauxLivraison: parseFloat(formValue.tauxLivraison),
+        notation: parseFloat(formValue.notation),
         categorieFournisseur: { id: formValue.categorieId }
       };
 
