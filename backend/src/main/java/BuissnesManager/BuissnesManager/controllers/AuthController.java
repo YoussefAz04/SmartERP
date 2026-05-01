@@ -166,8 +166,11 @@ public class AuthController {
                 permissionDtoList.addAll(permissionService.getPermissionsByRole(role.getId()));
             }
 
-            // User-specific permissions (set when creating an employee) take priority.
-            // If any exist, they replace the role-level defaults loaded above.
+            // User-specific permissions (set when creating an employee) take priority over
+            // role-level defaults. When present they completely replace the role-level list
+            // because per-employee grants are intentionally more restrictive than the role
+            // defaults, and mixing both would incorrectly re-grant access the admin chose
+            // to withhold (e.g. role has full access but this employee has read-only).
             List<PermissionDto> userPermissions = permissionService.getPermissionsByUser(user.getId());
             if (!userPermissions.isEmpty()) {
                 permissionDtoList = userPermissions;
