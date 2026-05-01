@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CommandeAchatService } from '../../../core/service/commande-achat/commande-achat.service';
@@ -11,7 +11,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
 @Component({
   selector: 'app-add-commande-achat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './add-commande-achat.component.html',
   styleUrl: './add-commande-achat.component.scss'
 })
