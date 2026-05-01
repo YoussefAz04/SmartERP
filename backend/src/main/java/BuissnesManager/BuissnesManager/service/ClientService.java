@@ -3,11 +3,15 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.entity.CategorieClient;
 import BuissnesManager.BuissnesManager.entity.Client;
+import BuissnesManager.BuissnesManager.entity.CommandeVente;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
+import BuissnesManager.BuissnesManager.entity.FactureDeVente;
 import BuissnesManager.BuissnesManager.repository.ArticleVenteRepo;
 import BuissnesManager.BuissnesManager.repository.CategorieClientRepo;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
+import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
+import BuissnesManager.BuissnesManager.repository.FactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +30,12 @@ public class ClientService {
 
     @Autowired
     private CategorieClientRepo categorieClientRepo;
+
+    @Autowired
+    private FactureDeVenteRepo factureDeVenteRepo;
+
+    @Autowired
+    private CommandeVenteRepository commandeVenteRepository;
 
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
@@ -87,6 +97,18 @@ public class ClientService {
             av.setClient(null);
         }
         articleVenteRepo.saveAll(relatedArticles);
+        // Detach any facture_de_vente rows that reference this client
+        List<FactureDeVente> relatedFactures = factureDeVenteRepo.findByClientId(id);
+        for (FactureDeVente fdv : relatedFactures) {
+            fdv.setClient(null);
+        }
+        factureDeVenteRepo.saveAll(relatedFactures);
+        // Detach any commande_vente rows that reference this client
+        List<CommandeVente> relatedCommandes = commandeVenteRepository.findByClientId(id);
+        for (CommandeVente cv : relatedCommandes) {
+            cv.setClient(null);
+        }
+        commandeVenteRepository.saveAll(relatedCommandes);
         clientRepo.deleteById(id);
     }
 

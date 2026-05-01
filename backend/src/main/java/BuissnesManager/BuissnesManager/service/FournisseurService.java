@@ -1,10 +1,16 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.entity.Article;
 import BuissnesManager.BuissnesManager.entity.CategorieFournisseur;
+import BuissnesManager.BuissnesManager.entity.CommandeAchat;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
+import BuissnesManager.BuissnesManager.entity.FactureAchat;
 import BuissnesManager.BuissnesManager.entity.Fournisseur;
+import BuissnesManager.BuissnesManager.repository.ArticleRepository;
 import BuissnesManager.BuissnesManager.repository.CategorieFournisseurRepo;
+import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
+import BuissnesManager.BuissnesManager.repository.FactureAchatRepo;
 import BuissnesManager.BuissnesManager.repository.FournisseurRepo;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +36,15 @@ public class FournisseurService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private CommandeAchatRepository commandeAchatRepository;
+
+    @Autowired
+    private ArticleRepository articleRepository;
+
+    @Autowired
+    private FactureAchatRepo factureAchatRepo;
 
     // ✅ ADD FOURNISSEUR
     @Transactional
@@ -76,6 +91,24 @@ public class FournisseurService {
         if (!fournisseurRepo.existsById(id)) {
             throw new RuntimeException("Fournisseur not found with id: " + id);
         }
+        // Detach commande_achat rows that reference this fournisseur
+        List<CommandeAchat> relatedCommandes = commandeAchatRepository.findByFournisseurId(id);
+        for (CommandeAchat ca : relatedCommandes) {
+            ca.setFournisseur(null);
+        }
+        commandeAchatRepository.saveAll(relatedCommandes);
+        // Detach article rows that reference this fournisseur
+        List<Article> relatedArticles = articleRepository.findByFournisseurId(id);
+        for (Article a : relatedArticles) {
+            a.setFournisseur(null);
+        }
+        articleRepository.saveAll(relatedArticles);
+        // Detach facture_achat rows that reference this fournisseur
+        List<FactureAchat> relatedFactures = factureAchatRepo.findByFournisseurId(id);
+        for (FactureAchat fa : relatedFactures) {
+            fa.setFournisseur(null);
+        }
+        factureAchatRepo.saveAll(relatedFactures);
         fournisseurRepo.deleteById(id);
     }
 
