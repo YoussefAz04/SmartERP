@@ -5,7 +5,6 @@ import BuissnesManager.BuissnesManager.dto.LigneCommandeAchatDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
-import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

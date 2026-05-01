@@ -2,7 +2,6 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.entity.Module;
 import BuissnesManager.BuissnesManager.entity.ModuleTittle;
-import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.RoleType;
 import BuissnesManager.BuissnesManager.entity.SousModule;
 import BuissnesManager.BuissnesManager.repository.ModuleRepo;

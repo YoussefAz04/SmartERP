@@ -1,6 +1,5 @@
 package BuissnesManager.BuissnesManager.dto;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

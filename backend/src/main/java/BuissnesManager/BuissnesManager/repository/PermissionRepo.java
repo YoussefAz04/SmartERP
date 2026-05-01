@@ -2,7 +2,6 @@ package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.entity.Module;
 import BuissnesManager.BuissnesManager.entity.Permission;
-import jakarta.persistence.Persistence;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
