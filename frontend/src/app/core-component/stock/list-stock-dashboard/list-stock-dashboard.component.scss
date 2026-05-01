@@ -156,8 +156,8 @@ $shadow-lg:  0 8px 32px rgba(0,0,0,.10), 0 24px 56px rgba(0,0,0,.08);
     text-shadow: 0 4px 20px rgba(0,0,0,0.25);
     background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.75) 100%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .header-subtitle {
@@ -190,7 +190,6 @@ $shadow-lg:  0 8px 32px rgba(0,0,0,.10), 0 24px 56px rgba(0,0,0,.08);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border: none;
   letter-spacing: 0.3px;
-  text-transform: uppercase;
 
   i { font-size: 14px; }
 
@@ -268,18 +267,17 @@ $shadow-lg:  0 8px 32px rgba(0,0,0,.10), 0 24px 56px rgba(0,0,0,.08);
   opacity: 0;
   transform: translateY(20px);
 
-  // Shine overlay
+  // Shine overlay — slides across card on hover
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: -60%;
-    width: 40%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    top: 0; left: -80%;
+    width: 45%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
     transform: skewX(-15deg);
-    opacity: 0;
-    transition: opacity 0.4s ease;
     pointer-events: none;
     z-index: 2;
+    transition: left 0.55s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   // Glass overlay
@@ -298,6 +296,7 @@ $shadow-lg:  0 8px 32px rgba(0,0,0,.10), 0 24px 56px rgba(0,0,0,.08);
     transform: translateY(-7px) !important;
     box-shadow: var(--card-glow) !important;
 
+    &::before { left: 140%; }
     &::after { opacity: 1; }
 
     .kpi-icon-wrap {
