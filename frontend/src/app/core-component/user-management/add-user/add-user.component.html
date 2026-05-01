@@ -1,222 +1,315 @@
-<div class="page-header">
-  <div class="row">
-    <div class="col">
-      <h3 class="page-title">Add New Employee</h3>
-      <ul class="breadcrumb">
-        <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
-        <li class="breadcrumb-item active">Add Employee</li>
-      </ul>
+<div class="add-employee-page">
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="page-hero__content">
+      <div class="page-hero__icon">
+        <i class="feather icon-user-plus"></i>
+      </div>
+      <div>
+        <h1 class="page-hero__title">Add New Employee</h1>
+        <nav class="page-hero__breadcrumb" aria-label="breadcrumb">
+          <a href="javascript:void(0);" class="breadcrumb-link">Home</a>
+          <span class="breadcrumb-sep" aria-hidden="true">/</span>
+          <span class="breadcrumb-current">Add Employee</span>
+        </nav>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">
-          <h5>Add New Employee</h5>
+  <!-- Content Grid -->
+  <div class="content-grid">
+
+    <!-- Main Form Card -->
+    <div class="main-col">
+      <div class="form-card">
+
+        <div class="form-card__header">
+          <div class="form-card__header-icon">
+            <i class="feather icon-user"></i>
+          </div>
+          <div>
+            <h2 class="form-card__title">Employee Information</h2>
+            <p class="form-card__subtitle">Fill in the details to create a new employee account</p>
+          </div>
         </div>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="addUserForm" (ngSubmit)="onSubmitAddUser()">
-          <!-- Username Field -->
-          <div class="form-group mb-3">
-            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="username"
-              formControlName="username"
-              placeholder="Enter username">
-            <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('username')">
-              Username is required (min 3 characters)
+
+        <div class="form-card__body">
+          <form [formGroup]="addUserForm" (ngSubmit)="onSubmitAddUser()">
+
+            <!-- Section 1: Account Details -->
+            <div class="form-section">
+              <h3 class="form-section__title">
+                <span class="form-section__num">1</span>
+                Account Details
+              </h3>
+
+              <div class="field-grid">
+
+                <!-- Username -->
+                <div class="field-group">
+                  <label class="field-label" for="username">
+                    Username <span class="field-required">*</span>
+                  </label>
+                  <div class="field-input-wrap" [class.is-invalid]="isFieldInvalid('username')">
+                    <i class="feather icon-user field-icon"></i>
+                    <input
+                      type="text"
+                      class="field-input"
+                      id="username"
+                      formControlName="username"
+                      placeholder="Enter username">
+                  </div>
+                  <span class="field-error" *ngIf="isFieldInvalid('username')">
+                    <i class="feather icon-alert-circle"></i>
+                    Username is required (min 3 characters)
+                  </span>
+                </div>
+
+                <!-- Email -->
+                <div class="field-group">
+                  <label class="field-label" for="email">
+                    Email <span class="field-required">*</span>
+                  </label>
+                  <div class="field-input-wrap" [class.is-invalid]="isFieldInvalid('email')">
+                    <i class="feather icon-mail field-icon"></i>
+                    <input
+                      type="email"
+                      class="field-input"
+                      id="email"
+                      formControlName="email"
+                      placeholder="Enter email address">
+                  </div>
+                  <span class="field-error" *ngIf="isFieldInvalid('email')">
+                    <i class="feather icon-alert-circle"></i>
+                    Valid email is required
+                  </span>
+                </div>
+
+                <!-- Password -->
+                <div class="field-group">
+                  <label class="field-label" for="password">
+                    Password <span class="field-required">*</span>
+                  </label>
+                  <div class="field-input-wrap" [class.is-invalid]="isFieldInvalid('password')">
+                    <i class="feather icon-lock field-icon"></i>
+                    <input
+                      type="password"
+                      class="field-input"
+                      id="password"
+                      formControlName="password"
+                      placeholder="Enter password">
+                  </div>
+                  <span class="field-error" *ngIf="isFieldInvalid('password')">
+                    <i class="feather icon-alert-circle"></i>
+                    Password is required (min 6 characters)
+                  </span>
+                </div>
+
+                <!-- Phone -->
+                <div class="field-group">
+                  <label class="field-label" for="phone">Phone</label>
+                  <div class="field-input-wrap">
+                    <i class="feather icon-phone field-icon"></i>
+                    <input
+                      type="tel"
+                      class="field-input"
+                      id="phone"
+                      formControlName="phone"
+                      placeholder="Enter phone number">
+                  </div>
+                </div>
+
+              </div>
             </div>
-          </div>
 
-          <!-- Email Field -->
-          <div class="form-group mb-3">
-            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-            <input 
-              type="email" 
-              class="form-control" 
-              id="email"
-              formControlName="email"
-              placeholder="Enter email">
-            <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('email')">
-              Valid email is required
-            </div>
-          </div>
+            <!-- Section 2: Module Permissions -->
+            <div class="form-section" *ngIf="modules.length > 0">
+              <h3 class="form-section__title">
+                <span class="form-section__num">2</span>
+                Module Permissions
+              </h3>
+              <p class="form-section__hint">
+                Enable a module and pick which CRUD actions (Create, Read, Update, Delete) the employee can perform.
+                Use the shortcuts to grant <em>Full access</em> or <em>Read-only</em>.
+              </p>
 
-          <!-- Password Field -->
-          <div class="form-group mb-3">
-            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-            <input 
-              type="password" 
-              class="form-control" 
-              id="password"
-              formControlName="password"
-              placeholder="Enter password">
-            <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('password')">
-              Password is required (min 6 characters)
-            </div>
-          </div>
+              <div class="modules-grid">
+                <div
+                  class="module-card"
+                  *ngFor="let module of modules"
+                  [class.module-card--active]="isModuleSelected(module.id)">
 
-          <!-- Phone Field -->
-          <div class="form-group mb-3">
-            <label for="phone" class="form-label">Phone</label>
-            <input 
-              type="tel" 
-              class="form-control" 
-              id="phone"
-              formControlName="phone"
-              placeholder="Enter phone number">
-          </div>
-
-          <!-- Module Permissions -->
-          <div class="form-group mb-4" *ngIf="modules.length > 0">
-            <label class="form-label fw-semibold">Module Permissions</label>
-            <p class="text-muted small mb-2">
-              Enable a module and pick which CRUD actions (Create, Read, Update, Delete) the employee can perform.
-              Use the shortcuts to grant <em>Full access</em> or <em>Read-only</em>.
-            </p>
-            <div class="row g-2">
-              <div class="col-12 col-lg-6" *ngFor="let module of modules">
-                <div class="border rounded p-2 module-permission-card"
-                     [class.border-primary]="isModuleSelected(module.id)"
-                     [class.bg-light]="isModuleSelected(module.id)">
-                  <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="form-check mb-0">
+                  <div class="module-card__header">
+                    <label class="module-toggle" [for]="'module-' + module.id">
                       <input
-                        class="form-check-input"
+                        class="module-toggle__checkbox"
                         type="checkbox"
                         [id]="'module-' + module.id"
                         [checked]="isModuleSelected(module.id)"
                         (change)="toggleModule(module.id)">
-                      <label class="form-check-label fw-semibold" [for]="'module-' + module.id">
-                        {{ module.title }}
-                      </label>
-                    </div>
-                    <div class="btn-group btn-group-sm" role="group" *ngIf="isModuleSelected(module.id)">
-                      <button type="button"
-                              class="btn"
-                              [class.btn-primary]="isModuleFullAccess(module.id)"
-                              [class.btn-outline-primary]="!isModuleFullAccess(module.id)"
-                              (click)="setModuleFullAccess(module.id)">Full</button>
-                      <button type="button"
-                              class="btn"
-                              [class.btn-info]="isModuleReadOnly(module.id)"
-                              [class.btn-outline-info]="!isModuleReadOnly(module.id)"
-                              (click)="setModuleReadOnly(module.id)">Read-only</button>
+                      <span class="module-toggle__slider"></span>
+                      <span class="module-card__name">{{ module.title }}</span>
+                    </label>
+                    <div class="module-shortcuts" *ngIf="isModuleSelected(module.id)">
+                      <button
+                        type="button"
+                        class="shortcut-btn"
+                        [class.shortcut-btn--active]="isModuleFullAccess(module.id)"
+                        (click)="setModuleFullAccess(module.id)">Full</button>
+                      <button
+                        type="button"
+                        class="shortcut-btn shortcut-btn--read"
+                        [class.shortcut-btn--active-read]="isModuleReadOnly(module.id)"
+                        (click)="setModuleReadOnly(module.id)">Read-only</button>
                     </div>
                   </div>
-                  <div class="d-flex flex-wrap gap-3 ps-4" *ngIf="isModuleSelected(module.id)">
-                    <div class="form-check" *ngFor="let perm of permissionTypes">
+
+                  <div class="module-perms" *ngIf="isModuleSelected(module.id)">
+                    <label
+                      class="perm-badge"
+                      *ngFor="let perm of permissionTypes"
+                      [class.perm-badge--on]="hasPermission(module.id, perm)"
+                      [for]="'module-' + module.id + '-' + perm">
                       <input
-                        class="form-check-input"
                         type="checkbox"
+                        class="perm-badge__input"
                         [id]="'module-' + module.id + '-' + perm"
                         [checked]="hasPermission(module.id, perm)"
                         (change)="togglePermission(module.id, perm)">
-                      <label class="form-check-label text-capitalize" [for]="'module-' + module.id + '-' + perm">
-                        {{ perm }}
-                      </label>
-                    </div>
+                      {{ perm | titlecase }}
+                    </label>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Enterprise Assignment (SUPER_ADMIN only) -->
+            <div class="form-section enterprise-section" *ngIf="isSuperAdmin">
+              <h3 class="form-section__title enterprise-section__title">
+                <span class="form-section__num enterprise-num">3</span>
+                Enterprise Assignment
+              </h3>
+
+              <div class="field-group">
+                <label class="field-label">
+                  Select Enterprise <span class="field-required">*</span>
+                </label>
+
+                <div class="loading-indicator" *ngIf="enterprisesLoading">
+                  <span class="spinner-border spinner-border-sm" role="status"></span>
+                  Loading enterprises...
+                </div>
+
+                <div class="empty-msg" *ngIf="!enterprisesLoading && enterprises.length === 0">
+                  No enterprises available.
+                </div>
+
+                <div class="field-input-wrap" *ngIf="!enterprisesLoading && enterprises.length > 0">
+                  <i class="feather icon-briefcase field-icon"></i>
+                  <select
+                    class="field-input field-select"
+                    [(ngModel)]="selectedEnterpriseId"
+                    [ngModelOptions]="{standalone: true}"
+                    (change)="onEnterpriseSelected(selectedEnterpriseId!)">
+                    <option [ngValue]="null" disabled>— Select an enterprise —</option>
+                    <option *ngFor="let enterprise of enterprises" [ngValue]="enterprise.id">
+                      {{ enterprise.nom }}{{ enterprise.active ? ' ✓' : '' }}
+                    </option>
+                  </select>
+                </div>
+
+                <span class="field-error"
+                  *ngIf="isSuperAdmin && !selectedEnterpriseId && enterprises.length > 0">
+                  <i class="feather icon-alert-circle"></i>
+                  Enterprise selection is required
+                </span>
+              </div>
+
+              <!-- Enterprise Info Preview -->
+              <div class="enterprise-preview" *ngIf="selectedEnterpriseInfo">
+                <div class="enterprise-preview__row">
+                  <div class="enterprise-preview__cell">
+                    <span class="preview-label">Enterprise Name</span>
+                    <span class="preview-value">{{ selectedEnterpriseInfo.nom }}</span>
+                  </div>
+                  <div class="enterprise-preview__cell">
+                    <span class="preview-label">Status</span>
+                    <span class="preview-value">
+                      <span class="status-pill"
+                        [ngClass]="selectedEnterpriseInfo.active ? 'status-pill--active' : 'status-pill--inactive'"
+                        [attr.aria-label]="selectedEnterpriseInfo.active ? 'Active' : 'Inactive'">
+                        {{ selectedEnterpriseInfo.active ? '✓ Active' : '○ Inactive' }}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <div class="enterprise-preview__row">
+                  <div class="enterprise-preview__cell">
+                    <span class="preview-label">Total Users</span>
+                    <span class="preview-value">{{ selectedEnterpriseInfo.userCount || 0 }}</span>
+                  </div>
+                  <div class="enterprise-preview__cell">
+                    <span class="preview-label">Created Date</span>
+                    <span class="preview-value">{{ formatDate(selectedEnterpriseInfo.dateCreation) }}</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Enterprise Assignment Section (SUPER_ADMIN only) -->
-          <div *ngIf="isSuperAdmin" class="enterprise-assignment-section">
-            <div class="section-header">
-              <span class="section-icon">🏢</span>
-              <h3>👥 Enterprise Assignment</h3>
+            <!-- Action Buttons -->
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="btn-submit"
+                [disabled]="isSubmitting || addUserForm.invalid">
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"></span>
+                <i *ngIf="!isSubmitting" class="feather icon-user-plus"></i>
+                {{ isSubmitting ? 'Creating...' : 'Create Employee' }}
+              </button>
+              <button
+                type="button"
+                class="btn-cancel"
+                (click)="goBack()"
+                [disabled]="isSubmitting">
+                <i class="feather icon-x"></i>
+                Cancel
+              </button>
             </div>
 
-            <div class="form-group mb-3">
-              <label class="form-label fw-semibold">
-                Select Enterprise <span class="required">*</span>
-              </label>
-
-              <div *ngIf="enterprisesLoading" class="loading-state">
-                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                Loading enterprises...
-              </div>
-
-              <div *ngIf="!enterprisesLoading && enterprises.length === 0" class="empty-state">
-                No enterprises available.
-              </div>
-
-              <select
-                *ngIf="!enterprisesLoading && enterprises.length > 0"
-                class="form-control enterprise-select"
-                [(ngModel)]="selectedEnterpriseId"
-                [ngModelOptions]="{standalone: true}"
-                (change)="onEnterpriseSelected(selectedEnterpriseId!)">
-                <option [ngValue]="null" disabled>— Select an enterprise —</option>
-                <option *ngFor="let enterprise of enterprises" [ngValue]="enterprise.id">
-                  {{ enterprise.nom }}{{ enterprise.active ? ' ✓' : '' }}
-                </option>
-              </select>
-
-              <div *ngIf="isSuperAdmin && !selectedEnterpriseId && enterprises.length > 0" class="validation-message">
-                Enterprise is required for SUPER_ADMIN
-              </div>
-            </div>
-
-            <!-- Enterprise Info Preview Card -->
-            <div *ngIf="selectedEnterpriseInfo" class="enterprise-info-card">
-              <div class="card-row">
-                <div class="card-col">
-                  <span class="info-label">Enterprise Name</span>
-                  <span class="info-value">{{ selectedEnterpriseInfo.nom }}</span>
-                </div>
-                <div class="card-col">
-                  <span class="info-label">Status</span>
-                  <span class="info-value">
-                    <span class="status-badge"
-                          [ngClass]="selectedEnterpriseInfo.active ? 'active' : 'inactive'"
-                          [attr.aria-label]="selectedEnterpriseInfo.active ? 'Active' : 'Inactive'">
-                      {{ selectedEnterpriseInfo.active ? '✓ Active' : '○ Inactive' }}
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div class="card-row">
-                <div class="card-col">
-                  <span class="info-label">Total Users</span>
-                  <span class="info-value">{{ selectedEnterpriseInfo.userCount || 0 }}</span>
-                </div>
-                <div class="card-col">
-                  <span class="info-label">Created Date</span>
-                  <span class="info-value">{{ formatDate(selectedEnterpriseInfo.dateCreation) }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Buttons -->
-          <div class="form-group d-flex gap-2">
-            <button 
-              type="submit" 
-              class="btn btn-primary"
-              [disabled]="isSubmitting || addUserForm.invalid">
-              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
-              <i *ngIf="!isSubmitting" class="feather icon-save me-1"></i>
-              {{ isSubmitting ? 'Creating...' : 'Create Employee' }}
-            </button>
-            <button 
-              type="button" 
-              class="btn btn-secondary"
-              (click)="goBack()"
-              [disabled]="isSubmitting">
-              <i class="feather icon-x"></i> Cancel
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
+
+    <!-- Sidebar: Tips -->
+    <div class="sidebar-col">
+      <div class="tips-card">
+        <div class="tips-card__header">
+          <i class="feather icon-info"></i>
+          Quick Guide
+        </div>
+        <ul class="tips-list">
+          <li class="tips-item">
+            <span class="tips-item__icon">🔒</span>
+            <span>Set a strong password of at least 6 characters.</span>
+          </li>
+          <li class="tips-item">
+            <span class="tips-item__icon">📧</span>
+            <span>The employee will use this email address to sign in.</span>
+          </li>
+          <li class="tips-item">
+            <span class="tips-item__icon">🧩</span>
+            <span>Enable only the modules the employee actually needs.</span>
+          </li>
+          <li class="tips-item">
+            <span class="tips-item__icon">⚡</span>
+            <span>Use <strong>Full</strong> or <strong>Read-only</strong> shortcuts to assign all permissions at once.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
   </div>
 </div>
