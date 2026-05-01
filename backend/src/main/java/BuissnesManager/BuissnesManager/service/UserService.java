@@ -80,7 +80,26 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        if (request.getModuleIds() != null && !request.getModuleIds().isEmpty()) {
+        if (request.getModulePermissions() != null && !request.getModulePermissions().isEmpty()) {
+            for (BuissnesManager.BuissnesManager.dto.ModulePermissionRequest mp : request.getModulePermissions()) {
+                if (mp == null || mp.getModuleId() == null || !mp.hasAnyFlag()) {
+                    continue;
+                }
+                Long moduleId = mp.getModuleId();
+                Module module = moduleRepo.findById(moduleId)
+                        .orElseThrow(() -> new RuntimeException("Module non trouvé: " + moduleId));
+                if (permissionRepo.findByModuleIdAndRoleId(moduleId, employeeRole.getId()) == null) {
+                    Permission permission = new Permission();
+                    permission.setCreate(mp.isCreate());
+                    permission.setUpdate(mp.isUpdate());
+                    permission.setDelete(mp.isDelete());
+                    permission.setView(mp.isView());
+                    permission.setModule(module);
+                    permission.setRole(employeeRole);
+                    permissionRepo.save(permission);
+                }
+            }
+        } else if (request.getModuleIds() != null && !request.getModuleIds().isEmpty()) {
             for (Long moduleId : request.getModuleIds()) {
                 Module module = moduleRepo.findById(moduleId)
                         .orElseThrow(() -> new RuntimeException("Module non trouvé: " + moduleId));

@@ -76,21 +76,53 @@
           <!-- Module Permissions -->
           <div class="form-group mb-4" *ngIf="modules.length > 0">
             <label class="form-label fw-semibold">Module Permissions</label>
-            <p class="text-muted small mb-2">Select the modules this employee can access (full CRUD access).</p>
+            <p class="text-muted small mb-2">
+              Enable a module and pick which CRUD actions (Create, Read, Update, Delete) the employee can perform.
+              Use the shortcuts to grant <em>Full access</em> or <em>Read-only</em>.
+            </p>
             <div class="row g-2">
-              <div class="col-sm-6 col-md-4" *ngFor="let module of modules">
-                <div class="form-check border rounded p-2" 
+              <div class="col-12 col-lg-6" *ngFor="let module of modules">
+                <div class="border rounded p-2 module-permission-card"
                      [class.border-primary]="isModuleSelected(module.id)"
                      [class.bg-light]="isModuleSelected(module.id)">
-                  <input 
-                    class="form-check-input"
-                    type="checkbox"
-                    [id]="'module-' + module.id"
-                    [checked]="isModuleSelected(module.id)"
-                    (change)="toggleModule(module.id)">
-                  <label class="form-check-label" [for]="'module-' + module.id">
-                    {{ module.title }}
-                  </label>
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="form-check mb-0">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        [id]="'module-' + module.id"
+                        [checked]="isModuleSelected(module.id)"
+                        (change)="toggleModule(module.id)">
+                      <label class="form-check-label fw-semibold" [for]="'module-' + module.id">
+                        {{ module.title }}
+                      </label>
+                    </div>
+                    <div class="btn-group btn-group-sm" role="group" *ngIf="isModuleSelected(module.id)">
+                      <button type="button"
+                              class="btn"
+                              [class.btn-primary]="isModuleFullAccess(module.id)"
+                              [class.btn-outline-primary]="!isModuleFullAccess(module.id)"
+                              (click)="setModuleFullAccess(module.id)">Full</button>
+                      <button type="button"
+                              class="btn"
+                              [class.btn-info]="isModuleReadOnly(module.id)"
+                              [class.btn-outline-info]="!isModuleReadOnly(module.id)"
+                              (click)="setModuleReadOnly(module.id)">Read-only</button>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-3 ps-4" *ngIf="isModuleSelected(module.id)">
+                    <div class="form-check" *ngFor="let perm of permissionTypes">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        [id]="'module-' + module.id + '-' + perm"
+                        [checked]="hasPermission(module.id, perm)"
+                        (change)="togglePermission(module.id, perm)">
+                      <label class="form-check-label text-capitalize" [for]="'module-' + module.id + '-' + perm">
+                        {{ perm }}
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
