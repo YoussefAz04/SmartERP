@@ -142,108 +142,45 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
 // ── Hero Header ────────────────────────────────────────────
 .db-header {
   position: relative;
-  background: linear-gradient(
-    135deg,
-    #2D1B69 0%,
-    #4338CA 30%,
-    #7C3AED 65%,
-    #4F46E5 100%
-  );
-  background-size: 300% 300%;
-  animation: gradientShift 12s ease infinite;
+  background: #111827;
   border-radius: $radius-xl;
   padding: 40px 44px 36px;
   margin-bottom: 28px;
-  box-shadow:
-    0 20px 60px rgba(67,56,202,0.45),
-    0 4px 14px rgba(67,56,202,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.12);
+  box-shadow: 0 4px 24px rgba(0,0,0,.22);
   overflow: hidden;
   color: #fff;
 
-  // Mesh overlay
+  // Diagonal stripe pattern (matches article-achat style)
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 32px 32px;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgba(255,255,255,.022) 0px,
+      rgba(255,255,255,.022) 1px,
+      transparent 1px,
+      transparent 14px
+    );
     pointer-events: none;
     z-index: 0;
   }
 
-  // Decorative blobs
-  &__blob {
+  // Blue accent strip on left edge (matches article-achat style)
+  &::after {
+    content: '';
     position: absolute;
-    border-radius: 50%;
-    opacity: 0.18;
-    pointer-events: none;
-    animation: blobFloat 8s ease-in-out infinite;
-
-    &--1 {
-      width: 320px; height: 320px;
-      background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 70%);
-      top: -100px; right: 5%;
-      animation-delay: 0s;
-    }
-    &--2 {
-      width: 160px; height: 160px;
-      background: radial-gradient(circle, $sky-500 0%, transparent 70%);
-      bottom: -50px; right: 22%;
-      opacity: 0.22;
-      animation-delay: -3s;
-    }
-    &--3 {
-      width: 100px; height: 100px;
-      background: radial-gradient(circle, $amber-500 0%, transparent 70%);
-      top: 20px; left: 30%;
-      opacity: 0.2;
-      animation-delay: -5s;
-    }
-    &--4 {
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, $violet-500 0%, transparent 70%);
-      bottom: -60px; left: -30px;
-      opacity: 0.14;
-      animation-delay: -2s;
-      animation-duration: 11s;
-    }
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #60a5fa, #818cf8);
+    border-radius: $radius-xl 0 0 $radius-xl;
   }
 
-  // Sparkle dots
-  &__sparkle {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    animation: sparkleFloat ease-in-out infinite;
+  // Hide decorative blobs
+  &__blob { display: none; }
 
-    &--1 {
-      width: 6px; height: 6px;
-      background: rgba(255,255,255,0.9);
-      top: 22px; right: 38%;
-      animation-duration: 3.2s;
-      animation-delay: -1s;
-      box-shadow: 0 0 8px 2px rgba(255,255,255,0.6);
-    }
-    &--2 {
-      width: 4px; height: 4px;
-      background: rgba(196,181,253,0.95);
-      top: 55px; right: 50%;
-      animation-duration: 4.1s;
-      animation-delay: -2.3s;
-      box-shadow: 0 0 6px 2px rgba(196,181,253,0.5);
-    }
-    &--3 {
-      width: 5px; height: 5px;
-      background: rgba(253,230,138,0.9);
-      top: 40px; left: 45%;
-      animation-duration: 3.6s;
-      animation-delay: -0.8s;
-      box-shadow: 0 0 7px 2px rgba(253,230,138,0.5);
-    }
-  }
+  // Hide sparkle dots
+  &__sparkle { display: none; }
 
   &__inner {
     position: relative;
@@ -260,24 +197,20 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
   &__eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
     margin: 0 0 14px;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-size: 10px;
-    font-weight: 800;
-    color: rgba(255,255,255,0.75);
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.22);
-    padding: 6px 14px;
-    border-radius: 99px;
-    @supports (backdrop-filter: blur(4px)) {
-      backdrop-filter: blur(4px);
-    }
+    letter-spacing: 0.06em;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #93c5fd;
+    background: rgba(96,165,250,.12);
+    border: 1px solid rgba(96,165,250,.22);
+    padding: 4px 12px;
+    border-radius: 8px;
 
     i {
       font-size: 11px;
-      color: #FCD34D;
     }
   }
 
@@ -397,7 +330,6 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
   letter-spacing: -1.2px;
   color: #fff;
   display: inline-block;
-  animation: titleGlow 4s ease-in-out infinite;
   line-height: 1.05;
 
   @media (max-width: 768px) {
@@ -537,155 +469,135 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
 
 .stat-card {
   position: relative;
-  background: $card;
   border-radius: $radius-xl;
-  padding: 28px 26px 22px;
+  padding: 22px 22px 0;
   box-shadow: $shadow-md;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 0;
   overflow: hidden;
-  border: 1px solid $line;
-  transition: transform 0.22s cubic-bezier(.22,.68,0,1.4), box-shadow 0.22s ease, border-color 0.22s ease;
+  border: none;
+  transition: transform 0.22s cubic-bezier(.22,.68,0,1.4), box-shadow 0.22s ease;
 
-  // Decorative bg shape
-  &__bg-shape {
-    position: absolute;
-    right: -24px;
-    top: -24px;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    opacity: 0.07;
-    pointer-events: none;
-    transition: transform 0.4s ease;
-  }
+  // Hide decorative bg shape (replaced by gradient background)
+  &__bg-shape { display: none; }
 
   &:hover {
     transform: translateY(-6px);
     box-shadow: $shadow-xl;
-
-    .stat-card__bg-shape { transform: scale(1.25); }
   }
 
   &__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
   }
 
   &__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 54px;
-    height: 54px;
-    border-radius: 15px;
-    font-size: 22px;
-    box-shadow: $shadow-sm;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 20px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
   }
 
   &__trend {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 5px 10px;
+    padding: 3px 10px;
     border-radius: 99px;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
+    color: rgba(255,255,255,.88);
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.2);
 
-    &--up {
-      background: $emerald-50;
-      color: $emerald-700;
-      border: 1px solid rgba($emerald-500, 0.2);
-    }
-    &--neutral {
-      background: $sky-100;
-      color: darken($sky-500, 15%);
-      border: 1px solid rgba($sky-500, 0.2);
-    }
-    &--violet {
-      background: $violet-50;
-      color: $violet-700;
-      border: 1px solid rgba($violet-500, 0.22);
+    &--up, &--neutral, &--violet {
+      background: rgba(255,255,255,.15);
+      color: rgba(255,255,255,.88);
+      border: 1px solid rgba(255,255,255,.2);
     }
   }
 
-  &__body { flex: 1; }
+  &__body {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
 
   &__value {
-    font-size: 52px;
-    font-weight: 900;
+    font-size: 36px;
+    font-weight: 800;
     line-height: 1;
-    letter-spacing: -2.5px;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 5px;
     animation: countUp 0.6s ease-out both;
   }
 
   &__label {
-    font-size: 11.5px;
+    font-size: 10px;
     font-weight: 700;
-    margin-top: 6px;
+    margin-top: 4px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    opacity: 0.65;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,.6);
+    margin-bottom: 14px;
   }
 
   &__link {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 18px;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 600;
     text-decoration: none;
-    padding: 7px 0;
-    border-top: 1px solid rgba(0,0,0,0.06);
-    transition: gap 0.2s ease, opacity 0.2s ease;
-    opacity: 0.75;
+    padding: 10px 22px;
+    margin: 0 -22px;
+    border-top: 1px solid rgba(255,255,255,.12);
+    background: rgba(0,0,0,.08);
+    color: rgba(255,255,255,.65);
+    transition: background .18s ease, color .18s ease;
 
-    &:hover { gap: 10px; opacity: 1; }
+    &:hover {
+      background: rgba(0,0,0,.18);
+      color: #fff;
+      gap: 10px;
+    }
 
-    i { font-size: 13px; }
+    i { font-size: 12px; }
   }
 
-  // ── Card variants
+  // ── Card variants (gradient backgrounds matching article-achat)
+  // Note: class names --amber/--violet kept for HTML template compatibility;
+  //       gradient colors match the article-achat kpi-card palette.
   &--indigo {
-    border-top: 4px solid $indigo-600;
-    .stat-card__icon    { background: $indigo-50; color: $indigo-600; }
-    .stat-card__bg-shape { background: $indigo-600; }
-    .stat-card__value   { color: $indigo-700; }
-    .stat-card__label   { color: $indigo-600; }
-    .stat-card__link    { color: $indigo-600; border-color: $indigo-100; }
-    &:hover             { border-color: rgba($indigo-600, 0.4); }
+    background: linear-gradient(145deg, #1e1b74 0%, #3730a3 60%, #4f46e5 100%);
+    box-shadow: 0 6px 22px rgba(#1e1b74,.42);
   }
   &--amber {
-    border-top: 4px solid $amber-500;
-    .stat-card__icon    { background: $amber-50; color: $amber-600; }
-    .stat-card__bg-shape { background: $amber-500; }
-    .stat-card__value   { color: $amber-600; }
-    .stat-card__label   { color: $amber-600; }
-    .stat-card__link    { color: $amber-600; border-color: $amber-100; }
-    &:hover             { border-color: rgba($amber-500, 0.4); }
+    // teal gradient (matching article-achat kpi-card--teal)
+    background: linear-gradient(145deg, #0b5f73 0%, #0e7490 60%, #0891b2 100%);
+    box-shadow: 0 6px 22px rgba(#0b5f73,.4);
   }
   &--emerald {
-    border-top: 4px solid $emerald-500;
-    .stat-card__icon    { background: $emerald-50; color: $emerald-600; }
-    .stat-card__bg-shape { background: $emerald-500; }
-    .stat-card__value   { color: $emerald-700; }
-    .stat-card__label   { color: $emerald-600; }
-    .stat-card__link    { color: $emerald-600; border-color: $emerald-100; }
-    &:hover             { border-color: rgba($emerald-500, 0.4); }
+    background: linear-gradient(145deg, #064e3b 0%, #047857 60%, #059669 100%);
+    box-shadow: 0 6px 22px rgba(#064e3b,.4);
   }
   &--violet {
-    border-top: 4px solid $violet-600;
-    .stat-card__icon    { background: $violet-50; color: $violet-600; }
-    .stat-card__bg-shape { background: $violet-600; }
-    .stat-card__value   { color: $violet-700; }
-    .stat-card__label   { color: $violet-600; }
-    .stat-card__link    { color: $violet-600; border-color: $violet-100; }
-    &:hover             { border-color: rgba($violet-600, 0.4); }
+    // blue gradient (matching article-achat kpi-card--amber)
+    background: linear-gradient(145deg, #1e3a8a 0%, #1d4ed8 60%, #2563eb 100%);
+    box-shadow: 0 6px 22px rgba(#1e3a8a,.42);
   }
 
   // Ripple
@@ -1048,25 +960,16 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
   .dashboard-shell { background: $d-bg; }
 
   .db-header {
-    background: linear-gradient(135deg, #2D1B69 0%, #3B1E7A 55%, #2E2060 100%);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-  }
-
-  .quick-action {
-    background: $d-card;
-    border-color: $d-line;
-    .quick-action__label { color: $d-text; }
-    .quick-action__hint  { color: $d-muted; }
+    background: #0d1117;
+    box-shadow: 0 4px 24px rgba(0,0,0,.35);
   }
 
   .stat-card {
-    background: $d-card;
-    border-color: $d-line;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-    &--indigo  .stat-card__value { color: $d-indigo; }
-    &--amber   .stat-card__value { color: $amber-500; }
-    &--emerald .stat-card__value { color: $emerald-500; }
-    &--violet  .stat-card__value { color: #A78BFA; }
+    // gradient backgrounds remain – only override value colour for accessibility
+    &--indigo  .stat-card__value { color: #fff; }
+    &--amber   .stat-card__value { color: #fff; }
+    &--emerald .stat-card__value { color: #fff; }
+    &--violet  .stat-card__value { color: #fff; }
   }
 
   .db-card {
