@@ -40,10 +40,6 @@ export class TacheService {
     return this.http.get<Tache[]>(`${this.baseUrl}/getAllTacheByProjet/${idProjet}`);
   }
 
-  assignerTacheAMembre(idTache: number, idMembre: number) {
-    const url = `${this.baseUrl}/assign-tache-membre/${idTache}/${idMembre}`;
-    return this.http.put<void>(url, null);
-  }
   updateTacheStatut(id: number, statut: StatutTache) {
     return this.http.put<void>(`${this.baseUrl}/${id}/${statut}`, null);
   }
