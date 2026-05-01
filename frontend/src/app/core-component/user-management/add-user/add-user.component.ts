@@ -42,7 +42,7 @@ interface EntrepriseListItem extends Entreprise {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './add-user.component.html',
-  styleUrl: './add-user.component.scss'
+  styleUrl: './add-user.component.css'
 })
 export class AddUserComponent implements OnInit {
   addUserForm!: FormGroup;
