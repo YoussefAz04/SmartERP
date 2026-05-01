@@ -15,7 +15,7 @@ export interface ResponseDto {
   name: string;
   userId: number;        // ← used in departement.component.ts, profile.component.ts
   roleId: number;
-  entreprise: Entreprise; // ← used in header, budget, client, equipe, facture, projet, etc.
+  entreprise: Entreprise; // ← used in header, budget, client, facture, projet, etc.
   entrepriseId?: number;   // ← stored at login alongside entreprise
   entrepriseName?: string; // ← stored at login alongside entreprise
 }

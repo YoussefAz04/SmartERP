@@ -93,12 +93,6 @@
                 <div class="task-dates">
                   <span>{{ tache.dateDebut | date:'dd/MM' }} - {{ tache.dateFin | date:'dd/MM' }}</span>
                 </div>
-
-                <div class="action-table-data ms-3" style="padding-left : 50%">
-                  <a class="p-2" data-bs-toggle="modal" data-bs-target="#edit-units" title="Assigner un membre" (click)="recupereTacheId(tache.id)">
-                    <i class="feather icon-user"></i>
-                  </a>
-                </div>
               </div>
 
             </div>
@@ -119,42 +113,3 @@
     </div>
   </div>
 
-
-
-
-
-<!-- Assigner Member -->
-<div class="modal fade" id="edit-units">
-  <div class="modal-dialog modal-dialog-centered custom-modal-two">
-    <div class="modal-content">
-      <div class="page-wrapper-new p-0">
-        <div class="content">
-          <div class="modal-header border-0 custom-modal-header">
-            <div class="page-title">
-              <h4>Assigner Membre</h4>
-            </div>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body custom-modal-body">
-            <form [formGroup]="assignTacheForm" (ngSubmit)="onSubmitAssignTache()">
-              <div class="mb-3">
-                <label for="membreSelect" class="form-label">Sélectionnez un Membre</label>
-                <select id="membreSelect" class="form-control" formControlName="membreId">
-                  <option *ngFor="let membre of membres" [value]="membre.id">{{ membre.membreTitre }}</option>
-                </select>
-              </div>
-
-              <div class="modal-footer-btn mt-3">
-                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-submit" >Assigner Rôle</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- /Assigner Role -->
