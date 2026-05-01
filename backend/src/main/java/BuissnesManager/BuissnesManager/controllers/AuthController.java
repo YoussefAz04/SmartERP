@@ -166,6 +166,13 @@ public class AuthController {
                 permissionDtoList.addAll(permissionService.getPermissionsByRole(role.getId()));
             }
 
+            // User-specific permissions (set when creating an employee) take priority.
+            // If any exist, they replace the role-level defaults loaded above.
+            List<PermissionDto> userPermissions = permissionService.getPermissionsByUser(user.getId());
+            if (!userPermissions.isEmpty()) {
+                permissionDtoList = userPermissions;
+            }
+
             // Build response
             Response response = new Response();
             response.setId(user.getId());

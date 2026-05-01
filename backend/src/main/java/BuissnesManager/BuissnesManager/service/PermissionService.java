@@ -51,6 +51,27 @@ public class PermissionService {
     }
 
     @Transactional(readOnly = true)
+    public List<PermissionDto> getPermissionsByUser(Long userId) {
+        List<Permission> permissions = permissionRepo.findAllByUserId(userId);
+
+        return permissions.stream().map(permission -> {
+            PermissionDto dto = new PermissionDto();
+            dto.setId(permission.getId());
+            dto.setCreate(permission.isCreate());
+            dto.setDelete(permission.isDelete());
+            dto.setUpdate(permission.isUpdate());
+            dto.setView(permission.isView());
+
+            if (permission.getModule() != null) {
+                dto.setModuleId(permission.getModule().getId());
+                dto.setModuleTitle(permission.getModule().getTitle());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<PermissionDto> getPermissionsByRole(Long idRole) {
         List<Permission> permissions = permissionRepo.findAllByRoleId(idRole);
 
