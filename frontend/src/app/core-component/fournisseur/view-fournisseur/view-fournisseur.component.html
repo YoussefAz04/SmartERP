@@ -51,6 +51,11 @@
           <div class="col-sm-8">{{ fournisseur.nom }}</div>
         </div>
         <hr>
+        <div class="row mb-3" *ngIf="fournisseur.prenom">
+          <div class="col-sm-4 fw-bold text-muted">Prénom</div>
+          <div class="col-sm-8">{{ fournisseur.prenom }}</div>
+        </div>
+        <hr *ngIf="fournisseur.prenom">
         <div class="row mb-3">
           <div class="col-sm-4 fw-bold text-muted">Email</div>
           <div class="col-sm-8">{{ fournisseur.email }}</div>
@@ -67,8 +72,34 @@
         </div>
         <hr>
         <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Secteur d'Activité</div>
+          <div class="col-sm-8">{{ fournisseur.secteurActivite || 'N/A' }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
           <div class="col-sm-4 fw-bold text-muted">Catégorie</div>
           <div class="col-sm-8">{{ fournisseur.categorieFournisseur?.nom || 'N/A' }}</div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Taux de Livraison</div>
+          <div class="col-sm-8">
+            <span *ngIf="fournisseur.tauxLivraison != null">{{ fournisseur.tauxLivraison }}%</span>
+            <span *ngIf="fournisseur.tauxLivraison == null">N/A</span>
+          </div>
+        </div>
+        <hr>
+        <div class="row mb-3">
+          <div class="col-sm-4 fw-bold text-muted">Notation</div>
+          <div class="col-sm-8">
+            <span class="rating-stars" *ngIf="fournisseur.notation != null" [title]="fournisseur.notation + ' / 5'">
+              <i class="feather icon-star" *ngFor="let s of [1,2,3,4,5]"
+                [class.star-on]="s <= (fournisseur.notation || 0)"
+                [class.star-off]="s > (fournisseur.notation || 0)"></i>
+              <span class="ms-2">{{ fournisseur.notation }} / 5</span>
+            </span>
+            <span *ngIf="fournisseur.notation == null">N/A</span>
+          </div>
         </div>
       </div>
     </div>
