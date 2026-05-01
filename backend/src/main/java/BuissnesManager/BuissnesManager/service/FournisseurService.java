@@ -98,11 +98,28 @@ public class FournisseurService {
     // ✅ UPDATE FOURNISSEUR
     @Transactional
     public Fournisseur updateFournisseur(Long id, Fournisseur fournisseur) {
-        if (!fournisseurRepo.existsById(id)) {
-            throw new RuntimeException("Fournisseur not found with id: " + id);
+        Fournisseur existing = fournisseurRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Fournisseur not found with id: " + id));
+        existing.setNom(fournisseur.getNom());
+        existing.setPrenom(fournisseur.getPrenom());
+        existing.setEmail(fournisseur.getEmail());
+        existing.setTelephone(fournisseur.getTelephone());
+        existing.setAdresse(fournisseur.getAdresse());
+        existing.setSecteurActivite(fournisseur.getSecteurActivite());
+        existing.setTauxLivraison(fournisseur.getTauxLivraison());
+        existing.setNotation(fournisseur.getNotation());
+        existing.setVille(fournisseur.getVille());
+        existing.setPays(fournisseur.getPays());
+        existing.setCodePostal(fournisseur.getCodePostal());
+        existing.setNumeroIdentificationFiscale(fournisseur.getNumeroIdentificationFiscale());
+        existing.setRegistreCommerce(fournisseur.getRegistreCommerce());
+        if (fournisseur.getCategorieFournisseur() != null && fournisseur.getCategorieFournisseur().getId() != null) {
+            CategorieFournisseur categorie = categorieFournisseurRepo
+                .findById(fournisseur.getCategorieFournisseur().getId())
+                .orElseThrow(() -> new RuntimeException("Categorie not found with id: " + fournisseur.getCategorieFournisseur().getId()));
+            existing.setCategorieFournisseur(categorie);
         }
-        fournisseur.setId(id);
-        return fournisseurRepo.save(fournisseur);
+        return fournisseurRepo.save(existing);
     }
 
     // ✅ ADD CATEGORIE FOURNISSEUR
