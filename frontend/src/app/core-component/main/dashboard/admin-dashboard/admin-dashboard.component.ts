@@ -17,6 +17,7 @@ export interface DashboardStats {
   totalClients: number;
   totalFournisseurs: number;
   totalArticles: number;
+  totalCommandes: number;
 }
 
 export interface RecentArticleView {
@@ -41,7 +42,7 @@ export class AdminDashboardComponent implements OnInit {
   public today: Date = new Date();
 
   // Stats for count-up cards
-  public stats: DashboardStats = { totalClients: 0, totalFournisseurs: 0, totalArticles: 0 };
+  public stats: DashboardStats = { totalClients: 0, totalFournisseurs: 0, totalArticles: 0, totalCommandes: 0 };
   public statsLoaded = false;
 
   // Recent data
@@ -127,6 +128,7 @@ export class AdminDashboardComponent implements OnInit {
           totalClients: clients ? clients.length : 0,
           totalFournisseurs: fournisseurs ? fournisseurs.length : 0,
           totalArticles: articles ? articles.length : 0,
+          totalCommandes: commandes ? commandes.length : 0,
         };
         this.statsLoaded = true;
 
