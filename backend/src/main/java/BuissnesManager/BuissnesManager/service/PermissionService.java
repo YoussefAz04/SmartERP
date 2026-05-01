@@ -1,18 +1,22 @@
 package BuissnesManager.BuissnesManager.service;
 
 
+import BuissnesManager.BuissnesManager.dto.ModulePermissionRequest;
 import BuissnesManager.BuissnesManager.dto.PermissionDto;
 import BuissnesManager.BuissnesManager.entity.Module;
 import BuissnesManager.BuissnesManager.entity.Permission;
 import BuissnesManager.BuissnesManager.entity.Role;
+import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.repository.ModuleRepo;
 import BuissnesManager.BuissnesManager.repository.PermissionRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
+import BuissnesManager.BuissnesManager.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +29,9 @@ public class PermissionService {
 
     @Autowired
     private RoleRepo roleRepo ;
+
+    @Autowired
+    private UserRepo userRepo ;
 
 
     @Transactional
@@ -105,6 +112,48 @@ public class PermissionService {
                 permission.setModule(module);
                 permission.setRole(role);
                 permissionRepo.save(permission);
+            }
+        }
+    @Transactional
+    public void updateUserPermissions(Long userId, List<ModulePermissionRequest> permissions) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        if (permissions == null) return;
+
+        // Upsert each requested module permission
+        Set<Long> requestedIds = permissions.stream()
+                .map(ModulePermissionRequest::getModuleId)
+                .collect(Collectors.toSet());
+
+        for (ModulePermissionRequest mp : permissions) {
+            Long moduleId = mp.getModuleId();
+            Module module = moduleRepo.findById(moduleId)
+                    .orElseThrow(() -> new RuntimeException("Module not found: " + moduleId));
+            Permission existing = permissionRepo.findByModuleIdAndUserId(moduleId, userId);
+            if (existing != null) {
+                existing.setCreate(mp.isCreate());
+                existing.setUpdate(mp.isUpdate());
+                existing.setDelete(mp.isDelete());
+                existing.setView(mp.isView());
+                permissionRepo.save(existing);
+            } else {
+                Permission permission = new Permission();
+                permission.setCreate(mp.isCreate());
+                permission.setUpdate(mp.isUpdate());
+                permission.setDelete(mp.isDelete());
+                permission.setView(mp.isView());
+                permission.setModule(module);
+                permission.setUser(user);
+                permissionRepo.save(permission);
+            }
+        }
+
+        // Remove permissions for modules no longer in the list
+        List<Permission> existing = permissionRepo.findAllByUserId(userId);
+        for (Permission p : existing) {
+            if (p.getModule() != null && !requestedIds.contains(p.getModule().getId())) {
+                permissionRepo.delete(p);
             }
         }
     }
