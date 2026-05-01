@@ -10,7 +10,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './edit-categorie-fournisseur.component.html',
-  styleUrl: './edit-categorie-fournisseur.component.scss'
+  styleUrl: './edit-categorie-fournisseur.component.css'
 })
 export class EditCategorieFournisseurComponent implements OnInit {
   categorieForm!: FormGroup;

@@ -15,7 +15,7 @@ import { routes } from '../../../core/helpers/routes';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, NgClass],
   templateUrl: './edit-client.component.html',
-  styleUrl: './edit-client.component.scss'
+  styleUrl: './edit-client.component.css'
 })
 export class EditClientComponent implements OnInit {
   clientForm!: FormGroup;

@@ -21,7 +21,7 @@ import { NotificationService } from '../../shared/notification/notification.serv
     FormsModule
   ],
   templateUrl: './client.component.html',
-  styleUrl: './client.component.scss'
+  styleUrl: './client.component.css'
 })
 export class ClientComponent implements OnInit, AfterViewInit {
   clientList: Client[] = [];

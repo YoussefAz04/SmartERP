@@ -11,7 +11,7 @@ import { FactureVente } from '../../../model/FactureDeVente.model';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './view-client.component.html',
-  styleUrl: './view-client.component.scss'
+  styleUrl: './view-client.component.css'
 })
 export class ViewClientComponent implements OnInit {
   client: Client | null = null;

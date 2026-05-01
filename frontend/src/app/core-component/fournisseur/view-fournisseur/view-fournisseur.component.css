@@ -1,0 +1,40 @@
+.page-header {
+  margin-bottom: 25px;
+}
+.page-header .page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+}
+.page-header .breadcrumb {
+  font-size: 13px;
+}
+
+.card {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.card .card-header {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px;
+}
+.card .card-header .card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+}
+.card .card-body {
+  padding: 20px;
+}
+.card .card-body .fw-bold {
+  font-weight: 600;
+}
+.card .card-body .text-muted {
+  color: #888 !important;
+}
+.card .card-body hr {
+  border-color: #f0f0f0;
+  margin: 10px 0;
+}
