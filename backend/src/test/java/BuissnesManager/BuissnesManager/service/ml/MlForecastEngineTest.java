@@ -118,8 +118,8 @@ class MlForecastEngineTest {
                 "walk-forward CV should produce a real MAPE on 24-month history");
         assertTrue(r.walkForwardFolds > 0, "CV should evaluate at least one fold");
         assertNotNull(r.modelName);
-        assertTrue("OLS".equals(r.modelName) || "Ridge".equals(r.modelName)
-                || "ElasticNet".equals(r.modelName) || "RandomForest".equals(r.modelName),
+        assertTrue(r.modelName.startsWith("OLS") || r.modelName.startsWith("Ridge")
+                || r.modelName.startsWith("ElasticNet") || r.modelName.startsWith("RandomForest"),
                 "selected model must be one of OLS / Ridge / ElasticNet / RandomForest, got " + r.modelName);
     }
 

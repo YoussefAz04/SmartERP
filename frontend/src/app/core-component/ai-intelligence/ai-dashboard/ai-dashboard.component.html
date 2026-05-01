@@ -21,8 +21,8 @@
           <strong>{{ dashboard.salesAnalysis.bestMonth }}</strong>
         </div>
         <div class="hero-highlight">
-          <span class="hero-highlight-label">Fiabilité IA</span>
-          <strong>{{ dashboard.forecast.confidenceScore | number:'1.0-0' }}%</strong>
+          <span class="hero-highlight-label">Revenu total</span>
+          <strong>{{ formatCurrency(dashboard.kpiSummary.totalRevenue) }} TND</strong>
         </div>
         <div class="hero-highlight">
           <span class="hero-highlight-label">Prévision</span>
@@ -31,11 +31,6 @@
       </div>
     </div>
     <div class="ai-header-right">
-      <div class="header-status-card" *ngIf="dashboard && !loading">
-        <span class="status-label">Score analytique</span>
-        <strong>{{ aiQualityScore }}%</strong>
-        <small>Basé sur la confiance et les priorités</small>
-      </div>
       <span class="date-chip">
         <i class="far fa-calendar-alt"></i>
         {{ today | date: 'd MMMM yyyy' }}
@@ -48,22 +43,6 @@
   </div>
 
   <div class="ai-quick-insights" *ngIf="dashboard && !loading">
-    <div class="insight-pill">
-      <div class="pill-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
-      <div class="pill-content">
-        <span class="pill-label">Qualité IA</span>
-        <span class="pill-value">{{ aiQualityScore }}%</span>
-      </div>
-    </div>
-    <div class="insight-pill">
-      <div class="pill-icon pill-icon-secondary"><i class="fas fa-chart-line"></i></div>
-      <div class="pill-content">
-        <span class="pill-label">Confiance prévision</span>
-        <span class="pill-value" [ngClass]="confidenceLevelClass">
-          {{ dashboard.forecast.confidenceScore | number:'1.0-0' }}% · {{ confidenceLevelLabel }}
-        </span>
-      </div>
-    </div>
     <div class="insight-pill">
       <div class="pill-icon pill-icon-warning"><i class="fas fa-bell"></i></div>
       <div class="pill-content">

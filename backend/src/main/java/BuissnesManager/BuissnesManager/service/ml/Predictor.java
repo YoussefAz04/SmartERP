@@ -42,14 +42,14 @@ public interface Predictor {
     }
 
  
+    /** Factory: fit an {@link ElasticNet} (L1+L2) regression. */
     static Predictor fitElasticNet(DataFrame df, StructType schema,
                                    double lambda1, double lambda2) {
         return new LinearAdapter("ElasticNet",
                 ElasticNet.fit(Formula.lhs("y"), df, lambda1, lambda2), schema);
     }
 
-  
-     */
+    /** Factory: fit a {@link RandomForest} regression with the given hyperparameters. */
     static Predictor fitRandomForest(DataFrame df, StructType schema,
                                      int ntrees, int maxDepth, int mtry, long seed) {
         Properties props = new Properties();
