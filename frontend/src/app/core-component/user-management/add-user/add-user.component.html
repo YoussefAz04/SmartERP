@@ -199,7 +199,7 @@
 
                 <div class="loading-indicator" *ngIf="enterprisesLoading">
                   <span class="spinner-border spinner-border-sm" role="status"></span>
-                  Loading enterprises…
+                  Loading enterprises...
                 </div>
 
                 <div class="empty-msg" *ngIf="!enterprisesLoading && enterprises.length === 0">
@@ -266,7 +266,7 @@
                 [disabled]="isSubmitting || addUserForm.invalid">
                 <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"></span>
                 <i *ngIf="!isSubmitting" class="feather icon-user-plus"></i>
-                {{ isSubmitting ? 'Creating…' : 'Create Employee' }}
+                {{ isSubmitting ? 'Creating...' : 'Create Employee' }}
               </button>
               <button
                 type="button"
