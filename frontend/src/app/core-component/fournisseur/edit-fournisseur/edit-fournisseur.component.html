@@ -86,13 +86,8 @@
                       class="form-control"
                       formControlName="prenom"
                       placeholder="Entrez le prénom (optionnel)"
-                      [class.is-invalid]="isFieldInvalid('prenom')"
                       aria-label="Prénom du fournisseur">
                   </div>
-                  <span class="error-message" *ngIf="isFieldInvalid('prenom')">
-                    <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('prenom')?.hasError('minlength')">Min 2 caractères</span>
-                  </span>
                 </div>
               </div>
 
@@ -176,7 +171,7 @@
               <!-- Secteur Activite Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Secteur d'Activité <span class="text-danger">*</span></label>
+                  <label class="form-label">Secteur d'Activité</label>
                   <div class="input-wrapper">
                     <i class="feather icon-briefcase input-icon"></i>
                     <input
@@ -184,14 +179,8 @@
                       class="form-control"
                       formControlName="secteurActivite"
                       placeholder="Ex: Technologie, Commerce..."
-                      [class.is-invalid]="isFieldInvalid('secteurActivite')"
                       aria-label="Secteur d'activité">
                   </div>
-                  <span class="error-message" *ngIf="isFieldInvalid('secteurActivite')">
-                    <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('secteurActivite')?.hasError('required')">Le secteur est requis</span>
-                    <span *ngIf="fournisseurForm.get('secteurActivite')?.hasError('minlength')">Min 3 caractères</span>
-                  </span>
                 </div>
               </div>
 
@@ -233,7 +222,6 @@
                 <div class="input-blocks mb-3">
                   <label class="form-label">
                     Taux de Livraison
-                    <span class="text-danger">*</span>
                     <span class="taux-live-badge">{{ tauxCurrentValue }}%</span>
                   </label>
                   <div class="taux-slider-wrap" [class.invalid-wrap]="isFieldInvalid('tauxLivraison')">
@@ -253,7 +241,6 @@
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('tauxLivraison')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('tauxLivraison')?.hasError('required')">Le taux est requis</span>
                     <span *ngIf="fournisseurForm.get('tauxLivraison')?.hasError('min') || fournisseurForm.get('tauxLivraison')?.hasError('max')">Valeur entre 0 et 100</span>
                   </span>
                 </div>
@@ -264,7 +251,6 @@
                 <div class="input-blocks mb-3">
                   <label class="form-label">
                     Notation
-                    <span class="text-danger">*</span>
                     <span class="notation-hint" *ngIf="notationCurrentValue > 0">
                       {{ notationCurrentValue }}&thinsp;/&thinsp;5
                     </span>
@@ -291,7 +277,6 @@
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('notation')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('notation')?.hasError('required')">Veuillez sélectionner au moins 1 étoile</span>
                     <span *ngIf="fournisseurForm.get('notation')?.hasError('min') || fournisseurForm.get('notation')?.hasError('max')">Sélectionnez entre 1 et 5 étoiles</span>
                   </span>
                 </div>

@@ -44,13 +44,13 @@ export class EditFournisseurComponent implements OnInit {
   initializeForm(): void {
     this.fournisseurForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
-      prenom: ['', [Validators.minLength(2)]],
+      prenom: [''],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
-      secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
-      tauxLivraison: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
-      notation: [null, [Validators.required, Validators.min(1), Validators.max(5)]],
+      secteurActivite: [''],
+      tauxLivraison: [0, [Validators.min(0), Validators.max(100)]],
+      notation: [null, [Validators.min(1), Validators.max(5)]],
       categorieId: ['', Validators.required],
     });
   }
@@ -130,6 +130,11 @@ export class EditFournisseurComponent implements OnInit {
       this.isLoading = true;
       const formValue = this.fournisseurForm.value;
 
+      const tauxRaw = formValue.tauxLivraison;
+      const notationRaw = formValue.notation;
+      const tauxNum = tauxRaw === null || tauxRaw === '' || tauxRaw === undefined ? null : parseFloat(tauxRaw);
+      const notationNum = notationRaw === null || notationRaw === '' || notationRaw === undefined ? null : parseFloat(notationRaw);
+
       const fournisseurData: any = {
         nom: formValue.nom.trim(),
         prenom: formValue.prenom ? formValue.prenom.trim() : '',
@@ -137,8 +142,8 @@ export class EditFournisseurComponent implements OnInit {
         telephone: formValue.telephone.trim(),
         adresse: formValue.adresse.trim(),
         secteurActivite: formValue.secteurActivite ? formValue.secteurActivite.trim() : '',
-        tauxLivraison: parseFloat(formValue.tauxLivraison),
-        notation: parseFloat(formValue.notation),
+        tauxLivraison: tauxNum !== null && !isNaN(tauxNum) ? tauxNum : null,
+        notation: notationNum !== null && !isNaN(notationNum) ? notationNum : null,
         categorieFournisseur: { id: formValue.categorieId }
       };
 
