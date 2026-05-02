@@ -169,7 +169,7 @@ export class FactureDeVenteServiceService {
 
     const tableStartY = 80 + clientLines.length * 7 + (factureData.description ? 20 : 5);
 
-    const rows = details.map((d, i) => {
+    let rows: string[][] = details.map((d, i) => {
       const qte = d.quantite || 1;
       const prix = d.prixUnitaireHT || 0;
       const tva = d.tva || 0;
@@ -184,6 +184,26 @@ export class FactureDeVenteServiceService {
         totalTTC.toFixed(2) + " DT",
       ];
     });
+
+    // Fallback to commandeVente.lignes when no DetaisFactureDeVente is available
+    const commandeLignes = factureData.commandeVente?.lignes;
+    if (rows.length === 0 && Array.isArray(commandeLignes) && commandeLignes.length > 0) {
+      rows = commandeLignes.map((l, i) => {
+        const qte = Number(l.quantite) || 1;
+        const prix = Number(l.prixUnitaireHT) || 0;
+        const tva = Number(l.tva) || 0;
+        const totalHT = l.montantHT != null ? Number(l.montantHT) : qte * prix;
+        const totalTTC = l.montantTTC != null ? Number(l.montantTTC) : totalHT + totalHT * (tva / 100);
+        return [
+          l.articleVente?.nom || `Article ${i + 1}`,
+          qte.toString(),
+          prix.toFixed(2) + " DT",
+          `${tva}%`,
+          totalHT.toFixed(2) + " DT",
+          totalTTC.toFixed(2) + " DT",
+        ];
+      });
+    }
 
     autoTable(doc, {
       startY: tableStartY,

@@ -158,7 +158,7 @@ export class FactureService {
     // Line items table
     const rawDetails = factureData.detaisFactureAchat;
     const detailsArray = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
-    const rows = detailsArray.map((d, i) => {
+    let rows: string[][] = detailsArray.map((d, i) => {
       const qte = d.quantite || 1;
       const prix = d.prixUnitaireHT || 0;
       const tva = d.tva || 0;
@@ -174,6 +174,25 @@ export class FactureService {
       ];
     });
 
+    // Fallback to lignes (LigneFactureAchat) when no DetaisFactureAchat is available
+    if (rows.length === 0 && Array.isArray(factureData.lignes) && factureData.lignes.length > 0) {
+      rows = factureData.lignes.map((l, i) => {
+        const qte = Number(l.quantite) || 1;
+        const prix = Number(l.prixUnitaireHT) || 0;
+        const tva = Number(l.tva) || 0;
+        const totalHT = l.montantHT != null ? Number(l.montantHT) : qte * prix;
+        const totalTTC = l.montantTTC != null ? Number(l.montantTTC) : totalHT * (1 + tva / 100);
+        return [
+          l.designation || `Article ${i + 1}`,
+          qte.toString(),
+          prix.toFixed(2) + ' DT',
+          `${tva}%`,
+          totalHT.toFixed(2) + ' DT',
+          totalTTC.toFixed(2) + ' DT'
+        ];
+      });
+    }
+
     const fillR = caract?.fillColorR ?? headerR;
     const fillG = caract?.fillColorG ?? headerG;
     const fillB = caract?.fillColorB ?? headerB;
@@ -184,7 +203,7 @@ export class FactureService {
     autoTable(doc, {
       startY: separatorY + 5,
       head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
-      body: detailsArray.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
+      body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
       theme: 'grid',
       headStyles: {
         fillColor: [fillR, fillG, fillB],

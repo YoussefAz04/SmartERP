@@ -60,7 +60,7 @@ public class FactureDeVente {
 
     @ManyToOne
     @JoinColumn(name = "commande_vente_id")
-    @JsonIgnoreProperties({"lignes", "client", "entreprise"})
+    @JsonIgnoreProperties({"client", "entreprise", "factureDeVentes"})
     private CommandeVente commandeVente;
 
     @OneToOne(mappedBy = "factureDeVente", cascade = CascadeType.ALL)

@@ -9,6 +9,16 @@ export interface DetaisFactureAchat {
   factureAchat?: FactureAchat;
 }
 
+export interface LigneFactureAchat {
+  id?: number;
+  designation?: string;
+  quantite?: number;
+  prixUnitaireHT?: number;
+  tva?: number;
+  montantHT?: number;
+  montantTTC?: number;
+}
+
 
 
 
@@ -27,6 +37,8 @@ export interface FactureAchat {
   cheminFichier?: string;
 
   detaisFactureAchat?: DetaisFactureAchat;
+
+  lignes?: LigneFactureAchat[];
 
   fournisseur?: {
     id?: number;
