@@ -107,7 +107,7 @@ export class routes {
     return this.core + '/settings';
   }
   public static get profile(): string {
-    return this.pages + '/profile';
+    return this.core + '/profile';
   }
   public static get activities(): string {
     return this.pages + '/activities';
