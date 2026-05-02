@@ -14,7 +14,7 @@ export class routes {
     return this.base + '/signup';
   }
   public static get forgotPassword(): string {
-    return this.base + '/forgot-password';
+    return '/auth/forgot-password';
   }
   public static get forgotPassword2(): string {
     return this.base + '/forgot-password-2';
