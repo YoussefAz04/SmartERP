@@ -637,7 +637,6 @@ $amber-500:  #f59e0b;
   font-weight: 700;
   letter-spacing: -0.015em;
 
-
   i { color: $blue-600; }
 }
 
@@ -1102,7 +1101,7 @@ $amber-500:  #f59e0b;
 }
 
 @media (max-width: 576px) {
-  .ai-header h1 { font-size: 1.5rem; -webkit-text-fill-color: unset; color: $slate-900; }
+  .ai-header h1 { font-size: 1.5rem; background: none; -webkit-text-fill-color: initial; color: $slate-900; }
 
   .date-chip,
   .btn-refresh { width: 100%; justify-content: center; }
