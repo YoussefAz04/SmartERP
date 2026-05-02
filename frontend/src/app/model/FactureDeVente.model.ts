@@ -11,6 +11,19 @@ export interface DetaisFactureVente {
   factureAchat?: FactureVente;
 }
 
+export interface LigneCommandeVente {
+  id?: number;
+  quantite?: number;
+  prixUnitaireHT?: number;
+  tva?: number;
+  montantHT?: number;
+  montantTTC?: number;
+  articleVente?: {
+    id?: number;
+    nom?: string;
+  };
+}
+
 
 
 
@@ -35,5 +48,6 @@ export interface FactureVente {
     id?: number;
     reference?: string;
     statut?: string;
+    lignes?: LigneCommandeVente[];
   };
 }

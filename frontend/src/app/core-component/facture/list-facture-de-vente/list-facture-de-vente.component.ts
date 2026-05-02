@@ -302,7 +302,7 @@ export class ListFactureDeVenteComponent implements OnInit{
       // Line items table
       const rawDetails = facture.detaisFactureDeVente;
       const details = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
-      const rows = details.map((d, i) => {
+      let rows: string[][] = details.map((d, i) => {
         const qte = d.quantite || 1;
         const prix = d.prixUnitaireHT || 0;
         const tva = d.tva || 0;
@@ -317,6 +317,26 @@ export class ListFactureDeVenteComponent implements OnInit{
           totalTTC.toFixed(2) + ' DT'
         ];
       });
+
+      // Fallback to commandeVente.lignes when no DetaisFactureDeVente is available
+      const commandeLignes = facture.commandeVente?.lignes;
+      if (rows.length === 0 && Array.isArray(commandeLignes) && commandeLignes.length > 0) {
+        rows = commandeLignes.map((l, i) => {
+          const qte = Number(l.quantite) || 1;
+          const prix = Number(l.prixUnitaireHT) || 0;
+          const tva = Number(l.tva) || 0;
+          const totalHT = l.montantHT != null ? Number(l.montantHT) : qte * prix;
+          const totalTTC = l.montantTTC != null ? Number(l.montantTTC) : totalHT * (1 + tva / 100);
+          return [
+            l.articleVente?.nom || `Article ${i + 1}`,
+            qte.toString(),
+            prix.toFixed(2) + ' DT',
+            `${tva}%`,
+            totalHT.toFixed(2) + ' DT',
+            totalTTC.toFixed(2) + ' DT'
+          ];
+        });
+      }
 
       autoTable(doc, {
         startY: separatorY + 5,
