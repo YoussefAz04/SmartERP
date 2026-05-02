@@ -5,21 +5,21 @@
       <i class="feather icon-users"></i>
     </div>
     <div class="um-header-text">
-      <h1>User Management</h1>
+      <h1>Gestion des Utilisateurs</h1>
       <p>
-        <ng-container *ngIf="isSuperAdmin">All Enterprises</ng-container>
-        <ng-container *ngIf="isAdmin && !isSuperAdmin">{{ currentEnterpriseName || 'Your Enterprise' }}</ng-container>
+        <ng-container *ngIf="isSuperAdmin">Toutes les entreprises</ng-container>
+        <ng-container *ngIf="isAdmin && !isSuperAdmin">{{ currentEnterpriseName || 'Votre entreprise' }}</ng-container>
       </p>
     </div>
   </div>
   <div class="um-header-right">
     <div class="um-stats-badge">
       <i class="feather icon-user-check"></i>
-      <span>{{ tableData.length }} User{{ tableData.length !== 1 ? 's' : '' }}</span>
+      <span>{{ tableData.length }} Utilisateur{{ tableData.length !== 1 ? 's' : '' }}</span>
     </div>
     <a *ngIf="isAdmin || isSuperAdmin" (click)="addUsers()" class="um-btn-add">
       <i class="feather icon-plus-circle"></i>
-      <span>Add New User</span>
+      <span>Ajouter un utilisateur</span>
     </a>
   </div>
 </div>
@@ -35,21 +35,21 @@
         [ngModelOptions]="{standalone: true}"
         (ngModelChange)="searchData(searchDataValue)"
         type="search"
-        placeholder="Search by name or email..."
+        placeholder="Rechercher par nom ou email..."
         class="um-search-input"
       />
     </div>
     <div class="um-toolbar-actions">
       <button class="um-btn-filter" (click)="openFilter()" [class.active]="filter">
         <i class="feather icon-filter"></i>
-        <span>Filter</span>
+        <span>Filtrer</span>
       </button>
       <div class="um-sort-select">
         <i class="feather icon-sliders"></i>
-        <mat-select [(ngModel)]="selectedValue2" [ngModelOptions]="{standalone: true}" placeholder="Sort by Date">
-          <mat-option value="Sort by Date">Sort by Date</mat-option>
-          <mat-option value="Newest">Newest</mat-option>
-          <mat-option value="Oldest">Oldest</mat-option>
+        <mat-select [(ngModel)]="selectedValue2" [ngModelOptions]="{standalone: true}" placeholder="Trier par date">
+          <mat-option value="Sort by Date">Trier par date</mat-option>
+          <mat-option value="Newest">Plus récents</mat-option>
+          <mat-option value="Oldest">Plus anciens</mat-option>
         </mat-select>
       </div>
     </div>
@@ -59,20 +59,20 @@
   <div class="um-filter-panel" [class.open]="filter">
     <div class="um-filter-row">
       <div class="um-filter-field">
-        <label><i class="feather icon-stop-circle"></i> Status</label>
-        <mat-select [(ngModel)]="selectedValue4" [ngModelOptions]="{standalone: true}" placeholder="All Statuses">
-          <mat-option value="Choose Status">All Statuses</mat-option>
-          <mat-option value="Active">Active</mat-option>
-          <mat-option value="Inactive">Inactive</mat-option>
+        <label><i class="feather icon-stop-circle"></i> Statut</label>
+        <mat-select [(ngModel)]="selectedValue4" [ngModelOptions]="{standalone: true}" placeholder="Tous les statuts">
+          <mat-option value="Choose Status">Tous les statuts</mat-option>
+          <mat-option value="Active">Actif</mat-option>
+          <mat-option value="Inactive">Inactif</mat-option>
         </mat-select>
       </div>
       <div class="um-filter-field">
-        <label><i class="feather icon-shield"></i> Role</label>
+        <label><i class="feather icon-shield"></i> Rôle</label>
         <mat-select [(ngModel)]="selectedValue5"
                     (ngModelChange)="filterByRole(selectedValue5)"
                     [ngModelOptions]="{standalone: true}"
-                    placeholder="All Roles">
-          <mat-option value="">All Roles</mat-option>
+                    placeholder="Tous les rôles">
+          <mat-option value="">Tous les rôles</mat-option>
           @for (role of roles; track role.id) {
             <mat-option [value]="role.name">{{ role.name }}</mat-option>
           }
@@ -80,7 +80,7 @@
       </div>
       <div class="um-filter-actions">
         <button class="um-btn-apply">
-          <i class="feather icon-search"></i> Apply Filter
+          <i class="feather icon-search"></i> Appliquer le filtre
         </button>
       </div>
     </div>
@@ -91,11 +91,11 @@
     <table matSort (matSortChange)="sortData($event)" class="um-table">
       <thead>
         <tr>
-          <th mat-sort-header="username">User</th>
+          <th mat-sort-header="username">Utilisateur</th>
           <th mat-sort-header="email">Email</th>
-          <th mat-sort-header="role">Role</th>
-          <th *ngIf="isSuperAdmin" mat-sort-header="entrepriseNom">Enterprise</th>
-          <th mat-sort-header="status">Status</th>
+          <th mat-sort-header="role">Rôle</th>
+          <th *ngIf="isSuperAdmin" mat-sort-header="entrepriseNom">Entreprise</th>
+          <th mat-sort-header="status">Statut</th>
           <th class="no-sort um-th-actions">Actions</th>
         </tr>
       </thead>
@@ -108,8 +108,8 @@
                 <div class="um-empty-icon">
                   <i class="feather icon-user-x"></i>
                 </div>
-                <h3>No Users Found</h3>
-                <p>Try adjusting your search or filter criteria.</p>
+                <h3>Aucun utilisateur trouvé</h3>
+                <p>Essayez d'ajuster vos critères de recherche ou de filtrage.</p>
               </div>
             </td>
           </tr>
@@ -158,7 +158,7 @@
             <td class="um-td-status">
               <span class="um-status-badge" [class.active]="data.enabled" [class.inactive]="!data.enabled">
                 <span class="um-status-dot"></span>
-                {{ data.enabled ? 'Active' : 'Inactive' }}
+                {{ data.enabled ? 'Actif' : 'Inactif' }}
               </span>
             </td>
 
@@ -167,23 +167,23 @@
               <div class="um-actions">
                 <button class="um-action-btn um-action-assign"
                         (click)="userAssigner(data.id)"
-                        matTooltip="Assign Role"
-                        title="Assign Role">
+                        matTooltip="Assigner un rôle"
+                        title="Assigner un rôle">
                   <i class="feather icon-shield"></i>
                 </button>
                 <button class="um-action-btn um-action-view"
                         (click)="viewUsers(data.id)"
                         *ngIf="permissionUsers?.view"
-                        matTooltip="View Details"
-                        title="View Details">
+                        matTooltip="Voir les détails"
+                        title="Voir les détails">
                   <i class="feather icon-eye"></i>
                 </button>
                 <button class="um-action-btn um-action-delete"
                         (click)="deleteUser(data.id)"
                         [class.loading]="isDeleting && deletingUserId === data.id"
                         *ngIf="permissionUsers?.delete"
-                        matTooltip="Delete User"
-                        title="Delete User">
+                        matTooltip="Supprimer l'utilisateur"
+                        title="Supprimer l'utilisateur">
                   @if (isDeleting && deletingUserId === data.id) {
                     <span class="spinner-border spinner-border-sm" role="status"></span>
                   } @else {

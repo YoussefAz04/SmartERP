@@ -8,18 +8,18 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="pagination-wrapper">
       <div class="dataTables_info">
-        Showing results
+        Affichage des résultats
       </div>
       <div class="dataTables_paginate">
         <ul class="pagination">
           <li class="paginate_button page-item previous">
-            <button class="page-link" type="button" (click)="onPrevious()">Previous</button>
+            <button class="page-link" type="button" (click)="onPrevious()">Précédent</button>
           </li>
           <li class="paginate_button page-item active">
             <button class="page-link" type="button">1</button>
           </li>
           <li class="paginate_button page-item next">
-            <button class="page-link" type="button" (click)="onNext()">Next</button>
+            <button class="page-link" type="button" (click)="onNext()">Suivant</button>
           </li>
         </ul>
       </div>

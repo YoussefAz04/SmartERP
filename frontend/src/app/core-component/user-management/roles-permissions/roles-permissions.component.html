@@ -5,18 +5,18 @@
       <i class="feather icon-shield"></i>
     </div>
     <div class="rp-header-text">
-      <h1>Roles &amp; Permissions</h1>
-      <p>Manage your roles and access permissions</p>
+      <h1>Rôles &amp; Permissions</h1>
+      <p>Gérez vos rôles et permissions d'accès</p>
     </div>
   </div>
   <div class="rp-header-right">
     <div class="rp-stats-badge">
       <i class="feather icon-layers"></i>
-      <span>{{ tableData.length }} Role{{ tableData.length !== 1 ? 's' : '' }}</span>
+      <span>{{ tableData.length }} Rôle{{ tableData.length !== 1 ? 's' : '' }}</span>
     </div>
     <a href="javascript:void(0);" class="rp-btn-add" data-bs-toggle="modal" data-bs-target="#add-units">
       <i class="feather icon-plus-circle"></i>
-      <span>Add New Role</span>
+      <span>Ajouter un rôle</span>
     </a>
   </div>
 </div>
@@ -30,7 +30,7 @@
       [ngModelOptions]="{standalone: true}"
       (ngModelChange)="searchData(searchDataValue)"
       type="search"
-      placeholder="Search roles by name..."
+      placeholder="Rechercher des rôles par nom..."
       class="rp-search-input"
     />
     <span class="rp-search-hint">
@@ -40,11 +40,11 @@
   <div class="rp-toolbar-actions">
     <button class="rp-btn-filter" (click)="openFilter()" [class.active]="filter">
       <i class="feather icon-filter"></i>
-      <span>Filter</span>
+      <span>Filtrer</span>
     </button>
     <div class="rp-sort-select">
       <i class="feather icon-sliders"></i>
-      <mat-select [(ngModel)]="selectedValue1" [ngModelOptions]="{standalone: true}" placeholder="Sort by Date">
+      <mat-select [(ngModel)]="selectedValue1" [ngModelOptions]="{standalone: true}" placeholder="Trier par date">
         @for (data of selectedList1; track data) {
           <mat-option [value]="data.value">{{ data.value }}</mat-option>
         }
@@ -57,20 +57,20 @@
 <div class="rp-filter-panel" [class.open]="filter">
   <div class="rp-filter-row">
     <div class="rp-filter-field">
-      <label><i class="feather icon-zap"></i> Choose Role</label>
-      <mat-select [(ngModel)]="selectedValue2" [ngModelOptions]="{standalone: true}" placeholder="All Roles">
+      <label><i class="feather icon-zap"></i> Choisir un rôle</label>
+      <mat-select [(ngModel)]="selectedValue2" [ngModelOptions]="{standalone: true}" placeholder="Tous les rôles">
         @for (data of selectedList2; track data) {
           <mat-option [value]="data.value">{{ data.value }}</mat-option>
         }
       </mat-select>
     </div>
     <div class="rp-filter-field">
-      <label for="rp-date-filter" class="rp-date-label"><i class="feather icon-calendar"></i> Created Date</label>
-      <input id="rp-date-filter" type="date" class="rp-date-input" aria-label="Filter by created date">
+      <label for="rp-date-filter" class="rp-date-label"><i class="feather icon-calendar"></i> Date de création</label>
+      <input id="rp-date-filter" type="date" class="rp-date-input" aria-label="Filtrer par date de création">
     </div>
     <div class="rp-filter-actions">
       <button class="rp-btn-apply">
-        <i class="feather icon-search"></i> Apply Filter
+        <i class="feather icon-search"></i> Appliquer le filtre
       </button>
     </div>
   </div>
@@ -84,10 +84,10 @@
       <div class="rp-empty-icon">
         <i class="feather icon-shield-off"></i>
       </div>
-      <h3>No Roles Found</h3>
-      <p>Get started by creating your first role to manage access permissions.</p>
+      <h3>Aucun rôle trouvé</h3>
+      <p>Commencez par créer votre premier rôle pour gérer les permissions d'accès.</p>
       <a href="javascript:void(0);" class="rp-btn-add" data-bs-toggle="modal" data-bs-target="#add-units">
-        <i class="feather icon-plus-circle"></i> Create First Role
+        <i class="feather icon-plus-circle"></i> Créer le premier rôle
       </a>
     </div>
   }
@@ -101,7 +101,7 @@
         </div>
         <div class="rp-card-badge">
           <i class="feather icon-award"></i>
-          {{ data.roleType || 'CUSTOM' }}
+          {{ data.roleType || 'PERSONNALISÉ' }}
         </div>
       </div>
 
@@ -119,29 +119,29 @@
         <button class="rp-card-action rp-action-edit"
                 data-bs-toggle="modal" data-bs-target="#edit-units"
                 (click)="openEditModal(data)"
-                title="Edit Role">
+                title="Modifier le rôle">
           <i class="feather icon-edit-2"></i>
-          <span>Edit</span>
+          <span>Modifier</span>
         </button>
         <button class="rp-card-action rp-action-shield"
                 [routerLink]="routes.permissions(data.id)"
-                title="View Permissions">
+                title="Voir les permissions">
           <i class="feather icon-eye"></i>
-          <span>View Permissions</span>
+          <span>Voir les permissions</span>
         </button>
         <button class="rp-card-action rp-action-users"
                 data-bs-toggle="modal" data-bs-target="#manage-users-modal"
                 (click)="manageUsersForRole(data)"
-                title="Manage Members">
+                title="Gérer les membres">
           <i class="feather icon-users"></i>
-          <span>Members</span>
+          <span>Membres</span>
         </button>
         <button class="rp-card-action rp-action-delete"
                 *ngIf="isSuperAdmin()"
                 (click)="confirmColor(data.id)"
-                title="Delete Role">
+                title="Supprimer le rôle">
           <i class="feather icon-trash-2"></i>
-          <span>Delete</span>
+          <span>Supprimer</span>
         </button>
       </div>
     </div>
@@ -157,25 +157,25 @@
         <div class="content">
           <div class="modal-header border-0 custom-modal-header">
             <div class="page-title">
-              <h4><i class="feather icon-plus-circle"></i> Create Role</h4>
+              <h4><i class="feather icon-plus-circle"></i> Créer un rôle</h4>
             </div>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body custom-modal-body">
             <form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
               <div class="mb-0">
-                <label class="form-label">Role Name</label>
-                <input type="text" class="form-control" formControlName="name" placeholder="Enter role name">
+                <label class="form-label">Nom du rôle</label>
+                <input type="text" class="form-control" formControlName="name" placeholder="Entrez le nom du rôle">
               </div>
               <div *ngIf="roleForm.get('name')?.invalid && roleForm.get('name')?.touched" class="text-danger">
-                Role name is required.
+                Le nom du rôle est requis.
               </div>
               <div class="modal-footer-btn mt-3">
-                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-submit" [disabled]="roleForm.invalid" aria-label="Close">
-                  <i class="feather icon-plus-circle"></i> Create Role
+                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-submit" [disabled]="roleForm.invalid" aria-label="Fermer">
+                  <i class="feather icon-plus-circle"></i> Créer le rôle
                 </button>
               </div>
             </form>
@@ -195,25 +195,25 @@
         <div class="content">
           <div class="modal-header border-0 custom-modal-header">
             <div class="page-title">
-              <h4><i class="feather icon-edit"></i> Edit Role</h4>
+              <h4><i class="feather icon-edit"></i> Modifier le rôle</h4>
             </div>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body custom-modal-body">
             <form [formGroup]="editRoleForm" (ngSubmit)="onUpdateRole()">
               <div class="mb-0">
-                <label class="form-label">Role Name</label>
-                <input type="text" class="form-control" formControlName="name" placeholder="Enter role name">
+                <label class="form-label">Nom du rôle</label>
+                <input type="text" class="form-control" formControlName="name" placeholder="Entrez le nom du rôle">
               </div>
               <div class="text-danger mt-1" *ngIf="editRoleForm.get('name')?.invalid && editRoleForm.get('name')?.touched">
-                Role name is required.
+                Le nom du rôle est requis.
               </div>
               <div class="modal-footer-btn mt-3">
-                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Annuler</button>
                 <button type="submit" class="btn btn-submit" [disabled]="editRoleForm.invalid">
-                  <i class="feather icon-save"></i> Save Changes
+                  <i class="feather icon-save"></i> Enregistrer les modifications
                 </button>
               </div>
             </form>
@@ -235,25 +235,25 @@
             <div class="page-title">
               <h4>
                 <i class="feather icon-users"></i>
-                Manage Users &mdash; <strong>{{ currentRoleForManage?.name }}</strong>
+                Gérer les utilisateurs &mdash; <strong>{{ currentRoleForManage?.name }}</strong>
               </h4>
             </div>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body custom-modal-body">
             <div *ngIf="manageUsersLoading" class="text-center py-3">
-              <span class="text-muted">Loading users...</span>
+              <span class="text-muted">Chargement des utilisateurs...</span>
             </div>
             <div *ngIf="!manageUsersLoading">
-              <p class="text-muted mb-3">Select users to assign or remove this role.</p>
+              <p class="text-muted mb-3">Sélectionnez les utilisateurs pour assigner ou retirer ce rôle.</p>
               <div class="manage-users-table table-responsive" style="max-height: 350px; overflow-y: auto;">
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th style="width: 50px;">Assign</th>
-                      <th>Username</th>
+                      <th style="width: 50px;">Assigner</th>
+                      <th>Nom d'utilisateur</th>
                       <th>Email</th>
                     </tr>
                   </thead>
@@ -274,13 +274,13 @@
                 </table>
               </div>
               <div *ngIf="allUsers.length === 0" class="text-center text-muted py-3">
-                No users found.
+                Aucun utilisateur trouvé.
               </div>
             </div>
             <div class="modal-footer-btn mt-3">
-              <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-submit" aria-label="Save user role assignments" (click)="assignUsersToRole()">
-                <i class="feather icon-save"></i> Save
+              <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Annuler</button>
+              <button type="button" class="btn btn-submit" aria-label="Enregistrer les affectations de rôle" (click)="assignUsersToRole()">
+                <i class="feather icon-save"></i> Enregistrer
               </button>
             </div>
           </div>
