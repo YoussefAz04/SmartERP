@@ -46,9 +46,7 @@ public class ArticleAchatService {
     public List<ArticleAchatResponseDto> getAllArticlesAchat() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
-            return articleRepository.findAllWithRelations().stream()
-                    .map(this::toResponseDto)
-                    .collect(Collectors.toList());
+            throw new RuntimeException("Enterprise context required");
         }
         return articleRepository.findAllWithRelationsByEntrepriseId(entrepriseId).stream()
                 .map(this::toResponseDto)

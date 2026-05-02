@@ -64,8 +64,7 @@ public class CommandeAchatService {
         if (entrepriseId == null) {
             logger.error("❌ CRITICAL: No enterprise ID found in JWT token!");
             logger.error("   User is not properly authenticated with an enterprise.");
-            logger.error("   Returning empty list to prevent data leaks.");
-            return List.of();  // ← Return EMPTY instead of all orders
+            throw new RuntimeException("Enterprise context required");
         }
         
         List<CommandeAchat> commandes = commandeAchatRepository.findByEntrepriseId(entrepriseId);

@@ -77,7 +77,7 @@ public class ArticleService {
     public List<Article> getAllArticles() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
-            return articleRepository.findAll();
+            throw new RuntimeException("Enterprise context required");
         }
         return articleRepository.findByEntrepriseId(entrepriseId);
     }

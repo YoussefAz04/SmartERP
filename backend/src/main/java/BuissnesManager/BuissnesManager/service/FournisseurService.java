@@ -66,7 +66,7 @@ public class FournisseurService {
     public List<Fournisseur> getAllFournisseurs() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
-            return fournisseurRepo.findAll();
+            throw new RuntimeException("Enterprise context required");
         }
         return fournisseurRepo.findByEntrepriseId(entrepriseId);
     }

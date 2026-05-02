@@ -39,7 +39,7 @@ public class ArticleVenteService {
     public List<ArticleVente> getAllArticlesVente() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
-            return articleVenteRepo.findAll();
+            throw new RuntimeException("Enterprise context required");
         }
         return articleVenteRepo.findByEntrepriseId(entrepriseId);
     }
