@@ -13,13 +13,16 @@
   grid-template-columns: 2fr 1.5fr 1.2fr 1fr;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  background: #f0f7ff;
-  border-radius: 10px;
-  transition: background 0.15s;
+  padding: 11px 14px;
+  background: linear-gradient(135deg, rgba(239,246,255,.7) 0%, rgba(224,242,254,.7) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(37,99,235,.06);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 
   &:hover {
-    background: #dbeafe;
+    background: linear-gradient(135deg, rgba(219,234,254,.9) 0%, rgba(186,230,253,.9) 100%);
+    transform: translateX(3px);
+    box-shadow: 0 4px 14px rgba(37,99,235,.1);
   }
 
   @media (max-width: 768px) {
