@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { UserService } from '../../auth/service/user/user.service';
 import { UserDTO } from '../../model/userDTO.model';
 import { ResponseDto } from '../../model/reponseDto.model';
@@ -41,7 +41,6 @@ export class ProfileComponent implements OnInit {
     private notification: NotificationService,
     private roleService: RoleService,
     private webStorage: WebstorageService,
-    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -185,10 +184,6 @@ export class ProfileComponent implements OnInit {
 
   logout(): void {
     this.webStorage.Logout();
-  }
-
-  goBack(): void {
-    this.router.navigate(['/dashboard/admin-dashboard']);
   }
 
   get primaryRole(): string {
