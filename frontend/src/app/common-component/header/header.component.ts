@@ -204,9 +204,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   highlightText(text: string): string {
-    if (!this.searchQuery || !text) return text;
-    const escaped = this.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+    if (!text) return '';
+    // HTML-escape first to prevent XSS before injecting into innerHTML
+    const safe = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    if (!this.searchQuery) return safe;
+    const queryEscaped = this.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safe.replace(new RegExp(`(${queryEscaped})`, 'gi'), '<mark>$1</mark>');
   }
 
   // ===== THEME METHODS =====
