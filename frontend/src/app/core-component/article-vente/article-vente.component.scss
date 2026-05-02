@@ -415,6 +415,7 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
 }
 
 .filter-group { display: flex; flex-direction: column; gap: 5px; }
+.filter-group--wide { grid-column: span 1; }
 .filter-group--action { justify-content: flex-end; }
 
 .filter-label {
