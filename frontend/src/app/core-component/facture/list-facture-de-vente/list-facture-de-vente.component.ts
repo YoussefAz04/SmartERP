@@ -14,6 +14,7 @@ import {FormsModule} from "@angular/forms";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Swal from 'sweetalert2';
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-list-facture-de-vente',
@@ -228,7 +229,10 @@ export class ListFactureDeVenteComponent implements OnInit{
   }
 
   exportToPdf(facture: FactureVente) {
-    this.factureService.generateFactureVentePDF(facture);
+    if (!facture.id) return;
+    this.factureService.getFactureById(facture.id).subscribe(fullFacture => {
+      this.factureService.generateFactureVentePDF(fullFacture);
+    });
   }
 
   exportMultipleToPdf() {
@@ -242,157 +246,172 @@ export class ListFactureDeVenteComponent implements OnInit{
       return;
     }
 
-    const doc = new jsPDF();
-    const selectedItems = Array.from(this.selectedFactures)
-      .map(id => this.factureAchatList.find(f => f.id === id))
-      .filter(f => f !== undefined) as FactureVente[];
+    const selectedIds = Array.from(this.selectedFactures).filter(id => id !== undefined);
+    const requests = selectedIds.map(id => this.factureService.getFactureById(id));
 
-    selectedItems.forEach((facture, index) => {
-      if (index > 0) {
-        doc.addPage();
-      }
+    forkJoin(requests).subscribe({
+      next: (fullFactures) => {
+        const doc = new jsPDF();
 
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 15;
+        fullFactures.forEach((facture, index) => {
+          if (index > 0) {
+            doc.addPage();
+          }
 
-      // Header bar
-      doc.setFillColor(46, 125, 50);
-      doc.rect(0, 0, 210, 20, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text('FACTURE DE VENTE', pageWidth / 2, 14, { align: 'center' });
-      doc.setTextColor(0, 0, 0);
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const margin = 15;
 
-      // Invoice details (right column)
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`N° Facture: ${facture.referance || '—'}`, 130, 30);
-      doc.text(`Date: ${facture.dateAchat || '—'}`, 130, 37);
-      doc.text(`Statut: ${facture.statut || '—'}`, 130, 44);
-      doc.text(`Paiement: ${facture.modePaiement || '—'}`, 130, 51);
-      if (facture.commandeVente?.reference) {
-        doc.text(`BC: ${facture.commandeVente.reference}`, 130, 58);
-      }
+          // Header bar
+          doc.setFillColor(46, 125, 50);
+          doc.rect(0, 0, 210, 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(18);
+          doc.setFont('helvetica', 'bold');
+          doc.text('FACTURE DE VENTE', pageWidth / 2, 14, { align: 'center' });
+          doc.setTextColor(0, 0, 0);
 
-      // Client section
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text('FACTURÉ À:', margin, 30);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
+          // Invoice details (right column)
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.text(`N° Facture: ${facture.referance || '—'}`, 130, 30);
+          doc.text(`Date: ${facture.dateAchat || '—'}`, 130, 37);
+          doc.text(`Statut: ${facture.statut || '—'}`, 130, 44);
+          doc.text(`Paiement: ${facture.modePaiement || '—'}`, 130, 51);
+          if (facture.commandeVente?.reference) {
+            doc.text(`BC: ${facture.commandeVente.reference}`, 130, 58);
+          }
 
-      const clientLines: string[] = [];
-      const fullName = [facture.client?.nom, facture.client?.prenom].filter(Boolean).join(' ');
-      if (fullName) clientLines.push(fullName);
-      if (facture.client?.adresse) clientLines.push(facture.client.adresse);
-      if (facture.client?.email) clientLines.push(facture.client.email);
-      if (facture.client?.telephone) clientLines.push(`Tél: ${facture.client.telephone}`);
-      if (facture.client?.secteurActivite) clientLines.push(`Secteur: ${facture.client.secteurActivite}`);
-      if (clientLines.length === 0) clientLines.push('Client non renseigné');
+          // Client section
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'bold');
+          doc.text('FACTURÉ À:', margin, 30);
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
 
-      clientLines.forEach((line, i) => {
-        doc.text(line, margin, 38 + i * 7);
-      });
+          const clientLines: string[] = [];
+          const fullName = [facture.client?.nom, facture.client?.prenom].filter(Boolean).join(' ');
+          if (fullName) clientLines.push(fullName);
+          if (facture.client?.adresse) clientLines.push(facture.client.adresse);
+          if (facture.client?.email) clientLines.push(facture.client.email);
+          if (facture.client?.telephone) clientLines.push(`Tél: ${facture.client.telephone}`);
+          if (facture.client?.secteurActivite) clientLines.push(`Secteur: ${facture.client.secteurActivite}`);
+          if (clientLines.length === 0) clientLines.push('Client non renseigné');
 
-      const separatorY = 38 + clientLines.length * 7 + 4;
-      doc.setLineWidth(0.5);
-      doc.line(margin, separatorY, 195, separatorY);
+          clientLines.forEach((line, i) => {
+            doc.text(line, margin, 38 + i * 7);
+          });
 
-      // Line items table
-      const rawDetails = facture.detaisFactureDeVente;
-      const details = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
-      let rows: string[][] = details.map((d, i) => {
-        const qte = d.quantite || 1;
-        const prix = d.prixUnitaireHT || 0;
-        const tva = d.tva || 0;
-        const totalHT = qte * prix;
-        const totalTTC = totalHT * (1 + tva / 100);
-        return [
-          d.article || `Article ${i + 1}`,
-          qte.toString(),
-          prix.toFixed(2) + ' DT',
-          `${tva}%`,
-          totalHT.toFixed(2) + ' DT',
-          totalTTC.toFixed(2) + ' DT'
-        ];
-      });
+          const separatorY = 38 + clientLines.length * 7 + 4;
+          doc.setLineWidth(0.5);
+          doc.line(margin, separatorY, 195, separatorY);
 
-      // Fallback to commandeVente.lignes when no DetaisFactureDeVente is available
-      const commandeLignes = facture.commandeVente?.lignes;
-      if (rows.length === 0 && Array.isArray(commandeLignes) && commandeLignes.length > 0) {
-        rows = commandeLignes.map((l, i) => {
-          const qte = Number(l.quantite) || 1;
-          const prix = Number(l.prixUnitaireHT) || 0;
-          const tva = Number(l.tva) || 0;
-          const totalHT = l.montantHT != null ? Number(l.montantHT) : qte * prix;
-          const totalTTC = l.montantTTC != null ? Number(l.montantTTC) : totalHT * (1 + tva / 100);
-          return [
-            l.articleVente?.nom || `Article ${i + 1}`,
-            qte.toString(),
-            prix.toFixed(2) + ' DT',
-            `${tva}%`,
-            totalHT.toFixed(2) + ' DT',
-            totalTTC.toFixed(2) + ' DT'
-          ];
+          // Line items table
+          const rawDetails = facture.detaisFactureDeVente;
+          const details = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
+          let rows: string[][] = details.map((d, i) => {
+            const qte = d.quantite || 1;
+            const prix = d.prixUnitaireHT || 0;
+            const tva = d.tva || 0;
+            const totalHT = qte * prix;
+            const totalTTC = totalHT * (1 + tva / 100);
+            return [
+              d.article || `Article ${i + 1}`,
+              qte.toString(),
+              prix.toFixed(2) + ' DT',
+              `${tva}%`,
+              totalHT.toFixed(2) + ' DT',
+              totalTTC.toFixed(2) + ' DT'
+            ];
+          });
+
+          // Fallback to commandeVente.lignes when no DetaisFactureDeVente is available
+          const commandeLignes = facture.commandeVente?.lignes;
+          if (rows.length === 0 && Array.isArray(commandeLignes) && commandeLignes.length > 0) {
+            rows = commandeLignes.map((l, i) => {
+              const qte = Number(l.quantite) || 1;
+              const prix = Number(l.prixUnitaireHT) || 0;
+              const tva = Number(l.tva) || 0;
+              const totalHT = l.montantHT != null ? Number(l.montantHT) : qte * prix;
+              const totalTTC = l.montantTTC != null ? Number(l.montantTTC) : totalHT * (1 + tva / 100);
+              return [
+                l.articleVente?.nom || `Article ${i + 1}`,
+                qte.toString(),
+                prix.toFixed(2) + ' DT',
+                `${tva}%`,
+                totalHT.toFixed(2) + ' DT',
+                totalTTC.toFixed(2) + ' DT'
+              ];
+            });
+          }
+
+          autoTable(doc, {
+            startY: separatorY + 5,
+            head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
+            body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
+            margin: { left: margin, right: margin },
+            theme: 'grid',
+            headStyles: { fillColor: [46, 125, 50], textColor: [255, 255, 255] },
+            styles: { fontSize: 9 }
+          });
+
+          const finalY = (doc as any).lastAutoTable.finalY + 8;
+          const montantHT = facture.montantHT || 0;
+          const montantTVA = facture.montantTVA || 0;
+          const remise = facture.remise || 0;
+          const montantTotal = facture.montantTotal || facture.montantTTC || 0;
+
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.text('Sous-total HT:', 130, finalY);
+          doc.text(montantHT.toFixed(2) + ' DT', 195, finalY, { align: 'right' });
+          doc.text('TVA:', 130, finalY + 7);
+          doc.text(montantTVA.toFixed(2) + ' DT', 195, finalY + 7, { align: 'right' });
+          if (remise > 0) {
+            doc.text('Remise:', 130, finalY + 14);
+            doc.text('-' + remise.toFixed(2) + ' DT', 195, finalY + 14, { align: 'right' });
+          }
+          const totalY = finalY + (remise > 0 ? 21 : 14);
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'bold');
+          doc.text('TOTAL TTC:', 130, totalY);
+          doc.text(montantTotal.toFixed(2) + ' DT', 195, totalY, { align: 'right' });
+          doc.setFont('helvetica', 'normal');
+
+          if (facture.description) {
+            doc.setFontSize(9);
+            doc.text(`Notes: ${facture.description}`, margin, totalY + 10, { maxWidth: 180 });
+          }
+
+          // Footer
+          doc.setFillColor(46, 125, 50);
+          doc.rect(0, 275, 210, 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(8);
+          doc.text(`Généré le: ${new Date().toLocaleString('fr-FR')}`, margin, 285);
+          doc.text('Merci pour votre confiance !', 190, 285, { align: 'right' });
+          doc.setTextColor(0, 0, 0);
+        });
+
+        doc.save('Factures_Vente.pdf');
+        this.selectedFactures.clear();
+        this.selectAll = false;
+      },
+      error: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors du chargement des détails des factures.',
+          confirmButtonColor: '#4caf50'
         });
       }
-
-      autoTable(doc, {
-        startY: separatorY + 5,
-        head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
-        body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
-        margin: { left: margin, right: margin },
-        theme: 'grid',
-        headStyles: { fillColor: [46, 125, 50], textColor: [255, 255, 255] },
-        styles: { fontSize: 9 }
-      });
-
-      const finalY = (doc as any).lastAutoTable.finalY + 8;
-      const montantHT = facture.montantHT || 0;
-      const montantTVA = facture.montantTVA || 0;
-      const remise = facture.remise || 0;
-      const montantTotal = facture.montantTotal || facture.montantTTC || 0;
-
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Sous-total HT:', 130, finalY);
-      doc.text(montantHT.toFixed(2) + ' DT', 195, finalY, { align: 'right' });
-      doc.text('TVA:', 130, finalY + 7);
-      doc.text(montantTVA.toFixed(2) + ' DT', 195, finalY + 7, { align: 'right' });
-      if (remise > 0) {
-        doc.text('Remise:', 130, finalY + 14);
-        doc.text('-' + remise.toFixed(2) + ' DT', 195, finalY + 14, { align: 'right' });
-      }
-      const totalY = finalY + (remise > 0 ? 21 : 14);
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text('TOTAL TTC:', 130, totalY);
-      doc.text(montantTotal.toFixed(2) + ' DT', 195, totalY, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
-
-      if (facture.description) {
-        doc.setFontSize(9);
-        doc.text(`Notes: ${facture.description}`, margin, totalY + 10, { maxWidth: 180 });
-      }
-
-      // Footer
-      doc.setFillColor(46, 125, 50);
-      doc.rect(0, 275, 210, 20, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(8);
-      doc.text(`Généré le: ${new Date().toLocaleString('fr-FR')}`, margin, 285);
-      doc.text('Merci pour votre confiance !', 190, 285, { align: 'right' });
-      doc.setTextColor(0, 0, 0);
     });
-
-    doc.save('Factures_Vente.pdf');
-    this.selectedFactures.clear();
-    this.selectAll = false;
   }
 
   sendEmailFactureVente(facture: FactureVente) {
-    this.factureService.sendEmailFactureVente(facture);
+    if (!facture.id) return;
+    this.factureService.getFactureById(facture.id).subscribe(fullFacture => {
+      this.factureService.sendEmailFactureVente(fullFacture);
+    });
   }
 
   addFacture() {
