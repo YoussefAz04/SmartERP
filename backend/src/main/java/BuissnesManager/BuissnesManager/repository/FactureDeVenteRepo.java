@@ -14,6 +14,15 @@ public interface FactureDeVenteRepo extends JpaRepository<FactureDeVente,Long> {
     Optional<FactureDeVente> findByCommandeVenteId(Long commandeVenteId);
     List<FactureDeVente> findByClientId(Long clientId);
 
+    @Query("SELECT f FROM FactureDeVente f " +
+           "LEFT JOIN FETCH f.commandeVente cv " +
+           "LEFT JOIN FETCH cv.lignes l " +
+           "LEFT JOIN FETCH l.articleVente " +
+           "LEFT JOIN FETCH f.detaisFactureDeVente " +
+           "LEFT JOIN FETCH f.client " +
+           "WHERE f.id = :id")
+    Optional<FactureDeVente> findByIdWithDetails(@Param("id") Long id);
+
     @Modifying
     @Query("UPDATE FactureDeVente f SET f.client = null WHERE f.client.id = :clientId")
     void detachClient(@Param("clientId") Long clientId);
