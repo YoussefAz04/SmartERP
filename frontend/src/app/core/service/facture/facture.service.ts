@@ -75,14 +75,14 @@ export class FactureService {
 
         doc.setFontSize(15);
         doc.setFont('helvetica', 'bold');
-        doc.text(String(this.entreprise.nom), 20, 35);
+        doc.text(this.entreprise.nom || '', 20, 35);
 
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text(String(this.entreprise.email || ''), 20, 42);
-        doc.text(String(this.entreprise.telephone || ''), 20, 49);
-        doc.text(String(this.entreprise.adresse || ''), 20, 56);
-        doc.text(String(this.entreprise.siteWeb || ''), 20, 63);
+        doc.text(this.entreprise.email || '', 20, 42);
+        doc.text(this.entreprise.telephone || '', 20, 49);
+        doc.text(this.entreprise.adresse || '', 20, 56);
+        doc.text(this.entreprise.siteWeb || '', 20, 63);
 
         this.buildFactureAchatContent(doc, factureData);
 
@@ -157,8 +157,8 @@ export class FactureService {
 
     // Line items table
     const rawDetails = factureData.detaisFactureAchat;
-    const details = Array.isArray(rawDetails) ? rawDetails : rawDetails ? [rawDetails] : [];
-    const rows = details.map((d, i) => {
+    const detailsArray = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
+    const rows = detailsArray.map((d, i) => {
       const qte = d.quantite || 1;
       const prix = d.prixUnitaireHT || 0;
       const tva = d.tva || 0;
@@ -184,7 +184,7 @@ export class FactureService {
     autoTable(doc, {
       startY: separatorY + 5,
       head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
-      body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
+      body: detailsArray.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
       theme: 'grid',
       headStyles: {
         fillColor: [fillR, fillG, fillB],

@@ -165,7 +165,7 @@ export class FactureDeVenteServiceService {
     }
 
     const rawDetails = factureData.detaisFactureDeVente;
-    const details = Array.isArray(rawDetails) ? rawDetails : rawDetails ? [rawDetails] : [];
+    const details = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
 
     const tableStartY = 80 + clientLines.length * 7 + (factureData.description ? 20 : 5);
 

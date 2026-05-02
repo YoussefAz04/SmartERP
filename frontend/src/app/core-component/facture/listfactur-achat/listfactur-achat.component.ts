@@ -271,7 +271,7 @@ export class ListfacturAchatComponent implements OnInit{
 
       // Line items table
       const rawDetails = facture.detaisFactureAchat;
-      const details = Array.isArray(rawDetails) ? rawDetails : rawDetails ? [rawDetails] : [];
+      const details = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
       const rows = details.map((d, i) => {
         const qte = d.quantite || 1;
         const prix = d.prixUnitaireHT || 0;
