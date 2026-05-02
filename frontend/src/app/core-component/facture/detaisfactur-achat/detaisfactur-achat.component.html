@@ -173,7 +173,48 @@
   </form>
 </div>
 
-<!-- Détails de la Facture Table -->
+<!-- Informations Fournisseur -->
+<div class="detail-card mt-section" *ngIf="factureDetais?.fournisseur">
+  <div class="section-header card-section-header">
+    <i class="feather icon-truck"></i>
+    <h3>Informations Fournisseur</h3>
+  </div>
+  <div class="client-info-grid">
+    <div class="client-info-item">
+      <span class="info-label">Nom</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.nom }}</span>
+    </div>
+    <div class="client-info-item" *ngIf="factureDetais.fournisseur?.email">
+      <span class="info-label">Email</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.email }}</span>
+    </div>
+    <div class="client-info-item" *ngIf="factureDetais.fournisseur?.telephone">
+      <span class="info-label">Téléphone</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.telephone }}</span>
+    </div>
+    <div class="client-info-item" *ngIf="factureDetais.fournisseur?.adresse">
+      <span class="info-label">Adresse</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.adresse }}</span>
+    </div>
+    <div class="client-info-item" *ngIf="factureDetais.fournisseur?.ville">
+      <span class="info-label">Ville</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.ville }}</span>
+    </div>
+    <div class="client-info-item" *ngIf="factureDetais.fournisseur?.pays">
+      <span class="info-label">Pays</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.pays }}</span>
+    </div>
+    <div class="client-info-item" *ngIf="factureDetais.fournisseur?.numeroIdentificationFiscale">
+      <span class="info-label">NIF</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.numeroIdentificationFiscale }}</span>
+    </div>
+    <div class="client-info-item" *ngIf="factureDetais.fournisseur?.registreCommerce">
+      <span class="info-label">Registre Commerce</span>
+      <span class="info-value">{{ factureDetais.fournisseur?.registreCommerce }}</span>
+    </div>
+  </div>
+</div>
+
 <div class="detail-card mt-section" *ngIf="factureDetais">
   <div class="section-header card-section-header">
     <i class="feather icon-list"></i>

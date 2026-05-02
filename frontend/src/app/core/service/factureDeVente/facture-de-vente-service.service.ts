@@ -96,14 +96,18 @@ export class FactureDeVenteServiceService {
 
 
   private buildFactureContent(doc: jsPDF, factureData: FactureVente) {
-    if (this.entreprise.caracteristiqueFactureEntreprise?.colorHeaderR && this.entreprise.caracteristiqueFactureEntreprise?.colorHeaderB && this.entreprise.caracteristiqueFactureEntreprise?.colorHeaderG)
-    doc.setFillColor(this.entreprise.caracteristiqueFactureEntreprise?.colorHeaderR, this.entreprise.caracteristiqueFactureEntreprise?.colorHeaderG, this.entreprise.caracteristiqueFactureEntreprise?.colorHeaderB);
+    const caract = this.entreprise.caracteristiqueFactureEntreprise;
+    const headerR = caract?.colorHeaderR ?? 46;
+    const headerG = caract?.colorHeaderG ?? 125;
+    const headerB = caract?.colorHeaderB ?? 50;
+    doc.setFillColor(headerR, headerG, headerB);
     doc.rect(0, 0, 210, 20, 'F');
 
-
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(20);
-    doc.setFont( 'bold');
+    doc.setFont('helvetica', 'bold');
     doc.text("FACTURE DE VENTE", 105, 15, {align: 'center'});
+    doc.setTextColor(0, 0, 0);
 
 
 
@@ -113,8 +117,12 @@ export class FactureDeVenteServiceService {
     const invoiceDetails = [
       `N° Facture: ${factureData.referance || "F-2025-001"}`,
       `Date: ${factureData.dateAchat || new Date().toLocaleDateString("fr-FR")}`,
-      `Statut: ${factureData.statut || "En attente"}`
+      `Statut: ${factureData.statut || "En attente"}`,
+      `Paiement: ${factureData.modePaiement || "—"}`
     ];
+    if (factureData.commandeVente?.reference) {
+      invoiceDetails.push(`Bon de Commande: ${factureData.commandeVente.reference}`);
+    }
 
     invoiceDetails.forEach((detail, index) => {
       doc.text(detail, 140, 40 + (index * 7));
@@ -128,38 +136,43 @@ export class FactureDeVenteServiceService {
 
     doc.setFontSize(10);
     doc.setFont('bold', 'normal');
-    const clientInfo = [
-      factureData.client?.nom || "Nom du Client",
-      factureData.client?.adresse || "Adresse du Client",
-      factureData.client?.email || "email@example.com",
-      factureData.client?.telephone || "Téléphone"
-    ];
+    const clientLines: string[] = [];
+    const fullName = [factureData.client?.nom, factureData.client?.prenom].filter(Boolean).join(' ');
+    clientLines.push(fullName || "Nom du Client");
+    if (factureData.client?.adresse) clientLines.push(factureData.client.adresse);
+    clientLines.push(factureData.client?.email || "email@example.com");
+    clientLines.push(factureData.client?.telephone || "Téléphone");
+    if (factureData.client?.secteurActivite) {
+      clientLines.push(`Secteur: ${factureData.client.secteurActivite}`);
+    }
 
-    clientInfo.forEach((info, index) => {
+    clientLines.forEach((info, index) => {
       doc.text(info, 20, 80 + (index * 7));
     });
 
     // Separator line after client info
     doc.setLineWidth(0.5);
-    doc.line(20, 110, 190, 110);
+    doc.line(20, 80 + clientLines.length * 7 + 3, 190, 80 + clientLines.length * 7 + 3);
 
 
 
     if (factureData.description) {
+      const descStartY = 80 + clientLines.length * 7 + 10;
       doc.setFontSize(10);
-      doc.text("Description:", 20, 200);
+      doc.text("Description:", 20, descStartY);
       const splitDesc = doc.splitTextToSize(factureData.description, 170);
-      doc.text(splitDesc, 20, 210);
+      doc.text(splitDesc, 20, descStartY + 7);
     }
 
-    const details = Array.isArray(factureData.detaisFactureDeVente)
-      ? factureData.detaisFactureDeVente
-      : [factureData.detaisFactureDeVente];
+    const rawDetails = factureData.detaisFactureDeVente;
+    const details = Array.isArray(rawDetails) ? rawDetails : rawDetails ? [rawDetails] : [];
+
+    const tableStartY = 80 + clientLines.length * 7 + (factureData.description ? 20 : 5);
 
     const rows = details.map((d, i) => {
       const qte = d.quantite || 1;
       const prix = d.prixUnitaireHT || 0;
-      const tva = d.tva || 20;
+      const tva = d.tva || 0;
       const totalHT = qte * prix;
       const totalTTC = totalHT + totalHT * (tva / 100);
       return [
@@ -167,48 +180,67 @@ export class FactureDeVenteServiceService {
         qte.toString(),
         prix.toFixed(2) + " DT",
         `${tva}%`,
+        totalHT.toFixed(2) + " DT",
         totalTTC.toFixed(2) + " DT",
       ];
     });
 
-
     autoTable(doc, {
-      startY: factureData.description ? 140 : 110,
-      head: [["Article", "Qté", "Prix HT", "TVA %", "Total TTC"]],
-      body: rows,
+      startY: tableStartY,
+      head: [["Article", "Qté", "Prix HT", "TVA %", "Montant HT", "Total TTC"]],
+      body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
       theme: "grid",
       headStyles: {
-
-        fillColor: [this.entreprise.caracteristiqueFactureEntreprise?.fillColorR || 0, this.entreprise.caracteristiqueFactureEntreprise?.fillColorG || 0, this.entreprise.caracteristiqueFactureEntreprise?.fillColorB || 0], textColor: [this.entreprise.caracteristiqueFactureEntreprise?.textColorR || 0, this.entreprise.caracteristiqueFactureEntreprise?.textColorG || 0, this.entreprise.caracteristiqueFactureEntreprise?.textColorB || 0] },
-      styles: { fontSize: 10 },
+        fillColor: [caract?.fillColorR || 0, caract?.fillColorG || 0, caract?.fillColorB || 0],
+        textColor: [caract?.textColorR || 255, caract?.textColorG || 255, caract?.textColorB || 255]
+      },
+      styles: { fontSize: 9 },
     });
-
-    const totalHT = details.reduce((sum, d) => sum + (d.quantite || 1) * (d.prixUnitaireHT || 0), 0);
-    const totalTVA = details.reduce((sum, d) => sum + ((d.quantite || 1) * (d.prixUnitaireHT || 0)) * ((d.tva || 20) / 100), 0);
-    const totalTTC = totalHT + totalTVA;
 
     const finalY = (doc as any).lastAutoTable.finalY + 10;
 
-    doc.setFontSize(10);
-    doc.text("Sous-total HT:", 140, finalY);
-    doc.text(totalHT.toFixed(2) + " DT", 180, finalY, { align: "right" });
+    const montantHT = factureData.montantHT || 0;
+    const montantTVA = factureData.montantTVA || 0;
+    const remise = factureData.remise || 0;
+    const montantTotal = factureData.montantTotal || factureData.montantTTC || 0;
 
-    doc.text("TVA:", 140, finalY + 7);
-    doc.text(totalTVA.toFixed(2) + " DT", 180, finalY + 7, { align: "right" });
+    doc.setFontSize(10);
+    doc.text("Sous-total HT:", 130, finalY);
+    doc.text(montantHT.toFixed(2) + " DT", 190, finalY, { align: "right" });
+
+    doc.text("TVA:", 130, finalY + 7);
+    doc.text(montantTVA.toFixed(2) + " DT", 190, finalY + 7, { align: "right" });
+
+    let summaryOffset = 14;
+    if (remise > 0) {
+      doc.text("Remise:", 130, finalY + summaryOffset);
+      doc.text("-" + remise.toFixed(2) + " DT", 190, finalY + summaryOffset, { align: "right" });
+      summaryOffset += 7;
+    }
 
     doc.setFontSize(12);
-    doc.text("TOTAL TTC:", 140, finalY + 14);
-    doc.text(totalTTC.toFixed(2) + " DT", 180, finalY + 14, { align: "right" });
+    doc.setFont('helvetica', 'bold');
+    doc.text("TOTAL TTC:", 130, finalY + summaryOffset);
+    doc.text(montantTotal.toFixed(2) + " DT", 190, finalY + summaryOffset, { align: "right" });
+    doc.setFont('helvetica', 'normal');
 
-
-
-    if (this.entreprise.caracteristiqueFactureEntreprise?.colorFooterR && this.entreprise.caracteristiqueFactureEntreprise?.colorFooterG && this.entreprise.caracteristiqueFactureEntreprise?.colorFooterB)
-      doc.setFillColor(this.entreprise.caracteristiqueFactureEntreprise?.colorFooterR, this.entreprise.caracteristiqueFactureEntreprise?.colorFooterG,  this.entreprise.caracteristiqueFactureEntreprise?.colorFooterB);
-    doc.rect(0, 275, 210, 20, 'F'); // rectangle en bas
+    if (caract?.colorFooterR && caract?.colorFooterG && caract?.colorFooterB) {
+      doc.setFillColor(caract.colorFooterR, caract.colorFooterG, caract.colorFooterB);
+    } else {
+      doc.setFillColor(46, 125, 50);
+    }
+    doc.rect(0, 275, 210, 20, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
-    doc.text("SIRET: 123 456 789 00012 - TVA: FR12345678901", 20, 285);
-    doc.text(this.entreprise.caracteristiqueFactureEntreprise?.messageFooter || "Merci pour votre confiance !", 140, 285);
+    const nif = this.entreprise.numeroIdentificationFiscale || '';
+    const rc = this.entreprise.registreCommerce || '';
+    if (nif || rc) {
+      doc.text(`NIF: ${nif}  —  RC: ${rc}`, 20, 285);
+    } else {
+      doc.text(`${this.entreprise.nom}`, 20, 285);
+    }
+    doc.text(caract?.messageFooter || "Merci pour votre confiance !", 190, 285, { align: "right" });
+    doc.setTextColor(0, 0, 0);
 
 
 
