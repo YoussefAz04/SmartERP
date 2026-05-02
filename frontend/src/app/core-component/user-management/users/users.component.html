@@ -178,6 +178,22 @@
                         title="Voir les détails">
                   <i class="feather icon-eye"></i>
                 </button>
+                <button class="um-action-btn"
+                        [class.um-action-deactivate]="data.enabled"
+                        [class.um-action-activate]="!data.enabled"
+                        (click)="toggleUserStatus(data)"
+                        [disabled]="isTogglingStatus && togglingUserId === data.id"
+                        *ngIf="permissionUsers?.update"
+                        [matTooltip]="data.enabled ? 'Désactiver le compte' : 'Activer le compte'"
+                        [title]="data.enabled ? 'Désactiver le compte' : 'Activer le compte'">
+                  @if (isTogglingStatus && togglingUserId === data.id) {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                  } @else if (data.enabled) {
+                    <i class="feather icon-user-x"></i>
+                  } @else {
+                    <i class="feather icon-user-check"></i>
+                  }
+                </button>
                 <button class="um-action-btn um-action-delete"
                         (click)="deleteUser(data.id)"
                         [class.loading]="isDeleting && deletingUserId === data.id"

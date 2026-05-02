@@ -230,6 +230,43 @@ public class UserController {
         }
     }
 
+    /**
+     * Activate or deactivate a user account.
+     * ADMIN can only toggle users in their own enterprise.
+     * A deactivated user is rejected at login.
+     */
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> setUserStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, Boolean> body,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Boolean enabled = body == null ? null : body.get("enabled");
+            if (enabled == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Le champ 'enabled' est requis", "status", "error"));
+            }
+            if (authorizationUtil.isAdmin() && !authorizationUtil.isSuperAdmin()) {
+                Long tokenEnterpriseId = extractEnterpriseId(authHeader);
+                if (tokenEnterpriseId == null || !userService.isUserInEnterprise(id, tokenEnterpriseId)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                            .body(Map.of("error", "ADMIN can only manage users in their own enterprise",
+                                    "status", "error"));
+                }
+            }
+            UserDTO updated = userService.setUserEnabled(id, enabled);
+            return ResponseEntity.ok(Map.of(
+                    "message", enabled ? "Utilisateur activé avec succès" : "Utilisateur désactivé avec succès",
+                    "status", "success",
+                    "user", updated));
+        } catch (Exception e) {
+            logger.error("Error toggling user status: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage(), "status", "error"));
+        }
+    }
+
     // ----------------------------------------------------------------
     // Helper
     // ----------------------------------------------------------------

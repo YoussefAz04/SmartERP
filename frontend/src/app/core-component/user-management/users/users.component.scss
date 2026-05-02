@@ -601,6 +601,42 @@ $shadow-xl: 0 20px 60px rgba(0,0,0,.15);
       border-width: 0.18em;
     }
   }
+
+  &.um-action-deactivate {
+    color: $orange-dark;
+
+    &:hover:not(:disabled) {
+      background: $orange-light;
+      border-color: rgba($orange, .35);
+      transform: translateY(-1px);
+    }
+
+    &:disabled { opacity: .6; cursor: not-allowed; }
+
+    .spinner-border-sm {
+      width: 0.95rem;
+      height: 0.95rem;
+      border-width: 0.18em;
+    }
+  }
+
+  &.um-action-activate {
+    color: $green-dark;
+
+    &:hover:not(:disabled) {
+      background: $green-light;
+      border-color: rgba($green, .35);
+      transform: translateY(-1px);
+    }
+
+    &:disabled { opacity: .6; cursor: not-allowed; }
+
+    .spinner-border-sm {
+      width: 0.95rem;
+      height: 0.95rem;
+      border-width: 0.18em;
+    }
+  }
 }
 
 // ============================================

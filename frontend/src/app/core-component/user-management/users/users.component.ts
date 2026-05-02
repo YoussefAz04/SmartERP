@@ -56,6 +56,8 @@ export class UsersComponent implements OnInit {
   password: boolean[] = [];
   isDeleting = false;
   deletingUserId: number | null = null;
+  isTogglingStatus = false;
+  togglingUserId: number | null = null;
 
   isSuperAdmin = false;
   isAdmin = false;
@@ -230,6 +232,57 @@ export class UsersComponent implements OnInit {
 
   togglePassword(index: number): void {
     this.password[index] = !this.password[index];
+  }
+
+  toggleUserStatus(user: UserDTO): void {
+    if (!user || user.id == null) {
+      this.notification.error('❌ ID utilisateur invalide');
+      return;
+    }
+
+    if (this.isTogglingStatus) {
+      this.notification.info('Opération en cours...');
+      return;
+    }
+
+    const newEnabled = !user.enabled;
+    const actionLabel = newEnabled ? 'activer' : 'désactiver';
+    const message = newEnabled
+      ? `Êtes-vous sûr de vouloir activer le compte de "${user.username}" ?`
+      : `Êtes-vous sûr de vouloir désactiver le compte de "${user.username}" ? L'utilisateur ne pourra plus se connecter.`;
+
+    this.notification.confirm(message).then(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.isTogglingStatus = true;
+      this.togglingUserId = user.id;
+
+      this.userService.setUserStatus(user.id, newEnabled).subscribe({
+        next: () => {
+          user.enabled = newEnabled;
+          const idxAll = this.allUsers.findIndex(u => u.id === user.id);
+          if (idxAll !== -1) {
+            this.allUsers[idxAll].enabled = newEnabled;
+          }
+          this.isTogglingStatus = false;
+          this.togglingUserId = null;
+          this.notification.success(
+            newEnabled
+              ? '✓ Utilisateur activé avec succès'
+              : '✓ Utilisateur désactivé avec succès'
+          );
+        },
+        error: (err: any) => {
+          this.isTogglingStatus = false;
+          this.togglingUserId = null;
+          const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur inconnue';
+          console.error(`Erreur ${actionLabel} utilisateur:`, err);
+          this.notification.error(`✗ Erreur lors de l'opération: ${errorMsg}`);
+        }
+      });
+    });
   }
 
   addUsers(): void {
