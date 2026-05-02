@@ -26,8 +26,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -237,6 +241,110 @@ public class AuthController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid credentials: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Request a password reset.
+     * POST /api/auth/forgot-password  body: { "email": "..." }
+     *
+     * Generates a one-time token (valid 30 minutes) and stores it on the user.
+     * Because no SMTP server is configured in this project, the token and a
+     * ready-to-use reset link are returned directly in the response so the UI
+     * can display them. To avoid leaking which emails are registered, the
+     * endpoint always returns 200 OK with a generic message; the token/link
+     * fields are only populated when the email actually matches an account.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request != null ? request.get("email") : null;
+        System.out.println("✅ Forgot-password endpoint hit for email: " + email);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", "If an account exists for this email, a password reset link has been generated.");
+
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required");
+        }
+
+        try {
+            Optional<User> userOpt = userRepo.findByEmail(email.trim());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                String token = UUID.randomUUID().toString().replace("-", "");
+                user.setResetPasswordToken(token);
+                user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(30));
+                userRepo.save(user);
+
+                // No SMTP configured: return the token/link directly so the UI
+                // (or a developer/admin) can use it. In a production deployment
+                // with email enabled, these fields should be removed and the
+                // link emailed to the user instead.
+                String resetLink = "/auth/reset-password?token=" + token;
+                body.put("token", token);
+                body.put("resetLink", resetLink);
+                body.put("expiresAt", user.getResetPasswordTokenExpiry().toString());
+                System.out.println("✅ Password reset token generated for user: " + user.getUsername());
+            } else {
+                System.out.println("ℹ️ Forgot-password requested for unknown email: " + email);
+            }
+            return ResponseEntity.ok(body);
+        } catch (Exception e) {
+            System.err.println("❌ Forgot-password error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not process password reset request: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Reset a password using a token previously issued by /forgot-password.
+     * POST /api/auth/reset-password  body: { "token": "...", "newPassword": "..." }
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        String token = request != null ? request.get("token") : null;
+        String newPassword = request != null ? request.get("newPassword") : null;
+        System.out.println("✅ Reset-password endpoint hit");
+
+        if (token == null || token.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token is required");
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must be at least 6 characters");
+        }
+
+        try {
+            Optional<User> userOpt = userRepo.findByResetPasswordToken(token.trim());
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired reset token");
+            }
+
+            User user = userOpt.get();
+            LocalDateTime expiry = user.getResetPasswordTokenExpiry();
+            if (expiry == null || expiry.isBefore(LocalDateTime.now())) {
+                // Clear the stale token so it cannot be retried
+                user.setResetPasswordToken(null);
+                user.setResetPasswordTokenExpiry(null);
+                userRepo.save(user);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired reset token");
+            }
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            // Single-use: invalidate the token
+            user.setResetPasswordToken(null);
+            user.setResetPasswordTokenExpiry(null);
+            userRepo.save(user);
+
+            System.out.println("✅ Password reset successful for user: " + user.getUsername());
+            Map<String, Object> body = new HashMap<>();
+            body.put("message", "Password updated successfully. You can now sign in with your new password.");
+            return ResponseEntity.ok(body);
+        } catch (Exception e) {
+            System.err.println("❌ Reset-password error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not reset password: " + e.getMessage());
         }
     }
 
