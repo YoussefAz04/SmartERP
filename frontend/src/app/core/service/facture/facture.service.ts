@@ -72,20 +72,7 @@ export class FactureService {
     if (currentUser?.entreprise?.id) {
       this.entrepriseService.getEntrepriseById(currentUser.entreprise.id).subscribe(data => {
         this.entreprise = data;
-
-        doc.setFontSize(15);
-        doc.setFont('helvetica', 'bold');
-        doc.text(this.entreprise.nom || '', 20, 35);
-
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(this.entreprise.email || '', 20, 42);
-        doc.text(this.entreprise.telephone || '', 20, 49);
-        doc.text(this.entreprise.adresse || '', 20, 56);
-        doc.text(this.entreprise.siteWeb || '', 20, 63);
-
         this.buildFactureAchatContent(doc, factureData);
-
         doc.save(`facture-achat-${factureData.referance || 'achat'}.pdf`);
       });
     }
@@ -93,22 +80,41 @@ export class FactureService {
 
   private buildFactureAchatContent(doc: jsPDF, factureData: FactureAchat) {
     const caract = this.entreprise.caracteristiqueFactureEntreprise;
-
-    // Header bar
     const headerR = caract?.colorHeaderR ?? 41;
     const headerG = caract?.colorHeaderG ?? 128;
     const headerB = caract?.colorHeaderB ?? 185;
-    doc.setFillColor(headerR, headerG, headerB);
-    doc.rect(0, 0, 210, 20, 'F');
 
+    // ── Header bar ────────────────────────────────────────────────────────────
+    doc.setFillColor(headerR, headerG, headerB);
+    doc.rect(0, 0, 210, 28, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
+    doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text("FACTURE D'ACHAT", 105, 15, { align: 'center' });
+    doc.text("FACTURE D'ACHAT", 105, 18.5, { align: 'center' });
     doc.setTextColor(0, 0, 0);
 
-    // Invoice details (right side)
-    doc.setFontSize(10);
+    // ── Company info panel (left column) ──────────────────────────────────────
+    doc.setFillColor(248, 249, 250);
+    doc.rect(12, 33, 86, 52, 'F');
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(this.entreprise.nom || '', 17, 43);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const companyLines = [
+      this.entreprise.email || '',
+      this.entreprise.telephone || '',
+      this.entreprise.adresse || '',
+      this.entreprise.siteWeb || ''
+    ].filter(l => l.trim() !== '');
+    companyLines.forEach((line, i) => {
+      doc.text(line, 17, 51 + i * 7);
+    });
+
+    // ── Invoice details panel (right column) ──────────────────────────────────
+    doc.setFillColor(248, 249, 250);
+    doc.rect(112, 33, 86, 52, 'F');
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     const invoiceDetails = [
       `N° Facture: ${factureData.referance || '—'}`,
@@ -116,21 +122,24 @@ export class FactureService {
       `Statut: ${factureData.statut || 'En attente'}`,
       `Paiement: ${factureData.modePaiement || '—'}`
     ];
+    if (factureData.commandeAchat?.reference) {
+      invoiceDetails.push(`Bon de Commande: ${factureData.commandeAchat.reference}`);
+    }
     invoiceDetails.forEach((detail, index) => {
-      doc.text(detail, 140, 35 + index * 7);
+      doc.text(detail, 117, 43 + index * 7);
     });
 
-    // Commande achat reference
-    if (factureData.commandeAchat?.reference) {
-      doc.text(`Bon de Commande: ${factureData.commandeAchat.reference}`, 140, 35 + invoiceDetails.length * 7);
-    }
-
-    // Fournisseur section
-    doc.setFontSize(12);
+    // ── Section heading: FOURNISSEUR ──────────────────────────────────────────
+    doc.setFillColor(headerR, headerG, headerB);
+    doc.rect(12, 89, 86, 8, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10.5);
     doc.setFont('helvetica', 'bold');
-    doc.text('FOURNISSEUR:', 20, 75);
+    doc.text('FOURNISSEUR:', 17, 95);
+    doc.setTextColor(0, 0, 0);
 
-    doc.setFontSize(10);
+    // ── Fournisseur info ──────────────────────────────────────────────────────
+    doc.setFontSize(9.5);
     doc.setFont('helvetica', 'normal');
     const fournisseurLines: string[] = [
       factureData.fournisseur?.nom || 'Nom du Fournisseur',
@@ -148,14 +157,16 @@ export class FactureService {
     }
     const filteredLines = fournisseurLines.filter(l => l.trim() !== '');
     filteredLines.forEach((line, index) => {
-      doc.text(line, 20, 83 + index * 7);
+      doc.text(line, 17, 102 + index * 7);
     });
 
-    const separatorY = 83 + filteredLines.length * 7 + 5;
-    doc.setLineWidth(0.5);
-    doc.line(20, separatorY, 190, separatorY);
+    // ── Separator ─────────────────────────────────────────────────────────────
+    const separatorY = 102 + filteredLines.length * 7 + 6;
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.4);
+    doc.line(12, separatorY, 198, separatorY);
 
-    // Line items table
+    // ── Line items table ──────────────────────────────────────────────────────
     const rawDetails = factureData.detaisFactureAchat;
     const detailsArray = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
     let rows: string[][] = detailsArray.map((d, i) => {
@@ -201,69 +212,86 @@ export class FactureService {
     const txtB = caract?.textColorB ?? 255;
 
     autoTable(doc, {
-      startY: separatorY + 5,
+      startY: separatorY + 6,
       head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
       body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
+      margin: { left: 12, right: 12 },
       theme: 'grid',
       headStyles: {
         fillColor: [fillR, fillG, fillB],
-        textColor: [txtR, txtG, txtB]
+        textColor: [txtR, txtG, txtB],
+        fontStyle: 'bold',
+        fontSize: 9
       },
-      styles: { fontSize: 9 }
+      styles: { fontSize: 9 },
+      alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-
+    const finalY = (doc as any).lastAutoTable.finalY + 8;
     const montantHT = factureData.montantHT || 0;
     const montantTVA = factureData.montantTVA || 0;
     const remise = factureData.remise || 0;
     const montantTotal = factureData.montantTotal || factureData.montantTTC || 0;
+    const hasRemise = remise > 0;
 
-    doc.setFontSize(10);
+    // ── Totals ────────────────────────────────────────────────────────────────
+    doc.setFontSize(9.5);
     doc.setFont('helvetica', 'normal');
-    doc.text('Sous-total HT:', 130, finalY);
-    doc.text(montantHT.toFixed(2) + ' DT', 190, finalY, { align: 'right' });
+    doc.setTextColor(60, 60, 60);
+    doc.text('Sous-total HT:', 117, finalY + 2);
+    doc.text(montantHT.toFixed(2) + ' DT', 196, finalY + 2, { align: 'right' });
+    doc.text('TVA:', 117, finalY + 10);
+    doc.text(montantTVA.toFixed(2) + ' DT', 196, finalY + 10, { align: 'right' });
 
-    doc.text('TVA:', 130, finalY + 7);
-    doc.text(montantTVA.toFixed(2) + ' DT', 190, finalY + 7, { align: 'right' });
-
-    let summaryOffset = 14;
-    if (remise > 0) {
-      doc.text('Remise:', 130, finalY + summaryOffset);
-      doc.text('-' + remise.toFixed(2) + ' DT', 190, finalY + summaryOffset, { align: 'right' });
-      summaryOffset += 7;
+    let summaryOffset = 18;
+    if (hasRemise) {
+      doc.text('Remise:', 117, finalY + summaryOffset);
+      doc.text('-' + remise.toFixed(2) + ' DT', 196, finalY + summaryOffset, { align: 'right' });
+      summaryOffset += 8;
     }
 
-    doc.setFontSize(12);
+    // TOTAL TTC — colored accent row
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.4);
+    doc.line(112, finalY + summaryOffset - 3, 198, finalY + summaryOffset - 3);
+    doc.setFillColor(headerR, headerG, headerB);
+    doc.rect(112, finalY + summaryOffset - 3, 86, 11, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL TTC:', 130, finalY + summaryOffset);
-    doc.text(montantTotal.toFixed(2) + ' DT', 190, finalY + summaryOffset, { align: 'right' });
+    doc.text('TOTAL TTC:', 117, finalY + summaryOffset + 4.5);
+    doc.text(montantTotal.toFixed(2) + ' DT', 196, finalY + summaryOffset + 4.5, { align: 'right' });
+    doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
 
     if (factureData.description) {
-      const descY = finalY + summaryOffset + 12;
-      doc.setFontSize(10);
-      doc.text('Notes:', 20, descY);
-      const splitDesc = doc.splitTextToSize(factureData.description, 170);
-      doc.text(splitDesc, 20, descY + 7);
+      const descY = finalY + summaryOffset + 18;
+      doc.setFontSize(9);
+      doc.setTextColor(80, 80, 80);
+      doc.text('Notes:', 17, descY);
+      const splitDesc = doc.splitTextToSize(factureData.description, 90);
+      doc.text(splitDesc, 17, descY + 6);
+      doc.setTextColor(0, 0, 0);
     }
 
-    // Footer bar
+    // ── Footer bar ────────────────────────────────────────────────────────────
     const footerR = caract?.colorFooterR ?? headerR;
     const footerG = caract?.colorFooterG ?? headerG;
     const footerB = caract?.colorFooterB ?? headerB;
     doc.setFillColor(footerR, footerG, footerB);
-    doc.rect(0, 275, 210, 20, 'F');
+    doc.rect(0, 272, 210, 25, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     const nif = this.entreprise.numeroIdentificationFiscale || '';
     const rc = this.entreprise.registreCommerce || '';
     if (nif || rc) {
-      doc.text(`NIF: ${nif}  —  RC: ${rc}`, 20, 285);
+      doc.text(`NIF: ${nif}  —  RC: ${rc}`, 17, 283);
+    } else {
+      doc.text(this.entreprise.nom || '', 17, 283);
     }
     doc.text(
       caract?.messageFooter || 'Merci pour votre collaboration !',
-      190, 285, { align: 'right' }
+      193, 283, { align: 'right' }
     );
     doc.setTextColor(0, 0, 0);
   }
