@@ -157,7 +157,21 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (error: any) => {
         this.loading = false;
-        this.errorMessage = 'Identifiants invalides. Veuillez réessayer.';
+        const code = error?.error?.error;
+        const serverMessage = typeof error?.error === 'string' ? error.error : error?.error?.message;
+        switch (code) {
+          case 'INVALID_USERNAME':
+            this.errorMessage = 'Nom d\'utilisateur invalide';
+            break;
+          case 'INVALID_PASSWORD':
+            this.errorMessage = 'Mot de passe invalide';
+            break;
+          case 'ACCOUNT_DISABLED':
+            this.errorMessage = 'Compte inactif. Veuillez contacter votre administrateur.';
+            break;
+          default:
+            this.errorMessage = serverMessage || 'Identifiants invalides. Veuillez réessayer.';
+        }
       }
     });
   }
