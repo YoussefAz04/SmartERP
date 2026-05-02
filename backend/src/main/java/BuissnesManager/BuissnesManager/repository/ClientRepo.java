@@ -15,8 +15,9 @@ public interface ClientRepo extends JpaRepository<Client,Long> {
     @Query("SELECT COUNT(c) FROM Client c WHERE c.entreprise.id = :entrepriseId")
     Long getTotalClients(@Param("entrepriseId") Long entrepriseId);
 
-    @Query("SELECT COUNT(c) FROM Client c WHERE c.categorieClient.id = :categorieId AND c.entreprise.id = :entrepriseId")
-    long countByCategorieClientIdAndEntrepriseId(@Param("categorieId") Long categorieId, @Param("entrepriseId") Long entrepriseId);
+    @Query("SELECT c.categorieClient.id, COUNT(c) FROM Client c WHERE c.entreprise.id = :entrepriseId GROUP BY c.categorieClient.id")
+    List<Object[]> countGroupedByCategorieAndEntreprise(@Param("entrepriseId") Long entrepriseId);
 
-    long countByCategorieClientId(Long categorieId);
+    @Query("SELECT c.categorieClient.id, COUNT(c) FROM Client c GROUP BY c.categorieClient.id")
+    List<Object[]> countGroupedByCategorie();
 }

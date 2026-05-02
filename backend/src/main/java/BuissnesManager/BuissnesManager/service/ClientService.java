@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ClientService {
@@ -121,12 +123,17 @@ public class ClientService {
     // ✅ GET ALL CATEGORIES
     public List<CategorieClientDto> getAllCategorieClient() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
-        return categorieClientRepo.findAll().stream().map(cat -> {
-            long count = (entrepriseId != null)
-                ? clientRepo.countByCategorieClientIdAndEntrepriseId(cat.getId(), entrepriseId)
-                : clientRepo.countByCategorieClientId(cat.getId());
-            return new CategorieClientDto(cat.getId(), cat.getNom(), cat.getDescription(), count);
-        }).toList();
+        List<Object[]> rows = (entrepriseId != null)
+            ? clientRepo.countGroupedByCategorieAndEntreprise(entrepriseId)
+            : clientRepo.countGroupedByCategorie();
+        Map<Long, Long> countMap = new HashMap<>();
+        for (Object[] row : rows) {
+            countMap.put((Long) row[0], (Long) row[1]);
+        }
+        return categorieClientRepo.findAll().stream().map(cat ->
+            new CategorieClientDto(cat.getId(), cat.getNom(), cat.getDescription(),
+                countMap.getOrDefault(cat.getId(), 0L))
+        ).toList();
     }
 
     // ✅ GET CATEGORY BY ID
