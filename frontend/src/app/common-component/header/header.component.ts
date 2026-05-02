@@ -1,5 +1,5 @@
 // header.component.ts
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import { Subject, of, interval, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil } from 'rxjs/operators';
@@ -9,6 +9,13 @@ import { routes } from 'src/app/core/helpers/routes';
 import { ResponseDto } from "../../model/reponseDto.model";
 import { AuthService } from "../../auth/service/auth.service";
 import { HeaderService, SearchResult, Notification } from './header.service';
+
+export interface SearchResultGroup {
+  type: string;
+  label: string;
+  icon: string;
+  results: SearchResult[];
+}
 
 @Component({
   selector: 'app-header',
@@ -30,7 +37,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public searchResults: SearchResult[] = [];
   public isSearching = false;
   public showSearchDropdown = false;
+  public selectedIndex = -1;
   private searchSubject = new Subject<string>();
+
+  @ViewChild('searchInput') searchInputRef!: ElementRef<HTMLInputElement>;
 
   // Notifications
   public notifications: Notification[] = [];
@@ -116,6 +126,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     ).subscribe((results: SearchResult[]) => {
       this.searchResults = results;
       this.isSearching = false;
+      this.selectedIndex = -1;
     });
   }
 
@@ -143,6 +154,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onSearchBlur(): void {
     setTimeout(() => {
       this.showSearchDropdown = false;
+      this.selectedIndex = -1;
     }, 200);
   }
 
@@ -150,6 +162,59 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.searchQuery = '';
     this.searchResults = [];
     this.showSearchDropdown = false;
+    this.selectedIndex = -1;
+  }
+
+  onSearchKeydown(event: KeyboardEvent): void {
+    if (!this.showSearchDropdown) return;
+    const total = this.searchResults.length;
+    if (total === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.selectedIndex = (this.selectedIndex + 1) % total;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.selectedIndex = (this.selectedIndex - 1 + total) % total;
+    } else if (event.key === 'Enter' && this.selectedIndex >= 0) {
+      event.preventDefault();
+      this.navigateToResult(this.searchResults[this.selectedIndex]);
+    } else if (event.key === 'Escape') {
+      this.clearSearch();
+    }
+  }
+
+  get groupedResults(): SearchResultGroup[] {
+    const groupMap: { [key: string]: SearchResultGroup } = {
+      Client:      { type: 'Client',      label: 'Clients',     icon: 'icon-users',     results: [] },
+      Article:     { type: 'Article',     label: 'Articles',    icon: 'icon-box',       results: [] },
+      Fournisseur: { type: 'Fournisseur', label: 'Fournisseurs',icon: 'icon-truck',     results: [] },
+      Commande:    { type: 'Commande',    label: 'Commandes',   icon: 'icon-file-text', results: [] },
+    };
+    for (const r of this.searchResults) {
+      if (groupMap[r.type]) {
+        groupMap[r.type].results.push(r);
+      }
+    }
+    return Object.values(groupMap).filter(g => g.results.length > 0);
+  }
+
+  getFlatIndex(result: SearchResult): number {
+    return this.searchResults.indexOf(result);
+  }
+
+  highlightText(text: string): string {
+    if (!text) return '';
+    // HTML-escape first to prevent XSS before injecting into innerHTML
+    const safe = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    if (!this.searchQuery) return safe;
+    const queryEscaped = this.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safe.replace(new RegExp(`(${queryEscaped})`, 'gi'), '<mark>$1</mark>');
   }
 
   // ===== THEME METHODS =====
@@ -299,9 +364,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   // ===== CLOSE DROPDOWNS ON CLICK OUTSIDE =====
+  @HostListener('document:keydown', ['$event'])
+  onGlobalKeydown(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+      event.preventDefault();
+      this.searchInputRef?.nativeElement?.focus();
+      this.showSearchDropdown = true;
+    }
+  }
+
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
+  onDocumentClick(event: MouseEvent): void {    const target = event.target as HTMLElement;
 
     if (!target.closest('.notifications-wrapper')) {
       this.showNotifications = false;

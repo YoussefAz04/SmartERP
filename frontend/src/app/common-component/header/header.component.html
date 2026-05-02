@@ -29,12 +29,14 @@
       <div class="search-wrapper">
         <i class="feather icon-search search-icon"></i>
         <input 
+          #searchInput
           type="text" 
           class="search-input"
-          placeholder="Search clients, articles, commands..."
+          placeholder="Rechercher clients, articles, commandes..."
           [(ngModel)]="searchQuery"
           (input)="onSearchInput(searchQuery)"
           (blur)="onSearchBlur()"
+          (keydown)="onSearchKeydown($event)"
           autocomplete="off">
         <button class="search-clear" *ngIf="searchQuery" (click)="clearSearch()" type="button">
           <i class="feather icon-x-circle"></i>
@@ -42,27 +44,63 @@
         <div class="search-spinner" *ngIf="isSearching">
           <i class="feather icon-loader"></i>
         </div>
+        <span class="search-shortcut" *ngIf="!searchQuery && !isSearching">
+          <kbd>Ctrl</kbd><kbd>K</kbd>
+        </span>
 
         <!-- Search Dropdown -->
         <div class="search-dropdown animate-dropdown" *ngIf="showSearchDropdown">
-          <div class="dropdown-empty" *ngIf="searchResults.length === 0 && !isSearching">
-            <i class="feather icon-inbox"></i>
-            <p>No results found</p>
+
+          <!-- Loading skeleton -->
+          <div class="search-loading" *ngIf="isSearching">
+            <div class="skeleton-item" *ngFor="let s of [1,2,3]">
+              <div class="skeleton-badge"></div>
+              <div class="skeleton-lines">
+                <div class="skeleton-line skeleton-line-main"></div>
+                <div class="skeleton-line skeleton-line-sub"></div>
+              </div>
+            </div>
           </div>
-          <div class="dropdown-results" *ngIf="searchResults.length > 0">
-            <ul class="results-list">
-              <li *ngFor="let result of searchResults; let i = index" 
-                class="result-item"
-                [style.animation-delay]="(i * 0.04) + 's'">
-                <a (click)="navigateToResult(result)">
-                  <span class="result-badge" [ngClass]="'badge-' + result.type.toLowerCase()">
-                    {{ result.type }}
-                  </span>
-                  <span class="result-text">{{ result.nom }}</span>
-                  <span class="result-detail" *ngIf="result.detail">{{ result.detail }}</span>
-                </a>
-              </li>
-            </ul>
+
+          <!-- Empty state -->
+          <div class="dropdown-empty" *ngIf="!isSearching && searchResults.length === 0">
+            <div class="empty-icon-wrap">
+              <i class="feather icon-search"></i>
+            </div>
+            <p class="empty-title">Aucun résultat pour « {{ searchQuery }} »</p>
+            <p class="empty-hint">Essayez un nom, une référence ou un email</p>
+          </div>
+
+          <!-- Grouped results -->
+          <div class="dropdown-groups" *ngIf="!isSearching && searchResults.length > 0">
+            <div class="results-header">
+              <span class="results-count">{{ searchResults.length }} résultat{{ searchResults.length > 1 ? 's' : '' }}</span>
+              <span class="results-nav-hint"><kbd>↑</kbd><kbd>↓</kbd> naviguer &nbsp;<kbd>↵</kbd> ouvrir</span>
+            </div>
+
+            <div class="result-group" *ngFor="let group of groupedResults">
+              <div class="result-group-header">
+                <i class="feather {{ group.icon }}"></i>
+                <span>{{ group.label }}</span>
+                <span class="group-count">{{ group.results.length }}</span>
+              </div>
+              <ul class="results-list">
+                <li *ngFor="let result of group.results"
+                  class="result-item"
+                  [class.result-item--active]="getFlatIndex(result) === selectedIndex">
+                  <a (click)="navigateToResult(result)" tabindex="-1">
+                    <span class="result-type-icon" [ngClass]="'type-icon-' + result.type.toLowerCase()">
+                      <i class="feather {{ group.icon }}"></i>
+                    </span>
+                    <span class="result-body">
+                      <span class="result-text" [innerHTML]="highlightText(result.nom)"></span>
+                      <span class="result-detail" *ngIf="result.detail">{{ result.detail }}</span>
+                    </span>
+                    <i class="feather icon-arrow-right result-arrow"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
