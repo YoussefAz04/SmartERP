@@ -1,0 +1,170 @@
+<div class="page-header">
+  <div class="page-title">
+    <h4>Mon Profil</h4>
+    <h6>Gérez les informations de votre compte utilisateur</h6>
+  </div>
+</div>
+
+<ng-container *ngIf="isLoading">
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+</ng-container>
+
+<div class="row" *ngIf="!isLoading && user">
+  <!-- LEFT: identity card -->
+  <div class="col-xl-4 col-lg-5 mb-3">
+    <div class="card profile-card">
+      <div class="card-body text-center">
+        <div class="profile-avatar">
+          <span *ngIf="initials">{{ initials }}</span>
+          <i class="feather icon-user" *ngIf="!initials"></i>
+        </div>
+        <h5 class="mb-1">{{ user.username }}</h5>
+        <p class="text-muted mb-2">{{ user.email }}</p>
+
+        <div class="profile-badges">
+          <span class="badge bg-primary me-1" *ngFor="let role of roles">{{ role }}</span>
+          <span class="badge" [ngClass]="user.enabled ? 'bg-success' : 'bg-secondary'">
+            {{ user.enabled ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+
+        <div class="profile-meta mt-3" *ngIf="entrepriseName">
+          <p class="mb-1"><i class="feather icon-briefcase me-2"></i>{{ entrepriseName }}</p>
+        </div>
+        <div class="profile-meta" *ngIf="user.phone">
+          <p class="mb-1"><i class="feather icon-phone me-2"></i>{{ user.phone }}</p>
+        </div>
+        <div class="profile-meta" *ngIf="user.id">
+          <p class="mb-0 text-muted small"><i class="feather icon-hash me-2"></i>ID: {{ user.id }}</p>
+        </div>
+
+        <hr />
+        <button type="button" class="btn btn-outline-danger btn-sm w-100" (click)="logout()">
+          <i class="feather icon-log-out me-2"></i>Déconnexion
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: editable account details -->
+  <div class="col-xl-8 col-lg-7">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0">Informations du compte</h5>
+        <span class="badge bg-warning text-dark" *ngIf="!canEdit">Lecture seule</span>
+      </div>
+      <div class="card-body">
+        <form #profileForm="ngForm" (ngSubmit)="onSubmit(profileForm)" novalidate>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="username" class="form-label">Nom d'utilisateur</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-control"
+                [(ngModel)]="user.username"
+                [disabled]="!canEdit || isSubmitting"
+                required
+                minlength="3"
+                #usernameField="ngModel"
+              />
+              <div class="text-danger small mt-1"
+                   *ngIf="usernameField.invalid && (usernameField.dirty || usernameField.touched)">
+                Le nom d'utilisateur est requis (3 caractères minimum).
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                [(ngModel)]="user.email"
+                [disabled]="!canEdit || isSubmitting"
+                required
+                email
+                #emailField="ngModel"
+              />
+              <div class="text-danger small mt-1"
+                   *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)">
+                Adresse email invalide.
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                class="form-control"
+                [(ngModel)]="user.phone"
+                [disabled]="!canEdit || isSubmitting"
+              />
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Rôle</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="primaryRole"
+                disabled
+              />
+            </div>
+
+            <div class="col-md-6 mb-3" *ngIf="entrepriseName">
+              <label class="form-label">Entreprise</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="entrepriseName"
+                disabled
+              />
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Statut du compte</label>
+              <input
+                type="text"
+                class="form-control"
+                [value]="user.enabled ? 'Actif' : 'Inactif'"
+                disabled
+              />
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2" *ngIf="canEdit">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancel()"
+              [disabled]="isSubmitting"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="profileForm.invalid || isSubmitting"
+            >
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-warning" *ngIf="!isLoading && !user">
+  Impossible de charger votre profil. Veuillez vous reconnecter.
+</div>

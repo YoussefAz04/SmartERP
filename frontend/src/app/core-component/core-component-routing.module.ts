@@ -9,6 +9,14 @@ const routes: Routes = [
     component: CoreComponentComponent,
     children: [
       {
+        // User profile: any authenticated user can view their own profile
+        path: 'profile',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN', 'EMPLOYEE'] },
+        loadComponent: () =>
+          import('./profile/profile.component').then((m) => m.ProfileComponent),
+      },
+      {
         // Platform settings: accessible by SUPER_ADMIN and ADMIN
         path: 'settings',
         canActivate: [RoleGuard],
