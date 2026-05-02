@@ -135,23 +135,46 @@ public class MlRecommendationEngine {
             return out;
         }
 
+        // Compute and rank probabilities so we can surface the most at-risk
+        // articles first instead of relying on an arbitrary 0.6 cutoff alone.
+        double[] probs = new double[n];
         for (int i = 0; i < n; i++) {
             double[] proba = new double[2];
             clf.predict(xs[i], proba);
-            double pStockout = proba[1];
-            if (pStockout > 0.6) {
-                StockRow r = rows.get(i);
-                String prio = pStockout > 0.85 ? "CRITIQUE" : "HAUTE";
-                String icon = pStockout > 0.85 ? "fa-triangle-exclamation" : "fa-box-open";
-                out.add(new RecommendationDto(
-                    "ML_RISQUE_STOCK",
-                    "Risque de rupture — " + r.articleName,
-                    String.format(Locale.FRANCE,
-                        "Le modèle ML estime une probabilité de rupture de %.0f%% dans les %d prochains jours (couverture=%.0f j, demande moy.=%.0f/mois). Prévoyez une commande fournisseur rapidement.",
-                        pStockout * 100.0, horizonDays, r.daysOfCover, r.avgMonthlyDemand),
-                    prio, icon, "Voir Stock"
-                ));
-            }
+            probs[i] = proba[1];
+        }
+        Integer[] order = new Integer[n];
+        for (int i = 0; i < n; i++) order[i] = i;
+        java.util.Arrays.sort(order, (a, b) -> Double.compare(probs[b], probs[a]));
+
+        for (int rank = 0; rank < n; rank++) {
+            int i = order[rank];
+            double pStockout = probs[i];
+            if (pStockout <= 0.6) break; // ranked DESC → all remaining are below threshold
+            StockRow r = rows.get(i);
+            String prio = pStockout > 0.85 ? "CRITIQUE" : "HAUTE";
+            String icon = pStockout > 0.85 ? "fa-triangle-exclamation" : "fa-box-open";
+            // Suggested order qty: cover (horizon + lead-time + 30j safety) of demand
+            // minus current stock; floor at 1 unit so the message is always actionable.
+            double dailyDemand = r.avgMonthlyDemand / 30.0;
+            double targetCoverDays = horizonDays + r.leadTimeDays + 30.0;
+            double suggestedQty = Math.max(1.0,
+                    Math.ceil(dailyDemand * targetCoverDays - r.stockLevel));
+            String coverStr = r.daysOfCover >= 365.0
+                    ? "≥ 1 an"
+                    : String.format(Locale.FRANCE, "%.0f j", r.daysOfCover);
+            String urgencyHint = pStockout > 0.85
+                    ? "Risque imminent — passez commande dès aujourd'hui."
+                    : "Anticipez l'achat avant la fin de la couverture actuelle.";
+            out.add(new RecommendationDto(
+                "ML_RISQUE_STOCK",
+                "Risque de rupture — " + r.articleName,
+                String.format(Locale.FRANCE,
+                    "Probabilité estimée de rupture : %.0f%% sur les %d prochains jours (couverture=%s, demande moy.=%.0f/mois, délai fournisseur=%.0f j). Quantité suggérée à commander : %.0f. %s",
+                    pStockout * 100.0, horizonDays, coverStr,
+                    r.avgMonthlyDemand, r.leadTimeDays, suggestedQty, urgencyHint),
+                prio, icon, "Voir Stock"
+            ));
         }
         return out;
     }
@@ -204,10 +227,10 @@ public class MlRecommendationEngine {
         ProductRow topRow = rows.get(top);
         out.add(new RecommendationDto(
             "PRODUIT_STAR",
-            "Produit vedette (ML)",
+            "Produit vedette — " + topRow.productName,
             String.format(Locale.FRANCE,
-                "« %s » est identifié par le modèle d'opportunité comme votre produit à plus fort potentiel (score=%.2f). Assurez-vous de maintenir un stock suffisant et testez des offres groupées.",
-                topRow.productName, scores[top]),
+                "« %s » est identifié par le modèle d'opportunité comme votre produit à plus fort potentiel (CA=%.0f, %.0f unités vendues, marge unitaire ≈ %.0f). Sécurisez le stock, mettez-le en avant et testez des offres groupées pour capter le momentum.",
+                topRow.productName, topRow.revenue, topRow.quantitySold, topRow.marginProxy),
             "BASSE", "fa-star", "Voir Produits"
         ));
 
@@ -216,12 +239,22 @@ public class MlRecommendationEngine {
         for (int rank = 1; rank <= opportunityCap && rank < n; rank++) {
             int i = idx[rank];
             ProductRow r = rows.get(i);
+            String hint;
+            if (r.velocityTrend > 0.1) {
+                hint = "La tendance récente est positive — accélérez la mise en avant.";
+            } else if (r.categoryShare > 0.15) {
+                hint = "Sa part de catégorie (%.0f%%) en fait un levier majeur — " +
+                       "renforcez l'assortiment lié.";
+                hint = String.format(Locale.FRANCE, hint, r.categoryShare * 100.0);
+            } else {
+                hint = "Investissez en marketing ou en mise en avant pour amplifier ce signal.";
+            }
             out.add(new RecommendationDto(
                 "OPPORTUNITE",
                 "Opportunité — " + r.productName,
                 String.format(Locale.FRANCE,
-                    "« %s » est dans le top-décile des produits à fort potentiel (score=%.2f). Investissez en marketing ou en mise en avant pour capter ce momentum.",
-                    r.productName, scores[i]),
+                    "« %s » figure dans le top-décile des produits à fort potentiel (CA=%.0f, %.0f unités). %s",
+                    r.productName, r.revenue, r.quantitySold, hint),
                 "MOYENNE", "fa-arrow-trend-up", "Voir Produits"
             ));
         }

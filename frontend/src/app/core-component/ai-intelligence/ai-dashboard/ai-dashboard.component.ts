@@ -255,17 +255,23 @@ export class AiDashboardComponent implements OnInit {
         this.router.navigate([routes.stockList]);
         break;
       case 'STOCK_CRITIQUE':
+      case 'VALEUR_STOCK':
         this.router.navigate([routes.stockList]);
         break;
       case 'STOCK_FAIBLE':
         this.router.navigate([routes.stockAdjust]);
         break;
       case 'VENTES_FAIBLES':
+      case 'TENDANCE_CROISSANCE':
+      case 'PANIER_MOYEN_BAISSE':
+      case 'PANIER_MOYEN_HAUSSE':
+      case 'TAUX_ANNULATION':
         this.router.navigate([routes.commandeVenteList]);
         break;
       case 'PRODUIT_STAR':
       case 'OPPORTUNITE':
       case 'PRODUITS_LENTS':
+      case 'CATEGORIE_DOMINANTE':
         this.router.navigate([routes.articleVenteList]);
         break;
       case 'MARGE_FAIBLE':
@@ -276,6 +282,9 @@ export class AiDashboardComponent implements OnInit {
         break;
       case 'LIVRAISON_RETARD':
       case 'LIVRAISON_OK':
+      case 'DIVERSIFICATION_FOURNISSEUR':
+      case 'FOURNISSEUR_PERFORMANT':
+      case 'CASH_FLOW':
         this.router.navigate([routes.commandeAchatList]);
         break;
       case 'CONCENTRATION_CLIENT':
