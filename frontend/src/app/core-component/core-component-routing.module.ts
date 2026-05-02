@@ -97,41 +97,12 @@ const routes: Routes = [
           ),
       },
       {
-        // Sales: business data – no SUPER_ADMIN
-        path: 'sales',
-        canActivate: [RoleGuard],
-        data: { requiredRoles: ['ADMIN'] },
-        loadChildren: () =>
-          import('./sales/sales.module').then((m) => m.SalesModule),
-      },
-      {
         // Stock: business data – no SUPER_ADMIN
         path: 'stock',
         canActivate: [RoleGuard],
         data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
         loadChildren: () =>
           import('./stock/stock.module').then((m) => m.StockModule),
-      },
-      {
-        // Purchases: business data – no SUPER_ADMIN
-        path: 'purchase',
-        canActivate: [RoleGuard],
-        data: { requiredRoles: ['ADMIN'] },
-        loadChildren: () =>
-          import('./purchase/purchase.module').then((m) => m.PurchaseModule),
-      },
-      {
-        // Expenses: business data – no SUPER_ADMIN
-        path: 'expense',
-        canActivate: [RoleGuard],
-        data: { requiredRoles: ['ADMIN'] },
-        loadChildren: () =>
-          import('./expense/expense.module').then((m) => m.ExpenseModule),
-      },
-      {
-        path: 'reports',
-        loadChildren: () =>
-          import('./reports/reports.module').then((m) => m.ReportsModule),
       },
       {
         // Budget: business data – no SUPER_ADMIN
