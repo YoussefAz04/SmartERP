@@ -395,6 +395,14 @@ export class ListFactureDeVenteComponent implements OnInit{
         doc.save('Factures_Vente.pdf');
         this.selectedFactures.clear();
         this.selectAll = false;
+      },
+      error: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors du chargement des détails des factures.',
+          confirmButtonColor: '#4caf50'
+        });
       }
     });
   }
