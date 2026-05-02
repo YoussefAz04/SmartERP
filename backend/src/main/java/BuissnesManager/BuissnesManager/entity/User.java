@@ -65,6 +65,14 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
+
+    @JsonIgnore
+    @Column(name = "reset_password_token", length = 100)
+    private String resetPasswordToken;
+
+    @JsonIgnore
+    @Column(name = "reset_password_token_expiry")
+    private LocalDateTime resetPasswordTokenExpiry;
     
     // =====================
     // CONSTRUCTOR

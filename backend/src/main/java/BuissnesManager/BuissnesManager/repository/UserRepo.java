@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface UserRepo extends JpaRepository<User,Long> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
+    Optional<User> findByResetPasswordToken(String resetPasswordToken);
 
     // Find all users belonging to a specific enterprise
     List<User> findByEntrepriseId(Long entrepriseId);
