@@ -70,7 +70,7 @@ public class ClientService {
     public List<Client> getAllClient() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
-            return clientRepo.findAll();
+            throw new RuntimeException("Enterprise context required");
         }
         return clientRepo.findByEntrepriseId(entrepriseId);
     }

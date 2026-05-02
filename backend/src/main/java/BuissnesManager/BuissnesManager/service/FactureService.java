@@ -90,7 +90,7 @@ public class FactureService {
 public List<FactureAchat> getAllFactureAchat(){
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
-            return factureAchatRepo.findAll();
+            throw new RuntimeException("Enterprise context required");
         }
         return factureAchatRepo.findByEntrepriseId(entrepriseId);
 }

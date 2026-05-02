@@ -50,7 +50,7 @@ public class FactureDeVenteService {
     public List<FactureDeVente> getAllFactures() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
-            return factureDeVenteRepo.findAll();
+            throw new RuntimeException("Enterprise context required");
         }
         return factureDeVenteRepo.findByEntrepriseId(entrepriseId);
     }

@@ -164,12 +164,10 @@ public class CommandeVenteService {
     @Transactional
     public List<CommandeVente> getAllCommandes() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
-        List<CommandeVente> commandes;
         if (entrepriseId == null) {
-            commandes = commandeVenteRepository.findAll();
-        } else {
-            commandes = commandeVenteRepository.findByEntrepriseId(entrepriseId);
+            throw new RuntimeException("Enterprise context required");
         }
+        List<CommandeVente> commandes = commandeVenteRepository.findByEntrepriseId(entrepriseId);
         // Recalculate totals for commandes with missing amounts and batch save
         List<CommandeVente> toSave = new java.util.ArrayList<>();
         for (CommandeVente commande : commandes) {

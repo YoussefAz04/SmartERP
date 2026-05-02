@@ -67,6 +67,7 @@ public class CommandeVenteController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     public ResponseEntity<?> getAllCommandes() {
         try {
             logger.info("? Getting all purchase orders");
