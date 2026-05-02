@@ -66,109 +66,116 @@ export class FactureDeVenteServiceService {
 
   generateFactureVentePDF(factureData: FactureVente) {
     const doc = new jsPDF();
-
     const item = localStorage.getItem('myLSkey');
-    let currentUser: ResponseDto | null = null;
-
-    if (item) {
-      currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
-
-      if (currentUser?.entreprise.id) {
-        this.entrepriseService.getEntrepriseById(currentUser.entreprise.id).subscribe(data => {
-          this.entreprise = data;
-
-          doc.setFontSize(15);
-          doc.text(String(this.entreprise.nom), 20, 35);
-
-          doc.setFontSize(10);
-          doc.text(String(this.entreprise.email), 20, 42);
-          doc.text(String(this.entreprise.telephone), 20, 49);
-          doc.text(String(this.entreprise.adresse), 20, 56);
-          doc.text(String(this.entreprise.siteWeb), 20, 63);
-
-          this.buildFactureContent(doc, factureData);
-
-          doc.save(`facture-${factureData.referance || 'vente'}.pdf`);
-        });
-      }
+    if (!item) { return; }
+    const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
+    if (currentUser?.entreprise.id) {
+      this.entrepriseService.getEntrepriseById(currentUser.entreprise.id).subscribe(data => {
+        this.entreprise = data;
+        this.buildFactureContent(doc, factureData);
+        doc.save(`facture-${factureData.referance || 'vente'}.pdf`);
+      });
     }
   }
-
 
   private buildFactureContent(doc: jsPDF, factureData: FactureVente) {
     const caract = this.entreprise.caracteristiqueFactureEntreprise;
     const headerR = caract?.colorHeaderR ?? 46;
     const headerG = caract?.colorHeaderG ?? 125;
     const headerB = caract?.colorHeaderB ?? 50;
-    doc.setFillColor(headerR, headerG, headerB);
-    doc.rect(0, 0, 210, 20, 'F');
 
+    // ── Header bar ────────────────────────────────────────────────────────────
+    doc.setFillColor(headerR, headerG, headerB);
+    doc.rect(0, 0, 210, 28, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
+    doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text("FACTURE DE VENTE", 105, 15, {align: 'center'});
+    doc.text('FACTURE DE VENTE', 105, 18.5, { align: 'center' });
     doc.setTextColor(0, 0, 0);
 
+    // ── Company info panel (left column) ──────────────────────────────────────
+    doc.setFillColor(248, 249, 250);
+    doc.rect(12, 33, 86, 52, 'F');
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(String(this.entreprise.nom || ''), 17, 43);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const companyLines = [
+      this.entreprise.email || '',
+      this.entreprise.telephone || '',
+      this.entreprise.adresse || '',
+      this.entreprise.siteWeb || ''
+    ].filter(l => l.trim() !== '');
+    companyLines.forEach((line, i) => {
+      doc.text(line, 17, 51 + i * 7);
+    });
 
-
-
-    doc.setFontSize(10);
-    doc.setFont('bold', 'normal');
+    // ── Invoice details panel (right column) ──────────────────────────────────
+    doc.setFillColor(248, 249, 250);
+    doc.rect(112, 33, 86, 52, 'F');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
     const invoiceDetails = [
-      `N° Facture: ${factureData.referance || "F-2025-001"}`,
-      `Date: ${factureData.dateAchat || new Date().toLocaleDateString("fr-FR")}`,
-      `Statut: ${factureData.statut || "En attente"}`,
-      `Paiement: ${factureData.modePaiement || "—"}`
+      `N° Facture: ${factureData.referance || '—'}`,
+      `Date: ${factureData.dateAchat || new Date().toLocaleDateString('fr-FR')}`,
+      `Statut: ${factureData.statut || 'En attente'}`,
+      `Paiement: ${factureData.modePaiement || '—'}`
     ];
     if (factureData.commandeVente?.reference) {
       invoiceDetails.push(`Bon de Commande: ${factureData.commandeVente.reference}`);
     }
-
     invoiceDetails.forEach((detail, index) => {
-      doc.text(detail, 140, 40 + (index * 7));
+      doc.text(detail, 117, 43 + index * 7);
     });
 
-    doc.setFontSize(12);
-    doc.setFont('bold', 'bold');
-    doc.text("FACTURÉ À:", 20, 70);
+    // ── Section heading: FACTURÉ À ────────────────────────────────────────────
+    doc.setFillColor(headerR, headerG, headerB);
+    doc.rect(12, 89, 86, 8, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FACTURÉ À:', 17, 95);
+    doc.setTextColor(0, 0, 0);
 
-
-
-    doc.setFontSize(10);
-    doc.setFont('bold', 'normal');
+    // ── Client info ───────────────────────────────────────────────────────────
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'normal');
     const clientLines: string[] = [];
     const fullName = [factureData.client?.nom, factureData.client?.prenom].filter(Boolean).join(' ');
-    clientLines.push(fullName || "Nom du Client");
-    if (factureData.client?.adresse) clientLines.push(factureData.client.adresse);
-    clientLines.push(factureData.client?.email || "email@example.com");
-    clientLines.push(factureData.client?.telephone || "Téléphone");
+    if (fullName) { clientLines.push(fullName); }
+    if (factureData.client?.adresse) { clientLines.push(factureData.client.adresse); }
+    if (factureData.client?.email) { clientLines.push(factureData.client.email); }
+    if (factureData.client?.telephone) { clientLines.push(factureData.client.telephone); }
     if (factureData.client?.secteurActivite) {
       clientLines.push(`Secteur: ${factureData.client.secteurActivite}`);
     }
-
+    if (clientLines.length === 0) { clientLines.push('Client non renseigné'); }
     clientLines.forEach((info, index) => {
-      doc.text(info, 20, 80 + (index * 7));
+      doc.text(info, 17, 102 + index * 7);
     });
 
-    // Separator line after client info
-    doc.setLineWidth(0.5);
-    doc.line(20, 80 + clientLines.length * 7 + 3, 190, 80 + clientLines.length * 7 + 3);
+    // ── Separator ─────────────────────────────────────────────────────────────
+    const separatorY = 102 + clientLines.length * 7 + 6;
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.4);
+    doc.line(12, separatorY, 198, separatorY);
 
-
-
+    // ── Description ───────────────────────────────────────────────────────────
+    let tableStartY = separatorY + 6;
     if (factureData.description) {
-      const descStartY = 80 + clientLines.length * 7 + 10;
-      doc.setFontSize(10);
-      doc.text("Description:", 20, descStartY);
+      doc.setFontSize(9);
+      doc.setTextColor(80, 80, 80);
+      doc.text('Description:', 17, tableStartY + 4);
       const splitDesc = doc.splitTextToSize(factureData.description, 170);
-      doc.text(splitDesc, 20, descStartY + 7);
+      doc.text(splitDesc, 17, tableStartY + 11);
+      tableStartY += 11 + splitDesc.length * 5 + 4;
+      doc.setTextColor(0, 0, 0);
     }
 
+    // ── Line items table ──────────────────────────────────────────────────────
     const rawDetails = factureData.detaisFactureDeVente;
     const details = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
-
-    const tableStartY = 80 + clientLines.length * 7 + (factureData.description ? 20 : 5);
-
     let rows: string[][] = details.map((d, i) => {
       const qte = d.quantite || 1;
       const prix = d.prixUnitaireHT || 0;
@@ -178,10 +185,10 @@ export class FactureDeVenteServiceService {
       return [
         d.article || `Article ${i + 1}`,
         qte.toString(),
-        prix.toFixed(2) + " DT",
+        prix.toFixed(2) + ' DT',
         `${tva}%`,
-        totalHT.toFixed(2) + " DT",
-        totalTTC.toFixed(2) + " DT",
+        totalHT.toFixed(2) + ' DT',
+        totalTTC.toFixed(2) + ' DT'
       ];
     });
 
@@ -197,73 +204,91 @@ export class FactureDeVenteServiceService {
         return [
           l.articleVente?.nom || `Article ${i + 1}`,
           qte.toString(),
-          prix.toFixed(2) + " DT",
+          prix.toFixed(2) + ' DT',
           `${tva}%`,
-          totalHT.toFixed(2) + " DT",
-          totalTTC.toFixed(2) + " DT",
+          totalHT.toFixed(2) + ' DT',
+          totalTTC.toFixed(2) + ' DT'
         ];
       });
     }
 
+    const fillR = caract?.fillColorR ?? headerR;
+    const fillG = caract?.fillColorG ?? headerG;
+    const fillB = caract?.fillColorB ?? headerB;
+    const txtR = caract?.textColorR ?? 255;
+    const txtG = caract?.textColorG ?? 255;
+    const txtB = caract?.textColorB ?? 255;
+
     autoTable(doc, {
       startY: tableStartY,
-      head: [["Article", "Qté", "Prix HT", "TVA %", "Montant HT", "Total TTC"]],
+      head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
       body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
-      theme: "grid",
+      margin: { left: 12, right: 12 },
+      theme: 'grid',
       headStyles: {
-        fillColor: [caract?.fillColorR || 0, caract?.fillColorG || 0, caract?.fillColorB || 0],
-        textColor: [caract?.textColorR || 255, caract?.textColorG || 255, caract?.textColorB || 255]
+        fillColor: [fillR, fillG, fillB],
+        textColor: [txtR, txtG, txtB],
+        fontStyle: 'bold',
+        fontSize: 9
       },
       styles: { fontSize: 9 },
+      alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-
+    const finalY = (doc as any).lastAutoTable.finalY + 8;
     const montantHT = factureData.montantHT || 0;
     const montantTVA = factureData.montantTVA || 0;
     const remise = factureData.remise || 0;
     const montantTotal = factureData.montantTotal || factureData.montantTTC || 0;
+    const hasRemise = remise > 0;
 
-    doc.setFontSize(10);
-    doc.text("Sous-total HT:", 130, finalY);
-    doc.text(montantHT.toFixed(2) + " DT", 190, finalY, { align: "right" });
+    // ── Totals ────────────────────────────────────────────────────────────────
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    doc.text('Sous-total HT:', 117, finalY + 2);
+    doc.text(montantHT.toFixed(2) + ' DT', 196, finalY + 2, { align: 'right' });
+    doc.text('TVA:', 117, finalY + 10);
+    doc.text(montantTVA.toFixed(2) + ' DT', 196, finalY + 10, { align: 'right' });
 
-    doc.text("TVA:", 130, finalY + 7);
-    doc.text(montantTVA.toFixed(2) + " DT", 190, finalY + 7, { align: "right" });
-
-    let summaryOffset = 14;
-    if (remise > 0) {
-      doc.text("Remise:", 130, finalY + summaryOffset);
-      doc.text("-" + remise.toFixed(2) + " DT", 190, finalY + summaryOffset, { align: "right" });
-      summaryOffset += 7;
+    let summaryOffset = 18;
+    if (hasRemise) {
+      doc.text('Remise:', 117, finalY + summaryOffset);
+      doc.text('-' + remise.toFixed(2) + ' DT', 196, finalY + summaryOffset, { align: 'right' });
+      summaryOffset += 8;
     }
 
-    doc.setFontSize(12);
+    // TOTAL TTC — colored accent row
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.4);
+    doc.line(112, finalY + summaryOffset - 3, 198, finalY + summaryOffset - 3);
+    doc.setFillColor(headerR, headerG, headerB);
+    doc.rect(112, finalY + summaryOffset - 3, 86, 11, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text("TOTAL TTC:", 130, finalY + summaryOffset);
-    doc.text(montantTotal.toFixed(2) + " DT", 190, finalY + summaryOffset, { align: "right" });
+    doc.text('TOTAL TTC:', 117, finalY + summaryOffset + 4.5);
+    doc.text(montantTotal.toFixed(2) + ' DT', 196, finalY + summaryOffset + 4.5, { align: 'right' });
+    doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
 
-    if (caract?.colorFooterR && caract?.colorFooterG && caract?.colorFooterB) {
-      doc.setFillColor(caract.colorFooterR, caract.colorFooterG, caract.colorFooterB);
-    } else {
-      doc.setFillColor(46, 125, 50);
-    }
-    doc.rect(0, 275, 210, 20, 'F');
+    // ── Footer bar ────────────────────────────────────────────────────────────
+    const footerR = caract?.colorFooterR ?? headerR;
+    const footerG = caract?.colorFooterG ?? headerG;
+    const footerB = caract?.colorFooterB ?? headerB;
+    doc.setFillColor(footerR, footerG, footerB);
+    doc.rect(0, 272, 210, 25, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     const nif = this.entreprise.numeroIdentificationFiscale || '';
     const rc = this.entreprise.registreCommerce || '';
     if (nif || rc) {
-      doc.text(`NIF: ${nif}  —  RC: ${rc}`, 20, 285);
+      doc.text(`NIF: ${nif}  —  RC: ${rc}`, 17, 283);
     } else {
-      doc.text(`${this.entreprise.nom}`, 20, 285);
+      doc.text(String(this.entreprise.nom || ''), 17, 283);
     }
-    doc.text(caract?.messageFooter || "Merci pour votre confiance !", 190, 285, { align: "right" });
+    doc.text(caract?.messageFooter || 'Merci pour votre confiance !', 193, 283, { align: 'right' });
     doc.setTextColor(0, 0, 0);
-
-
-
   }
 
 
@@ -280,16 +305,6 @@ export class FactureDeVenteServiceService {
         this.entreprise = data;
 
         const doc = new jsPDF();
-
-        doc.setFontSize(15);
-        doc.text(String(this.entreprise.nom), 20, 35);
-
-        doc.setFontSize(10);
-        doc.text(String(this.entreprise.email), 20, 42);
-        doc.text(String(this.entreprise.telephone), 20, 49);
-        doc.text(String(this.entreprise.adresse), 20, 56);
-        doc.text(String(this.entreprise.siteWeb), 20, 63);
-
         this.buildFactureContent(doc, factureData);
 
         // Transformer en blob

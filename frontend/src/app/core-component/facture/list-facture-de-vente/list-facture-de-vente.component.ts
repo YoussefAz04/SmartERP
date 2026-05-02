@@ -263,29 +263,37 @@ export class ListFactureDeVenteComponent implements OnInit{
 
           // Header bar
           doc.setFillColor(46, 125, 50);
-          doc.rect(0, 0, 210, 20, 'F');
+          doc.rect(0, 0, 210, 28, 'F');
           doc.setTextColor(255, 255, 255);
-          doc.setFontSize(18);
+          doc.setFontSize(22);
           doc.setFont('helvetica', 'bold');
-          doc.text('FACTURE DE VENTE', pageWidth / 2, 14, { align: 'center' });
+          doc.text('FACTURE DE VENTE', pageWidth / 2, 18.5, { align: 'center' });
           doc.setTextColor(0, 0, 0);
 
-          // Invoice details (right column)
-          doc.setFontSize(10);
+          // Invoice details panel (right column)
+          doc.setFillColor(248, 249, 250);
+          doc.rect(112, 33, 86, 44, 'F');
+          doc.setFontSize(9);
           doc.setFont('helvetica', 'normal');
-          doc.text(`N° Facture: ${facture.referance || '—'}`, 130, 30);
-          doc.text(`Date: ${facture.dateAchat || '—'}`, 130, 37);
-          doc.text(`Statut: ${facture.statut || '—'}`, 130, 44);
-          doc.text(`Paiement: ${facture.modePaiement || '—'}`, 130, 51);
+          doc.text(`N° Facture: ${facture.referance || '—'}`, 117, 43);
+          doc.text(`Date: ${facture.dateAchat || '—'}`, 117, 51);
+          doc.text(`Statut: ${facture.statut || '—'}`, 117, 59);
+          doc.text(`Paiement: ${facture.modePaiement || '—'}`, 117, 67);
           if (facture.commandeVente?.reference) {
-            doc.text(`BC: ${facture.commandeVente.reference}`, 130, 58);
+            doc.text(`BC: ${facture.commandeVente.reference}`, 117, 75);
           }
 
-          // Client section
-          doc.setFontSize(11);
+          // Section heading: FACTURÉ À
+          doc.setFillColor(46, 125, 50);
+          doc.rect(12, 33, 86, 8, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(10.5);
           doc.setFont('helvetica', 'bold');
-          doc.text('FACTURÉ À:', margin, 30);
-          doc.setFontSize(10);
+          doc.text('FACTURÉ À:', 17, 39);
+          doc.setTextColor(0, 0, 0);
+
+          // Client info
+          doc.setFontSize(9.5);
           doc.setFont('helvetica', 'normal');
 
           const clientLines: string[] = [];
@@ -298,12 +306,13 @@ export class ListFactureDeVenteComponent implements OnInit{
           if (clientLines.length === 0) clientLines.push('Client non renseigné');
 
           clientLines.forEach((line, i) => {
-            doc.text(line, margin, 38 + i * 7);
+            doc.text(line, 17, 46 + i * 7);
           });
 
-          const separatorY = 38 + clientLines.length * 7 + 4;
-          doc.setLineWidth(0.5);
-          doc.line(margin, separatorY, 195, separatorY);
+          const separatorY = 46 + clientLines.length * 7 + 6;
+          doc.setDrawColor(200, 200, 200);
+          doc.setLineWidth(0.4);
+          doc.line(12, separatorY, 198, separatorY);
 
           // Line items table
           const rawDetails = facture.detaisFactureDeVente;
@@ -345,13 +354,14 @@ export class ListFactureDeVenteComponent implements OnInit{
           }
 
           autoTable(doc, {
-            startY: separatorY + 5,
+            startY: separatorY + 6,
             head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
             body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
-            margin: { left: margin, right: margin },
+            margin: { left: 12, right: 12 },
             theme: 'grid',
-            headStyles: { fillColor: [46, 125, 50], textColor: [255, 255, 255] },
-            styles: { fontSize: 9 }
+            headStyles: { fillColor: [46, 125, 50], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 9 },
+            styles: { fontSize: 9 },
+            alternateRowStyles: { fillColor: [252, 252, 252] }
           });
 
           const finalY = (doc as any).lastAutoTable.finalY + 8;
@@ -359,36 +369,48 @@ export class ListFactureDeVenteComponent implements OnInit{
           const montantTVA = facture.montantTVA || 0;
           const remise = facture.remise || 0;
           const montantTotal = facture.montantTotal || facture.montantTTC || 0;
+          const hasRemise = remise > 0;
 
-          doc.setFontSize(10);
+          doc.setFontSize(9.5);
           doc.setFont('helvetica', 'normal');
-          doc.text('Sous-total HT:', 130, finalY);
-          doc.text(montantHT.toFixed(2) + ' DT', 195, finalY, { align: 'right' });
-          doc.text('TVA:', 130, finalY + 7);
-          doc.text(montantTVA.toFixed(2) + ' DT', 195, finalY + 7, { align: 'right' });
-          if (remise > 0) {
-            doc.text('Remise:', 130, finalY + 14);
-            doc.text('-' + remise.toFixed(2) + ' DT', 195, finalY + 14, { align: 'right' });
+          doc.setTextColor(60, 60, 60);
+          doc.text('Sous-total HT:', 117, finalY + 2);
+          doc.text(montantHT.toFixed(2) + ' DT', 196, finalY + 2, { align: 'right' });
+          doc.text('TVA:', 117, finalY + 10);
+          doc.text(montantTVA.toFixed(2) + ' DT', 196, finalY + 10, { align: 'right' });
+          let summaryOffset = 18;
+          if (hasRemise) {
+            doc.text('Remise:', 117, finalY + summaryOffset);
+            doc.text('-' + remise.toFixed(2) + ' DT', 196, finalY + summaryOffset, { align: 'right' });
+            summaryOffset += 8;
           }
-          const totalY = finalY + (remise > 0 ? 21 : 14);
+          doc.setDrawColor(180, 180, 180);
+          doc.setLineWidth(0.4);
+          doc.line(112, finalY + summaryOffset - 3, 198, finalY + summaryOffset - 3);
+          doc.setFillColor(46, 125, 50);
+          doc.rect(112, finalY + summaryOffset - 3, 86, 11, 'F');
+          doc.setTextColor(255, 255, 255);
           doc.setFontSize(11);
           doc.setFont('helvetica', 'bold');
-          doc.text('TOTAL TTC:', 130, totalY);
-          doc.text(montantTotal.toFixed(2) + ' DT', 195, totalY, { align: 'right' });
+          doc.text('TOTAL TTC:', 117, finalY + summaryOffset + 4.5);
+          doc.text(montantTotal.toFixed(2) + ' DT', 196, finalY + summaryOffset + 4.5, { align: 'right' });
+          doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
 
           if (facture.description) {
             doc.setFontSize(9);
-            doc.text(`Notes: ${facture.description}`, margin, totalY + 10, { maxWidth: 180 });
+            doc.setTextColor(80, 80, 80);
+            doc.text(`Notes: ${facture.description}`, 17, finalY + summaryOffset + 18, { maxWidth: 90 });
+            doc.setTextColor(0, 0, 0);
           }
 
           // Footer
           doc.setFillColor(46, 125, 50);
-          doc.rect(0, 275, 210, 20, 'F');
+          doc.rect(0, 272, 210, 25, 'F');
           doc.setTextColor(255, 255, 255);
           doc.setFontSize(8);
-          doc.text(`Généré le: ${new Date().toLocaleString('fr-FR')}`, margin, 285);
-          doc.text('Merci pour votre confiance !', 190, 285, { align: 'right' });
+          doc.text(`Généré le: ${new Date().toLocaleString('fr-FR')}`, 17, 283);
+          doc.text('Merci pour votre confiance !', 193, 283, { align: 'right' });
           doc.setTextColor(0, 0, 0);
         });
 
