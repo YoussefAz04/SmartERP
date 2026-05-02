@@ -1,42 +1,42 @@
 // ══════════════════════════════════════════════════════════════
 // Articles Vente — Professional ERP Stylesheet
-// Navy / Cobalt / Teal / Forest-Green palette
+// Blue / Indigo / Cyan / Emerald cohesive palette
 // ══════════════════════════════════════════════════════════════
 
 // ── Design Tokens ─────────────────────────────────────────────
 
 // Deep navy (hero, panel headers)
-$nv900: #0c1929;  $nv800: #132238;  $nv700: #1a2d4a;
-$nv600: #1e3a5f;  $nv500: #25496e;  $nv400: #3a6491;
+$nv900: #0a1628;  $nv800: #0f1f3d;  $nv700: #162952;
+$nv600: #1c3366;  $nv500: #1e4080;  $nv400: #2d5fa8;
 
-// Cobalt blue — primary brand / KPI-1
-$cb900: #0d2848;  $cb700: #0d47a1;  $cb600: #1565c0;
-$cb500: #1976d2;  $cb400: #2196f3;  $cb100: #e3f2fd;
-$cb50:  #f0f7ff;
+// Royal blue — primary brand / KPI-1 / actions
+$cb900: #0c1d6e;  $cb700: #1d4ed8;  $cb600: #2563eb;
+$cb500: #3b82f6;  $cb400: #60a5fa;  $cb100: #dbeafe;
+$cb50:  #eff6ff;
 
-// Deep purple — pricing / KPI-2
-$pu900: #2d0740;  $pu700: #4a148c;  $pu600: #6a1b9a;
-$pu500: #7b1fa2;  $pu400: #9c27b0;  $pu100: #f3e5f5;
-$pu50:  #faf5ff;
+// Indigo / Violet — pricing / KPI-2
+$pu900: #1e1b4b;  $pu700: #3730a3;  $pu600: #4338ca;
+$pu500: #6366f1;  $pu400: #818cf8;  $pu100: #e0e7ff;
+$pu50:  #f5f3ff;
 
-// Teal — efficiency / KPI-3
-$tl900: #00251a;  $tl700: #00564a;  $tl600: #00695c;
-$tl500: #00796b;  $tl400: #00897b;  $tl300: #4db6ac;
-$tl100: #e0f2f1;  $tl50:  #f0faf9;
+// Cyan / Teal — efficiency / KPI-3
+$tl900: #083344;  $tl700: #0e7490;  $tl600: #0891b2;
+$tl500: #06b6d4;  $tl400: #22d3ee;  $tl300: #67e8f9;
+$tl100: #cffafe;  $tl50:  #ecfeff;
 
-// Forest green — value/money / KPI-4
-$gn900: #1b2e1c;  $gn700: #1b5e20;  $gn600: #2e7d32;
-$gn500: #388e3c;  $gn400: #43a047;  $gn300: #66bb6a;
-$gn100: #e8f5e9;  $gn50:  #f1faf2;
+// Emerald green — value/money / KPI-4
+$gn900: #022c22;  $gn700: #047857;  $gn600: #059669;
+$gn500: #10b981;  $gn400: #34d399;  $gn300: #6ee7b7;
+$gn100: #d1fae5;  $gn50:  #ecfdf5;
 
-// Warm gold (hero accent bar)
-$gd500: #c8930a;  $gd400: #e8a320;  $gd300: #f0b82a;
+// Accent (hero shimmer bar & badge)
+$ac500: #38bdf8;  $ac400: #7dd3fc;  $ac300: #bae6fd;
 
 // Amber (markup-mid)
-$am700: #e65100;  $am600: #f57c00;  $am100: #fff3e0;
+$am700: #b45309;  $am600: #d97706;  $am100: #fef3c7;
 
 // Red
-$re700: #b71c1c;  $re600: #c62828;  $re500: #d32f2f;  $re50: #ffebee;
+$re700: #b91c1c;  $re600: #dc2626;  $re500: #ef4444;  $re50: #fef2f2;
 
 // Slate neutrals
 $sl900: #0f172a;  $sl800: #1e293b;  $sl700: #334155;
@@ -61,20 +61,20 @@ $ts:  all .14s ease;
   padding: 42px 52px 40px;
   margin-bottom: 28px;
   background: linear-gradient(145deg,
-    $nv900 0%, $nv800 28%, $nv700 58%, $nv600 84%, #1c3859 100%);
+    $nv900 0%, $nv800 30%, $nv700 58%, $cb900 80%, #1a2f6a 100%);
   box-shadow:
-    0 18px 56px rgba($nv900,.60),
-    0 4px 12px rgba($nv900,.22),
-    inset 0 1px 0 rgba(255,255,255,.07);
+    0 20px 60px rgba($nv900,.65),
+    0 4px 14px rgba($nv900,.25),
+    inset 0 1px 0 rgba(255,255,255,.08);
   animation: heroReveal .48s ease both;
 }
 
-// warm gold accent bar
+// sky-blue shimmer accent bar
 .hero-shimmer-bar {
   position: absolute;
-  top: 0; left: 0; right: 0; height: 3px;
+  top: 0; left: 0; right: 0; height: 4px;
   background: linear-gradient(90deg,
-    $gd500 0%, $gd400 30%, $gd300 55%, $gd400 75%, $gd500 100%);
+    $cb700 0%, $tl600 28%, $ac500 52%, $pu600 74%, $cb700 100%);
   background-size: 300% 100%;
   animation: shimmerFlow 4s ease infinite;
   z-index: 3;
@@ -88,6 +88,21 @@ $ts:  all .14s ease;
   pointer-events: none; z-index: 0;
 }
 
+// decorative orbs already in template (orb-a, orb-b)
+.hero-orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  filter: blur(60px); opacity: .18; z-index: 0;
+}
+.orb-a {
+  width: 300px; height: 300px;
+  background: $cb500;
+  top: -80px; right: 80px;
+}
+.orb-b {
+  width: 200px; height: 200px;
+  background: $pu500;
+  bottom: -60px; right: 280px;
+}
 
 .hero-content {
   position: relative; z-index: 2;
@@ -99,31 +114,31 @@ $ts:  all .14s ease;
 
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba($gd400,.14);
-  border: 1px solid rgba($gd400,.28);
-  color: $gd300;
+  background: rgba($ac500,.14);
+  border: 1px solid rgba($ac500,.30);
+  color: $ac300;
   padding: 5px 16px; border-radius: 30px;
   font-size: 10px; font-weight: 800;
   text-transform: uppercase; letter-spacing: 1.5px;
   margin-bottom: 14px;
   animation: fadeInLeft .44s ease .10s both;
-  i { font-size: 11px; color: $gd400; }
+  i { font-size: 11px; color: $ac500; }
 }
 
 .hero-title {
   font-size: 38px; font-weight: 800;
-  color: #eef2f8;
+  color: #eef4ff;
   margin: 0 0 10px;
   letter-spacing: -.8px; line-height: 1.1;
   animation: fadeInLeft .44s ease .18s both;
 }
 
 .hero-subtitle {
-  color: rgba(255,255,255,.52);
+  color: rgba(255,255,255,.50);
   font-size: 13.5px; margin: 0;
   display: flex; align-items: center; gap: 8px;
   animation: fadeInLeft .44s ease .26s both;
-  i { font-size: 13px; color: $gd300; }
+  i { font-size: 13px; color: $ac400; }
 }
 
 .hero-actions {
@@ -139,24 +154,24 @@ $ts:  all .14s ease;
   transition: $t; letter-spacing: .1px;
 
   &.btn-hero-primary {
-    background: linear-gradient(135deg, $cb600, $cb500);
+    background: linear-gradient(135deg, $pu600, $pu500);
     color: $wh;
-    box-shadow: 0 4px 16px rgba($cb600,.42), 0 1px 4px rgba(0,0,0,.14);
+    box-shadow: 0 4px 18px rgba($pu600,.45), 0 1px 4px rgba(0,0,0,.14);
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba($cb600,.52);
-      background: linear-gradient(135deg, $cb500, $cb400);
+      box-shadow: 0 8px 24px rgba($pu500,.55);
+      background: linear-gradient(135deg, $pu500, $pu400);
     }
     &:active { transform: translateY(0); }
   }
 
   &.btn-hero-outline {
     background: rgba(255,255,255,.08);
-    color: rgba(255,255,255,.88);
-    border: 1.5px solid rgba(255,255,255,.22);
+    color: rgba(255,255,255,.90);
+    border: 1.5px solid rgba(255,255,255,.24);
     &:hover {
       background: rgba(255,255,255,.16);
-      border-color: rgba(255,255,255,.38);
+      border-color: rgba(255,255,255,.40);
       transform: translateY(-2px);
     }
     &:active { transform: translateY(0); }
@@ -189,16 +204,16 @@ $ts:  all .14s ease;
   }
 
   .kpi-label {
-    color: rgba(255,255,255,.62); font-size: 10px;
+    color: rgba(255,255,255,.65); font-size: 10px;
     font-weight: 800; margin-bottom: 12px;
     text-transform: uppercase; letter-spacing: 1.2px;
   }
 
   .kpi-trend {
     display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(0,0,0,.18);
-    border: 1px solid rgba(255,255,255,.16);
-    color: rgba(255,255,255,.88); padding: 4px 12px; border-radius: 20px;
+    background: rgba(0,0,0,.16);
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.90); padding: 4px 12px; border-radius: 20px;
     font-size: 11px; font-weight: 700;
     i { font-size: 11px; }
   }
@@ -207,50 +222,50 @@ $ts:  all .14s ease;
     width: 56px; height: 56px; border-radius: 15px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
-    background: rgba(255,255,255,.15);
-    border: 1.5px solid rgba(255,255,255,.22);
+    background: rgba(255,255,255,.16);
+    border: 1.5px solid rgba(255,255,255,.24);
     transition: $tb;
     i { font-size: 23px; color: $wh; }
   }
 
   .kpi-footer {
     padding: 12px 24px;
-    background: rgba(0,0,0,.14);
-    color: rgba(255,255,255,.60);
+    background: rgba(0,0,0,.13);
+    color: rgba(255,255,255,.62);
     font-size: 12px; font-weight: 600;
-    border-top: 1px solid rgba(255,255,255,.08);
+    border-top: 1px solid rgba(255,255,255,.10);
     position: relative; z-index: 1; transition: $t;
     display: flex; align-items: center; gap: 6px;
-    &:hover { background: rgba(0,0,0,.24); color: rgba(255,255,255,.88); }
+    &:hover { background: rgba(0,0,0,.22); color: rgba(255,255,255,.92); }
     i { font-size: 12px; }
   }
 
-  // Card 1 — Cobalt blue (Total Articles)
+  // Card 1 — Royal Blue (Total Articles)
   &.kpi-teal {
-    background: linear-gradient(148deg, $cb900 0%, $cb700 40%, $cb500 100%);
-    box-shadow: 0 8px 30px rgba($cb700,.44), 0 2px 8px rgba(0,0,0,.18);
-    &:hover { box-shadow: 0 16px 44px rgba($cb600,.54); }
+    background: linear-gradient(148deg, $cb900 0%, $cb700 45%, $cb500 100%);
+    box-shadow: 0 8px 32px rgba($cb700,.48), 0 2px 8px rgba(0,0,0,.18);
+    &:hover { box-shadow: 0 16px 46px rgba($cb600,.58); }
   }
 
-  // Card 2 — Deep purple (Prix Moyen)
+  // Card 2 — Indigo / Violet (Prix Moyen)
   &.kpi-indigo {
-    background: linear-gradient(148deg, $pu900 0%, $pu700 40%, $pu500 100%);
-    box-shadow: 0 8px 30px rgba($pu700,.40), 0 2px 8px rgba(0,0,0,.18);
-    &:hover { box-shadow: 0 16px 44px rgba($pu600,.50); }
+    background: linear-gradient(148deg, $pu900 0%, $pu700 45%, $pu500 100%);
+    box-shadow: 0 8px 32px rgba($pu700,.42), 0 2px 8px rgba(0,0,0,.18);
+    &:hover { box-shadow: 0 16px 46px rgba($pu600,.52); }
   }
 
-  // Card 3 — Teal (Markup)
+  // Card 3 — Cyan / Teal (Markup)
   &.kpi-amber {
-    background: linear-gradient(148deg, $tl900 0%, $tl600 40%, $tl400 100%);
-    box-shadow: 0 8px 30px rgba($tl600,.40), 0 2px 8px rgba(0,0,0,.18);
-    &:hover { box-shadow: 0 16px 44px rgba($tl500,.50); }
+    background: linear-gradient(148deg, $tl900 0%, $tl700 45%, $tl500 100%);
+    box-shadow: 0 8px 32px rgba($tl700,.42), 0 2px 8px rgba(0,0,0,.18);
+    &:hover { box-shadow: 0 16px 46px rgba($tl600,.52); }
   }
 
-  // Card 4 — Forest green (Valeur)
+  // Card 4 — Emerald (Valeur)
   &.kpi-emerald {
-    background: linear-gradient(148deg, $gn900 0%, $gn600 40%, $gn400 100%);
-    box-shadow: 0 8px 30px rgba($gn600,.40), 0 2px 8px rgba(0,0,0,.18);
-    &:hover { box-shadow: 0 16px 44px rgba($gn500,.50); }
+    background: linear-gradient(148deg, $gn900 0%, $gn700 45%, $gn500 100%);
+    box-shadow: 0 8px 32px rgba($gn700,.42), 0 2px 8px rgba(0,0,0,.18);
+    &:hover { box-shadow: 0 16px 46px rgba($gn600,.52); }
   }
 }
 
@@ -274,7 +289,7 @@ $ts:  all .14s ease;
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, $cb600, $pu500, $tl400);
+    background: linear-gradient(90deg, $cb700, $pu600, $tl600, $gn600);
     z-index: 1;
   }
 
@@ -290,7 +305,7 @@ $ts:  all .14s ease;
       background: linear-gradient(90deg, $sl200, transparent);
       margin-left: 6px;
     }
-    i { color: $cb600; font-size: 15px; }
+    i { color: $cb700; font-size: 15px; }
   }
 
   .filter-body { padding: 20px 24px; }
@@ -311,7 +326,7 @@ $ts:  all .14s ease;
     color: $sl400; font-size: 14px;
     pointer-events: none; transition: color .18s ease;
   }
-  &:focus-within .filter-input-icon { color: $cb600; }
+  &:focus-within .filter-input-icon { color: $cb700; }
 
   .filter-input {
     width: 100%; height: 42px;
@@ -321,8 +336,8 @@ $ts:  all .14s ease;
     transition: $t; outline: none;
 
     &:focus {
-      border-color: $cb500; background: $wh;
-      box-shadow: 0 0 0 3px rgba($cb500,.11);
+      border-color: $cb600; background: $wh;
+      box-shadow: 0 0 0 3px rgba($cb600,.12);
     }
     &::placeholder { color: $sl300; }
     &:hover:not(:focus) { border-color: $sl300; background: $wh; }
@@ -339,7 +354,7 @@ $ts:  all .14s ease;
   cursor: pointer; transition: $t;
 
   &:hover {
-    border-color: $cb600; color: $cb700;
+    border-color: $cb700; color: $cb700;
     background: $cb50; transform: scale(1.02);
   }
   &:active { transform: scale(.98); }
@@ -360,13 +375,13 @@ $ts:  all .14s ease;
 
     &.panel-header-vente {
       background: linear-gradient(135deg,
-        $nv900 0%, $nv800 30%, $nv700 65%, $nv600 100%);
-      border-bottom: 2px solid rgba($cb400,.22);
+        $nv900 0%, $nv800 30%, $nv700 65%, $cb900 100%);
+      border-bottom: 2px solid rgba($cb500,.22);
 
-      .panel-title { color: #eef2f8; }
+      .panel-title { color: #eef4ff; }
       .panel-badge {
-        background: rgba($cb400,.16); color: rgba(180,215,255,.9);
-        border: 1px solid rgba($cb400,.22);
+        background: rgba($cb500,.18); color: rgba(180,210,255,.92);
+        border: 1px solid rgba($cb500,.28);
       }
     }
   }
@@ -378,9 +393,9 @@ $ts:  all .14s ease;
 
   .panel-title-icon {
     width: 30px; height: 30px; border-radius: 8px;
-    background: rgba($cb400,.16); border: 1px solid rgba($cb400,.22);
+    background: rgba($cb500,.18); border: 1px solid rgba($cb500,.28);
     display: inline-flex; align-items: center; justify-content: center;
-    i { font-size: 14px; color: rgba(180,215,255,.9); }
+    i { font-size: 14px; color: rgba(180,210,255,.92); }
   }
 
   .panel-badge {
@@ -412,7 +427,7 @@ $ts:  all .14s ease;
   width: 100%; border-collapse: collapse; font-size: 13px;
 
   thead tr {
-    background: linear-gradient(90deg, #f7f9fc 0%, #f4f6fb 50%, #f7f9fc 100%);
+    background: linear-gradient(90deg, #f0f4ff 0%, #f5f3ff 50%, #f0f4ff 100%);
   }
 
   th {
@@ -422,7 +437,7 @@ $ts:  all .14s ease;
 
     &.sortable {
       cursor: pointer; user-select: none; transition: $t;
-      &:hover { color: $cb600; background: rgba($cb500,.05); }
+      &:hover { color: $cb700; background: rgba($cb600,.06); }
       .sort-icon { font-size: 12px; margin-left: 5px; opacity: .42; vertical-align: middle; }
     }
     &.col-check { width: 50px; text-align: center; }
@@ -440,16 +455,16 @@ $ts:  all .14s ease;
     transition: background $ts;
     animation: rowReveal .26s ease both;
 
-    &:hover td { background: rgba($cb500,.04); }
+    &:hover td { background: rgba($cb600,.04); }
 
     &.row-selected td {
-      background: rgba($cb500,.07);
-      border-bottom-color: rgba($cb400,.16);
+      background: rgba($pu600,.07);
+      border-bottom-color: rgba($pu500,.16);
     }
 
     &:nth-child(even) td { background-color: rgba($sl100,.48); }
-    &:nth-child(even):hover td { background: rgba($cb500,.05); }
-    &:nth-child(even).row-selected td { background: rgba($cb500,.08); }
+    &:nth-child(even):hover td { background: rgba($cb600,.05); }
+    &:nth-child(even).row-selected td { background: rgba($pu600,.08); }
 
     &:last-child td { border-bottom: none; }
   }
@@ -482,13 +497,13 @@ $ts:  all .14s ease;
   }
 
   input:checked + .checkmark {
-    background: linear-gradient(135deg, $cb700, $cb500);
-    border-color: $cb600;
-    box-shadow: 0 2px 8px rgba($cb600,.36);
+    background: linear-gradient(135deg, $pu700, $pu500);
+    border-color: $pu600;
+    box-shadow: 0 2px 8px rgba($pu600,.38);
     &::after { transform: rotate(45deg) scale(1); }
   }
 
-  &:hover .checkmark { border-color: $cb500; box-shadow: 0 0 0 3px rgba($cb500,.10); }
+  &:hover .checkmark { border-color: $pu500; box-shadow: 0 0 0 3px rgba($pu500,.12); }
 }
 
 
@@ -498,11 +513,11 @@ $ts:  all .14s ease;
 
   .article-avatar {
     width: 36px; height: 36px; border-radius: 10px;
-    background: linear-gradient(135deg, $cb700, $cb500);
-    color: rgba(255,255,255,.92); font-size: 14px; font-weight: 800;
+    background: linear-gradient(135deg, $cb700, $pu600);
+    color: rgba(255,255,255,.94); font-size: 14px; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba($cb700,.34);
+    box-shadow: 0 3px 10px rgba($cb700,.32);
   }
 }
 
@@ -512,7 +527,7 @@ $ts:  all .14s ease;
 .price-badge {
   display: inline-block; padding: 5px 12px;
   background: $cb50; color: $cb700;
-  border: 1px solid rgba($cb500,.24);
+  border: 1px solid rgba($cb600,.26);
   border-radius: 8px; font-weight: 800; font-size: 12px; white-space: nowrap;
 }
 
@@ -525,11 +540,11 @@ $ts:  all .14s ease;
 
 .sku-code {
   display: inline-block; padding: 4px 10px;
-  background: $nv800; color: rgba(180,215,255,.82);
+  background: $nv800; color: rgba(180,210,255,.84);
   border-radius: 7px;
   font-family: 'Cascadia Code','Courier New',monospace;
   font-size: 11px; font-weight: 600; letter-spacing: .6px;
-  border: 1px solid rgba($cb400,.16);
+  border: 1px solid rgba($cb500,.18);
 }
 
 .markup-badge {
@@ -540,14 +555,14 @@ $ts:  all .14s ease;
 
   &.markup-high {
     background: $gn100; color: $gn700;
-    border: 1px solid rgba($gn400,.32);
+    border: 1px solid rgba($gn500,.32);
   }
   &.markup-mid {
     background: $am100; color: $am700;
     border: 1px solid rgba($am600,.28);
   }
   &.markup-low {
-    background: $re50; color: $re600;
+    background: $re50; color: $re700;
     border: 1px solid rgba($re500,.24);
   }
 }
@@ -556,7 +571,7 @@ $ts:  all .14s ease;
   display: inline-flex; align-items: center; gap: 5px;
   padding: 5px 11px;
   background: $pu50; color: $pu600;
-  border: 1px solid rgba($pu400,.28);
+  border: 1px solid rgba($pu500,.28);
   border-radius: 8px; font-size: 12px; font-weight: 700; white-space: nowrap;
   i { font-size: 11px; }
 }
@@ -574,20 +589,20 @@ $ts:  all .14s ease;
   transition: $t; font-size: 13.5px;
 
   &.action-btn-edit {
-    background: $cb50; color: $cb600; border-color: rgba($cb500,.22);
+    background: $cb50; color: $cb700; border-color: rgba($cb600,.22);
     &:hover {
-      background: $cb600; color: $wh; border-color: $cb700;
+      background: $cb700; color: $wh; border-color: $cb900;
       transform: scale(1.10);
-      box-shadow: 0 4px 12px rgba($cb600,.38);
+      box-shadow: 0 4px 12px rgba($cb700,.40);
     }
   }
 
   &.action-btn-delete {
-    background: $re50; color: $re500; border-color: rgba($re500,.20);
+    background: $re50; color: $re600; border-color: rgba($re500,.20);
     &:hover {
-      background: $re500; color: $wh; border-color: $re600;
+      background: $re600; color: $wh; border-color: $re700;
       transform: scale(1.10);
-      box-shadow: 0 4px 12px rgba($re500,.36);
+      box-shadow: 0 4px 12px rgba($re600,.38);
     }
   }
 }
