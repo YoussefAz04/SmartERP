@@ -354,7 +354,7 @@ $ts:  all .14s ease;
   cursor: pointer; transition: $t;
 
   &:hover {
-    border-color: $cb700; color: $cb700;
+    border-color: $cb900; color: $cb700;
     background: $cb50; transform: scale(1.02);
   }
   &:active { transform: scale(.98); }
