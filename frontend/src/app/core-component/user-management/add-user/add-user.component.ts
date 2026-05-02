@@ -246,17 +246,17 @@ export class AddUserComponent implements OnInit {
 
   onSubmitAddUser(): void {
     if (!this.addUserForm.valid) {
-      this.notification.warning('Please fill all required fields');
+      this.notification.warning('Veuillez remplir tous les champs requis');
       return;
     }
 
     if (this.isSuperAdmin && !this.selectedEnterpriseId) {
-      this.notification.error('❌ Please select an enterprise to assign the user to.');
+      this.notification.error('❌ Veuillez sélectionner une entreprise à laquelle affecter l\'utilisateur.');
       return;
     }
 
     if (!this.isSuperAdmin && this.currentEnterpriseId === null) {
-      this.notification.error('❌ Enterprise context is missing. Please log out and log in again.');
+      this.notification.error('❌ Le contexte d\'entreprise est manquant. Veuillez vous déconnecter puis vous reconnecter.');
       return;
     }
 
@@ -283,13 +283,13 @@ export class AddUserComponent implements OnInit {
     this.userService.createEmployeeUser(request).subscribe({
       next: (response: any) => {
         console.log('Employee created successfully:', response);
-        this.notification.success('✓ Employee created successfully');
+        this.notification.success('✓ Employé créé avec succès');
         this.router.navigate(['/user-management/users']);
         this.isSubmitting = false;
       },
       error: (err: any) => {
         console.error('Error creating employee:', err);
-        this.notification.error('✗ Error: ' + (err.error?.message || err.error || err.message));
+        this.notification.error('✗ Erreur : ' + (err.error?.message || err.error || err.message));
         this.isSubmitting = false;
       }
     });
