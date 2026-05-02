@@ -5,4 +5,5 @@ export interface CategorieClient {
   nom: string;
   description: string;
   clients?: Client[];
+  clientCount?: number;
 }

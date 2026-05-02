@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.CategorieClientDto;
 import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.entity.CategorieClient;
 import BuissnesManager.BuissnesManager.entity.Client;
@@ -15,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ClientService {
@@ -118,8 +121,19 @@ public class ClientService {
     }
 
     // ✅ GET ALL CATEGORIES
-    public List<CategorieClient> getAllCategorieClient() {
-        return categorieClientRepo.findAll();
+    public List<CategorieClientDto> getAllCategorieClient() {
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        List<Object[]> rows = (entrepriseId != null)
+            ? clientRepo.countGroupedByCategorieAndEntreprise(entrepriseId)
+            : clientRepo.countGroupedByCategorie();
+        Map<Long, Long> countMap = new HashMap<>();
+        for (Object[] row : rows) {
+            countMap.put((Long) row[0], (Long) row[1]);
+        }
+        return categorieClientRepo.findAll().stream().map(cat ->
+            new CategorieClientDto(cat.getId(), cat.getNom(), cat.getDescription(),
+                countMap.getOrDefault(cat.getId(), 0L))
+        ).toList();
     }
 
     // ✅ GET CATEGORY BY ID

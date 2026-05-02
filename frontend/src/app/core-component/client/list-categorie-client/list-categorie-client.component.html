@@ -112,9 +112,9 @@
               </div>
             </td>
             <td>
-              <span class="count-badge" [class.count-badge-empty]="!categorie.clients || categorie.clients.length === 0">
-                <i class="feather" [ngClass]="(categorie.clients && categorie.clients.length > 0) ? 'icon-users' : 'icon-minus'"></i>
-                {{ categorie.clients?.length || 0 }}
+              <span class="count-badge" [class.count-badge-empty]="!(categorie.clientCount ?? categorie.clients?.length)">
+                <i class="feather" [ngClass]="(categorie.clientCount ?? categorie.clients?.length ?? 0) > 0 ? 'icon-users' : 'icon-minus'"></i>
+                {{ categorie.clientCount ?? categorie.clients?.length ?? 0 }}
               </span>
             </td>
             <td>
