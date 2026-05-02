@@ -236,6 +236,10 @@ public class AuthController {
             System.out.println("✅ Login successful for: " + user.getUsername());
             System.out.println("✅ Enterprise ID in response: " + entrepriseId);
             return ResponseEntity.ok(response);
+        } catch (org.springframework.security.authentication.DisabledException e) {
+            System.err.println("❌ Login refused (account disabled): " + request.getUsername());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Compte désactivé. Veuillez contacter votre administrateur.");
         } catch (Exception e) {
             System.err.println("❌ Login error: " + e.getMessage());
             e.printStackTrace();

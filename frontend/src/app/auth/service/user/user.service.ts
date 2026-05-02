@@ -60,4 +60,8 @@ export class UserService {
   deleteUser(userId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${userId}`);
   }
+
+  setUserStatus(userId: number, enabled: boolean): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${userId}/status`, { enabled });
+  }
 }
