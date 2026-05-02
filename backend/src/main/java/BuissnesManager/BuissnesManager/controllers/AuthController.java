@@ -146,11 +146,24 @@ public class AuthController {
             Optional<User> userOptional = userRepo.findByUsername(request.getUsername());
             if (userOptional.isEmpty()) {
                 System.out.println("❌ User not found in database: " + request.getUsername());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Invalid credentials: User not found");
+                Map<String, String> body = new HashMap<>();
+                body.put("error", "INVALID_USERNAME");
+                body.put("message", "Nom d'utilisateur invalide");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
             }
 
             User dbUser = userOptional.get();
+
+            // Pre-check the account status so we can return a specific "compte inactif"
+            // message even when the AuthenticationManager would otherwise raise a generic
+            // BadCredentialsException for the same situation.
+            if (!dbUser.isEnabled()) {
+                System.err.println("❌ Login refused (account disabled): " + request.getUsername());
+                Map<String, String> body = new HashMap<>();
+                body.put("error", "ACCOUNT_DISABLED");
+                body.put("message", "Compte inactif. Veuillez contacter votre administrateur.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+            }
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -238,13 +251,29 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (org.springframework.security.authentication.DisabledException e) {
             System.err.println("❌ Login refused (account disabled): " + request.getUsername());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Compte désactivé. Veuillez contacter votre administrateur.");
+            Map<String, String> body = new HashMap<>();
+            body.put("error", "ACCOUNT_DISABLED");
+            body.put("message", "Compte inactif. Veuillez contacter votre administrateur.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            System.err.println("❌ Login refused (bad password): " + request.getUsername());
+            Map<String, String> body = new HashMap<>();
+            body.put("error", "INVALID_PASSWORD");
+            body.put("message", "Mot de passe invalide");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+        } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            System.err.println("❌ Login refused (username not found): " + request.getUsername());
+            Map<String, String> body = new HashMap<>();
+            body.put("error", "INVALID_USERNAME");
+            body.put("message", "Nom d'utilisateur invalide");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
         } catch (Exception e) {
             System.err.println("❌ Login error: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid credentials: " + e.getMessage());
+            Map<String, String> body = new HashMap<>();
+            body.put("error", "AUTH_ERROR");
+            body.put("message", "Identifiants invalides. Veuillez réessayer.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
         }
     }
 
