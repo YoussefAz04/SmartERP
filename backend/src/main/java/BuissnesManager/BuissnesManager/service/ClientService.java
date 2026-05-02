@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.CategorieClientDto;
 import BuissnesManager.BuissnesManager.entity.ArticleVente;
 import BuissnesManager.BuissnesManager.entity.CategorieClient;
 import BuissnesManager.BuissnesManager.entity.Client;
@@ -118,8 +119,14 @@ public class ClientService {
     }
 
     // ✅ GET ALL CATEGORIES
-    public List<CategorieClient> getAllCategorieClient() {
-        return categorieClientRepo.findAll();
+    public List<CategorieClientDto> getAllCategorieClient() {
+        Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        return categorieClientRepo.findAll().stream().map(cat -> {
+            long count = (entrepriseId != null)
+                ? clientRepo.countByCategorieClientIdAndEntrepriseId(cat.getId(), entrepriseId)
+                : clientRepo.countByCategorieClientId(cat.getId());
+            return new CategorieClientDto(cat.getId(), cat.getNom(), cat.getDescription(), count);
+        }).toList();
     }
 
     // ✅ GET CATEGORY BY ID

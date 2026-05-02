@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.dto.CategorieClientDto;
 import BuissnesManager.BuissnesManager.entity.CategorieClient;
 import BuissnesManager.BuissnesManager.entity.Client;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
@@ -121,7 +122,7 @@ public class ClientController {
 
     // ✅ GET ALL CATEGORIES
     @GetMapping("/getAllCategorieClients")
-    public ResponseEntity<List<CategorieClient>> getAllCategorieClients() {
+    public ResponseEntity<List<CategorieClientDto>> getAllCategorieClients() {
         try {
             return ResponseEntity.ok(clientService.getAllCategorieClient());
         } catch (Exception e) {
