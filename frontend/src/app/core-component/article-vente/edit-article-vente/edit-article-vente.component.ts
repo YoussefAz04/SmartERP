@@ -1,11 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ArticleVenteService } from '../../../core/service/article-vente/article-vente.service';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { ArticleAchat } from '../../../model/article-achat.model';
-import { NotificationService } from '../../../shared/notification/notification.service';
+
+interface ToastState {
+  visible: boolean;
+  message: string;
+  type: 'success' | 'error';
+}
 
 @Component({
   selector: 'app-edit-article-vente',
@@ -14,7 +19,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
   templateUrl: './edit-article-vente.component.html',
   styleUrl: './edit-article-vente.component.scss'
 })
-export class EditArticleVenteComponent implements OnInit {
+export class EditArticleVenteComponent implements OnInit, OnDestroy {
   articleForm!: FormGroup;
   articlesAchat: ArticleAchat[] = [];
   isLoading = false;
@@ -23,12 +28,15 @@ export class EditArticleVenteComponent implements OnInit {
   selectedArticleAchatPrice: number | null = null;
   autoCalculated = false;
 
+  toast: ToastState = { visible: false, message: '', type: 'success' };
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
+  private static readonly TOAST_DURATION_MS = 4000;
+
   constructor(private articleVenteService: ArticleVenteService,
     private articleAchatService: ArticleAchatService,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute,
-    private notification: NotificationService) {}
+    private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.articleId = Number(this.route.snapshot.paramMap.get('id'));
@@ -38,6 +46,21 @@ export class EditArticleVenteComponent implements OnInit {
     if (this.articleId) {
       this.loadArticle();
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+  }
+
+  showToast(message: string, type: 'success' | 'error'): void {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toast = { visible: true, message, type };
+    this.toastTimer = setTimeout(() => this.dismissToast(), EditArticleVenteComponent.TOAST_DURATION_MS);
+  }
+
+  dismissToast(): void {
+    this.toast = { ...this.toast, visible: false };
+    if (this.toastTimer) { clearTimeout(this.toastTimer); this.toastTimer = null; }
   }
 
   initializeForm(): void {
@@ -145,17 +168,17 @@ export class EditArticleVenteComponent implements OnInit {
       this.articleVenteService.updateArticleVente(this.articleId, articleData).subscribe({
         next: () => {
           this.isLoading = false;
-          this.notification.success('✓ Article mis à jour avec succès!');
-          this.router.navigate(['/article-vente/listArticleVente']);
+          this.showToast('Article mis à jour avec succès !', 'success');
+          setTimeout(() => this.router.navigate(['/article-vente/listArticleVente']), 1200);
         },
         error: (err: any) => {
           this.isLoading = false;
           const errorMsg = err.error?.message || err.message || 'Impossible de mettre à jour l\'article';
-          this.notification.error('✗ Erreur: ' + errorMsg);
+          this.showToast('Erreur : ' + errorMsg, 'error');
         }
       });
     } else {
-      this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      this.showToast('Veuillez remplir correctement tous les champs obligatoires.', 'error');
     }
   }
 }
