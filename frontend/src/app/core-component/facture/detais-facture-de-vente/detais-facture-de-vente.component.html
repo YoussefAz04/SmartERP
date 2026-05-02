@@ -192,7 +192,9 @@
     <i class="feather icon-list"></i>
     <h3>Lignes de la Facture</h3>
   </div>
-  <div class="table-container" *ngIf="factureDetais?.detaisFactureDeVente; else noDetails">
+
+  <!-- Single detail (manual facture) -->
+  <div class="table-container" *ngIf="factureDetais?.detaisFactureDeVente">
     <table class="modern-table">
       <thead>
         <tr>
@@ -214,12 +216,40 @@
       </tbody>
     </table>
   </div>
-  <ng-template #noDetails>
-    <div class="empty-state">
-      <i class="feather icon-inbox"></i>
-      <p>Aucun détail disponible pour cette facture</p>
-    </div>
-  </ng-template>
+
+  <!-- Lines from associated commande vente (auto-generated facture) -->
+  <div class="table-container"
+       *ngIf="!factureDetais?.detaisFactureDeVente && factureDetais?.commandeVente?.lignes?.length">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Article</th>
+          <th>Quantité</th>
+          <th>Prix Unitaire HT</th>
+          <th>TVA</th>
+          <th>Montant HT</th>
+          <th>Total TTC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ligne of factureDetais.commandeVente?.lignes">
+          <td>{{ ligne.articleVente?.nom || '—' }}</td>
+          <td>{{ ligne.quantite }}</td>
+          <td class="amount-cell">{{ ligne.prixUnitaireHT | number:'1.2-2' }} DT</td>
+          <td>{{ ligne.tva | number:'1.2-2' }} %</td>
+          <td class="amount-cell">{{ ligne.montantHT | number:'1.2-2' }} DT</td>
+          <td class="amount-cell total">{{ ligne.montantTTC | number:'1.2-2' }} DT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state"
+       *ngIf="!factureDetais?.detaisFactureDeVente && !factureDetais?.commandeVente?.lignes?.length">
+    <i class="feather icon-inbox"></i>
+    <p>Aucun détail disponible pour cette facture</p>
+  </div>
 </div>
 
 <!-- Informations Client -->

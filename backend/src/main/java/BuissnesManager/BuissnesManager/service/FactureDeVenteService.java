@@ -56,7 +56,7 @@ public class FactureDeVenteService {
     }
 
     public Optional<FactureDeVente> getFactureById(Long id) {
-        return factureDeVenteRepo.findById(id);
+        return factureDeVenteRepo.findByIdWithDetails(id);
     }
 
 
