@@ -31,6 +31,13 @@ export interface FactureAchat {
   fournisseur?: {
     id?: number;
     nom?: string;
+    email?: string;
+    telephone?: string;
+    adresse?: string;
+    ville?: string;
+    pays?: string;
+    numeroIdentificationFiscale?: string;
+    registreCommerce?: string;
   };
 
   commandeAchat?: {

@@ -140,6 +140,7 @@
             <i class="feather icon-minus" 
                [hidden]="sortBy === 'referance'"></i>
           </th>
+          <th>Fournisseur</th>
           <th (click)="onSort('montantTTC')" class="sortable" title="Cliquer pour trier">
             Montant TTC
             <i class="feather icon-chevron-up" 
@@ -176,6 +177,13 @@
           </td>
           <td class="reference-cell">
             <span class="badge-ref">{{ facture.referance }}</span>
+          </td>
+          <td class="client-cell">
+            <span *ngIf="facture.fournisseur?.nom" class="client-name">
+              <i class="feather icon-truck"></i>
+              {{ facture.fournisseur?.nom }}
+            </span>
+            <span *ngIf="!facture.fournisseur?.nom" class="no-client">—</span>
           </td>
           <td class="amount-cell highlight">
             <strong>{{ facture.montantTTC | number:'1.2-2' }} DT</strong>
