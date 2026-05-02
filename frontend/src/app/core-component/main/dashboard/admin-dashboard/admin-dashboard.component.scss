@@ -89,11 +89,6 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
   50%       { transform: translateY(-12px) scale(1.35); opacity: 1; }
 }
 
-@keyframes subtleRotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
 @keyframes ripple {
   to { transform: scale(3.5); opacity: 0; }
 }
@@ -405,12 +400,14 @@ $shadow-xl:  0 20px 48px rgba(15,23,42,.14), 0 8px 16px rgba(15,23,42,.08);
   font-size: 42px;
   font-weight: 900;
   letter-spacing: -1.5px;
+  color: #fff; // fallback for browsers without gradient-text support
   background: linear-gradient(110deg, #ffffff 20%, #c7d2fe 55%, #7dd3fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: inline-block;
   line-height: 1.05;
+  will-change: filter;
   animation: titleGlow 4s ease-in-out infinite;
 
   @media (max-width: 768px) {
