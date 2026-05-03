@@ -1,8 +1,8 @@
 package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
+import BuissnesManager.BuissnesManager.dto.ValidationResponseDto;
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
-import BuissnesManager.BuissnesManager.entity.FactureDeVente;
 import BuissnesManager.BuissnesManager.service.CommandeVenteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,11 +130,10 @@ public class CommandeVenteController {
         try {
             logger.info("? [VALIDATION] Starting invoice generation for order ID: {}", id);
             
-            // ✅ FIXED: Return type is now FactureDeVente (not FactureVente)
-            FactureDeVente facture = commandeVenteService.validerCommande(id);
+            ValidationResponseDto response = commandeVenteService.validerCommande(id);
             
-            logger.info("? [VALIDATION] Invoice created successfully with ID: {}", facture.getId());
-            return ResponseEntity.ok(facture);
+            logger.info("? [VALIDATION] Invoice created successfully with ID: {}", response.getFacture().getId());
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             logger.error("? [VALIDATION] Error during validation: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(errorBody(e.getMessage()));
