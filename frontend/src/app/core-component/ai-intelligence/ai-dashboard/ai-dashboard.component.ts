@@ -169,6 +169,8 @@ export class AiDashboardComponent implements OnInit {
         labels: {
           style: { fontSize: '12px', fontWeight: 600, colors: '#64748b' },
         },
+        tooltip: { enabled: false },
+        crosshairs: { show: false },
       },
       yaxis: {
         labels: {
@@ -212,6 +214,10 @@ export class AiDashboardComponent implements OnInit {
         shared: true,
         intersect: false,
         style: { fontSize: '12px', fontFamily: this.chartFontFamily },
+        x: {
+          formatter: (_val: unknown, opts: { dataPointIndex?: number } = {}) =>
+            months[opts?.dataPointIndex ?? 0] ?? '',
+        },
         y: { formatter: (v: number) => this.formatTooltipValue(v) },
       },
     } as Partial<ChartOptions>;
