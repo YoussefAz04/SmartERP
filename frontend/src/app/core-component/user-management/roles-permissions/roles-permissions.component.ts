@@ -303,7 +303,11 @@ export class RolesPermissionsComponent implements OnInit{
 
   private refreshRoles(): void {
     this.roleService.getAllRoles().subscribe(data => {
-      this.tableData = data.filter(r => r.name !== 'Manager');
+      let filtered = data.filter(r => r.name !== 'Manager');
+      if (!this.isSuperAdmin()) {
+        filtered = filtered.filter(r => r.roleType !== 'SUPER_ADMIN');
+      }
+      this.tableData = filtered;
       this.dataSource = new MatTableDataSource(this.tableData);
     });
   }

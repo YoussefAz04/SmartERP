@@ -161,7 +161,7 @@ export class DetaisUsersComponent implements OnInit {
     this.rolesLoadError = false;
     this.roleService.getAllRoles().subscribe({
       next: (roles) => {
-        if (this.isAdmin && !this.isSuperAdmin) {
+        if (!this.isSuperAdmin) {
           this.availableRoles = roles.filter(r =>
             r.roleType === 'EMPLOYEE' || r.roleType === 'ADMIN'
           );
