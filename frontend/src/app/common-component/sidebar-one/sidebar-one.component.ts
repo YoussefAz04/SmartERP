@@ -65,9 +65,6 @@ export class SidebarOneComponent implements OnInit {
       }
     });
     this.getRoutes(this.router);
-    this.sidebar.getAllModuleTitles().subscribe(modules => {
-      this.sidebar.generateSidebarData(modules);
-    });
     this.sidebar.sidebarData$.subscribe(data => {
       // Filter out sections with no active menu items to avoid orphaned section headers
       this.side_bar_data = data.filter((section: SidebarSection) => section.menu && section.menu.length > 0);
@@ -136,10 +133,9 @@ export class SidebarOneComponent implements OnInit {
 
   ngOnInit(): void {
     // Reload sidebar data on init to apply role-based filtering for the logged-in user.
-    // Role and permission filtering is handled inside generateSidebarData using localStorage.
-    this.sidebar.getAllModuleTitles().subscribe(modules => {
-      this.sidebar.generateSidebarData(modules);
-    });
+    // For EMPLOYEE users, permissions are refreshed from the backend to pick up any
+    // changes made by the admin since the employee last logged in.
+    this.sidebar.loadSidebarWithRefresh();
   }
 
 
