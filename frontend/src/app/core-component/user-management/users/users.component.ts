@@ -110,7 +110,7 @@ export class UsersComponent implements OnInit {
   loadRoles(): void {
     this.roleService.getAllRoles().subscribe({
       next: (roles) => {
-        if (this.isAdmin && !this.isSuperAdmin) {
+        if (!this.isSuperAdmin) {
           this.roles = roles.filter(r =>
             r.roleType === 'EMPLOYEE' || r.roleType === 'ADMIN'
           );
