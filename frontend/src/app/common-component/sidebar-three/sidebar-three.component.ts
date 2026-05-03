@@ -1,17 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import { SidebarService } from 'src/app/core/core.index';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar-three',
   templateUrl: './sidebar-three.component.html',
   styleUrls: ['./sidebar-three.component.scss'],
 })
-export class SidebarThreeComponent {
+export class SidebarThreeComponent implements OnInit, OnDestroy {
   opendSubMenu: Array<string | number> = [];
   public activePath = '';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public sidebarData: Array<any> = [];
+
+  private dataSub?: Subscription;
+
   constructor(private sidebar: SidebarService, private router: Router) {
     this.activePath = this.router.url.split('/')[1];
     this.router.events.subscribe((data: RouterEvent) => {
@@ -20,7 +24,56 @@ export class SidebarThreeComponent {
       }
       this.opendSubMenu[0] = ''
     });
-    this.sidebarData = this.sidebar.sidebarData3;
+  }
+
+  ngOnInit(): void {
+    this.dataSub = this.sidebar.sidebarData$.subscribe(data => {
+      this.sidebarData = this.transformSidebarData(data);
+    });
+    this.sidebar.getAllModuleTitles().subscribe(modules => {
+      this.sidebar.generateSidebarData(modules);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.dataSub?.unsubscribe();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private transformSidebarData(data: any[]): any[] {
+    return data.map(section => ({
+      tittle: section.tittle,
+      featherIcon: this.getSectionIcon(section.tittle),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subRoutes: (section.menu || []).map((item: any) => ({
+        tittle: item.menuValue,
+        hasSubRoute: item.hasSubRoute,
+        showSubRoute: item.showSubRoute,
+        route: item.route,
+        activeRoute: item.base1,
+        featherIcon: item.icon || 'grid',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        subRoutes: (item.subMenus || []).map((sub: any) => ({
+          tittle: sub.menuValue,
+          route: sub.route,
+        }))
+      }))
+    }));
+  }
+
+  private getSectionIcon(title: string): string {
+    const t = (title || '').toLowerCase();
+    if (t.includes('article') || t.includes('stock')) return 'package';
+    if (t.includes('client')) return 'users';
+    if (t.includes('fournisseur')) return 'truck';
+    if (t.includes('commande')) return 'file-text';
+    if (t.includes('facture')) return 'credit-card';
+    if (t.includes('budget') || t.includes('comptab')) return 'dollar-sign';
+    if (t.includes('ia') || t.includes('intellig')) return 'cpu';
+    if (t.includes('admin') || t.includes('platform') || t.includes('param')) return 'settings';
+    if (t.includes('document')) return 'folder';
+    if (t.includes('projet')) return 'briefcase';
+    return 'grid';
   }
 
   showMenu(val: string): void {

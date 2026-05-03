@@ -106,7 +106,7 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
             this.userEntrepriseId = this.idEntreprise;
             console.log("Id entreprise:", this.userEntrepriseId);
             this.currentStep = 2;
-            this.router.navigate(['/signin'])
+            this.router.navigate(['/auth/signin'])
 
           },
         });

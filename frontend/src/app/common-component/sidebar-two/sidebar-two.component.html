@@ -8,12 +8,7 @@
             @for (mainTittle of sidebarData; track mainTittle) {
               <li class="nav-item" role="presentation">
                 <a class="tablinks nav-link" (click)="showMenu(mainTittle.tittle)" href="#home" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"  role="tab" aria-selected="true"   [class.active]="opendSubMenu[0] === mainTittle.tittle">
-                  @if (mainTittle.tittle === 'Sales') {
-                    <i class="feather icon-shopping-cart"></i>
-                  }
-                  @if (mainTittle.tittle !== 'Sales') {
-                    <img [src]="mainTittle.icon" alt="icon" />
-                  }
+                  <i class="feather" [class]="'icon-' + mainTittle.featherIcon"></i>
                 </a>
               </li>
             }

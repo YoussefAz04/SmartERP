@@ -8,7 +8,7 @@ export class routes {
   // auth routes *start*
 
   public static get signIn(): string {
-    return this.base + '/signin';
+    return '/auth/signin';
   }
   public static get signUp(): string {
     return this.base + '/signup';
@@ -117,10 +117,10 @@ export class routes {
   // core pages child routes
 
   public static get productList(): string {
-    return this.inventory + '/listArticleAchat';
+    return this.articleAchat + '/listArticleAchat';
   }
   public static get addProduct(): string {
-    return this.inventory + '/product/add-product';
+    return this.articleAchat + '/add';
   }
   public static get expiredProduct(): string {
     return this.inventory + '/product/expired-products';
