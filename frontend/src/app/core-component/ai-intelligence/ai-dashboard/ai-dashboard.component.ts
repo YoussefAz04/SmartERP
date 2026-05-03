@@ -211,8 +211,7 @@ export class AiDashboardComponent implements OnInit {
   formatRecType(type: string | null | undefined): string {
     if (!type) { return ''; }
     return type
-      .toString()
-      .replace(/[_\-]+/g, ' ')
+      .replace(/[_-]+/g, ' ')
       .toLowerCase()
       .replace(/\b\w/g, (c) => c.toUpperCase());
   }
