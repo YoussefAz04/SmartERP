@@ -87,12 +87,12 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 66px;
-  background: rgba($white, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid $border-light;
-  box-shadow: 0 1px 0 rgba($border-light, 0.8), 0 2px 12px rgba(0, 0, 0, 0.04);
+  height: 68px;
+  background: linear-gradient(110deg, #ffffff 60%, rgba(238, 242, 255, 0.55) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba($border-light, 0.7);
+  box-shadow: 0 1px 0 rgba($border-light, 0.6), 0 4px 24px rgba(79, 70, 229, 0.06), 0 1px 6px rgba(0, 0, 0, 0.05);
   padding: 0 28px;
   gap: 20px;
   width: 100%;
@@ -106,8 +106,8 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, $accent-blue 0%, $accent-indigo 40%, transparent 100%);
-    opacity: 0.5;
+    background: linear-gradient(90deg, $accent-blue 0%, $accent-indigo 45%, rgba($accent-indigo, 0.3) 70%, transparent 100%);
+    opacity: 0.7;
   }
 }
 
@@ -167,7 +167,7 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   border-radius: 14px;
   background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
   border: 1.5px solid rgba($accent-blue, 0.18);
-  box-shadow: 0 2px 10px rgba($accent-blue, 0.1), 0 1px 3px rgba($accent-blue, 0.06);
+  box-shadow: 0 2px 10px rgba($accent-blue, 0.12), 0 1px 3px rgba($accent-blue, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
   transition: all $trans;
   position: relative;
   overflow: hidden;
@@ -179,13 +179,13 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba($white, 0.8), transparent);
+    background: linear-gradient(90deg, transparent, rgba($white, 0.9), transparent);
   }
 
   .logo-brand:hover & {
-    background: linear-gradient(135deg, rgba($accent-blue, 0.08) 0%, rgba($accent-blue, 0.14) 100%);
-    border-color: rgba($accent-blue, 0.35);
-    box-shadow: 0 4px 18px rgba($accent-blue, 0.18);
+    background: linear-gradient(135deg, rgba($accent-blue, 0.1) 0%, rgba($accent-blue, 0.16) 100%);
+    border-color: rgba($accent-blue, 0.38);
+    box-shadow: 0 6px 20px rgba($accent-blue, 0.2), 0 2px 6px rgba($accent-blue, 0.1);
     transform: translateY(-1px);
   }
 }
@@ -264,18 +264,24 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   height: 42px;
-  background: $bg-light;
-  border: 1.5px solid transparent;
+  background: rgba($bg-light, 0.85);
+  border: 1.5px solid rgba($border-light, 0.9);
   border-radius: 100px;
   padding: 0 16px;
   gap: 10px;
   transition: all $trans;
   width: 100%;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  &:hover {
+    border-color: rgba($accent-blue, 0.25);
+    background: rgba($white, 0.95);
+  }
 
   &:focus-within {
     border-color: $accent-blue;
     background: $white;
-    box-shadow: 0 0 0 4px rgba($accent-blue, 0.08);
+    box-shadow: 0 0 0 4px rgba($accent-blue, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.02);
 
     .search-icon {
       color: $accent-blue;
@@ -686,9 +692,9 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 12px;
-  background: transparent;
+  background: rgba($bg-light, 0.6);
   color: $text-secondary;
   cursor: pointer;
   transition: all $trans;
@@ -703,13 +709,14 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   &:hover {
-    background: linear-gradient(135deg, rgba($accent-blue, 0.08) 0%, rgba($accent-indigo, 0.06) 100%);
+    background: linear-gradient(135deg, rgba($accent-blue, 0.09) 0%, rgba($accent-indigo, 0.07) 100%);
+    border-color: rgba($accent-blue, 0.18);
     color: $accent-blue;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($accent-blue, 0.12);
+    box-shadow: 0 4px 14px rgba($accent-blue, 0.14);
 
     i {
-      transform: scale(1.1);
+      transform: scale(1.12);
     }
   }
 
@@ -750,12 +757,13 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   justify-content: center;
   min-width: 18px;
   height: 18px;
-  background: $accent-blue;
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
   color: $white;
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
   border: 2px solid $white;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
   animation: badgePulse 2s ease-in-out infinite;
   transition: border-color $trans;
 }
@@ -763,6 +771,18 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 .notifications-dropdown {
   min-width: 380px;
   max-width: 400px;
+}
+
+// ============================================
+// ACTION DIVIDER
+// ============================================
+.action-divider {
+  display: block;
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(180deg, transparent, $border-light 30%, $border-light 70%, transparent);
+  flex-shrink: 0;
+  margin: 0 4px;
 }
 
 // ============================================
@@ -987,19 +1007,19 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 5px 10px 5px 5px;
-  border: 1.5px solid $border-light;
+  padding: 5px 12px 5px 5px;
+  border: 1.5px solid rgba($accent-blue, 0.2);
   border-radius: 100px;
-  background: $white;
+  background: linear-gradient(135deg, rgba($accent-blue, 0.04) 0%, rgba($accent-indigo, 0.04) 100%);
   cursor: pointer;
   transition: all $trans;
   font-size: 0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 4px rgba($accent-blue, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
   &:hover {
-    border-color: rgba($accent-blue, 0.35);
-    background: linear-gradient(135deg, rgba($accent-blue, 0.03) 0%, rgba($accent-indigo, 0.03) 100%);
-    box-shadow: 0 4px 16px rgba($accent-blue, 0.12);
+    border-color: rgba($accent-blue, 0.45);
+    background: linear-gradient(135deg, rgba($accent-blue, 0.08) 0%, rgba($accent-indigo, 0.07) 100%);
+    box-shadow: 0 4px 16px rgba($accent-blue, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     transform: translateY(-1px);
   }
 
@@ -1060,7 +1080,7 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .user-name {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: $text-primary;
   white-space: nowrap;
@@ -1069,9 +1089,12 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
 .user-role {
   font-size: 10px;
-  color: $text-light;
+  font-weight: 500;
+  color: $accent-blue;
   white-space: nowrap;
   transition: color $trans;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 // Profile Dropdown
@@ -1225,14 +1248,14 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 // ============================================
 :host-context(.dark) {
   .header-modern {
-    background: rgba($dark-bg, 0.97);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: linear-gradient(110deg, rgba($dark-bg, 0.98) 60%, rgba(30, 34, 53, 0.98) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom-color: $dark-border;
-    box-shadow: 0 1px 0 rgba($dark-border, 0.8), 0 2px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 0 rgba($dark-border, 0.8), 0 4px 24px rgba(0, 0, 0, 0.35), 0 1px 6px rgba(0, 0, 0, 0.2);
 
     &::after {
-      opacity: 0.35;
+      opacity: 0.5;
     }
   }
 
@@ -1269,13 +1292,19 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .search-wrapper {
-    background: rgba($dark-surface, 0.8);
+    background: rgba($dark-surface, 0.7);
     border-color: $dark-border;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      border-color: rgba($accent-blue, 0.3);
+      background: rgba($dark-surface, 0.9);
+    }
 
     &:focus-within {
       border-color: $accent-blue;
       background: rgba($dark-surface, 0.95);
-      box-shadow: 0 0 0 4px rgba($accent-blue, 0.15);
+      box-shadow: 0 0 0 4px rgba($accent-blue, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.1);
 
       .search-icon {
         color: $accent-blue;
@@ -1303,11 +1332,14 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   .icon-btn {
     color: $dark-text-light;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
 
     &:hover {
-      background: linear-gradient(135deg, rgba($accent-blue, 0.12) 0%, rgba($accent-indigo, 0.1) 100%);
+      background: linear-gradient(135deg, rgba($accent-blue, 0.15) 0%, rgba($accent-indigo, 0.12) 100%);
+      border-color: rgba($accent-blue, 0.3);
       color: lighten($accent-blue, 12%);
-      box-shadow: 0 4px 12px rgba($accent-blue, 0.15);
+      box-shadow: 0 4px 14px rgba($accent-blue, 0.18);
     }
   }
 
@@ -1317,6 +1349,7 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   .badge-count {
     border-color: $dark-bg;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5);
   }
 
   .search-dropdown,
@@ -1473,14 +1506,14 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .user-profile-btn {
-    background: rgba($dark-surface, 0.8);
-    border-color: $dark-border;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, rgba($accent-blue, 0.08) 0%, rgba($accent-indigo, 0.06) 100%);
+    border-color: rgba($accent-blue, 0.25);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
     &:hover {
-      background: linear-gradient(135deg, rgba($accent-blue, 0.1) 0%, rgba($accent-indigo, 0.08) 100%);
-      border-color: rgba($accent-blue, 0.35);
-      box-shadow: 0 4px 16px rgba($accent-blue, 0.15);
+      background: linear-gradient(135deg, rgba($accent-blue, 0.14) 0%, rgba($accent-indigo, 0.12) 100%);
+      border-color: rgba($accent-blue, 0.42);
+      box-shadow: 0 4px 16px rgba($accent-blue, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
   }
 
@@ -1497,7 +1530,7 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .user-role {
-    color: $dark-text-light;
+    color: lighten($accent-blue, 15%);
   }
 
   .profile-header {
@@ -1544,6 +1577,10 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         background: rgba($danger, 0.08);
       }
     }
+  }
+
+  .action-divider {
+    background: linear-gradient(180deg, transparent, $dark-border 30%, $dark-border 70%, transparent);
   }
 
   .menu-divider {
@@ -1641,6 +1678,10 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     gap: 12px;
   }
 
+  .action-divider {
+    margin: 0 2px;
+  }
+
   .header-search-section {
     max-width: 300px;
   }
@@ -1712,6 +1753,10 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     height: 60px;
     padding: 0 8px;
     gap: 8px;
+  }
+
+  .action-divider {
+    display: none;
   }
 
   .logo-wrapper {
