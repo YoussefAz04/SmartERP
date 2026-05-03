@@ -66,6 +66,22 @@ export class AiDashboardComponent implements OnInit {
   public forecastChartOptions: Partial<ChartOptions> = {};
   public productChartOptions: Partial<DonutChartOptions> = {};
 
+  /** Shared chart font stack — keeps charts visually consistent. */
+  private readonly chartFontFamily = 'Inter, Poppins, "Segoe UI", sans-serif';
+
+  /** Compact axis label formatter (e.g. 1.2M, 850k, 42). */
+  private formatAxisValue(v: number): string {
+    if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'M';
+    if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
+    return String(v);
+  }
+
+  /** Localised TND tooltip formatter for chart series values. */
+  private formatTooltipValue(v: number | null | undefined): string {
+    if (v == null) return '—';
+    return v.toLocaleString('fr-FR') + ' TND';
+  }
+
   constructor(private aiService: AiIntelligenceService, private router: Router) {}
 
   ngOnInit(): void {
@@ -109,11 +125,6 @@ export class AiDashboardComponent implements OnInit {
     const months = sales.monthlySales.map((m) => m.month);
     const values = sales.monthlySales.map((m) => Math.round(m.amount));
     const trend = sales.trendLine.map((v) => Math.round(v));
-    const formatK = (v: number) =>
-      v >= 1_000_000 ? (v / 1_000_000).toFixed(1) + 'M'
-        : v >= 1000 ? (v / 1000).toFixed(0) + 'k'
-        : String(v);
-    const formatTooltip = (v: number) => (v == null ? '—' : v.toLocaleString('fr-FR') + ' TND');
 
     this.salesChartOptions = {
       series: [
@@ -123,7 +134,7 @@ export class AiDashboardComponent implements OnInit {
       chart: {
         height: 340,
         type: 'line',
-        fontFamily: 'Inter, Poppins, "Segoe UI", sans-serif',
+        fontFamily: this.chartFontFamily,
         toolbar: { show: false },
         background: 'transparent',
         animations: { enabled: true, speed: 700, animateGradually: { enabled: true, delay: 90 } },
@@ -162,7 +173,7 @@ export class AiDashboardComponent implements OnInit {
       yaxis: {
         labels: {
           style: { fontSize: '12px', colors: '#94a3b8' },
-          formatter: formatK,
+          formatter: (v: number) => this.formatAxisValue(v),
         },
       },
       legend: {
@@ -184,7 +195,7 @@ export class AiDashboardComponent implements OnInit {
           stops: [0, 100],
         },
       },
-      // ApexCharts options not declared in our partial type — accepted at runtime.
+      // ApexCharts options not declared in our partial type — accepted at runtime
       grid: {
         borderColor: '#e2e8f0',
         strokeDashArray: 4,
@@ -200,8 +211,8 @@ export class AiDashboardComponent implements OnInit {
         theme: 'light',
         shared: true,
         intersect: false,
-        style: { fontSize: '12px', fontFamily: 'Inter, Poppins, sans-serif' },
-        y: { formatter: formatTooltip },
+        style: { fontSize: '12px', fontFamily: this.chartFontFamily },
+        y: { formatter: (v: number) => this.formatTooltipValue(v) },
       },
     } as Partial<ChartOptions>;
   }
@@ -214,11 +225,6 @@ export class AiDashboardComponent implements OnInit {
     const fore = forecast.forecastPoints.map((p) => Math.round(p.forecast || 0));
     const upper = forecast.forecastPoints.map((p) => Math.round(p.upperBound || 0));
     const lower = forecast.forecastPoints.map((p) => Math.round(p.lowerBound || 0));
-    const formatK = (v: number) =>
-      v >= 1_000_000 ? (v / 1_000_000).toFixed(1) + 'M'
-        : v >= 1000 ? (v / 1000).toFixed(0) + 'k'
-        : String(v);
-    const formatTooltip = (v: number) => (v == null ? '—' : v.toLocaleString('fr-FR') + ' TND');
 
     this.forecastChartOptions = {
       series: [
@@ -230,7 +236,7 @@ export class AiDashboardComponent implements OnInit {
       chart: {
         height: 340,
         type: 'line',
-        fontFamily: 'Inter, Poppins, "Segoe UI", sans-serif',
+        fontFamily: this.chartFontFamily,
         toolbar: { show: false },
         background: 'transparent',
         animations: { enabled: true, speed: 700 },
@@ -260,7 +266,7 @@ export class AiDashboardComponent implements OnInit {
       yaxis: {
         labels: {
           style: { fontSize: '12px', colors: '#94a3b8' },
-          formatter: formatK,
+          formatter: (v: number) => this.formatAxisValue(v),
         },
       },
       legend: {
@@ -298,8 +304,8 @@ export class AiDashboardComponent implements OnInit {
         theme: 'light',
         shared: true,
         intersect: false,
-        style: { fontSize: '12px', fontFamily: 'Inter, Poppins, sans-serif' },
-        y: { formatter: formatTooltip },
+        style: { fontSize: '12px', fontFamily: this.chartFontFamily },
+        y: { formatter: (v: number) => this.formatTooltipValue(v) },
       },
     } as Partial<ChartOptions>;
   }
@@ -334,7 +340,7 @@ export class AiDashboardComponent implements OnInit {
       chart: {
         type: 'donut',
         height: 320,
-        fontFamily: 'Inter, Poppins, "Segoe UI", sans-serif',
+        fontFamily: this.chartFontFamily,
         background: 'transparent',
         animations: { enabled: true, speed: 700 },
         dropShadow: {
@@ -360,7 +366,7 @@ export class AiDashboardComponent implements OnInit {
         style: {
           fontSize: '12px',
           fontWeight: 700,
-          fontFamily: 'Inter, Poppins, sans-serif',
+          fontFamily: this.chartFontFamily,
         },
         dropShadow: { enabled: true, top: 1, left: 0, blur: 2, opacity: 0.4 },
         formatter: (val: number) => `${Number(val).toFixed(1)}%`,
@@ -402,7 +408,7 @@ export class AiDashboardComponent implements OnInit {
                 fontSize: '20px',
                 fontWeight: 800,
                 color: '#0f172a',
-                fontFamily: 'Inter, Poppins, sans-serif',
+                fontFamily: this.chartFontFamily,
                 offsetY: 4,
                 formatter: formatCenter,
               },
@@ -421,7 +427,7 @@ export class AiDashboardComponent implements OnInit {
       },
       tooltip: {
         theme: 'light',
-        style: { fontSize: '12px', fontFamily: 'Inter, Poppins, sans-serif' },
+        style: { fontSize: '12px', fontFamily: this.chartFontFamily },
         y: { formatter: (v: number) => formatCenter(v) },
       },
       states: {
