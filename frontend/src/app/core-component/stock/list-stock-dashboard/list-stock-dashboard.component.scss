@@ -29,6 +29,16 @@ $slate-800:     #1e293b;
 $slate-900:     #0f172a;
 $surface:       #ffffff;
 
+// ── Semantic palette — used across table pills, avatars, badges ──
+$color-rose-bg:    #fff1f2;
+$color-rose-bdr:   #fecdd3;
+$color-amber-bg:   #fff7ed;
+$color-amber-bdr:  #fed7aa;
+$color-green-bg:   #ecfdf5;
+$color-green-bdr:  #a7f3d0;
+$color-violet-bg:  #f5f3ff;
+$color-violet-bdr: #ddd6fe;
+
 $radius-2xl:    20px;
 $radius-xl:     16px;
 $radius-lg:     12px;
@@ -640,7 +650,7 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
 
   th {
     padding: 12px 18px;
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.9px;
@@ -721,8 +731,8 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
   background: $slate-100;
   color: $slate-600;
 
-  &.avatar-danger  { background: #fff1f2; color: $rose-dark;    border: 1px solid #fecdd3; }
-  &.avatar-warning { background: #fff7ed; color: $amber-dark;   border: 1px solid #fed7aa; }
+  &.avatar-danger  { background: $color-rose-bg;   color: $rose-dark;    border: 1px solid $color-rose-bdr; }
+  &.avatar-warning { background: $color-amber-bg;  color: $amber-dark;   border: 1px solid $color-amber-bdr; }
 }
 
 .article-name {
@@ -749,9 +759,9 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
   text-align: center;
   letter-spacing: -0.3px;
 
-  &.qty-badge-danger  { background: #fff1f2; color: $rose-dark;    border: 1px solid #fecdd3; }
-  &.qty-badge-success { background: #ecfdf5; color: $emerald-dark; border: 1px solid #a7f3d0; }
-  &.qty-badge-violet  { background: #f5f3ff; color: $violet-dark;  border: 1px solid #ddd6fe; }
+  &.qty-badge-danger  { background: $color-rose-bg;   color: $rose-dark;    border: 1px solid $color-rose-bdr; }
+  &.qty-badge-success { background: $color-green-bg;  color: $emerald-dark; border: 1px solid $color-green-bdr; }
+  &.qty-badge-violet  { background: $color-violet-bg; color: $violet-dark;  border: 1px solid $color-violet-bdr; }
   &.qty-badge-default { background: $slate-100; color: $slate-600; border: 1px solid $slate-200; }
 }
 
@@ -854,9 +864,9 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
   letter-spacing: 0.5px;
   white-space: nowrap;
 
-  &.pill-danger  { background: #fff1f2; color: $rose-dark;      border: 1px solid #fecdd3; }
-  &.pill-warning { background: #fff7ed; color: $amber-dark;     border: 1px solid #fed7aa; }
-  &.pill-success { background: #ecfdf5; color: $emerald-dark;   border: 1px solid #a7f3d0; }
+  &.pill-danger  { background: $color-rose-bg;   color: $rose-dark;    border: 1px solid $color-rose-bdr; }
+  &.pill-warning { background: $color-amber-bg;  color: $amber-dark;   border: 1px solid $color-amber-bdr; }
+  &.pill-success { background: $color-green-bg;  color: $emerald-dark; border: 1px solid $color-green-bdr; }
 }
 
 .movement-pill {
@@ -871,10 +881,10 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
   letter-spacing: 0.5px;
   white-space: nowrap;
 
-  &.pill-entree      { background: #ecfdf5; color: $emerald-dark; border: 1px solid #a7f3d0; }
-  &.pill-sortie      { background: #fff1f2; color: $rose-dark;    border: 1px solid #fecdd3; }
-  &.pill-ajustement  { background: #fff7ed; color: $amber-dark;   border: 1px solid #fed7aa; }
-  &.pill-reservation { background: #f5f3ff; color: $violet-dark;  border: 1px solid #ddd6fe; }
+  &.pill-entree      { background: $color-green-bg;  color: $emerald-dark; border: 1px solid $color-green-bdr; }
+  &.pill-sortie      { background: $color-rose-bg;   color: $rose-dark;    border: 1px solid $color-rose-bdr; }
+  &.pill-ajustement  { background: $color-amber-bg;  color: $amber-dark;   border: 1px solid $color-amber-bdr; }
+  &.pill-reservation { background: $color-violet-bg; color: $violet-dark;  border: 1px solid $color-violet-bdr; }
   &.pill-default     { background: $slate-100; color: $slate-600; border: 1px solid $slate-200; }
 }
 

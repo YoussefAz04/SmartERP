@@ -285,21 +285,12 @@
                         </div>
                       </td>
                       <td>
-                        <span class="movement-pill"
-                          [class.pill-entree]="mvt.typeMouvement === 'ENTREE'"
-                          [class.pill-sortie]="mvt.typeMouvement === 'SORTIE'"
-                          [class.pill-ajustement]="mvt.typeMouvement === 'AJUSTEMENT'"
-                          [class.pill-reservation]="mvt.typeMouvement === 'RESERVATION'"
-                          [class.pill-default]="mvt.typeMouvement !== 'ENTREE' && mvt.typeMouvement !== 'SORTIE' && mvt.typeMouvement !== 'AJUSTEMENT' && mvt.typeMouvement !== 'RESERVATION'">
+                        <span class="movement-pill" [class]="'movement-pill ' + getMovementPillClass(mvt.typeMouvement)">
                           {{ mvt.typeMouvement }}
                         </span>
                       </td>
                       <td class="text-center">
-                        <span class="qty-badge"
-                          [class.qty-badge-success]="mvt.typeMouvement === 'ENTREE'"
-                          [class.qty-badge-danger]="mvt.typeMouvement === 'SORTIE'"
-                          [class.qty-badge-violet]="mvt.typeMouvement === 'RESERVATION'"
-                          [class.qty-badge-default]="mvt.typeMouvement !== 'ENTREE' && mvt.typeMouvement !== 'SORTIE' && mvt.typeMouvement !== 'RESERVATION'">
+                        <span class="qty-badge" [class]="'qty-badge ' + getQtyBadgeClass(mvt.typeMouvement)">
                           {{ mvt.quantite }}
                         </span>
                       </td>

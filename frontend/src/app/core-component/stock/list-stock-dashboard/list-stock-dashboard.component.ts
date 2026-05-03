@@ -133,6 +133,25 @@ export class ListStockDashboardComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
+  getMovementPillClass(type: string): string {
+    switch (type) {
+      case 'ENTREE':      return 'pill-entree';
+      case 'SORTIE':      return 'pill-sortie';
+      case 'AJUSTEMENT':  return 'pill-ajustement';
+      case 'RESERVATION': return 'pill-reservation';
+      default:            return 'pill-default';
+    }
+  }
+
+  getQtyBadgeClass(type: string): string {
+    switch (type) {
+      case 'ENTREE':      return 'qty-badge-success';
+      case 'SORTIE':      return 'qty-badge-danger';
+      case 'RESERVATION': return 'qty-badge-violet';
+      default:            return 'qty-badge-default';
+    }
+  }
+
   get recentMovements(): StockMouvement[] {
     return this.movements.slice(0, 5);
   }
