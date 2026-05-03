@@ -84,7 +84,7 @@
                 <span>{{ group.label }}</span>
                 <span class="group-count">{{ group.results.length }}</span>
               </div>
-              <ul class="results-list">
+              <ul class="results-list" (mousedown)="$event.preventDefault()">
                 <li *ngFor="let result of group.results"
                   class="result-item"
                   [class.result-item--active]="getFlatIndex(result) === selectedIndex">
