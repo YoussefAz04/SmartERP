@@ -84,18 +84,6 @@ export class DetaisFactureDeVenteComponent implements OnInit {
     });
   }
 
-  exportToPdf() {
-    if (this.factureDetais) {
-      this.factureService.generateFactureVentePDF(this.factureDetais);
-    }
-  }
-
-  sendEmail() {
-    if (this.factureDetais) {
-      this.factureService.sendEmailFactureVente(this.factureDetais);
-    }
-  }
-
   goBack() {
     this.router.navigate(['/facture/listFactureVente']);
   }

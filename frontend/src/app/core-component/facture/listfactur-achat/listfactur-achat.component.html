@@ -234,12 +234,6 @@
                       matTooltip="Modifier">
                 <i class="feather icon-edit-2"></i>
               </button>
-              <button class="btn-action print" 
-                      (click)="exportToPdf(facture)" 
-                      title="Imprimer la facture"
-                      matTooltip="Imprimer">
-                <i class="feather icon-printer"></i>
-              </button>
               <button class="btn-action delete" 
                       (click)="deleteFacture(facture.id)" 
                       *ngIf="permissionAchat?.delete" 
