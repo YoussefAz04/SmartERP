@@ -1,5 +1,5 @@
 // =============================================
-// Factures d'Achat – Premium Vibrant Design
+// Factures d'Achat – Ultra-Fluid Premium UI
 // =============================================
 
 // Color palette – rich violet/indigo theme
@@ -16,22 +16,29 @@ $text-medium: #475569;
 $text-light: #94a3b8;
 $border-color: #e2e8f0;
 $bg-subtle: #f8fafc;
-$card-shadow: 0 2px 8px rgba(79, 70, 229, 0.08), 0 8px 24px rgba(79, 70, 229, 0.06);
-$card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06);
+$bg-page: #f1f5f9;
+$card-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(79, 70, 229, 0.08);
+$card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0.06);
+
+:host {
+  display: block;
+  background: $bg-page;
+  padding-bottom: 2rem;
+}
 
 // --- Page Header ---
 .page-header-wrapper {
   position: relative;
   margin-bottom: 1.75rem;
-  overflow: hidden;
-  border-radius: 20px;
+  border-radius: 24px;
   animation: slideInDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
   .header-bg-shapes {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: 24px;
+    pointer-events: none;
 
     .shape {
       position: absolute;
@@ -39,38 +46,38 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
       background: white;
 
       &.shape-1 {
-        width: 260px;
-        height: 260px;
-        top: -80px;
-        right: -50px;
-        opacity: 0.08;
+        width: 320px;
+        height: 320px;
+        top: -100px;
+        right: -60px;
+        opacity: 0.07;
         animation: floatShape 9s ease-in-out infinite;
       }
 
       &.shape-2 {
-        width: 140px;
-        height: 140px;
-        bottom: -50px;
-        left: 8%;
-        opacity: 0.1;
+        width: 160px;
+        height: 160px;
+        bottom: -60px;
+        left: 6%;
+        opacity: 0.09;
         animation: floatShape 7s ease-in-out infinite reverse;
       }
 
       &.shape-3 {
-        width: 90px;
-        height: 90px;
-        top: 15%;
-        right: 22%;
-        opacity: 0.07;
+        width: 100px;
+        height: 100px;
+        top: 20%;
+        right: 25%;
+        opacity: 0.06;
         animation: floatShape 11s ease-in-out infinite;
       }
 
       &.shape-4 {
-        width: 50px;
-        height: 50px;
-        top: 50%;
-        left: 30%;
-        opacity: 0.06;
+        width: 55px;
+        height: 55px;
+        top: 55%;
+        left: 28%;
+        opacity: 0.05;
         animation: floatShape 5s ease-in-out infinite reverse;
       }
     }
@@ -78,96 +85,101 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 }
 
 .modern-page-header {
-  background: linear-gradient(135deg, $gradient-start 0%, $gradient-mid 50%, $gradient-end 100%);
+  background: linear-gradient(135deg, $gradient-start 0%, $gradient-mid 52%, $gradient-end 100%);
   background-size: 200% 200%;
   animation: gradientShift 8s ease infinite;
-  padding: 2rem 2.25rem;
-  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  border-radius: 24px;
   position: relative;
   z-index: 1;
-  box-shadow: 0 8px 32px rgba(79, 70, 229, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(79, 70, 229, 0.45), 0 2px 8px rgba(0, 0, 0, 0.1),
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
 
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 
     .header-title {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1.1rem;
 
       .title-icon {
-        width: 56px;
-        height: 56px;
-        background: rgba(255, 255, 255, 0.2);
+        width: 52px;
+        height: 52px;
+        background: rgba(255, 255, 255, 0.18);
         border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        backdrop-filter: blur(12px);
-        border: 1.5px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(16px);
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.25);
         animation: iconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        flex-shrink: 0;
 
         &:hover {
           transform: rotate(8deg) scale(1.1);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
         i {
-          font-size: 1.6rem;
+          font-size: 1.5rem;
           color: white;
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
         }
       }
 
       h1 {
-        font-size: 1.9rem;
+        font-size: 1.75rem;
         font-weight: 800;
-        margin: 0 0 0.2rem 0;
+        margin: 0 0 0.15rem 0;
         color: white;
         letter-spacing: -0.5px;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
         animation: fadeInLeft 0.5s ease 0.15s both;
       }
 
       .subtitle {
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         margin: 0;
-        color: rgba(255, 255, 255, 0.88);
+        color: rgba(255, 255, 255, 0.82);
         animation: fadeInLeft 0.5s ease 0.25s both;
+        font-weight: 400;
       }
     }
 
     .header-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.65rem;
       animation: fadeInRight 0.5s ease 0.3s both;
 
       .btn-header {
-        padding: 0.75rem 1.4rem;
+        padding: 0.65rem 1.25rem;
         border-radius: 12px;
         font-weight: 600;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.45rem;
         border: none;
+        white-space: nowrap;
 
         &.btn-refresh {
-          background: rgba(255, 255, 255, 0.18);
-          border: 1.5px solid rgba(255, 255, 255, 0.55);
+          background: rgba(255, 255, 255, 0.15);
+          border: 1.5px solid rgba(255, 255, 255, 0.5);
           color: white;
           backdrop-filter: blur(12px);
 
           &:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.32);
-            transform: translateY(-3px) scale(1.02);
+            background: rgba(255, 255, 255, 0.28);
+            transform: translateY(-2px) scale(1.02);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
           }
         }
@@ -194,29 +206,27 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
   margin-bottom: 1.75rem;
 
   .stat-card {
-    background: white;
-    border-radius: 16px;
-    padding: 1.35rem;
+    border-radius: 20px;
+    padding: 1.4rem 1.5rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    box-shadow: $card-shadow;
+    gap: 1.1rem;
     transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border: 1px solid rgba($border-color, 0.8);
     animation: fadeInUp 0.4s ease both;
     position: relative;
     overflow: hidden;
 
-    &::before {
+    // Glossy sheen
+    &::after {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 3px;
-      border-radius: 16px 16px 0 0;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%);
+      border-radius: 20px 20px 0 0;
+      pointer-events: none;
     }
 
     &:nth-child(1) { animation-delay: 0.05s; }
@@ -225,27 +235,29 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
     &:nth-child(4) { animation-delay: 0.20s; }
 
     &:hover {
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: $card-shadow-hover;
-
-      &::before { opacity: 1; }
+      transform: translateY(-6px) scale(1.02);
 
       .stat-icon i {
-        transform: rotate(-8deg) scale(1.15);
+        transform: rotate(-8deg) scale(1.2);
       }
     }
 
     .stat-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
 
       i {
-        font-size: 1.4rem;
+        font-size: 1.45rem;
+        color: white;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
     }
@@ -255,36 +267,41 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
       flex-direction: column;
 
       .stat-value {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         font-weight: 800;
-        color: $text-dark;
-        line-height: 1.2;
-        letter-spacing: -0.3px;
+        color: white;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       }
 
       .stat-label {
         font-size: 0.78rem;
-        color: $text-light;
+        color: rgba(255, 255, 255, 0.82);
         font-weight: 500;
-        margin-top: 0.15rem;
+        margin-top: 0.2rem;
       }
     }
 
     &.stat-total {
-      .stat-icon { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #2563eb; }
-      &::before { background: linear-gradient(90deg, #2563eb, #4f46e5); }
+      background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35), 0 2px 6px rgba(79, 70, 229, 0.2);
+      &:hover { box-shadow: 0 14px 36px rgba(79, 70, 229, 0.45), 0 4px 12px rgba(79, 70, 229, 0.25); }
     }
     &.stat-amount {
-      .stat-icon { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #7c3aed; }
-      &::before { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35), 0 2px 6px rgba(124, 58, 237, 0.2);
+      &:hover { box-shadow: 0 14px 36px rgba(124, 58, 237, 0.45), 0 4px 12px rgba(124, 58, 237, 0.25); }
     }
     &.stat-pending {
-      .stat-icon { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; }
-      &::before { background: linear-gradient(90deg, #d97706, #f59e0b); }
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.35), 0 2px 6px rgba(217, 119, 6, 0.2);
+      &:hover { box-shadow: 0 14px 36px rgba(217, 119, 6, 0.45), 0 4px 12px rgba(217, 119, 6, 0.25); }
     }
     &.stat-paid {
-      .stat-icon { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #059669; }
-      &::before { background: linear-gradient(90deg, #059669, #10b981); }
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35), 0 2px 6px rgba(5, 150, 105, 0.2);
+      &:hover { box-shadow: 0 14px 36px rgba(5, 150, 105, 0.45), 0 4px 12px rgba(5, 150, 105, 0.25); }
     }
   }
 }
@@ -294,7 +311,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
   animation: fadeInUp 0.4s ease 0.25s both;
 
@@ -305,7 +322,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
     > i {
       position: absolute;
-      left: 14px;
+      left: 15px;
       top: 50%;
       transform: translateY(-50%);
       color: $text-light;
@@ -316,26 +333,23 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
     .search-input {
       width: 100%;
-      padding: 0.8rem 2.5rem 0.8rem 2.85rem;
+      padding: 0.85rem 2.8rem 0.85rem 2.9rem;
       border: 2px solid $border-color;
       border-radius: 14px;
       font-size: 0.9rem;
       background: white;
       transition: all 0.3s ease;
       color: $text-dark;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
 
       &:focus {
         outline: none;
         border-color: $primary;
-        box-shadow: 0 0 0 4px rgba($primary, 0.1), 0 2px 8px rgba($primary, 0.08);
-
-        ~ i, & + i {
-          color: $primary;
-        }
+        box-shadow: 0 0 0 4px rgba($primary, 0.1), 0 2px 12px rgba($primary, 0.1);
       }
 
       &::placeholder {
-        color: #b0b8c4;
+        color: #b8c2d0;
       }
     }
 
@@ -348,16 +362,21 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
       right: 12px;
       top: 50%;
       transform: translateY(-50%);
-      background: none;
+      background: #f1f5f9;
       border: none;
       color: $text-light;
       cursor: pointer;
-      padding: 4px;
+      padding: 5px;
       border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all 0.2s ease;
 
       &:hover {
-        background: #f1f5f9;
+        background: #e2e8f0;
         color: $text-medium;
         transform: translateY(-50%) scale(1.1);
       }
@@ -369,7 +388,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       color: white;
       border: none;
-      padding: 0.8rem 1.4rem;
+      padding: 0.85rem 1.5rem;
       border-radius: 12px;
       font-weight: 600;
       font-size: 0.875rem;
@@ -378,11 +397,11 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
       align-items: center;
       gap: 0.5rem;
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 
       &:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 28px rgba(16, 185, 129, 0.45);
       }
     }
   }
@@ -395,21 +414,21 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
   box-shadow: $card-shadow;
   overflow: visible;
   animation: fadeInUp 0.4s ease 0.3s both;
-  border: 1px solid rgba($border-color, 0.6);
+  border: 1px solid rgba($border-color, 0.5);
 
   .card-header-modern {
-    background: linear-gradient(180deg, #fafbff, $bg-subtle);
-    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    padding: 1.1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid #ddd6fe;
     border-radius: 20px 20px 0 0;
 
     .card-title {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
-      color: $text-dark;
+      color: $primary-dark;
       margin: 0;
       display: flex;
       align-items: center;
@@ -417,19 +436,20 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
       i {
         color: $primary;
-        font-size: 1.1rem;
+        font-size: 1rem;
       }
     }
 
     .count-badge {
-      padding: 0.35rem 0.9rem;
+      padding: 0.3rem 0.85rem;
       border-radius: 20px;
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
 
       &.badge-info {
-        background: linear-gradient(135deg, $primary-light, #c7d2fe);
-        color: $primary-dark;
+        background: linear-gradient(135deg, $primary, $accent);
+        color: white;
+        box-shadow: 0 2px 8px rgba($primary, 0.3);
       }
 
       &.badge-warning {
@@ -488,28 +508,33 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 .table-container {
   overflow-x: auto;
   overflow-y: visible;
+  border-radius: 0 0 20px 20px;
 }
 
 .modern-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 
   thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
     tr {
-      background: linear-gradient(180deg, #f5f3ff, #ede9fe);
+      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
       border-bottom: 2px solid #ddd6fe;
     }
 
     th {
-      padding: 1rem 1rem;
+      padding: 0.9rem 1rem;
       text-align: left;
       font-weight: 700;
       color: $primary-dark;
       white-space: nowrap;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.7px;
 
       &.sortable {
         cursor: pointer;
@@ -518,19 +543,20 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
         &:hover {
           color: $primary;
-          background: rgba($primary, 0.08);
+          background: rgba($primary, 0.07);
         }
 
         i {
           margin-left: 0.4rem;
           font-size: 0.7rem;
-          opacity: 0.6;
+          opacity: 0.55;
         }
       }
 
       &.checkbox-col {
-        width: 50px;
+        width: 46px;
         text-align: center;
+        padding-left: 1.25rem;
       }
 
       &.status-col {
@@ -538,7 +564,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
       }
 
       &.actions-col {
-        min-width: 240px;
+        min-width: 220px;
         text-align: center;
       }
     }
@@ -546,20 +572,26 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
   tbody {
     tr {
-      border-bottom: 1px solid #f5f3ff;
-      transition: all 0.25s ease;
+      border-bottom: 1px solid #f1efff;
+      transition: all 0.22s ease;
+
+      // Subtle zebra stripe
+      &:nth-child(even) {
+        background: #fbfaff;
+      }
 
       &.table-row {
         animation: fadeInRow 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) both;
 
         &:hover {
-          background: linear-gradient(90deg, rgba($primary, 0.03) 0%, rgba($primary, 0.06) 100%);
+          background: linear-gradient(90deg, rgba($primary, 0.04) 0%, rgba($primary, 0.07) 100%);
           box-shadow: inset 4px 0 0 $primary;
           transform: translateX(2px);
+          border-bottom-color: rgba($primary, 0.12);
         }
 
         &.selected {
-          background: rgba($primary, 0.06);
+          background: rgba($primary, 0.05);
           box-shadow: inset 4px 0 0 $primary;
         }
       }
@@ -571,22 +603,25 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
     }
 
     td {
-      padding: 0.9rem 1rem;
+      padding: 0.85rem 1rem;
       color: $text-medium;
       vertical-align: middle;
 
       &.checkbox-col {
         text-align: center;
+        padding-left: 1.25rem;
       }
 
       &.date-cell {
         font-weight: 500;
-        color: $text-light;
+        color: $text-medium;
+        white-space: nowrap;
 
         i {
           margin-right: 0.35rem;
-          font-size: 0.85rem;
-          opacity: 0.5;
+          font-size: 0.8rem;
+          opacity: 0.45;
+          color: $text-light;
         }
       }
 
@@ -594,17 +629,17 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
         .badge-ref {
           background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
           color: $primary-dark;
-          padding: 0.35rem 0.8rem;
+          padding: 0.3rem 0.75rem;
           border-radius: 8px;
           font-weight: 700;
-          font-size: 0.82rem;
+          font-size: 0.8rem;
           white-space: nowrap;
           display: inline-block;
-          border: 1px solid rgba($primary, 0.2);
+          border: 1px solid rgba($primary, 0.18);
           transition: all 0.2s ease;
 
           &:hover {
-            background: linear-gradient(135deg, $primary-light, #a5b4fc);
+            background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
             transform: scale(1.04);
           }
         }
@@ -612,10 +647,12 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
       &.amount-cell {
         color: $text-medium;
+        white-space: nowrap;
+        font-size: 0.875rem;
 
         &.highlight {
           color: $primary;
-          font-size: 0.95rem;
+          font-size: 0.9rem;
 
           strong {
             font-weight: 700;
@@ -623,15 +660,35 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
         }
       }
 
+      &.client-cell {
+        .client-name {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          font-weight: 500;
+          color: $text-dark;
+
+          i {
+            font-size: 0.8rem;
+            color: $text-light;
+          }
+        }
+
+        .no-client {
+          color: $text-light;
+        }
+      }
+
       &.payment-cell {
         .payment-badge {
           background: #f5f3ff;
-          color: $text-medium;
-          padding: 0.3rem 0.65rem;
+          color: $primary-dark;
+          padding: 0.28rem 0.65rem;
           border-radius: 6px;
-          font-size: 0.8rem;
-          font-weight: 500;
+          font-size: 0.78rem;
+          font-weight: 600;
           border: 1px solid #e0e7ff;
+          white-space: nowrap;
         }
       }
 
@@ -641,23 +698,25 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
           align-items: center;
           gap: 0.35rem;
           background: linear-gradient(135deg, #ede9fe, #ddd6fe);
-          padding: 0.3rem 0.7rem;
+          padding: 0.28rem 0.65rem;
           border-radius: 8px;
           font-weight: 600;
-          font-size: 0.8rem;
+          font-size: 0.78rem;
           color: $accent-dark;
           text-decoration: none;
           transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-          border: 1px solid rgba($accent, 0.2);
+          border: 1px solid rgba($accent, 0.18);
+          white-space: nowrap;
 
           &:hover {
-            background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
-            color: #4c1d95;
+            background: linear-gradient(135deg, $accent, #9333ea);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba($accent, 0.3);
+            box-shadow: 0 4px 14px rgba($accent, 0.35);
+            border-color: transparent;
           }
 
-          i { font-size: 0.75rem; }
+          i { font-size: 0.72rem; }
         }
         .no-commande {
           color: $text-light;
@@ -677,16 +736,16 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
         }
 
         .status-badge {
-          padding: 0.4rem 0.85rem;
+          padding: 0.35rem 0.8rem;
           border-radius: 20px;
           font-weight: 700;
-          font-size: 0.75rem;
+          font-size: 0.72rem;
           display: inline-flex;
           align-items: center;
-          gap: 0.35rem;
+          gap: 0.3rem;
           white-space: nowrap;
           text-transform: uppercase;
-          letter-spacing: 0.4px;
+          letter-spacing: 0.5px;
           cursor: pointer;
           transition: all 0.25s ease;
 
@@ -789,18 +848,19 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
         .action-buttons-row {
           display: flex;
           justify-content: center;
-          gap: 0.4rem;
+          gap: 0.35rem;
+          flex-wrap: wrap;
 
           .btn-action {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 
             &.view {
@@ -810,7 +870,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
                 background: $primary;
                 color: white;
                 transform: translateY(-3px) scale(1.1);
-                box-shadow: 0 6px 16px rgba($primary, 0.45);
+                box-shadow: 0 6px 16px rgba($primary, 0.4);
               }
             }
 
@@ -821,7 +881,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
                 background: $accent;
                 color: white;
                 transform: translateY(-3px) scale(1.1);
-                box-shadow: 0 6px 16px rgba($accent, 0.45);
+                box-shadow: 0 6px 16px rgba($accent, 0.4);
               }
             }
 
@@ -857,7 +917,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
                 box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
               }
               &:disabled {
-                opacity: 0.45;
+                opacity: 0.4;
                 cursor: not-allowed;
               }
             }
@@ -996,7 +1056,8 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
 @media (max-width: 768px) {
   .modern-page-header {
-    padding: 1.5rem;
+    padding: 1.35rem 1.25rem;
+    border-radius: 18px;
 
     .header-content {
       flex-direction: column;
@@ -1005,10 +1066,10 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
 
       .header-title {
         .title-icon {
-          width: 44px;
-          height: 44px;
+          width: 42px;
+          height: 42px;
         }
-        h1 { font-size: 1.45rem; }
+        h1 { font-size: 1.35rem; }
       }
 
       .header-actions {
@@ -1021,11 +1082,18 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
     }
   }
 
+  .page-header-wrapper {
+    border-radius: 18px;
+  }
+
   .stats-row {
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
-    .stat-card { padding: 1rem; }
-    .stat-info .stat-value { font-size: 1.1rem; }
+    .stat-card {
+      padding: 1rem 1.1rem;
+      border-radius: 16px;
+    }
+    .stat-info .stat-value { font-size: 1.2rem; }
   }
 
   .search-filter-section {
@@ -1035,8 +1103,8 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.18), 0 2px 8px rgba(0, 0, 0, 
   }
 
   .modern-table {
-    font-size: 0.82rem;
-    thead th, tbody td { padding: 0.65rem 0.6rem; }
+    font-size: 0.8rem;
+    thead th, tbody td { padding: 0.6rem 0.6rem; }
     .action-buttons-row { flex-wrap: wrap; }
   }
 }
