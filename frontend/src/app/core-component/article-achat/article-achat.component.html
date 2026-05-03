@@ -240,7 +240,7 @@
                     <div class="art-avatar">{{ a.nom.charAt(0).toUpperCase() }}</div>
                     <div>
                       <div class="art-name">{{ a.nom }}</div>
-                      <div class="art-desc" *ngIf="a.description">{{ a.description }}</div>
+                      <div class="art-desc" *ngIf="a.description" [title]="a.description">{{ a.description }}</div>
                     </div>
                   </div>
                 </td>

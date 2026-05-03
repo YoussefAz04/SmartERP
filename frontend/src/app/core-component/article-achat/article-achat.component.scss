@@ -622,26 +622,35 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
   border-collapse: collapse;
   font-size: 13.5px;
 
+  // ── Sticky header ──
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
   thead tr {
-    background: $sl-50;
+    background: $sl-100;
   }
 
   th {
-    padding: 11px 16px;
+    padding: 12px 16px;
     font-size: 10.5px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: .06em;
-    color: $sl-500;
-    border-bottom: 1.5px solid $sl-200;
+    letter-spacing: .07em;
+    color: $sl-600;
+    border-bottom: 2px solid $sl-200;
     white-space: nowrap;
+    // Subtle right-edge separator between columns
+    &:not(:last-child) { border-right: 1px solid $sl-200; }
 
     &.sortable {
       cursor: pointer;
       user-select: none;
       transition: $t;
       &:hover { color: $bl-700; background: $bl-50; }
-      .sort-icon { font-size: 11px; margin-left: 4px; opacity: .5; }
+      .sort-icon { font-size: 11px; margin-left: 4px; opacity: .55; }
     }
 
     &.th-check  { width: 44px; text-align: center; }
@@ -649,23 +658,39 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
   }
 
   td {
-    padding: 12px 16px;
+    padding: 10px 16px;
     vertical-align: middle;
     border-bottom: 1px solid $sl-100;
     color: $sl-700;
-    transition: background .12s ease;
+    transition: background .12s ease, border-left-color .12s ease;
     &.td-check { text-align: center; }
   }
 
+  // Zebra striping
   .aa-row {
     transition: $t;
     animation: rowFadeIn .25s ease both;
 
-    &:hover td { background: rgba($bl-500,.04); }
+    &:nth-child(even) td { background: $sl-50; }
+
+    &:hover td {
+      background: rgba($bl-500,.07) !important;
+    }
+
+    // Left-border accent on hover
+    &:hover td:first-child {
+      border-left: 3px solid $bl-500;
+      padding-left: 13px;
+    }
 
     &.row-selected td {
-      background: rgba($bl-500,.06);
+      background: rgba($bl-500,.08) !important;
       border-bottom-color: $bl-100;
+    }
+
+    &.row-selected td:first-child {
+      border-left: 3px solid $bl-600;
+      padding-left: 13px;
     }
 
     &:last-child td { border-bottom: none; }
@@ -740,18 +765,27 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
 }
 
 .art-name { font-weight: 700; color: $sl-800; font-size: 13.5px; }
-.art-desc { font-size: 11px; color: $sl-400; margin-top: 2px; max-width: 180px; }
+.art-desc {
+  font-size: 11px;
+  color: $sl-400;
+  margin-top: 2px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .price-badge {
   display: inline-block;
-  padding: 3px 10px;
+  padding: 4px 11px;
   background: $bl-50;
   color: $bl-800;
-  border: 1px solid $bl-100;
+  border: 1.5px solid $bl-200;
   border-radius: $r-sm;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 12.5px;
   white-space: nowrap;
+  letter-spacing: .01em;
 }
 
 .unit-pill {
