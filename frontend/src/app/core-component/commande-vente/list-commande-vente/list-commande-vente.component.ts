@@ -72,11 +72,25 @@ export class ListCommandeVenteComponent implements OnInit {
     this.notification.confirm('Valider cette commande ? Une facture vente sera automatiquement générée.').then(ok => { if (!ok) return;
     this.isLoading = true;
     this.commandeVenteService.validerCommande(id).subscribe({
-      next: (facture) => {
+      next: (response) => {
+        // Backend now returns { facture, stockAlerts } (ValidationResponseDto).
+        // Fall back to the legacy shape (bare FactureDeVente) just in case.
+        const facture = response?.facture ?? response;
+        const alerts: { type?: string; message?: string; articleName?: string }[] =
+          response?.stockAlerts ?? [];
         this.lastGeneratedFacture = facture;
         this.showFactureModal = true;
         this.loadCommandes();
         this.notification.success('✅ Commande validée ! Facture vente générée : ' + facture.referance);
+
+        // Show a red toast for each article whose stock fell below the threshold.
+        for (const alert of alerts) {
+          const msg = alert?.message
+            || (alert?.type === 'RUPTURE'
+                ? `RUPTURE DE STOCK : '${alert?.articleName ?? ''}' est épuisé !`
+                : `STOCK FAIBLE : '${alert?.articleName ?? ''}' en dessous du seuil.`);
+          this.notification.error(msg);
+        }
       },
       error: (err) => {
         this.isLoading = false;

@@ -4,6 +4,7 @@ import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeVenteDto;
 import BuissnesManager.BuissnesManager.dto.LivraisonResponseDto;
 import BuissnesManager.BuissnesManager.dto.StockAlertDto;
+import BuissnesManager.BuissnesManager.dto.ValidationResponseDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +45,9 @@ public class CommandeVenteService {
     private BonLivraisonRepository bonLivraisonRepository;
     @Autowired
     private StockAutomationService stockAutomationService;
+
+    @Autowired
+    private StockRepository stockRepository;
     
     @Autowired
     private FactureDeVenteRepo factureDeVenteRepository;
@@ -390,7 +395,7 @@ public class CommandeVenteService {
         @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
     })
     @Transactional
-    public FactureDeVente validerCommande(Long id) {
+    public ValidationResponseDto validerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
@@ -463,10 +468,62 @@ public class CommandeVenteService {
         //   - Consumption (quantiteReserve → quantiteVendue) happens later at
         //     physical delivery via livrerCommande().
 
-        logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={}",
-            id, savedFacture.getId(), totalHT, totalTVA, totalTTC);
+        // ✅ Collect low-stock alerts after reservation so the frontend can
+        //    display immediate red notifications for articles whose available
+        //    stock has dropped below the threshold (seuilMinimum or 10).
+        List<StockAlertDto> stockAlerts = collectLowStockAlerts(lignesCommande);
+
+        logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={} ({} stock alert(s))",
+            id, savedFacture.getId(), totalHT, totalTVA, totalTTC, stockAlerts.size());
         
-        return savedFacture;
+        return new ValidationResponseDto(savedFacture, stockAlerts);
+    }
+
+    /**
+     * Inspects the current stock level for each article in the given order lines and
+     * returns an alert for every article whose {@code quantiteDisponible} has dropped
+     * below its {@code seuilMinimum} (if configured) or below the default threshold of 10.
+     */
+    private List<StockAlertDto> collectLowStockAlerts(List<LigneCommandeVente> lignes) {
+        List<StockAlertDto> alerts = new ArrayList<>();
+        BigDecimal defaultThreshold = BigDecimal.TEN;
+        for (LigneCommandeVente ligne : lignes) {
+            ArticleVente articleVente = ligne.getArticleVente();
+            if (articleVente == null) continue;
+            Article article = articleVente.getArticleAchat();
+            if (article == null) continue;
+
+            List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
+            if (stocks.isEmpty()) continue;
+
+            Stock stock = stocks.get(0);
+            BigDecimal disponible = stock.getQuantiteDisponible() != null
+                    ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
+            String articleName = article.getNom() != null ? article.getNom() : ("Article #" + article.getId());
+            BigDecimal threshold = stock.getSeuilMinimum() != null ? stock.getSeuilMinimum() : defaultThreshold;
+
+            if (disponible.compareTo(BigDecimal.ZERO) <= 0) {
+                alerts.add(new StockAlertDto(
+                        "RUPTURE",
+                        article.getId(),
+                        articleName,
+                        disponible,
+                        stock.getSeuilMinimum(),
+                        String.format("RUPTURE DE STOCK : '%s' est épuisé !", articleName)));
+            } else if (disponible.compareTo(threshold) < 0) {
+                alerts.add(new StockAlertDto(
+                        "FAIBLE_STOCK",
+                        article.getId(),
+                        articleName,
+                        disponible,
+                        threshold,
+                        String.format("STOCK FAIBLE : '%s' en dessous du seuil (reste : %s, seuil : %s).",
+                                articleName,
+                                disponible.stripTrailingZeros().toPlainString(),
+                                threshold.stripTrailingZeros().toPlainString())));
+            }
+        }
+        return alerts;
     }
 
     @Caching(evict = {
