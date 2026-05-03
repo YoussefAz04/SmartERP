@@ -85,10 +85,7 @@ export class ListCommandeVenteComponent implements OnInit {
 
         // Show a red toast for each article whose stock fell below the threshold.
         for (const alert of alerts) {
-          const msg = alert?.message
-            || (alert?.type === 'RUPTURE'
-                ? `RUPTURE DE STOCK : '${alert?.articleName ?? ''}' est épuisé !`
-                : `STOCK FAIBLE : '${alert?.articleName ?? ''}' en dessous du seuil.`);
+          const msg = alert?.message || `Stock faible pour '${alert?.articleName ?? ''}'.`;
           this.notification.error(msg);
         }
       },
