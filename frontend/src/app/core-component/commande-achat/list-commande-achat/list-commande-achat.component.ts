@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,16 +23,57 @@ export class ListCommandeAchatComponent implements OnInit {
   showFactureModal = false;
   errorMessage = '';
 
+  canCreate = false;
+  canUpdate = false;
+  canDelete = false;
+
   statuts = ['EN_ATTENTE', 'CONFIRMEE', 'RECUE', 'ANNULEE'];
 
   constructor(
     private commandeAchatService: CommandeAchatService,
     private router: Router,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.loadRolePermissions();
     this.loadCommandes();
+  }
+
+  loadRolePermissions(): void {
+    const item = localStorage.getItem('myLSkey');
+    if (item) {
+      try {
+        const currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
+        const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
+        const canByRole = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
+
+        const normalize = (s: string | undefined | null) =>
+          (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        const targetTitle = normalize('Commande Achat');
+
+        let permissionFound = false;
+        if (currentUser?.permission && Array.isArray(currentUser.permission)) {
+          const perm = currentUser.permission.find((p: any) => normalize(p.moduleTitle) === targetTitle);
+          if (perm) {
+            permissionFound = true;
+            this.canCreate = perm.create === true;
+            this.canUpdate = perm.update === true;
+            this.canDelete = perm.delete === true;
+          }
+        }
+
+        if (!permissionFound) {
+          this.canCreate = canByRole;
+          this.canUpdate = canByRole;
+          this.canDelete = canByRole;
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+    this.cdr.detectChanges();
   }
 
   loadCommandes(): void {
