@@ -36,9 +36,7 @@ export class SidebarTwoComponent implements OnInit, OnDestroy {
         this.opendSubMenu[0] = this.sidebarData[0].tittle;
       }
     });
-    this.sidebar.getAllModuleTitles().subscribe(modules => {
-      this.sidebar.generateSidebarData(modules);
-    });
+    this.sidebar.loadSidebarWithRefresh();
   }
 
   ngOnDestroy(): void {

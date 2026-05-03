@@ -30,9 +30,7 @@ export class SidebarThreeComponent implements OnInit, OnDestroy {
     this.dataSub = this.sidebar.sidebarData$.subscribe(data => {
       this.sidebarData = this.transformSidebarData(data);
     });
-    this.sidebar.getAllModuleTitles().subscribe(modules => {
-      this.sidebar.generateSidebarData(modules);
-    });
+    this.sidebar.loadSidebarWithRefresh();
   }
 
   ngOnDestroy(): void {

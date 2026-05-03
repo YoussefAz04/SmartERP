@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, of, switchMap} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 import { routes } from '../../core.index';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {ModuleTittle} from "../../../model/moduleTittle.model";
 import {SousModule} from "../../../model/sousModule.model";
 import {Module} from "../../../model/module.model";
@@ -69,6 +70,56 @@ export class SidebarService {
 
   getAllModuleTitles(): Observable<ModuleTittle[]> {
     return this.http.get<ModuleTittle[]>(`${this.baseUrl}`);
+  }
+
+  /**
+   * Fetches fresh permissions from the backend for the current EMPLOYEE user
+   * and updates the myLSkey session in localStorage.
+   * Returns false (without updating) when the current user is ADMIN or SUPER_ADMIN,
+   * since those roles always see all business modules regardless of permissions.
+   */
+  refreshCurrentUserPermissions(): Observable<boolean> {
+    if (this.getUserRole() !== 'EMPLOYEE') {
+      return of(false);
+    }
+    const session = this.getSession();
+    if (!session?.userId) {
+      return of(false);
+    }
+    const params = new HttpParams().set('userId', session.userId);
+    return this.http.post<any[]>(
+      `${environment.apiUrl}/api/auth/refreshPermissionDtoList`,
+      null,
+      { params }
+    ).pipe(
+      map(permissions => {
+        try {
+          const raw = localStorage.getItem('myLSkey');
+          if (raw) {
+            const currentUser = JSON.parse(decodeURIComponent(escape(atob(raw))));
+            currentUser.permission = permissions;
+            localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(currentUser)))));
+          }
+        } catch {
+          // ignore storage errors
+        }
+        return true;
+      }),
+      catchError(() => of(false))
+    );
+  }
+
+  /**
+   * Refreshes permissions for the current employee (if applicable), then loads
+   * module titles from the backend and regenerates the sidebar data.
+   * Use this instead of manually chaining getAllModuleTitles + generateSidebarData.
+   */
+  loadSidebarWithRefresh(): void {
+    this.refreshCurrentUserPermissions().pipe(
+      switchMap(() => this.getAllModuleTitles())
+    ).subscribe(modules => {
+      this.generateSidebarData(modules);
+    });
   }
 
   /** Parses and returns the session object stored in localStorage, or null on error. */
