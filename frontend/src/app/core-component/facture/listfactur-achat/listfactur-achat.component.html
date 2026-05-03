@@ -191,7 +191,13 @@
           <td class="amount-cell">{{ facture.montantHT | number:'1.2-2' }} DT</td>
           <td class="amount-cell">{{ facture.montantTVA | number:'1.2-2' }} DT</td>
           <td class="payment-cell">
-            <span class="payment-badge">{{ facture.modePaiement }}</span>
+            <span class="payment-badge"
+                  (click)="changeModePaiement(facture)"
+                  style="cursor: pointer;"
+                  title="Cliquer pour changer le mode de paiement">
+              {{ facture.modePaiement }}
+              <i class="feather icon-edit-2" style="font-size: 10px; margin-left: 4px;"></i>
+            </span>
           </td>
           <td class="status-cell">
             <span class="status-badge" [ngClass]="getStatusClass(facture.statut)"

@@ -382,6 +382,46 @@ export class ListfacturAchatComponent implements OnInit{
     ).length;
   }
 
+  changeModePaiement(facture: FactureAchat) {
+    const modeLabels: Record<string, string> = {
+      'VIREMENT': 'Virement Bancaire',
+      'CHEQUE': 'Chèque',
+      'ESPECES': 'Espèces',
+      'CARTE_BANCAIRE': 'Carte Bancaire',
+      'TRAITE': 'Traite',
+      'A_DEFINIR': 'À Définir'
+    };
+
+    Swal.fire({
+      title: 'Changer le mode de paiement',
+      input: 'select',
+      inputOptions: modeLabels,
+      inputValue: facture.modePaiement ?? 'A_DEFINIR',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Changer',
+      cancelButtonText: 'Annuler',
+      reverseButtons: true,
+      inputPlaceholder: 'Sélectionner un mode de paiement'
+    }).then((result) => {
+      const newMode = result.value as string;
+      if (result.isConfirmed && newMode && newMode !== facture.modePaiement) {
+        const updatedFacture = { ...facture, modePaiement: newMode };
+        this.factureService.updateFactureAchat(facture.id!, updatedFacture).subscribe({
+          next: () => {
+            facture.modePaiement = newMode;
+            this.applyFiltersAndSort();
+            this.notify.success(`Le mode de paiement a été changé en "${modeLabels[newMode] || newMode}".`);
+          },
+          error: () => {
+            this.notify.error('Erreur lors de la mise à jour du mode de paiement.');
+          }
+        });
+      }
+    });
+  }
+
   changeStatus(facture: FactureAchat) {
     const statusLabels: Record<string, string> = {
       'PAYEE': 'Payée',
