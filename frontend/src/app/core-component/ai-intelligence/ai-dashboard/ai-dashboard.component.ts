@@ -214,10 +214,6 @@ export class AiDashboardComponent implements OnInit {
         shared: true,
         intersect: false,
         style: { fontSize: '12px', fontFamily: this.chartFontFamily },
-        x: {
-          formatter: (_val: unknown, opts: { dataPointIndex?: number } = {}) =>
-            months[opts?.dataPointIndex ?? 0] ?? '',
-        },
         y: { formatter: (v: number) => this.formatTooltipValue(v) },
       },
     } as Partial<ChartOptions>;
@@ -436,7 +432,7 @@ export class AiDashboardComponent implements OnInit {
         style: { fontSize: '12px', fontFamily: this.chartFontFamily },
         y: {
           formatter: (v: number) => formatCenter(v),
-          title: { formatter: (seriesName: string) => seriesName ? seriesName + ':' : '' },
+          title: { formatter: (seriesName: unknown) => typeof seriesName === 'string' && seriesName ? seriesName + ':' : '' },
         },
       },
       states: {
