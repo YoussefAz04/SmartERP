@@ -6,12 +6,7 @@ import { Subscription } from 'rxjs';
 import { ArticleVenteService } from '../../../core/service/article-vente/article-vente.service';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { ArticleAchat } from '../../../model/article-achat.model';
-
-interface ToastState {
-  visible: boolean;
-  message: string;
-  type: 'success' | 'error' | 'warning';
-}
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-article-vente',
@@ -28,18 +23,15 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
   selectedArticleAchatPrice: number | null = null;
   autoCalculated = false;
 
-  toast: ToastState = { visible: false, message: '', type: 'success' };
-
-  private readonly DEFAULT_TOAST_DURATION = 4000;
   private readonly NAVIGATION_DELAY = 1200;
-  private toastTimer: ReturnType<typeof setTimeout> | null = null;
   private subs = new Subscription();
 
   constructor(
     private articleVenteService: ArticleVenteService,
     private articleAchatService: ArticleAchatService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private notify: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -50,7 +42,6 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
-    if (this.toastTimer) clearTimeout(this.toastTimer);
   }
 
   initializeForm(): void {
@@ -112,17 +103,6 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
     this.subs.add(sub);
   }
 
-  showToast(message: string, type: ToastState['type'] = 'success', duration = this.DEFAULT_TOAST_DURATION): void {
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toast = { visible: true, message, type };
-    this.toastTimer = setTimeout(() => { this.toast = { ...this.toast, visible: false }; }, duration);
-  }
-
-  dismissToast(): void {
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toast = { ...this.toast, visible: false };
-  }
-
   onCancel(): void {
     this.router.navigate(['/article-vente/listArticleVente']);
   }
@@ -133,7 +113,7 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
     if (this.isLoading) return;
 
     if (!this.articleForm.valid) {
-      this.showToast('Veuillez remplir correctement tous les champs obligatoires.', 'warning');
+      this.notify.warning('Veuillez remplir correctement tous les champs obligatoires.');
       return;
     }
 
@@ -152,16 +132,15 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
     const sub = this.articleVenteService.addArticleVente(articleData, articleAchatId).subscribe({
       next: () => {
         this.isLoading = false;
-        this.showToast('Article vente ajouté avec succès !', 'success');
+        this.notify.success('Article vente ajouté avec succès !');
         setTimeout(() => this.router.navigate(['/article-vente/listArticleVente']), this.NAVIGATION_DELAY);
       },
       error: (err: any) => {
         this.isLoading = false;
         const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter l\'article';
-        this.showToast('Erreur : ' + errorMsg, 'error');
+        this.notify.error('Erreur : ' + errorMsg);
       }
     });
     this.subs.add(sub);
   }
 }
-

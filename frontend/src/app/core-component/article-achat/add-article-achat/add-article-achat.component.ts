@@ -1,16 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { Fournisseur } from '../../../model/fournisseur.model';
-
-interface ToastState {
-  visible: boolean;
-  message: string;
-  type: 'success' | 'error';
-}
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-add-article-achat',
@@ -19,7 +14,7 @@ interface ToastState {
   templateUrl: './add-article-achat.component.html',
   styleUrl: './add-article-achat.component.scss'
 })
-export class AddArticleAchatComponent implements OnInit, OnDestroy {
+export class AddArticleAchatComponent implements OnInit {
   articleForm!: FormGroup;
   fournisseurs: Fournisseur[] = [];
   categories: any[] = [];
@@ -27,19 +22,16 @@ export class AddArticleAchatComponent implements OnInit, OnDestroy {
   isLoading = false;
   submitted = false;
 
-  toast: ToastState = { visible: false, message: '', type: 'success' };
-
   private entrepriseId: number | null = null;
-  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   private static readonly REDIRECT_DELAY_MS = 1200;
-  private static readonly TOAST_DURATION_MS = 4000;
 
   constructor(
     private articleAchatService: ArticleAchatService,
     private fournisseurService: FournisseurService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private notify: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -47,12 +39,6 @@ export class AddArticleAchatComponent implements OnInit, OnDestroy {
     this.initializeForm();
     this.loadFournisseurs();
     this.loadCategories();
-  }
-
-  ngOnDestroy(): void {
-    if (this.toastTimer) {
-      clearTimeout(this.toastTimer);
-    }
   }
 
   private readEntrepriseId(): void {
@@ -108,32 +94,15 @@ export class AddArticleAchatComponent implements OnInit, OnDestroy {
     });
   }
 
-  showToast(message: string, type: 'success' | 'error'): void {
-    if (this.toastTimer) {
-      clearTimeout(this.toastTimer);
-    }
-    this.toast = { visible: true, message, type };
-    this.toastTimer = setTimeout(() => this.dismissToast(), AddArticleAchatComponent.TOAST_DURATION_MS);
-  }
-
-  dismissToast(): void {
-    this.toast = { ...this.toast, visible: false };
-    if (this.toastTimer) {
-      clearTimeout(this.toastTimer);
-      this.toastTimer = null;
-    }
-  }
-
   onCancel(): void {
     this.router.navigate(['/article-achat/listArticleAchat']);
   }
 
   onSubmit(): void {
     this.submitted = true;
-    this.dismissToast();
 
     if (!this.entrepriseId) {
-      this.showToast('Impossible de déterminer l\'entreprise. Veuillez vous reconnecter.', 'error');
+      this.notify.error('Impossible de déterminer l\'entreprise. Veuillez vous reconnecter.');
       return;
     }
 
@@ -157,7 +126,7 @@ export class AddArticleAchatComponent implements OnInit, OnDestroy {
         next: () => {
           this.isLoading = false;
           this.submitted = false;
-          this.showToast('Article achat ajouté avec succès !', 'success');
+          this.notify.success('Article achat ajouté avec succès !');
           this.articleForm.reset({ unite: 'Pièce' });
           setTimeout(
             () => this.router.navigate(['/article-achat/listArticleAchat']),
@@ -166,11 +135,11 @@ export class AddArticleAchatComponent implements OnInit, OnDestroy {
         },
         error: (err: any) => {
           this.isLoading = false;
-          this.showToast(err.error?.message || err.message || 'Impossible d\'ajouter l\'article', 'error');
+          this.notify.error(err.error?.message || err.message || 'Impossible d\'ajouter l\'article');
         }
       });
     } else {
-      this.showToast('Veuillez remplir correctement tous les champs obligatoires.', 'error');
+      this.notify.error('Veuillez remplir correctement tous les champs obligatoires.');
     }
   }
 }
