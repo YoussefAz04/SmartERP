@@ -164,13 +164,13 @@ public class MlRecommendationEngine {
                     ? "≥ 1 an"
                     : String.format(Locale.FRANCE, "%.0f j", r.daysOfCover);
             String urgencyHint = pStockout > 0.85
-                    ? "Risque imminent — passez commande dès aujourd'hui."
-                    : "Anticipez l'achat avant la fin de la couverture actuelle.";
+                    ? "Action immédiate requise — émettez un bon de commande sans délai."
+                    : "Planifiez le réapprovisionnement avant expiration de la couverture actuelle.";
             out.add(new RecommendationDto(
                 "ML_RISQUE_STOCK",
-                "Risque de rupture — " + r.articleName,
+                "Alerte Réapprovisionnement — " + r.articleName,
                 String.format(Locale.FRANCE,
-                    "Probabilité estimée de rupture : %.0f%% sur les %d prochains jours (couverture=%s, demande moy.=%.0f/mois, délai fournisseur=%.0f j). Quantité suggérée à commander : %.0f. %s",
+                    "Probabilité de rupture estimée à %.0f %% sur l'horizon de %d jours. Couverture actuelle : %s | Demande moyenne : %.0f unités/mois | Délai fournisseur : %.0f j. Quantité de réapprovisionnement recommandée : %.0f unité(s). %s",
                     pStockout * 100.0, horizonDays, coverStr,
                     r.avgMonthlyDemand, r.leadTimeDays, suggestedQty, urgencyHint),
                 prio, icon, "Voir Stock"
@@ -227,9 +227,9 @@ public class MlRecommendationEngine {
         ProductRow topRow = rows.get(top);
         out.add(new RecommendationDto(
             "PRODUIT_STAR",
-            "Produit vedette — " + topRow.productName,
+            "Produit Vedette — " + topRow.productName,
             String.format(Locale.FRANCE,
-                "« %s » est identifié par le modèle d'opportunité comme votre produit à plus fort potentiel (CA=%.0f, %.0f unités vendues, marge unitaire ≈ %.0f). Sécurisez le stock, mettez-le en avant et testez des offres groupées pour capter le momentum.",
+                "« %s » est identifié par le modèle prédictif comme la référence à plus fort potentiel de croissance. Chiffre d'affaires : %.0f — Unités vendues : %.0f — Marge unitaire estimée : %.0f. Sécurisez le niveau de stock, activez la mise en avant commerciale et testez des offres combinées pour amplifier la dynamique de vente.",
                 topRow.productName, topRow.revenue, topRow.quantitySold, topRow.marginProxy),
             "BASSE", "fa-star", "Voir Produits"
         ));
@@ -241,19 +241,19 @@ public class MlRecommendationEngine {
             ProductRow r = rows.get(i);
             String hint;
             if (r.velocityTrend > 0.1) {
-                hint = "La tendance récente est positive — accélérez la mise en avant.";
+                hint = "La tendance récente est favorable — accélérez la mise en avant commerciale.";
             } else if (r.categoryShare > 0.15) {
-                hint = "Sa part de catégorie (%.0f%%) en fait un levier majeur — " +
-                       "renforcez l'assortiment lié.";
+                hint = "Sa part de catégorie (%.0f %%) en fait un levier stratégique — " +
+                       "renforcez l'assortiment associé.";
                 hint = String.format(Locale.FRANCE, hint, r.categoryShare * 100.0);
             } else {
-                hint = "Investissez en marketing ou en mise en avant pour amplifier ce signal.";
+                hint = "Investissez en visibilité commerciale pour capitaliser sur ce signal de croissance.";
             }
             out.add(new RecommendationDto(
                 "OPPORTUNITE",
-                "Opportunité — " + r.productName,
+                "Opportunité de Croissance — " + r.productName,
                 String.format(Locale.FRANCE,
-                    "« %s » figure dans le top-décile des produits à fort potentiel (CA=%.0f, %.0f unités). %s",
+                    "« %s » se distingue parmi les références à fort potentiel de progression. Chiffre d'affaires : %.0f — Unités écoulées : %.0f. %s",
                     r.productName, r.revenue, r.quantitySold, hint),
                 "MOYENNE", "fa-arrow-trend-up", "Voir Produits"
             ));
