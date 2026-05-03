@@ -318,14 +318,18 @@
               <i class="fas" [ngClass]="rec.icon"></i>
             </div>
             <span class="rec-priority" [ngClass]="getPriorityClass(rec.priority)">
+              <span class="rec-priority-dot"></span>
               {{ getPriorityLabel(rec.priority) }}
             </span>
           </div>
           <h4 class="rec-title">{{ rec.title }}</h4>
           <p class="rec-desc">{{ rec.description }}</p>
           <div class="rec-footer">
-            <span class="rec-type">{{ rec.type }}</span>
-            <button class="btn-action" (click)="navigateFromRecommendation(rec)">{{ rec.actionLabel }}</button>
+            <span class="rec-type" [title]="rec.type">{{ formatRecType(rec.type) }}</span>
+            <button class="btn-action" (click)="navigateFromRecommendation(rec)">
+              <span class="btn-action-label">{{ rec.actionLabel }}</span>
+              <i class="fas fa-arrow-right btn-action-icon"></i>
+            </button>
           </div>
         </div>
       </div>
