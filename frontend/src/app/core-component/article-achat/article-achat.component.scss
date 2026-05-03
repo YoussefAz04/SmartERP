@@ -674,7 +674,7 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
     &:nth-child(even) td { background: $sl-50; }
 
     &:hover td {
-      background: rgba($bl-500,.07) !important;
+      background: rgba($bl-500,.07);
     }
 
     // Left-border accent on hover
@@ -684,7 +684,7 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
     }
 
     &.row-selected td {
-      background: rgba($bl-500,.08) !important;
+      background: rgba($bl-500,.08);
       border-bottom-color: $bl-100;
     }
 
