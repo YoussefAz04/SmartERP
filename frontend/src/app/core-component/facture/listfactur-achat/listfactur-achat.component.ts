@@ -10,6 +10,7 @@ import {FormsModule} from "@angular/forms";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Swal from 'sweetalert2';
+import {NotificationService} from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-listfactur-achat',
@@ -40,7 +41,8 @@ export class ListfacturAchatComponent implements OnInit{
   selectAll: boolean = false;
 
   constructor(private factureService : FactureService,
-              private router : Router) {
+              private router : Router,
+              private notify: NotificationService) {
   }
 
   ngOnInit() {
@@ -58,12 +60,7 @@ export class ListfacturAchatComponent implements OnInit{
       },
       error: () => {
         this.isLoading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Erreur lors du chargement des factures.',
-          confirmButtonColor: '#667eea'
-        });
+        this.notify.error('Erreur lors du chargement des factures.');
       }
     });
   }
@@ -166,23 +163,11 @@ export class ListfacturAchatComponent implements OnInit{
             this.deletingIds.delete(id);
             this.factureAchatList = this.factureAchatList.filter(f => f.id !== id);
             this.applyFiltersAndSort();
-            Swal.fire({
-              icon: 'success',
-              title: 'Supprimé !',
-              text: 'La facture a été supprimée avec succès.',
-              confirmButtonColor: '#667eea',
-              timer: 2500,
-              timerProgressBar: true
-            });
+            this.notify.success('La facture a été supprimée avec succès.');
           },
           error: () => {
             this.deletingIds.delete(id);
-            Swal.fire({
-              icon: 'error',
-              title: 'Erreur',
-              text: 'Erreur lors de la suppression de la facture.',
-              confirmButtonColor: '#667eea'
-            });
+            this.notify.error('Erreur lors de la suppression de la facture.');
           }
         });
       }
@@ -195,12 +180,7 @@ export class ListfacturAchatComponent implements OnInit{
 
   exportMultipleToPdf() {
     if (this.selectedFactures.size === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Aucune sélection',
-        text: 'Veuillez sélectionner au moins une facture.',
-        confirmButtonColor: '#667eea'
-      });
+      this.notify.info('Veuillez sélectionner au moins une facture.');
       return;
     }
 
@@ -430,22 +410,10 @@ export class ListfacturAchatComponent implements OnInit{
           next: () => {
             facture.statut = newStatus;
             this.applyFiltersAndSort();
-            Swal.fire({
-              icon: 'success',
-              title: 'Statut mis à jour !',
-              text: `Le statut a été changé en "${statusLabels[newStatus] || newStatus}".`,
-              confirmButtonColor: '#2563eb',
-              timer: 2000,
-              timerProgressBar: true
-            });
+            this.notify.success(`Le statut a été changé en "${statusLabels[newStatus] || newStatus}".`);
           },
           error: () => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Erreur',
-              text: 'Erreur lors de la mise à jour du statut.',
-              confirmButtonColor: '#2563eb'
-            });
+            this.notify.error('Erreur lors de la mise à jour du statut.');
           }
         });
       }
@@ -475,7 +443,7 @@ export class ListfacturAchatComponent implements OnInit{
     const file = input.files && input.files[0];
     if (!file) return;
     if (file.type !== 'application/pdf') {
-      Swal.fire({ icon: 'warning', title: 'Format invalide', text: 'Veuillez sélectionner un PDF.' });
+      this.notify.warning('Veuillez sélectionner un PDF.');
       input.value = '';
       return;
     }
@@ -490,18 +458,14 @@ export class ListfacturAchatComponent implements OnInit{
       error: () => {
         this.importing = false;
         input.value = '';
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur d\'import',
-          text: "L'extraction OCR a échoué. Vérifiez que des zones FACTURE_ACHAT ont été enregistrées."
-        });
+        this.notify.error("L'extraction OCR a échoué. Vérifiez que des zones FACTURE_ACHAT ont été enregistrées.");
       }
     });
   }
 
   private showImportPreview(file: File, data: Record<string, unknown>) {
     if (data?.['warning']) {
-      Swal.fire({ icon: 'warning', title: 'Aperçu', text: String(data['warning']) });
+      this.notify.warning(String(data['warning']));
       return;
     }
 
@@ -540,23 +504,12 @@ export class ListfacturAchatComponent implements OnInit{
     this.factureService.saveFromPdf(file).subscribe({
       next: () => {
         this.importing = false;
-        Swal.fire({
-          icon: 'success',
-          title: 'Facture importée',
-          text: 'La facture d\'achat a été créée avec succès.',
-          confirmButtonColor: '#667eea',
-          timer: 2500,
-          timerProgressBar: true
-        });
+        this.notify.success('La facture d\'achat a été créée avec succès.');
         this.getAllFactureAchat();
       },
       error: () => {
         this.importing = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Impossible d\'enregistrer la facture importée.'
-        });
+        this.notify.error('Impossible d\'enregistrer la facture importée.');
       }
     });
   }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { SidebarService } from 'src/app/core/service/sidebar/sidebar.service';
 import Swal from 'sweetalert2';
+import { NotificationService } from 'src/app/shared/notification/notification.service';
 interface data {
   value: string;
 }
@@ -24,7 +25,7 @@ selectedList2: data[] = [
   { value: '211.11.0.25' },
   { value: '211.03.0.11' },
 ];
-constructor( private sidebar: SidebarService){
+constructor( private sidebar: SidebarService, private notify: NotificationService){
     
 }
   isCollapsed: boolean = false;
@@ -56,17 +57,9 @@ confirmColor() {
     })
     .then((result) => {
       if (result.isConfirmed) {
-        swalWithBootstrapButtons.fire(
-          'Deleted!',
-          'Your file has been deleted.',
-          'success'
-        );
+        this.notify.success('Your file has been deleted.');
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        swalWithBootstrapButtons.fire(
-          'Cancelled',
-          'Your imaginary file is safe :)',
-          'error'
-        );
+        this.notify.error('Your imaginary file is safe :)');
       }
     });
 }

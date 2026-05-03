@@ -15,6 +15,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Swal from 'sweetalert2';
 import {forkJoin} from 'rxjs';
+import {NotificationService} from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-list-facture-de-vente',
@@ -58,7 +59,8 @@ export class ListFactureDeVenteComponent implements OnInit{
   constructor(private factureService : FactureDeVenteServiceService,
               private router : Router,
               private clientService : ClientService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private notify: NotificationService) {
   }
 
   ngOnInit() {
@@ -79,12 +81,7 @@ export class ListFactureDeVenteComponent implements OnInit{
       },
       error: () => {
         this.isLoading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Erreur lors du chargement des factures.',
-          confirmButtonColor: '#4caf50'
-        });
+        this.notify.error('Erreur lors du chargement des factures.');
       }
     });
   }
@@ -205,23 +202,11 @@ export class ListFactureDeVenteComponent implements OnInit{
             this.deletingIds.delete(id);
             this.factureAchatList = this.factureAchatList.filter(f => f.id !== id);
             this.applyFiltersAndSort();
-            Swal.fire({
-              icon: 'success',
-              title: 'Supprimé !',
-              text: 'La facture a été supprimée avec succès.',
-              confirmButtonColor: '#4caf50',
-              timer: 2500,
-              timerProgressBar: true
-            });
+            this.notify.success('La facture a été supprimée avec succès.');
           },
           error: () => {
             this.deletingIds.delete(id);
-            Swal.fire({
-              icon: 'error',
-              title: 'Erreur',
-              text: 'Erreur lors de la suppression de la facture.',
-              confirmButtonColor: '#4caf50'
-            });
+            this.notify.error('Erreur lors de la suppression de la facture.');
           }
         });
       }
@@ -237,12 +222,7 @@ export class ListFactureDeVenteComponent implements OnInit{
 
   exportMultipleToPdf() {
     if (this.selectedFactures.size === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Aucune sélection',
-        text: 'Veuillez sélectionner au moins une facture.',
-        confirmButtonColor: '#4caf50'
-      });
+      this.notify.info('Veuillez sélectionner au moins une facture.');
       return;
     }
 
@@ -419,12 +399,7 @@ export class ListFactureDeVenteComponent implements OnInit{
         this.selectAll = false;
       },
       error: () => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Erreur lors du chargement des détails des factures.',
-          confirmButtonColor: '#4caf50'
-        });
+        this.notify.error('Erreur lors du chargement des détails des factures.');
       }
     });
   }
@@ -446,12 +421,7 @@ export class ListFactureDeVenteComponent implements OnInit{
         this.clients = data;
       },
       error: () => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur',
-          text: 'Erreur lors du chargement des clients.',
-          confirmButtonColor: '#4caf50'
-        });
+        this.notify.error('Erreur lors du chargement des clients.');
       }
     });
   }
@@ -479,12 +449,7 @@ export class ListFactureDeVenteComponent implements OnInit{
           }
         },
         error: () => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Erreur',
-            text: 'Erreur lors de l\'assignation du client.',
-            confirmButtonColor: '#4caf50'
-          });
+          this.notify.error('Erreur lors de l\'assignation du client.');
         }
       });
     }
@@ -534,22 +499,10 @@ export class ListFactureDeVenteComponent implements OnInit{
           next: () => {
             facture.statut = newStatus;
             this.applyFiltersAndSort();
-            Swal.fire({
-              icon: 'success',
-              title: 'Statut mis à jour !',
-              text: `Le statut a été changé en "${statusLabels[newStatus] || newStatus}".`,
-              confirmButtonColor: '#0ea5e9',
-              timer: 2000,
-              timerProgressBar: true
-            });
+            this.notify.success(`Le statut a été changé en "${statusLabels[newStatus] || newStatus}".`);
           },
           error: () => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Erreur',
-              text: 'Erreur lors de la mise à jour du statut.',
-              confirmButtonColor: '#0ea5e9'
-            });
+            this.notify.error('Erreur lors de la mise à jour du statut.');
           }
         });
       }

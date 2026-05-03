@@ -7,6 +7,7 @@ import { StockMouvementService } from '../../../core/service/stock-mouvement/sto
 import { Stock } from '../../../model/stock.model';
 import { StockMouvementDto, TypeMouvement } from '../../../model/stock-mouvement.model';
 import Swal from 'sweetalert2';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-adjust-stock',
@@ -42,7 +43,8 @@ export class AdjustStockComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private stockService: StockService,
-    private mouvementService: StockMouvementService
+    private mouvementService: StockMouvementService,
+    private notify: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -122,7 +124,7 @@ export class AdjustStockComponent implements OnInit {
     const newQty = this.quantiteNouvelle;
 
     if (type === 'SORTIE' && newQty < 0) {
-      Swal.fire('Erreur', 'La quantité ne peut pas être négative après la sortie.', 'error');
+      this.notify.error('La quantité ne peut pas être négative après la sortie.');
       return;
     }
 
@@ -146,19 +148,18 @@ export class AdjustStockComponent implements OnInit {
           this.stockService.updateStock(dto.stockId, { quantiteDisponible: updatedQty, localisation }).subscribe({
             next: () => {
               this.isSubmitting = false;
-              Swal.fire('Succès', 'Stock ajusté avec succès!', 'success').then(() => {
-                this.router.navigate(['/stock/view', dto.stockId]);
-              });
+              this.notify.success('Stock ajusté avec succès !');
+              setTimeout(() => this.router.navigate(['/stock/view', dto.stockId]), 800);
             },
             error: () => {
               this.isSubmitting = false;
-              Swal.fire('Succès partiel', 'Mouvement créé mais erreur lors de la mise à jour du stock.', 'warning');
+              this.notify.warning('Mouvement créé mais erreur lors de la mise à jour du stock.');
             }
           });
         },
         error: (err) => {
           this.isSubmitting = false;
-          Swal.fire('Erreur', "Impossible de créer le mouvement de stock.", 'error');
+          this.notify.error('Impossible de créer le mouvement de stock.');
         }
       });
     };

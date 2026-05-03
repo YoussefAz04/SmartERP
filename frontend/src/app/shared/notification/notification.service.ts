@@ -13,13 +13,16 @@ export class NotificationService {
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
+    showCloseButton: true,
+    closeButtonHtml: '&times;',
     timer: 3000,
     timerProgressBar: true,
     customClass: {
       popup: 'smart-toast',
       title: 'smart-toast-title',
       htmlContainer: 'smart-toast-body',
-      timerProgressBar: 'smart-toast-progress'
+      timerProgressBar: 'smart-toast-progress',
+      closeButton: 'smart-toast-close'
     },
     didOpen: (el) => {
       el.addEventListener('mouseenter', Swal.stopTimer);
@@ -29,22 +32,22 @@ export class NotificationService {
 
   /** Show a success toast. */
   success(message: string, title?: string): void {
-    this.fire('success', this.clean(message), title ?? 'Succès');
+    this.fire('success', this.clean(message), title);
   }
 
   /** Show an error toast. */
   error(message: string, title?: string): void {
-    this.fire('error', this.clean(message), title ?? 'Erreur');
+    this.fire('error', this.clean(message), title);
   }
 
   /** Show a warning toast. */
   warning(message: string, title?: string): void {
-    this.fire('warning', this.clean(message), title ?? 'Attention');
+    this.fire('warning', this.clean(message), title);
   }
 
   /** Show an informational toast. */
   info(message: string, title?: string): void {
-    this.fire('info', this.clean(message), title ?? 'Information');
+    this.fire('info', this.clean(message), title);
   }
 
   /**
