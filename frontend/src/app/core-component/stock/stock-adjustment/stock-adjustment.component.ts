@@ -120,10 +120,10 @@ export class StockAdjustmentComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        this.notify.success('Your file has been deleted.');} else if (
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        this.notify.error('Your imaginary file is safe :)');}
+        this.notify.success('Your file has been deleted.');
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.notify.error('Your imaginary file is safe :)');
+      }
     })
   }
   public selectedValue1 = '';
