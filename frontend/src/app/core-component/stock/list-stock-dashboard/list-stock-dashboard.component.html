@@ -188,7 +188,7 @@
         <div class="panel-body">
           @if (lowStockItems.length > 0) {
             <div class="table-responsive">
-              <table class="table mb-0">
+              <table class="modern-table mb-0">
                 <thead>
                   <tr>
                     <th>Article</th>
@@ -200,13 +200,21 @@
                 </thead>
                 <tbody>
                   @for (stock of lowStockItems.slice(0, 10); track stock.id) {
-                    <tr>
+                    <tr [class.row-danger]="getStockStatus(stock) === 'OUT_OF_STOCK'"
+                        [class.row-warning]="getStockStatus(stock) === 'LOW_STOCK'">
                       <td>
-                        <strong>{{ stock.articleAchat?.nom || 'Article #' + stock.id }}</strong>
+                        <div class="article-cell">
+                          <span class="article-avatar"
+                            [class.avatar-danger]="getStockStatus(stock) === 'OUT_OF_STOCK'"
+                            [class.avatar-warning]="getStockStatus(stock) === 'LOW_STOCK'">
+                            {{ (stock.articleAchat?.nom || 'A')[0].toUpperCase() }}
+                          </span>
+                          <span class="article-name">{{ stock.articleAchat?.nom || 'Article #' + stock.id }}</span>
+                        </div>
                       </td>
-                      <td>{{ stock.localisation || '-' }}</td>
+                      <td class="location-cell">{{ stock.localisation || '—' }}</td>
                       <td class="text-center">
-                        <span class="fw-bold text-danger">{{ stock.quantiteDisponible || 0 }}</span>
+                        <span class="qty-badge qty-badge-danger">{{ stock.quantiteDisponible || 0 }}</span>
                       </td>
                       <td class="text-center">
                         <span class="status-pill"
@@ -216,7 +224,7 @@
                           {{ getStatusLabel(stock) }}
                         </span>
                       </td>
-                      <td>
+                      <td class="text-center">
                         <a [routerLink]="['/stock/view', stock.id]" class="view-btn">
                           <i class="feather icon-eye"></i>
                         </a>
@@ -256,7 +264,7 @@
         <div class="panel-body">
           @if (recentMovements.length > 0) {
             <div class="table-responsive">
-              <table class="table mb-0">
+              <table class="modern-table mb-0">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -267,20 +275,28 @@
                 </thead>
                 <tbody>
                   @for (mvt of recentMovements; track mvt.id) {
-                    <tr>
-                      <td>{{ mvt.dateMouvement | date:'dd/MM/yy HH:mm' }}</td>
+                    <tr [class.row-entree]="mvt.typeMouvement === 'ENTREE'"
+                        [class.row-sortie]="mvt.typeMouvement === 'SORTIE'"
+                        [class.row-reservation]="mvt.typeMouvement === 'RESERVATION'">
                       <td>
-                        <span class="movement-pill"
-                          [class.pill-entree]="mvt.typeMouvement === 'ENTREE'"
-                          [class.pill-sortie]="mvt.typeMouvement === 'SORTIE'"
-                          [class.pill-ajustement]="mvt.typeMouvement === 'AJUSTEMENT'"
-                          [class.pill-reservation]="mvt.typeMouvement === 'RESERVATION'"
-                          [class.pill-default]="mvt.typeMouvement !== 'ENTREE' && mvt.typeMouvement !== 'SORTIE' && mvt.typeMouvement !== 'AJUSTEMENT' && mvt.typeMouvement !== 'RESERVATION'">
+                        <div class="date-cell">
+                          <span class="date-main">{{ mvt.dateMouvement | date:'dd/MM/yy' }}</span>
+                          <span class="date-time">{{ mvt.dateMouvement | date:'HH:mm' }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="movement-pill" [class]="'movement-pill ' + getMovementPillClass(mvt.typeMouvement)">
                           {{ mvt.typeMouvement }}
                         </span>
                       </td>
-                      <td class="text-center fw-bold">{{ mvt.quantite }}</td>
-                      <td class="text-truncate" style="max-width: 150px">{{ mvt.motif || '-' }}</td>
+                      <td class="text-center">
+                        <span class="qty-badge" [class]="'qty-badge ' + getQtyBadgeClass(mvt.typeMouvement)">
+                          {{ mvt.quantite }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="motif-text" [title]="mvt.motif || ''">{{ mvt.motif || '—' }}</span>
+                      </td>
                     </tr>
                   }
                 </tbody>
