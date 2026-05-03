@@ -38,7 +38,6 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
     inset: 0;
     overflow: hidden;
     border-radius: 24px;
-    pointer-events: none;
 
     .shape {
       position: absolute;
@@ -169,7 +168,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
         align-items: center;
         gap: 0.45rem;
         border: none;
-        white-space: nowrap;
+        // white-space is intentionally omitted to allow text wrapping on narrow screens
 
         &.btn-refresh {
           background: rgba(255, 255, 255, 0.15);
@@ -520,6 +519,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
     position: sticky;
     top: 0;
     z-index: 10;
+    background: #ede9fe; // opaque fallback for sticky scroll
 
     tr {
       background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
@@ -576,7 +576,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
       transition: all 0.22s ease;
 
       // Subtle zebra stripe
-      &:nth-child(even) {
+      &:nth-child(even):not(:hover) {
         background: #fbfaff;
       }
 
@@ -849,7 +849,7 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
           display: flex;
           justify-content: center;
           gap: 0.35rem;
-          flex-wrap: wrap;
+          flex-shrink: 0;
 
           .btn-action {
             width: 34px;
