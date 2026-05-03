@@ -1,150 +1,208 @@
-<div class="page-header">
-  <div class="page-title">
-    <h4>Mon Profil</h4>
-    <h6>Gérez les informations de votre compte utilisateur</h6>
+<!-- Page header -->
+<div class="profile-page-header">
+  <div>
+    <h4 class="profile-page-title">Mon Profil</h4>
+    <p class="profile-page-subtitle">Gérez les informations de votre compte utilisateur</p>
   </div>
 </div>
 
+<!-- Loading -->
 <ng-container *ngIf="isLoading">
-  <div class="d-flex justify-content-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Chargement...</span>
+  <div class="profile-loading">
+    <div class="profile-loading-spinner">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+      <p class="mt-3 text-muted">Chargement du profil…</p>
     </div>
   </div>
 </ng-container>
 
-<div class="row" *ngIf="!isLoading && user">
-  <!-- LEFT: identity card -->
-  <div class="col-xl-4 col-lg-5 mb-3">
-    <div class="card profile-card">
-      <div class="card-body text-center">
+<!-- Main layout -->
+<div class="profile-layout" *ngIf="!isLoading && user">
+
+  <!-- ── LEFT: identity card ─────────────────────────────────────── -->
+  <div class="profile-identity-col">
+    <div class="profile-card-wrap">
+
+      <!-- Gradient banner -->
+      <div class="profile-banner">
+        <div class="profile-banner-pattern"></div>
+      </div>
+
+      <!-- Avatar (overlaps banner) -->
+      <div class="profile-avatar-ring">
         <div class="profile-avatar">
           <span *ngIf="initials">{{ initials }}</span>
           <i class="feather icon-user" *ngIf="!initials"></i>
         </div>
-        <h5 class="mb-1">{{ user.username }}</h5>
-        <p class="text-muted mb-2">{{ user.email }}</p>
+      </div>
 
+      <!-- Content below avatar -->
+      <div class="profile-card-body">
+        <h5 class="profile-username">{{ user.username }}</h5>
+        <p class="profile-email">{{ user.email }}</p>
+
+        <!-- Badges -->
         <div class="profile-badges">
-          <span class="badge bg-primary me-1" *ngFor="let role of roles">{{ role }}</span>
-          <span class="badge" [ngClass]="user.enabled ? 'bg-success' : 'bg-secondary'">
+          <span class="profile-badge profile-badge-role" *ngFor="let role of roles">{{ role }}</span>
+          <span class="profile-badge" [ngClass]="user.enabled ? 'profile-badge-active' : 'profile-badge-inactive'">
+            <span class="profile-badge-dot"></span>
             {{ user.enabled ? 'Actif' : 'Inactif' }}
           </span>
         </div>
 
-        <div class="profile-meta mt-3" *ngIf="entrepriseName">
-          <p class="mb-1"><i class="feather icon-briefcase me-2"></i>{{ entrepriseName }}</p>
-        </div>
-        <div class="profile-meta" *ngIf="user.phone">
-          <p class="mb-1"><i class="feather icon-phone me-2"></i>{{ user.phone }}</p>
-        </div>
-        <div class="profile-meta" *ngIf="user.id">
-          <p class="mb-0 text-muted small"><i class="feather icon-hash me-2"></i>ID: {{ user.id }}</p>
+        <!-- Meta info -->
+        <div class="profile-meta-list">
+          <div class="profile-meta-item" *ngIf="entrepriseName">
+            <span class="profile-meta-icon"><i class="feather icon-briefcase"></i></span>
+            <span>{{ entrepriseName }}</span>
+          </div>
+          <div class="profile-meta-item" *ngIf="user.phone">
+            <span class="profile-meta-icon"><i class="feather icon-phone"></i></span>
+            <span>{{ user.phone }}</span>
+          </div>
+          <div class="profile-meta-item" *ngIf="user.id">
+            <span class="profile-meta-icon"><i class="feather icon-hash"></i></span>
+            <span class="text-muted">ID: {{ user.id }}</span>
+          </div>
         </div>
 
-        <hr />
-        <button type="button" class="btn btn-outline-danger btn-sm w-100" (click)="logout()">
-          <i class="feather icon-log-out me-2"></i>Déconnexion
+        <!-- Logout -->
+        <button type="button" class="profile-logout-btn" (click)="logout()">
+          <i class="feather icon-log-out"></i>
+          <span>Déconnexion</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT: editable account details -->
-  <div class="col-xl-8 col-lg-7">
-    <div class="card">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="mb-0">Informations du compte</h5>
-        <span class="badge bg-warning text-dark" *ngIf="!canEdit">Lecture seule</span>
+  <!-- ── RIGHT: editable form ───────────────────────────────────── -->
+  <div class="profile-form-col">
+    <div class="profile-form-card">
+
+      <!-- Card header -->
+      <div class="profile-form-header">
+        <div class="profile-form-header-left">
+          <span class="profile-form-header-icon"><i class="feather icon-edit-3"></i></span>
+          <div>
+            <h5 class="profile-form-title">Informations du compte</h5>
+            <p class="profile-form-subtitle">Modifiez vos informations personnelles</p>
+          </div>
+        </div>
+        <span class="profile-readonly-badge" *ngIf="!canEdit">
+          <i class="feather icon-lock me-1"></i>Lecture seule
+        </span>
       </div>
-      <div class="card-body">
+
+      <div class="profile-form-body">
         <form #profileForm="ngForm" (ngSubmit)="onSubmit(profileForm)" novalidate>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="username" class="form-label">Nom d'utilisateur</label>
+          <div class="profile-fields-grid">
+
+            <!-- Username -->
+            <div class="profile-field-group">
+              <label for="username" class="profile-field-label">
+                <i class="feather icon-user"></i>Nom d'utilisateur
+              </label>
               <input
                 type="text"
                 id="username"
                 name="username"
-                class="form-control"
+                class="profile-field-input"
                 [(ngModel)]="user.username"
                 [disabled]="!canEdit || isSubmitting"
                 required
                 minlength="3"
                 #usernameField="ngModel"
               />
-              <div class="text-danger small mt-1"
+              <div class="profile-field-error"
                    *ngIf="usernameField.invalid && (usernameField.dirty || usernameField.touched)">
+                <i class="feather icon-alert-circle"></i>
                 Le nom d'utilisateur est requis (3 caractères minimum).
               </div>
             </div>
 
-            <div class="col-md-6 mb-3">
-              <label for="email" class="form-label">Email</label>
+            <!-- Email -->
+            <div class="profile-field-group">
+              <label for="email" class="profile-field-label">
+                <i class="feather icon-mail"></i>Email
+              </label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                class="form-control"
+                class="profile-field-input"
                 [(ngModel)]="user.email"
                 [disabled]="!canEdit || isSubmitting"
                 required
                 email
                 #emailField="ngModel"
               />
-              <div class="text-danger small mt-1"
+              <div class="profile-field-error"
                    *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)">
-                Adresse email invalide.
+                <i class="feather icon-alert-circle"></i>Adresse email invalide.
               </div>
             </div>
 
-            <div class="col-md-6 mb-3">
-              <label for="phone" class="form-label">Téléphone</label>
+            <!-- Phone -->
+            <div class="profile-field-group">
+              <label for="phone" class="profile-field-label">
+                <i class="feather icon-phone"></i>Téléphone
+              </label>
               <input
                 type="text"
                 id="phone"
                 name="phone"
-                class="form-control"
+                class="profile-field-input"
                 [(ngModel)]="user.phone"
                 [disabled]="!canEdit || isSubmitting"
               />
             </div>
 
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Rôle</label>
+            <!-- Role (read-only) -->
+            <div class="profile-field-group">
+              <label class="profile-field-label">
+                <i class="feather icon-shield"></i>Rôle
+              </label>
               <input
                 type="text"
-                class="form-control"
+                class="profile-field-input profile-field-readonly"
                 [value]="primaryRole"
                 disabled
               />
             </div>
 
-            <div class="col-md-6 mb-3" *ngIf="entrepriseName">
-              <label class="form-label">Entreprise</label>
+            <!-- Entreprise (read-only) -->
+            <div class="profile-field-group" *ngIf="entrepriseName">
+              <label class="profile-field-label">
+                <i class="feather icon-briefcase"></i>Entreprise
+              </label>
               <input
                 type="text"
-                class="form-control"
+                class="profile-field-input profile-field-readonly"
                 [value]="entrepriseName"
                 disabled
               />
             </div>
 
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Statut du compte</label>
-              <input
-                type="text"
-                class="form-control"
-                [value]="user.enabled ? 'Actif' : 'Inactif'"
-                disabled
-              />
+            <!-- Account status (read-only) -->
+            <div class="profile-field-group">
+              <label class="profile-field-label">
+                <i class="feather icon-activity"></i>Statut du compte
+              </label>
+              <div class="profile-status-field" [class.profile-status-active]="user.enabled" [class.profile-status-inactive]="!user.enabled">
+                <span class="profile-status-dot"></span>
+                {{ user.enabled ? 'Actif' : 'Inactif' }}
+              </div>
             </div>
+
           </div>
 
-          <div class="d-flex justify-content-end gap-2" *ngIf="canEdit">
+          <!-- Actions -->
+          <div class="profile-form-actions" *ngIf="canEdit">
             <button
               type="button"
-              class="btn btn-secondary"
+              class="profile-btn-cancel"
               (click)="cancel()"
               [disabled]="isSubmitting"
             >
@@ -152,10 +210,11 @@
             </button>
             <button
               type="submit"
-              class="btn btn-primary"
+              class="profile-btn-save"
               [disabled]="profileForm.invalid || isSubmitting"
             >
               <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <i class="feather icon-save me-2" *ngIf="!isSubmitting"></i>
               Enregistrer
             </button>
           </div>
@@ -163,8 +222,11 @@
       </div>
     </div>
   </div>
+
 </div>
 
-<div class="alert alert-warning" *ngIf="!isLoading && !user">
+<!-- Error fallback -->
+<div class="profile-error-alert" *ngIf="!isLoading && !user">
+  <i class="feather icon-alert-triangle me-2"></i>
   Impossible de charger votre profil. Veuillez vous reconnecter.
 </div>
