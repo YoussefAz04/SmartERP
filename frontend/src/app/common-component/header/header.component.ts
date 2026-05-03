@@ -155,7 +155,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.showSearchDropdown = false;
       this.selectedIndex = -1;
-    }, 200);
+    }, 300);
   }
 
   clearSearch(): void {
