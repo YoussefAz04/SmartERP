@@ -71,6 +71,16 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   100% { background-position: 200% 0; }
 }
 
+@keyframes logoShimmerSweep {
+  0% { transform: translateX(-110%) skewX(-15deg); }
+  100% { transform: translateX(110%) skewX(-15deg); }
+}
+
+@keyframes logoIconFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-2px) rotate(-3deg) scale(1.06); }
+}
+
 // ============================================
 // HEADER WRAPPER
 // ============================================
@@ -161,17 +171,18 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  height: 46px;
-  padding: 8px 18px;
+  gap: 10px;
+  height: 48px;
+  padding: 8px 16px 8px 12px;
   border-radius: 14px;
   background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-  border: 1.5px solid rgba($accent-blue, 0.18);
-  box-shadow: 0 2px 10px rgba($accent-blue, 0.12), 0 1px 3px rgba($accent-blue, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
+  border: 1.5px solid rgba($accent-blue, 0.2);
+  box-shadow: 0 2px 12px rgba($accent-blue, 0.14), 0 1px 4px rgba($accent-blue, 0.08), inset 0 1px 0 rgba(255,255,255,0.75);
   transition: all $trans;
   position: relative;
   overflow: hidden;
 
+  // Top gloss line
   &::before {
     content: '';
     position: absolute;
@@ -179,14 +190,31 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba($white, 0.9), transparent);
+    background: linear-gradient(90deg, transparent, rgba($white, 0.95), transparent);
+  }
+
+  // Shimmer sweep on hover
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba($white, 0.22), transparent);
+    transform: translateX(-110%) skewX(-15deg);
+    pointer-events: none;
   }
 
   .logo-brand:hover & {
-    background: linear-gradient(135deg, rgba($accent-blue, 0.1) 0%, rgba($accent-blue, 0.16) 100%);
-    border-color: rgba($accent-blue, 0.38);
-    box-shadow: 0 6px 20px rgba($accent-blue, 0.2), 0 2px 6px rgba($accent-blue, 0.1);
+    background: linear-gradient(135deg, rgba($accent-blue, 0.1) 0%, rgba(109, 40, 217, 0.12) 100%);
+    border-color: rgba($accent-blue, 0.4);
+    box-shadow: 0 6px 22px rgba($accent-blue, 0.22), 0 2px 6px rgba($accent-blue, 0.12), inset 0 1px 0 rgba(255,255,255,0.6);
     transform: translateY(-1px);
+
+    &::after {
+      animation: logoShimmerSweep 0.55s ease forwards;
+    }
   }
 }
 
@@ -204,37 +232,52 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .logo-text {
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   white-space: nowrap;
-  display: inline-flex;
-  align-items: baseline;
 }
 
 .logo-text-smart {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1;
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 700;
 }
 
 .logo-text-erp {
-  background: linear-gradient(135deg, $accent-blue 0%, $accent-indigo 100%);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  background: linear-gradient(135deg, $accent-blue 0%, #7c3aed 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 800;
+}
+
+.logo-tagline {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba($text-secondary, 0.7);
+  line-height: 1;
+  margin-top: 2px;
 }
 
 .logo-icon {
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.25));
-  transition: transform $trans-spring;
+  filter: drop-shadow(0 3px 6px rgba(79, 70, 229, 0.35));
+  transition: transform $trans-spring, filter $trans;
 
   .logo-brand:hover & {
-    transform: rotate(-5deg) scale(1.08);
+    animation: logoIconFloat 0.6s $trans-spring forwards;
+    filter: drop-shadow(0 5px 10px rgba(79, 70, 229, 0.5));
   }
 }
 
@@ -1284,10 +1327,14 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .logo-text-erp {
-      background: linear-gradient(135deg, lighten($accent-blue, 10%) 0%, lighten($accent-indigo, 15%) 100%);
+      background: linear-gradient(135deg, lighten($accent-blue, 10%) 0%, #a78bfa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+
+    .logo-tagline {
+      color: rgba($dark-text-light, 0.65);
     }
   }
 
@@ -1623,8 +1670,13 @@ $trans-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     height: 24px;
   }
 
-  .logo-text {
-    font-size: 12px;
+  .logo-text-smart,
+  .logo-text-erp {
+    font-size: 13px;
+  }
+
+  .logo-tagline {
+    display: none;
   }
 
   .logo-badge {
