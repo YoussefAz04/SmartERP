@@ -41,6 +41,11 @@ export type DonutChartOptions = {
   colors: any;
   legend: ApexLegend | any;
   dataLabels: ApexDataLabels | any;
+  plotOptions: ApexPlotOptions | any;
+  stroke: ApexStroke | any;
+  fill: ApexFill | any;
+  tooltip: any;
+  states: any;
 };
 
 @Component({
@@ -60,6 +65,22 @@ export class AiDashboardComponent implements OnInit {
   public salesChartOptions: Partial<ChartOptions> = {};
   public forecastChartOptions: Partial<ChartOptions> = {};
   public productChartOptions: Partial<DonutChartOptions> = {};
+
+  /** Shared chart font stack — keeps charts visually consistent. */
+  private readonly chartFontFamily = 'Inter, Poppins, "Segoe UI", sans-serif';
+
+  /** Compact axis label formatter (e.g. 1.2M, 850k, 42). */
+  private formatAxisValue(v: number): string {
+    if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'M';
+    if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
+    return String(v);
+  }
+
+  /** Localised TND tooltip formatter for chart series values. */
+  private formatTooltipValue(v: number | null | undefined): string {
+    if (v == null) return '—';
+    return v.toLocaleString('fr-FR') + ' TND';
+  }
 
   constructor(private aiService: AiIntelligenceService, private router: Router) {}
 
@@ -107,21 +128,93 @@ export class AiDashboardComponent implements OnInit {
 
     this.salesChartOptions = {
       series: [
-        { name: 'Ventes Réelles', type: 'bar', data: values },
-        { name: 'Tendance', type: 'line', data: trend },
+        { name: 'Ventes Réelles', type: 'column', data: values },
+        { name: 'Tendance', type: 'area', data: trend },
       ],
-      chart: { height: 320, type: 'line' },
-      colors: ['#4361EE', '#F72585'],
-      plotOptions: { bar: { borderRadius: 4, columnWidth: '55%' } },
-      dataLabels: { enabled: false },
-      stroke: { width: [0, 3], curve: 'smooth' },
-      xaxis: { categories: months },
-      yaxis: {
-        labels: { formatter: (v: number) => (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : String(v)) },
+      chart: {
+        height: 340,
+        type: 'line',
+        fontFamily: this.chartFontFamily,
+        toolbar: { show: false },
+        background: 'transparent',
+        animations: { enabled: true, speed: 700, animateGradually: { enabled: true, delay: 90 } },
+        dropShadow: {
+          enabled: true,
+          enabledOnSeries: [0],
+          top: 6,
+          left: 0,
+          blur: 8,
+          color: '#4361EE',
+          opacity: 0.18,
+        },
       },
-      legend: { position: 'top' },
-      fill: { opacity: [0.85, 1] },
-    };
+      colors: ['#4361EE', '#F72585'],
+      plotOptions: {
+        bar: {
+          borderRadius: 8,
+          borderRadiusApplication: 'end',
+          columnWidth: '42%',
+        },
+      },
+      dataLabels: { enabled: false },
+      stroke: {
+        width: [0, 3],
+        curve: 'smooth',
+        lineCap: 'round',
+      },
+      xaxis: {
+        categories: months,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: {
+          style: { fontSize: '12px', fontWeight: 600, colors: '#64748b' },
+        },
+      },
+      yaxis: {
+        labels: {
+          style: { fontSize: '12px', colors: '#94a3b8' },
+          formatter: (v: number) => this.formatAxisValue(v),
+        },
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        fontSize: '12px',
+        fontWeight: 600,
+        labels: { colors: '#475569' },
+        markers: { size: 6, strokeWidth: 0, offsetX: -4 },
+        itemMargin: { horizontal: 10, vertical: 0 },
+      },
+      fill: {
+        type: ['gradient', 'gradient'],
+        gradient: {
+          type: 'vertical',
+          shadeIntensity: 0.25,
+          opacityFrom: [0.95, 0.35],
+          opacityTo: [0.7, 0],
+          stops: [0, 100],
+        },
+      },
+      // ApexCharts options not declared in our partial type — accepted at runtime
+      grid: {
+        borderColor: '#e2e8f0',
+        strokeDashArray: 4,
+        padding: { top: 0, right: 12, bottom: 0, left: 12 },
+        xaxis: { lines: { show: false } },
+      },
+      markers: {
+        size: 0,
+        strokeWidth: 2,
+        hover: { size: 6 },
+      },
+      tooltip: {
+        theme: 'light',
+        shared: true,
+        intersect: false,
+        style: { fontSize: '12px', fontFamily: this.chartFontFamily },
+        y: { formatter: (v: number) => this.formatTooltipValue(v) },
+      },
+    } as Partial<ChartOptions>;
   }
 
   buildForecastChart(): void {
@@ -135,22 +228,86 @@ export class AiDashboardComponent implements OnInit {
 
     this.forecastChartOptions = {
       series: [
-        { name: 'Réel', data: actual },
-        { name: 'Prévision', data: fore },
-        { name: 'Borne Haute', data: upper },
-        { name: 'Borne Basse', data: lower },
+        { name: 'Réel', type: 'line', data: actual },
+        { name: 'Prévision', type: 'line', data: fore },
+        { name: 'Borne Haute', type: 'area', data: upper },
+        { name: 'Borne Basse', type: 'area', data: lower },
       ],
-      chart: { height: 320, type: 'line' },
+      chart: {
+        height: 340,
+        type: 'line',
+        fontFamily: this.chartFontFamily,
+        toolbar: { show: false },
+        background: 'transparent',
+        animations: { enabled: true, speed: 700 },
+        dropShadow: {
+          enabled: true,
+          enabledOnSeries: [0, 1],
+          top: 4,
+          left: 0,
+          blur: 6,
+          opacity: 0.15,
+        },
+      },
       colors: ['#4361EE', '#F72585', '#06d6a0', '#ef476f'],
       dataLabels: { enabled: false },
-      stroke: { width: [3, 3, 1, 1], curve: 'smooth', dashArray: [0, 5, 4, 4] },
-      xaxis: { categories: periods },
-      yaxis: {
-        labels: { formatter: (v: number) => (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : String(v)) },
+      stroke: {
+        width: [4, 3, 1, 1],
+        curve: 'smooth',
+        dashArray: [0, 6, 0, 0],
+        lineCap: 'round',
       },
-      legend: { position: 'top' },
-      fill: { opacity: 1 },
-    };
+      xaxis: {
+        categories: periods,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: { style: { fontSize: '12px', fontWeight: 600, colors: '#64748b' } },
+      },
+      yaxis: {
+        labels: {
+          style: { fontSize: '12px', colors: '#94a3b8' },
+          formatter: (v: number) => this.formatAxisValue(v),
+        },
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        fontSize: '12px',
+        fontWeight: 600,
+        labels: { colors: '#475569' },
+        markers: { size: 6, strokeWidth: 0, offsetX: -4 },
+        itemMargin: { horizontal: 10, vertical: 0 },
+      },
+      fill: {
+        type: ['solid', 'solid', 'gradient', 'gradient'],
+        opacity: [1, 1, 0.18, 0.18],
+        gradient: {
+          shade: 'light',
+          type: 'vertical',
+          opacityFrom: 0.25,
+          opacityTo: 0,
+          stops: [0, 100],
+        },
+      },
+      grid: {
+        borderColor: '#e2e8f0',
+        strokeDashArray: 4,
+        padding: { top: 0, right: 12, bottom: 0, left: 12 },
+        xaxis: { lines: { show: false } },
+      },
+      markers: {
+        size: 0,
+        strokeWidth: 2,
+        hover: { size: 6 },
+      },
+      tooltip: {
+        theme: 'light',
+        shared: true,
+        intersect: false,
+        style: { fontSize: '12px', fontFamily: this.chartFontFamily },
+        y: { formatter: (v: number) => this.formatTooltipValue(v) },
+      },
+    } as Partial<ChartOptions>;
   }
 
   buildProductChart(): void {
@@ -173,14 +330,111 @@ export class AiDashboardComponent implements OnInit {
       seriesValues = quantities;
     }
 
+    const totalSeries = seriesValues.reduce((acc, v) => acc + v, 0);
+    const isCurrency = hasRevenue;
+    const formatCenter = (v: number) =>
+      isCurrency ? this.formatCurrency(v) + ' TND' : v.toLocaleString('fr-FR');
+
     this.productChartOptions = {
       series: seriesValues,
-      chart: { type: 'donut', height: 300 },
+      chart: {
+        type: 'donut',
+        height: 320,
+        fontFamily: this.chartFontFamily,
+        background: 'transparent',
+        animations: { enabled: true, speed: 700 },
+        dropShadow: {
+          enabled: true,
+          top: 4,
+          left: 0,
+          blur: 10,
+          opacity: 0.15,
+        },
+      },
       labels: top5.map((p) => p.productName),
       colors: ['#4361EE', '#F72585', '#06d6a0', '#ef476f', '#ffd166'],
-      legend: { position: 'bottom', fontSize: '12px' },
-      dataLabels: { enabled: true },
-    };
+      legend: {
+        position: 'bottom',
+        fontSize: '12px',
+        fontWeight: 600,
+        labels: { colors: '#475569' },
+        markers: { size: 6, strokeWidth: 0, offsetX: -4 },
+        itemMargin: { horizontal: 8, vertical: 4 },
+      },
+      dataLabels: {
+        enabled: true,
+        style: {
+          fontSize: '12px',
+          fontWeight: 700,
+          fontFamily: this.chartFontFamily,
+        },
+        dropShadow: { enabled: true, top: 1, left: 0, blur: 2, opacity: 0.4 },
+        formatter: (val: number) => `${Number(val).toFixed(1)}%`,
+      },
+      // Extra options accepted at runtime by ApexCharts even if not in our partial type
+      stroke: { width: 3, colors: ['#ffffff'] },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'light',
+          type: 'diagonal2',
+          shadeIntensity: 0.35,
+          gradientToColors: ['#7B9CFF', '#FF6FA8', '#3DEFB6', '#FF7B96', '#FFE08A'],
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 1,
+          stops: [0, 100],
+        },
+      },
+      plotOptions: {
+        pie: {
+          startAngle: -90,
+          endAngle: 270,
+          expandOnClick: true,
+          donut: {
+            size: '72%',
+            background: 'transparent',
+            labels: {
+              show: true,
+              name: {
+                show: true,
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#94a3b8',
+                offsetY: -8,
+              },
+              value: {
+                show: true,
+                fontSize: '20px',
+                fontWeight: 800,
+                color: '#0f172a',
+                fontFamily: this.chartFontFamily,
+                offsetY: 4,
+                formatter: formatCenter,
+              },
+              total: {
+                show: true,
+                showAlways: false,
+                label: 'Total',
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#94a3b8',
+                formatter: () => formatCenter(totalSeries),
+              },
+            },
+          },
+        },
+      },
+      tooltip: {
+        theme: 'light',
+        style: { fontSize: '12px', fontFamily: this.chartFontFamily },
+        y: { formatter: (v: number) => formatCenter(v) },
+      },
+      states: {
+        hover: { filter: { type: 'lighten', value: 0.05 } },
+        active: { filter: { type: 'darken', value: 0.1 } },
+      },
+    } as Partial<DonutChartOptions>;
   }
 
   getPriorityClass(priority: string): string {
