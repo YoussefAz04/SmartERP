@@ -2674,10 +2674,6 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
   backdrop-filter: blur(10px);
 }
 
-/* Remove the old left side-stripe accent */
-.smart-toast.swal2-popup.swal2-toast::before {
-  content: none;
-}
 
 /* Per-type gradient backgrounds */
 .smart-toast.swal2-popup.swal2-toast.swal2-icon-success {
@@ -2701,40 +2697,45 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
   border-color: rgba(196, 181, 253, 0.35);
 }
 
-/* Icon: white outline circle with white symbol */
+/* Hide the complex SweetAlert2 animated icon entirely — replaced by CSS pseudo-element */
 .smart-toast.swal2-popup.swal2-toast .swal2-icon {
-  margin: 0;
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  border-width: 2px;
-  border-color: rgba(255, 255, 255, 0.9) !important;
+  display: none !important;
+}
+
+/* Clean icon container injected via ::before on the toast itself */
+.smart-toast.swal2-popup.swal2-toast::before {
+  content: '';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
   flex-shrink: 0;
 }
 
-.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content {
-  color: #ffffff !important;
-  font-size: 1em;
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-success::before {
+  content: '✓';
 }
-
-/* Success check lines */
-.smart-toast.swal2-popup.swal2-toast .swal2-success-ring {
-  border-color: rgba(255, 255, 255, 0.6) !important;
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-error::before {
+  content: '✕';
 }
-.smart-toast.swal2-popup.swal2-toast .swal2-success-line-tip,
-.smart-toast.swal2-popup.swal2-toast .swal2-success-line-long {
-  background-color: #ffffff !important;
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-warning::before {
+  content: '⚠';
+  font-size: 13px;
 }
-.smart-toast.swal2-popup.swal2-toast .swal2-success-fix,
-.smart-toast.swal2-popup.swal2-toast .swal2-success-circular-line-left,
-.smart-toast.swal2-popup.swal2-toast .swal2-success-circular-line-right {
-  background-color: transparent !important;
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-info::before {
+  content: 'i';
+  font-style: italic;
 }
-
-/* Error X-mark lines */
-.smart-toast.swal2-popup.swal2-toast .swal2-x-mark-line-left,
-.smart-toast.swal2-popup.swal2-toast .swal2-x-mark-line-right {
-  background-color: #ffffff !important;
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-question::before {
+  content: '?';
 }
 
 /* Title / body — same line, white text */
