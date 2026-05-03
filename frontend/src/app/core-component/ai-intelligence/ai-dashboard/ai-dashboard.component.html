@@ -158,7 +158,10 @@
             [xaxis]="salesChartOptions.xaxis"
             [yaxis]="salesChartOptions.yaxis"
             [legend]="salesChartOptions.legend"
-            [fill]="salesChartOptions.fill">
+            [fill]="salesChartOptions.fill"
+            [grid]="$any(salesChartOptions).grid"
+            [markers]="$any(salesChartOptions).markers"
+            [tooltip]="$any(salesChartOptions).tooltip">
           </apx-chart>
         </div>
         <div class="chart-footer">
@@ -180,7 +183,12 @@
             [labels]="productChartOptions.labels"
             [colors]="productChartOptions.colors"
             [legend]="productChartOptions.legend"
-            [dataLabels]="productChartOptions.dataLabels">
+            [dataLabels]="productChartOptions.dataLabels"
+            [plotOptions]="productChartOptions.plotOptions"
+            [stroke]="productChartOptions.stroke"
+            [fill]="productChartOptions.fill"
+            [tooltip]="$any(productChartOptions).tooltip"
+            [states]="$any(productChartOptions).states">
           </apx-chart>
           <div *ngIf="!productChartOptions.series?.length" class="no-data">
             <i class="fas fa-info-circle"></i> Aucune donnée produit
@@ -224,7 +232,10 @@
           [xaxis]="forecastChartOptions.xaxis"
           [yaxis]="forecastChartOptions.yaxis"
           [legend]="forecastChartOptions.legend"
-          [fill]="forecastChartOptions.fill">
+          [fill]="forecastChartOptions.fill"
+          [grid]="$any(forecastChartOptions).grid"
+          [markers]="$any(forecastChartOptions).markers"
+          [tooltip]="$any(forecastChartOptions).tooltip">
         </apx-chart>
       </div>
     </div>
