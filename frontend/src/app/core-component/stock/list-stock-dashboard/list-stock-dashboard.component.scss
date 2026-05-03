@@ -542,16 +542,42 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
 .modern-panel {
   border-radius: $radius-xl;
   overflow: hidden;
-  box-shadow: $shadow-sm;
-  border: 1px solid $slate-100;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04);
+  border: 1px solid $slate-200;
   margin-bottom: 24px;
-  animation: panelEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  animation: panelEnter 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+  transition: box-shadow 0.3s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1);
   background: $surface;
+  position: relative;
+
+  // Top accent stripe
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    z-index: 5;
+    pointer-events: none;
+    border-radius: $radius-xl $radius-xl 0 0;
+  }
 
   &:hover {
-    box-shadow: $shadow-md;
-    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12), 0 3px 12px rgba(0,0,0,0.06);
+    transform: translateY(-3px);
+  }
+
+  // Danger panel — red accent stripe + left border glow
+  &.panel-danger {
+    border-color: #fecdd3;
+    &::before { background: linear-gradient(90deg, #e11d48, #fb7185); }
+    &:hover { box-shadow: 0 10px 40px rgba(225,29,72,0.12), 0 3px 12px rgba(225,29,72,0.06); }
+  }
+
+  // Primary panel — blue accent stripe + left border glow
+  &.panel-primary {
+    border-color: #bfdbfe;
+    &::before { background: linear-gradient(90deg, #1e40af, #60a5fa); }
+    &:hover { box-shadow: 0 10px 40px rgba(37,99,235,0.12), 0 3px 12px rgba(37,99,235,0.06); }
   }
 
   .panel-header {
@@ -561,18 +587,40 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
     align-items: center;
 
     &.panel-header-danger {
-      background: linear-gradient(135deg, #881337 0%, #e11d48 100%);
-      .panel-title { color: #fff; }
-      .panel-badge { background: rgba(255,255,255,0.16); color: #ffe4e6; border: 1px solid rgba(255,255,255,0.18); }
-      .panel-link  { color: rgba(255,255,255,0.88); border-color: rgba(255,255,255,0.24); }
-      .panel-icon-wrap { background: rgba(255,255,255,0.12); i { color: #fecdd3; } }
+      background: linear-gradient(135deg, #881337 0%, #be123c 50%, #e11d48 100%);
+      position: relative;
+      overflow: hidden;
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 18px 18px;
+        pointer-events: none;
+      }
+      .panel-title { color: #fff; position: relative; z-index: 2; }
+      .panel-badge { background: rgba(255,255,255,0.16); color: #ffe4e6; border: 1px solid rgba(255,255,255,0.22); position: relative; z-index: 2; }
+      .panel-link  { color: rgba(255,255,255,0.92); border-color: rgba(255,255,255,0.28); position: relative; z-index: 2; }
+      .panel-icon-wrap { background: rgba(255,255,255,0.14); i { color: #fecdd3; } position: relative; z-index: 2; }
     }
 
     &.panel-header-primary {
-      background: linear-gradient(135deg, #0b1e3d 0%, #1e3a5f 100%);
-      .panel-title { color: #fff; }
-      .panel-link  { color: rgba(255,255,255,0.88); border-color: rgba(255,255,255,0.24); }
-      .panel-icon-wrap { background: rgba(255,255,255,0.1); i { color: #93c5fd; } }
+      background: linear-gradient(135deg, #0b1e3d 0%, #1e3a5f 60%, #2563eb 100%);
+      position: relative;
+      overflow: hidden;
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 18px 18px;
+        pointer-events: none;
+      }
+      .panel-title { color: #fff; position: relative; z-index: 2; }
+      .panel-link  { color: rgba(255,255,255,0.92); border-color: rgba(255,255,255,0.28); position: relative; z-index: 2; }
+      .panel-icon-wrap { background: rgba(255,255,255,0.12); i { color: #93c5fd; } position: relative; z-index: 2; }
     }
 
     .panel-title {
@@ -587,13 +635,14 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
     }
 
     .panel-icon-wrap {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: $radius-sm;
       display: flex;
       align-items: center;
       justify-content: center;
-      i { font-size: 15px; }
+      box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+      i { font-size: 16px; }
     }
 
     .panel-badge {
@@ -607,7 +656,7 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
       font-size: 11px;
       font-weight: 700;
       text-decoration: none;
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: $radius-sm;
       border: 1px solid;
       transition: all 0.2s ease;
@@ -623,7 +672,7 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
       }
 
       &:hover {
-        background: rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.16);
         i { transform: translateX(3px); }
       }
     }
@@ -645,16 +694,15 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
 
   thead tr {
     background: $slate-50;
-    border-bottom: 2px solid $slate-200;
   }
 
   th {
-    padding: 12px 18px;
-    font-size: 11px;
+    padding: 13px 18px;
+    font-size: 10.5px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.9px;
-    color: $slate-500;
+    letter-spacing: 1px;
+    color: $slate-400;
     white-space: nowrap;
     border-bottom: 2px solid $slate-200;
     background: $slate-50;
@@ -665,48 +713,54 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
 
   tbody tr {
     border-left: 3px solid transparent;
-    transition: background 0.15s ease, border-left-color 0.15s ease;
+    transition: background 0.18s ease, border-left-color 0.18s ease;
 
     &:last-child td { border-bottom: none; }
 
-    &:nth-child(even) td { background: rgba($slate-50, 0.6); }
+    &:nth-child(even) td { background: rgba($slate-50, 0.7); }
 
     &:hover {
-      border-left-color: $azure-light;
       td { background: #f0f7ff !important; }
     }
 
+    // Low stock row variants — always-on left border
     &.row-danger {
       border-left-color: $rose;
-      &:hover { border-left-color: $rose-dark; }
+      td { background: rgba($color-rose-bg, 0.35); }
+      &:hover td { background: rgba($color-rose-bg, 0.65) !important; }
     }
 
     &.row-warning {
       border-left-color: $amber;
-      &:hover { border-left-color: $amber-dark; }
+      td { background: rgba($color-amber-bg, 0.35); }
+      &:hover td { background: rgba($color-amber-bg, 0.65) !important; }
     }
 
+    // Movement row variants — always-on left border
     &.row-entree {
-      &:hover { border-left-color: $emerald; }
+      border-left-color: $emerald;
+      &:hover td { background: rgba($color-green-bg, 0.5) !important; }
     }
 
     &.row-sortie {
-      &:hover { border-left-color: $rose; }
+      border-left-color: $rose;
+      &:hover td { background: rgba($color-rose-bg, 0.4) !important; }
     }
 
     &.row-reservation {
-      &:hover { border-left-color: $violet; }
+      border-left-color: $violet;
+      &:hover td { background: rgba($color-violet-bg, 0.5) !important; }
     }
   }
 
   td {
-    padding: 12px 18px;
+    padding: 13px 18px;
     vertical-align: middle;
     border-bottom: 1px solid $slate-100;
     font-size: 13px;
     color: $slate-700;
     background: $surface;
-    transition: background 0.15s ease;
+    transition: background 0.18s ease;
   }
 }
 
@@ -750,14 +804,15 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
 // Quantity badge
 .qty-badge {
   display: inline-block;
-  min-width: 38px;
-  padding: 3px 10px;
+  min-width: 42px;
+  padding: 4px 10px;
   border-radius: $radius-sm;
   font-size: 13px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   text-align: center;
   letter-spacing: -0.3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
 
   &.qty-badge-danger  { background: $color-rose-bg;   color: $rose-dark;    border: 1px solid $color-rose-bdr; }
   &.qty-badge-success { background: $color-green-bg;  color: $emerald-dark; border: 1px solid $color-green-bdr; }
@@ -852,40 +907,94 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
 // ============================================================
 // Status & Movement Pills
 // ============================================================
+@mixin pill-dot($color) {
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $color;
+    flex-shrink: 0;
+  }
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 12px;
+  gap: 6px;
+  padding: 5px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
 
-  &.pill-danger  { background: $color-rose-bg;   color: $rose-dark;    border: 1px solid $color-rose-bdr; }
-  &.pill-warning { background: $color-amber-bg;  color: $amber-dark;   border: 1px solid $color-amber-bdr; }
-  &.pill-success { background: $color-green-bg;  color: $emerald-dark; border: 1px solid $color-green-bdr; }
+  &.pill-danger  {
+    background: $color-rose-bg;
+    color: $rose-dark;
+    border: 1px solid $color-rose-bdr;
+    @include pill-dot($rose);
+  }
+  &.pill-warning {
+    background: $color-amber-bg;
+    color: $amber-dark;
+    border: 1px solid $color-amber-bdr;
+    @include pill-dot($amber);
+  }
+  &.pill-success {
+    background: $color-green-bg;
+    color: $emerald-dark;
+    border: 1px solid $color-green-bdr;
+    @include pill-dot($emerald);
+  }
 }
 
 .movement-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 12px;
+  gap: 6px;
+  padding: 5px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
 
-  &.pill-entree      { background: $color-green-bg;  color: $emerald-dark; border: 1px solid $color-green-bdr; }
-  &.pill-sortie      { background: $color-rose-bg;   color: $rose-dark;    border: 1px solid $color-rose-bdr; }
-  &.pill-ajustement  { background: $color-amber-bg;  color: $amber-dark;   border: 1px solid $color-amber-bdr; }
-  &.pill-reservation { background: $color-violet-bg; color: $violet-dark;  border: 1px solid $color-violet-bdr; }
-  &.pill-default     { background: $slate-100; color: $slate-600; border: 1px solid $slate-200; }
+  &.pill-entree {
+    background: $color-green-bg;
+    color: $emerald-dark;
+    border: 1px solid $color-green-bdr;
+    @include pill-dot($emerald);
+  }
+  &.pill-sortie {
+    background: $color-rose-bg;
+    color: $rose-dark;
+    border: 1px solid $color-rose-bdr;
+    @include pill-dot($rose);
+  }
+  &.pill-ajustement {
+    background: $color-amber-bg;
+    color: $amber-dark;
+    border: 1px solid $color-amber-bdr;
+    @include pill-dot($amber);
+  }
+  &.pill-reservation {
+    background: $color-violet-bg;
+    color: $violet-dark;
+    border: 1px solid $color-violet-bdr;
+    @include pill-dot($violet);
+  }
+  &.pill-default {
+    background: $slate-100;
+    color: $slate-600;
+    border: 1px solid $slate-200;
+    @include pill-dot($slate-400);
+  }
 }
 
 // ============================================================
