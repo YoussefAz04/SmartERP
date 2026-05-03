@@ -43,7 +43,7 @@ export class SidebarThreeComponent implements OnInit, OnDestroy {
   private transformSidebarData(data: any[]): any[] {
     return data.map(section => ({
       tittle: section.tittle,
-      featherIcon: this.getSectionIcon(section.tittle),
+      featherIcon: this.sidebar.getSectionFeatherIcon(section.tittle),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       subRoutes: (section.menu || []).map((item: any) => ({
         tittle: item.menuValue,
@@ -59,21 +59,6 @@ export class SidebarThreeComponent implements OnInit, OnDestroy {
         }))
       }))
     }));
-  }
-
-  private getSectionIcon(title: string): string {
-    const t = (title || '').toLowerCase();
-    if (t.includes('article') || t.includes('stock')) return 'package';
-    if (t.includes('client')) return 'users';
-    if (t.includes('fournisseur')) return 'truck';
-    if (t.includes('commande')) return 'file-text';
-    if (t.includes('facture')) return 'credit-card';
-    if (t.includes('budget') || t.includes('comptab')) return 'dollar-sign';
-    if (t.includes('ia') || t.includes('intellig')) return 'cpu';
-    if (t.includes('admin') || t.includes('platform') || t.includes('param')) return 'settings';
-    if (t.includes('document')) return 'folder';
-    if (t.includes('projet')) return 'briefcase';
-    return 'grid';
   }
 
   showMenu(val: string): void {
