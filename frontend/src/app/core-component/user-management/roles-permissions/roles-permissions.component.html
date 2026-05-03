@@ -14,7 +14,7 @@
       <i class="feather icon-layers"></i>
       <span>{{ tableData.length }} Rôle{{ tableData.length !== 1 ? 's' : '' }}</span>
     </div>
-    <a href="javascript:void(0);" class="rp-btn-add" data-bs-toggle="modal" data-bs-target="#add-units">
+    <a *ngIf="isAdmin() || isSuperAdmin()" href="javascript:void(0);" class="rp-btn-add" data-bs-toggle="modal" data-bs-target="#add-units">
       <i class="feather icon-plus-circle"></i>
       <span>Ajouter un rôle</span>
     </a>
@@ -86,7 +86,7 @@
       </div>
       <h3>Aucun rôle trouvé</h3>
       <p>Commencez par créer votre premier rôle pour gérer les permissions d'accès.</p>
-      <a href="javascript:void(0);" class="rp-btn-add" data-bs-toggle="modal" data-bs-target="#add-units">
+      <a *ngIf="isAdmin() || isSuperAdmin()" href="javascript:void(0);" class="rp-btn-add" data-bs-toggle="modal" data-bs-target="#add-units">
         <i class="feather icon-plus-circle"></i> Créer le premier rôle
       </a>
     </div>

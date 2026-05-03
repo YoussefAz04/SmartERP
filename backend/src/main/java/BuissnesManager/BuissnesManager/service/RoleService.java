@@ -27,6 +27,14 @@ public class RoleService {
         return roleRepository.findAll();
     }
 
+    public List<Role> getAllGlobal() {
+        return roleRepository.findByEntrepriseIsNull();
+    }
+
+    public List<Role> getAllByEnterprise(Long enterpriseId) {
+        return roleRepository.findByEntrepriseId(enterpriseId);
+    }
+
     public Optional<Role> getById(Long id) {
         return roleRepository.findById(id);
     }

@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,5 +35,10 @@ public class Role {
 
     @OneToMany(mappedBy = "role" )
     private List<Permission> permission;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entreprise_id")
+    @JsonIgnore
+    private Entreprise entreprise;
 
 }
