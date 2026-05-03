@@ -155,6 +155,14 @@ const routes: Routes = [
           import('./commande-vente/commande-vente.module').then((m) => m.CommandeVenteModule),
       },
       {
+        // Notifications: accessible by ADMIN and EMPLOYEE
+        path: 'notifications',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
+        loadComponent: () =>
+          import('./notifications/notifications.component').then((m) => m.NotificationsComponent),
+      },
+      {
         // AI analytics: enterprise business data – no SUPER_ADMIN
         path: 'ai-intelligence',
         canActivate: [RoleGuard],

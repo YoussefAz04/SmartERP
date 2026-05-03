@@ -1,0 +1,32 @@
+.notification-item {
+  transition: background-color 0.2s ease;
+
+  &.unread {
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+  }
+
+  &:last-child {
+    border-bottom: none !important;
+  }
+
+  .notification-message {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #666;
+
+  &.active {
+    background-color: rgba(var(--bs-primary-rgb), 0.15);
+    color: var(--bs-primary);
+  }
+}
