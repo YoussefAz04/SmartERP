@@ -65,68 +65,6 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Toast Notifications
-// ══════════════════════════════════════════════════════════════════════════════
-.toast-container {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 9999;
-  pointer-events: none;
-
-  @media (max-width: 480px) { top: 12px; right: 12px; left: 12px; }
-}
-
-.toast-notification {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
-  border-radius: $r;
-  font-size: .84rem;
-  font-weight: 500;
-  box-shadow: $shadow-xl;
-  pointer-events: all;
-  animation: toastIn .32s cubic-bezier(.34,1.56,.64,1);
-  min-width: 290px;
-  max-width: 420px;
-  backdrop-filter: blur(10px);
-
-  @media (max-width: 480px) { min-width: unset; max-width: 100%; }
-
-  .toast-icon    { display: flex; align-items: center; flex-shrink: 0; }
-  .toast-message { flex: 1; line-height: 1.45; }
-
-  .toast-close {
-    display: flex;
-    align-items: center;
-    background: rgba(255,255,255,.2);
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: $r-xs;
-    opacity: .8;
-    flex-shrink: 0;
-    transition: $t-fast;
-    color: #fff;
-    &:hover { opacity: 1; background: rgba(255,255,255,.3); }
-  }
-
-  &.toast-success {
-    background: linear-gradient(135deg, $green-600, $green-700);
-    color: #fff;
-    border: 1px solid rgba($green-500, .4);
-  }
-
-  &.toast-error {
-    background: linear-gradient(135deg, $red-600, #b91c1c);
-    color: #fff;
-    border: 1px solid rgba(#f87171, .4);
-  }
-}
-
-
-// ══════════════════════════════════════════════════════════════════════════════
 // Page Wrapper
 // ══════════════════════════════════════════════════════════════════════════════
 .article-add-wrapper {
@@ -770,11 +708,6 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes toastIn {
-  from { opacity: 0; transform: translateX(32px) scale(.9); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -795,7 +728,7 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 // Reduced Motion
 // ══════════════════════════════════════════════════════════════════════════════
 @media (prefers-reduced-motion: reduce) {
-  .article-add-wrapper, .section-animate, .toast-notification,
+  .article-add-wrapper, .section-animate,
   .section-icon-wrap, .field-input, .field-select,
   .btn-cancel, .btn-submit, .btn-spinner {
     animation: none !important;

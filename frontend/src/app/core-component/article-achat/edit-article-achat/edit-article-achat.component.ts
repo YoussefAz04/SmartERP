@@ -1,16 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ArticleAchatService } from '../../../core/service/article-achat/article-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { Fournisseur } from '../../../model/fournisseur.model';
-
-interface ToastState {
-  visible: boolean;
-  message: string;
-  type: 'success' | 'error';
-}
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-edit-article-achat',
@@ -19,22 +14,19 @@ interface ToastState {
   templateUrl: './edit-article-achat.component.html',
   styleUrl: './edit-article-achat.component.scss'
 })
-export class EditArticleAchatComponent implements OnInit, OnDestroy {
+export class EditArticleAchatComponent implements OnInit {
   articleForm!: FormGroup;
   fournisseurs: Fournisseur[] = [];
   isLoading = false;
   submitted = false;
   articleId!: number;
 
-  toast: ToastState = { visible: false, message: '', type: 'success' };
-  private toastTimer: ReturnType<typeof setTimeout> | null = null;
-  private static readonly TOAST_DURATION_MS = 4000;
-
   constructor(private articleAchatService: ArticleAchatService,
     private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute) {}
+    private route: ActivatedRoute,
+    private notify: NotificationService) {}
 
   ngOnInit(): void {
     this.articleId = Number(this.route.snapshot.paramMap.get('id'));
@@ -44,22 +36,6 @@ export class EditArticleAchatComponent implements OnInit, OnDestroy {
       this.loadArticle();
     }
   }
-
-  ngOnDestroy(): void {
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-  }
-
-  showToast(message: string, type: 'success' | 'error'): void {
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toast = { visible: true, message, type };
-    this.toastTimer = setTimeout(() => this.dismissToast(), EditArticleAchatComponent.TOAST_DURATION_MS);
-  }
-
-  dismissToast(): void {
-    this.toast = { ...this.toast, visible: false };
-    if (this.toastTimer) { clearTimeout(this.toastTimer); this.toastTimer = null; }
-  }
-
   initializeForm(): void {
     this.articleForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
@@ -128,17 +104,17 @@ export class EditArticleAchatComponent implements OnInit, OnDestroy {
       this.articleAchatService.updateArticleAchat(this.articleId, articleData).subscribe({
         next: () => {
           this.isLoading = false;
-          this.showToast('Article mis à jour avec succès !', 'success');
+          this.notify.success('Article mis à jour avec succès !');
           setTimeout(() => this.router.navigate(['/article-achat/listArticleAchat']), 1200);
         },
         error: (err: any) => {
           this.isLoading = false;
           const errorMsg = err.error?.message || err.message || 'Impossible de mettre à jour l\'article';
-          this.showToast('Erreur : ' + errorMsg, 'error');
+          this.notify.error('Erreur : ' + errorMsg);
         }
       });
     } else {
-      this.showToast('Veuillez remplir correctement tous les champs obligatoires.', 'error');
+      this.notify.error('Veuillez remplir correctement tous les champs obligatoires.');
     }
   }
 }
