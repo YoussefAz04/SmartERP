@@ -26,7 +26,7 @@
 
 /* ── Hero ────────────────────────────────────────────── */
 .ent-hero {
-  background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 40%, #7c3aed 80%, #a855f7 100%);
+  background: linear-gradient(135deg, #0f0d2e 0%, #1e1a6e 40%, #5b21b6 80%, #6d1fa8 100%);
   border-radius: 20px; padding: 30px 36px; margin-bottom: 22px;
   overflow: hidden; position: relative;
   box-shadow: 0 8px 32px rgba(67,56,202,.4);
