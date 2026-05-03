@@ -434,7 +434,10 @@ export class AiDashboardComponent implements OnInit {
       tooltip: {
         theme: 'light',
         style: { fontSize: '12px', fontFamily: this.chartFontFamily },
-        y: { formatter: (v: number) => formatCenter(v) },
+        y: {
+          formatter: (v: number) => formatCenter(v),
+          title: { formatter: (seriesName: string) => seriesName ? seriesName + ':' : '' },
+        },
       },
       states: {
         hover: { filter: { type: 'lighten', value: 0.05 } },
