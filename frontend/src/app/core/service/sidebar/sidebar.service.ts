@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import {BehaviorSubject, Observable, of, switchMap} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, take} from 'rxjs/operators';
 import { routes } from '../../core.index';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {ModuleTittle} from "../../../model/moduleTittle.model";
@@ -100,8 +100,10 @@ export class SidebarService {
             currentUser.permission = permissions;
             localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(currentUser)))));
           }
-        } catch {
-          // ignore storage errors
+        } catch (e) {
+          // localStorage may be unavailable in private-browsing contexts; ignore
+          // and proceed with the existing in-memory session state.
+          console.warn('SidebarService: could not update permissions in localStorage', e);
         }
         return true;
       }),
@@ -115,8 +117,11 @@ export class SidebarService {
    * Use this instead of manually chaining getAllModuleTitles + generateSidebarData.
    */
   loadSidebarWithRefresh(): void {
+    // SidebarService is a root-level singleton (lives for the entire app lifetime),
+    // so this one-shot HTTP + module-load subscription does not cause a memory leak.
     this.refreshCurrentUserPermissions().pipe(
-      switchMap(() => this.getAllModuleTitles())
+      switchMap(() => this.getAllModuleTitles()),
+      take(1)
     ).subscribe(modules => {
       this.generateSidebarData(modules);
     });
