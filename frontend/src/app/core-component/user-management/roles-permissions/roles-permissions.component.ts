@@ -107,6 +107,10 @@ export class RolesPermissionsComponent implements OnInit{
     return this.authService.getRoles().includes('SUPER_ADMIN');
   }
 
+  isAdmin(): boolean {
+    return this.authService.getRoles().includes('ADMIN');
+  }
+
 
   public sortData(sort: Sort) {
     const data = this.tableData.slice();
