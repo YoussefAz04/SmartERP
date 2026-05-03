@@ -39,6 +39,11 @@ $ro-400: #34d399;
 $ro-100: #d1fae5;
 $ro-50:  #ecfdf5;
 
+// Warning Rose (for low-markup pill and delete states)
+$warn-700: #be123c;
+$warn-100: #fecdd3;
+$warn-50:  #fff1f2;
+
 // Slate
 $sl-900: #0f172a;
 $sl-800: #1e293b;
@@ -654,12 +659,14 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
     transition: $t;
     animation: rowFadeIn .25s ease both;
 
-    &:hover td {
-      background: rgba($vi-500,.07) !important;
+    &:hover td,
+    &:nth-child(even):hover td {
+      background: rgba($vi-500,.07);
     }
 
-    &.row-selected td {
-      background: rgba($vi-500,.09) !important;
+    &.row-selected td,
+    &.row-selected:nth-child(even) td {
+      background: rgba($vi-500,.09);
       border-bottom-color: $vi-100;
     }
 
@@ -796,9 +803,9 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
     border: 1px solid $am-100;
   }
   &--low {
-    background: #fff1f2;
-    color: #be123c;
-    border: 1px solid #fecdd3;
+    background: $warn-50;
+    color: $warn-700;
+    border: 1px solid $warn-100;
   }
 }
 
