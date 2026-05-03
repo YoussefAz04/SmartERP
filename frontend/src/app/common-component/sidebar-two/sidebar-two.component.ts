@@ -1,18 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import { SidebarService } from 'src/app/core/core.index';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar-two',
   templateUrl: './sidebar-two.component.html',
   styleUrls: ['./sidebar-two.component.scss'],
 })
-export class SidebarTwoComponent {
+export class SidebarTwoComponent implements OnInit, OnDestroy {
   opendSubMenu: Array<string> = [];
   public activePath = '';
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public sidebarData: Array<any> = [];
+
+  private dataSub?: Subscription;
 
   constructor(private sidebar: SidebarService, private router: Router) {
     this.activePath = this.router.url.split('/')[1];
@@ -21,12 +24,46 @@ export class SidebarTwoComponent {
         this.activePath = data.url.split('/')[1];
       }
     });
-    this.sidebarData = this.sidebar.sidebarData2;
     if (localStorage.getItem('showMenu')) {
       this.opendSubMenu[0] = localStorage.getItem('showMenu') || '';
-    } else {
-      this.opendSubMenu[0] = this.sidebarData[0].tittle;
     }
+  }
+
+  ngOnInit(): void {
+    this.dataSub = this.sidebar.sidebarData$.subscribe(data => {
+      this.sidebarData = this.transformSidebarData(data);
+      if (this.sidebarData.length > 0 && !this.opendSubMenu[0]) {
+        this.opendSubMenu[0] = this.sidebarData[0].tittle;
+      }
+    });
+    this.sidebar.getAllModuleTitles().subscribe(modules => {
+      this.sidebar.generateSidebarData(modules);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.dataSub?.unsubscribe();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private transformSidebarData(data: any[]): any[] {
+    return data.map(section => ({
+      tittle: section.tittle,
+      featherIcon: this.sidebar.getSectionFeatherIcon(section.tittle),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subRoutes: (section.menu || []).map((item: any) => ({
+        tittle: item.menuValue,
+        hasSubRoute: item.hasSubRoute,
+        showSubRoute: item.showSubRoute,
+        route: item.route,
+        activeRoute: item.base1,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        subRoutes: (item.subMenus || []).map((sub: any) => ({
+          tittle: sub.menuValue,
+          route: sub.route,
+        }))
+      }))
+    }));
   }
 
   showMenu(val: string): void {
