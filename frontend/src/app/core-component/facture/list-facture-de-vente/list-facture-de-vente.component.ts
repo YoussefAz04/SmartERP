@@ -404,13 +404,6 @@ export class ListFactureDeVenteComponent implements OnInit{
     });
   }
 
-  sendEmailFactureVente(facture: FactureVente) {
-    if (!facture.id) return;
-    this.factureService.getFactureById(facture.id).subscribe(fullFacture => {
-      this.factureService.sendEmailFactureVente(fullFacture);
-    });
-  }
-
   addFacture() {
     this.router.navigate(['facture/ajouterFactureDeVente']);
   }
