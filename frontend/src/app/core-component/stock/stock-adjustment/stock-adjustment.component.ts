@@ -9,6 +9,7 @@ import { SidebarService } from 'src/app/core/service/sidebar/sidebar.service';
 import { stockadjustment } from 'src/app/shared/model/page.model';
 import { PaginationService, pageSelection, tablePageSize } from 'src/app/shared/shared.index';
 import Swal from 'sweetalert2';
+import { NotificationService } from 'src/app/shared/notification/notification.service';
 interface data {
   value: string;
 }
@@ -36,7 +37,8 @@ export class StockAdjustmentComponent {
     private data: DataService,
     private pagination: PaginationService,
     private router: Router,
-    private sidebar: SidebarService
+    private sidebar: SidebarService,
+    private notify: NotificationService
   ) {
     this.data.getDataTable().subscribe((apiRes: apiResultFormat) => {
       this.totalData = apiRes.totalData;
@@ -118,19 +120,9 @@ export class StockAdjustmentComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        swalWithBootstrapButtons.fire(
-          'Deleted!',
-          'Your file has been deleted.',
-          'success'
-        )
-      } else if (
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        swalWithBootstrapButtons.fire(
-          'Cancelled',
-          'Your imaginary file is safe :)',
-          'error'
-        )
+        this.notify.success('Your file has been deleted.');
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        this.notify.error('Your imaginary file is safe :)');
       }
     })
   }

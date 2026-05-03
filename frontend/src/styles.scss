@@ -2654,84 +2654,153 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
 
 /* =========================================================================
    Modern notification styling (NotificationService toasts & confirm dialog)
+   Pill-shaped gradient toast — single unified style across the ERP.
    ========================================================================= */
 .smart-toast.swal2-popup.swal2-toast {
-  display: grid !important;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 10px 14px;
-  padding: 14px 18px;
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
   margin: 12px;
-  min-width: 320px;
-  max-width: 420px;
-  border-radius: 14px;
-  background: #ffffff;
-  color: #1f2937;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  min-width: 290px;
+  max-width: 460px;
+  border-radius: 999px;
+  color: #ffffff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   overflow: hidden;
   position: relative;
   font-family: inherit;
+  backdrop-filter: blur(10px);
 }
 
+/* Remove the old left side-stripe accent */
 .smart-toast.swal2-popup.swal2-toast::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  background: #6366f1;
+  content: none;
 }
 
-.smart-toast.swal2-popup.swal2-toast.swal2-icon-success::before { background: #10b981; }
-.smart-toast.swal2-popup.swal2-toast.swal2-icon-error::before   { background: #ef4444; }
-.smart-toast.swal2-popup.swal2-toast.swal2-icon-warning::before { background: #f59e0b; }
-.smart-toast.swal2-popup.swal2-toast.swal2-icon-info::before    { background: #3b82f6; }
-.smart-toast.swal2-popup.swal2-toast.swal2-icon-question::before{ background: #8b5cf6; }
+/* Per-type gradient backgrounds */
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-success {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-error {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  border-color: rgba(248, 113, 113, 0.35);
+}
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+  border-color: rgba(252, 211, 77, 0.35);
+}
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-info {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-color: rgba(147, 197, 253, 0.35);
+}
+.smart-toast.swal2-popup.swal2-toast.swal2-icon-question {
+  background: linear-gradient(135deg, #8b5cf6 0%, #5b21b6 100%);
+  border-color: rgba(196, 181, 253, 0.35);
+}
 
+/* Icon: white outline circle with white symbol */
 .smart-toast.swal2-popup.swal2-toast .swal2-icon {
-  grid-row: 1 / span 2;
-  margin: 2px 0 0 0;
-  width: 32px;
-  height: 32px;
+  margin: 0;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
   border-width: 2px;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  flex-shrink: 0;
 }
 
-.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content,
-.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-success-ring,
-.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-success-line-tip,
-.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-success-line-long,
-.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-x-mark-line-left,
-.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-x-mark-line-right {
-  font-size: 1.1em;
+.smart-toast.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content {
+  color: #ffffff !important;
+  font-size: 1em;
 }
 
+/* Success check lines */
+.smart-toast.swal2-popup.swal2-toast .swal2-success-ring {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+.smart-toast.swal2-popup.swal2-toast .swal2-success-line-tip,
+.smart-toast.swal2-popup.swal2-toast .swal2-success-line-long {
+  background-color: #ffffff !important;
+}
+.smart-toast.swal2-popup.swal2-toast .swal2-success-fix,
+.smart-toast.swal2-popup.swal2-toast .swal2-success-circular-line-left,
+.smart-toast.swal2-popup.swal2-toast .swal2-success-circular-line-right {
+  background-color: transparent !important;
+}
+
+/* Error X-mark lines */
+.smart-toast.swal2-popup.swal2-toast .swal2-x-mark-line-left,
+.smart-toast.swal2-popup.swal2-toast .swal2-x-mark-line-right {
+  background-color: #ffffff !important;
+}
+
+/* Title / body — same line, white text */
 .smart-toast .smart-toast-title {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: #111827;
-  line-height: 1.25;
+  color: #ffffff !important;
+  line-height: 1.3;
   text-align: left;
 }
 
 .smart-toast .smart-toast-body {
   margin: 0;
   padding: 0;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
+  font-weight: 500;
   line-height: 1.4;
-  color: #4b5563;
+  color: #ffffff !important;
   text-align: left;
   white-space: pre-line;
   word-break: break-word;
+  flex: 1;
 }
 
-.smart-toast .smart-toast-progress {
-  background: rgba(99, 102, 241, 0.6);
+/* When title is empty, hide the empty heading element so the body sits flush */
+.smart-toast .smart-toast-title:empty {
+  display: none;
 }
-.smart-toast.swal2-icon-success .smart-toast-progress { background: rgba(16, 185, 129, 0.65); }
-.smart-toast.swal2-icon-error   .smart-toast-progress { background: rgba(239, 68, 68, 0.65); }
-.smart-toast.swal2-icon-warning .smart-toast-progress { background: rgba(245, 158, 11, 0.7); }
-.smart-toast.swal2-icon-info    .smart-toast-progress { background: rgba(59, 130, 246, 0.65); }
+
+/* Close button — translucent white pill */
+.smart-toast .swal2-close,
+.smart-toast.swal2-popup.swal2-toast .swal2-close {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  margin: 0 0 0 4px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.85;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  flex-shrink: 0;
+}
+.smart-toast .swal2-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 1;
+  color: #ffffff !important;
+}
+
+/* Progress bar — translucent white */
+.smart-toast .smart-toast-progress,
+.smart-toast.swal2-icon-success .smart-toast-progress,
+.smart-toast.swal2-icon-error   .smart-toast-progress,
+.smart-toast.swal2-icon-warning .smart-toast-progress,
+.smart-toast.swal2-icon-info    .smart-toast-progress {
+  background: rgba(255, 255, 255, 0.5);
+}
 
 /* Confirm dialog */
 .smart-dialog.swal2-popup {
@@ -2788,15 +2857,13 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
   background: #e5e7eb;
 }
 
-/* Dark mode support */
+/* Dark mode support — gradients already work on dark backgrounds; keep title/body white */
 .dark .smart-toast.swal2-popup.swal2-toast {
-  background: #1f2937;
-  color: #f3f4f6;
-  border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.35);
 }
-.dark .smart-toast .smart-toast-title { color: #f9fafb; }
-.dark .smart-toast .smart-toast-body  { color: #d1d5db; }
+.dark .smart-toast .smart-toast-title { color: #ffffff !important; }
+.dark .smart-toast .smart-toast-body  { color: #ffffff !important; }
 
 .dark .smart-dialog.swal2-popup {
   background: #111827;

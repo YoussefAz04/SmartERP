@@ -17,6 +17,7 @@ import {UserService} from "../../../auth/service/user/user.service";
 import {UserDTO} from "../../../model/userDTO.model";
 import {forkJoin} from "rxjs";
 import {AuthService} from "../../../auth/service/auth.service";
+import {NotificationService} from "../../../shared/notification/notification.service";
 interface data {
   value: string;
 }
@@ -97,7 +98,8 @@ export class RolesPermissionsComponent implements OnInit{
     private fb: FormBuilder,
     private roleService : RoleService,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notify: NotificationService
   ) {
   }
 
@@ -245,7 +247,7 @@ export class RolesPermissionsComponent implements OnInit{
     const allRequests = [...addRequests, ...removeRequests];
 
     if (allRequests.length === 0) {
-      Swal.fire('No changes', 'No changes were made.', 'info');
+      this.notify.info('No changes were made.');
       this.closeManageUsersModal();
       return;
     }
@@ -253,10 +255,10 @@ export class RolesPermissionsComponent implements OnInit{
     forkJoin(allRequests).subscribe({
       next: () => {
         this.closeManageUsersModal();
-        Swal.fire('Success', 'User assignments updated successfully.', 'success');
+        this.notify.success('User assignments updated successfully.');
       },
       error: () => {
-        Swal.fire('Error', 'An error occurred while updating user assignments.', 'error');
+        this.notify.error('An error occurred while updating user assignments.');
       }
     });
   }

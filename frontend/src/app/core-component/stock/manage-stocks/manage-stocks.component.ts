@@ -12,6 +12,7 @@ import {
 import { manageStocks } from 'src/app/shared/model/page.model';
 import { PaginationService, tablePageSize } from 'src/app/shared/shared.index';
 import Swal from 'sweetalert2';
+import { NotificationService } from 'src/app/shared/notification/notification.service';
 interface data {
   value: string;
 }
@@ -47,7 +48,8 @@ export class ManageStocksComponent {
     private data: DataService,
     private pagination: PaginationService,
     private router: Router,
-    private sidebar: SidebarService
+    private sidebar: SidebarService,
+    private notify: NotificationService
   ) {
     this.data.getDataTable().subscribe((apiRes: apiResultFormat) => {
       this.totalData = apiRes.totalData;
@@ -131,17 +133,9 @@ export class ManageStocksComponent {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          swalWithBootstrapButtons.fire(
-            'Deleted!',
-            'Your file has been deleted.',
-            'success'
-          );
+          this.notify.success('Your file has been deleted.');
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalWithBootstrapButtons.fire(
-            'Cancelled',
-            'Your imaginary file is safe :)',
-            'error'
-          );
+          this.notify.error('Your imaginary file is safe :)');
         }
       });
   }

@@ -6,6 +6,7 @@ import { StockService } from '../../../core/service/stock/stock.service';
 import { Stock } from '../../../model/stock.model';
 import { ResponseDto } from '../../../model/reponseDto.model';
 import Swal from 'sweetalert2';
+import { NotificationService } from '../../../shared/notification/notification.service';
 
 @Component({
   selector: 'app-list-stock',
@@ -49,7 +50,8 @@ export class ListStockComponent implements OnInit {
 
   constructor(
     private stockService: StockService,
-    private router: Router
+    private router: Router,
+    private notify: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -163,9 +165,9 @@ export class ListStockComponent implements OnInit {
           next: () => {
             this.stocks = this.stocks.filter(s => s.id !== id);
             this.applyFilters();
-            Swal.fire('Supprimé!', 'Le stock a été supprimé.', 'success');
+            this.notify.success('Le stock a été supprimé.');
           },
-          error: () => Swal.fire('Erreur', 'Impossible de supprimer le stock.', 'error')
+          error: () => this.notify.error('Impossible de supprimer le stock.')
         });
       }
     });
