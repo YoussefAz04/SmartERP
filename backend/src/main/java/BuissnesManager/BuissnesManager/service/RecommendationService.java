@@ -340,7 +340,7 @@ public class RecommendationService {
                     "CONCENTRATION_CLIENT",
                     "Risque de Concentration Client",
                     String.format(Locale.FRANCE,
-                        "Les 3 principaux clients concentrent %.1f %% du chiffre d'affaires (premier client « %s » : %.1f %). %s",
+                        "Les 3 principaux clients concentrent %.1f %% du chiffre d'affaires (premier client « %s » : %.1f %%). %s",
                         concentration, topCustomerName, topShare,
                         pick(v,
                             "Diversifiez le portefeuille client pour réduire l'exposition au risque de churn.",
