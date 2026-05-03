@@ -203,6 +203,20 @@ export class AiDashboardComponent implements OnInit {
     }
   }
 
+  /**
+   * Convert raw recommendation type codes (e.g. "ML_RISQUE_STOCK",
+   * "STOCK_CRITIQUE", "FOURNISSEUR_PERFORMANT") into clean, human-readable
+   * labels for display in the recommendation card footer.
+   */
+  formatRecType(type: string | null | undefined): string {
+    if (!type) { return ''; }
+    return type
+      .toString()
+      .replace(/[_\-]+/g, ' ')
+      .toLowerCase()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
   getRecommendationsByPriority(priority: string): Recommendation[] {
     return (this.dashboard?.recommendations || []).filter((r) => r.priority === priority);
   }
