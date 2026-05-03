@@ -25,7 +25,7 @@
         <span class="btn-icon"><i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i></span>
         <span>Actualiser</span>
       </button>
-      <button class="btn-header-action btn-add" (click)="addCommande()">
+      <button *ngIf="canCreate" class="btn-header-action btn-add" (click)="addCommande()">
         <span class="btn-icon"><i class="feather icon-plus"></i></span>
         <span>Nouvelle Commande</span>
       </button>
@@ -179,7 +179,7 @@
           <td class="actions-cell">
             <div class="action-buttons-row">
               <!-- Validate button - Show if BROUILLON or EN_ATTENTE -->
-              <button *ngIf="canEditOrValidate(commande.statut)"
+              <button *ngIf="canUpdate && canEditOrValidate(commande.statut)"
                       class="btn-action validate"
                       (click)="validerCommande(commande.id!)"
                       title="Confirmer et générer facture">
@@ -187,7 +187,7 @@
               </button>
 
               <!-- Edit button - Show if not confirmed/delivered/cancelled -->
-              <button *ngIf="canEditOrValidate(commande.statut)"
+              <button *ngIf="canUpdate && canEditOrValidate(commande.statut)"
                       class="btn-action edit"
                       (click)="editCommande(commande.id!)"
                       title="Modifier">
@@ -195,7 +195,7 @@
               </button>
 
               <!-- Deliver button - Show if CONFIRMEE -->
-              <button *ngIf="canDeliver(commande.statut)"
+              <button *ngIf="canUpdate && canDeliver(commande.statut)"
                       class="btn-action deliver"
                       (click)="livrerCommande(commande.id!)"
                       title="Livrer la commande (met à jour le stock)">
@@ -211,7 +211,7 @@
               </button>
 
               <!-- Cancel button -->
-              <button *ngIf="canCancel(commande.statut)"
+              <button *ngIf="canUpdate && canCancel(commande.statut)"
                       class="btn-action cancel"
                       (click)="annulerCommande(commande.id!)"
                       title="Annuler la commande">
@@ -219,7 +219,8 @@
               </button>
 
               <!-- Delete button -->
-              <button class="btn-action delete"
+              <button *ngIf="canDelete"
+                      class="btn-action delete"
                       (click)="deleteCommande(commande.id!)"
                       title="Supprimer">
                 <i class="feather icon-trash-2"></i>

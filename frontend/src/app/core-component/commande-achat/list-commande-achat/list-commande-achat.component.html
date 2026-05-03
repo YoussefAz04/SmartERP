@@ -25,7 +25,7 @@
         <span class="btn-icon"><i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i></span>
         <span>Actualiser</span>
       </button>
-      <button class="btn-header-action btn-add" (click)="addCommande()">
+      <button *ngIf="canCreate" class="btn-header-action btn-add" (click)="addCommande()">
         <span class="btn-icon"><i class="feather icon-plus"></i></span>
         <span>Nouvelle Commande</span>
       </button>
@@ -179,7 +179,7 @@
           <td class="actions-cell">
             <div class="action-buttons-row">
               <!-- Validate button - Show if EN_ATTENTE (not yet confirmed) -->
-              <button *ngIf="commande.statut === 'EN_ATTENTE'"
+              <button *ngIf="canUpdate && commande.statut === 'EN_ATTENTE'"
                       class="btn-action validate"
                       (click)="validerCommande(commande.id!)"
                       title="Confirmer et générer facture">
@@ -187,7 +187,7 @@
               </button>
 
               <!-- Receive button - Show if CONFIRMEE (confirmed but not yet received) -->
-              <button *ngIf="commande.statut === 'CONFIRMEE'"
+              <button *ngIf="canUpdate && commande.statut === 'CONFIRMEE'"
                       class="btn-action receive"
                       (click)="recevoirCommande(commande.id!)"
                       title="Marquer comme reçue (met à jour le stock)">
@@ -203,7 +203,7 @@
               </button>
 
               <!-- Edit button - Show if not in final state -->
-              <button *ngIf="commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE' && commande.statut !== 'CONFIRMEE'"
+              <button *ngIf="canUpdate && commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE' && commande.statut !== 'CONFIRMEE'"
                       class="btn-action edit"
                       (click)="editCommande(commande.id!)"
                       title="Modifier">
@@ -211,15 +211,16 @@
               </button>
 
               <!-- Cancel button - Show if not already cancelled or in final state -->
-              <button *ngIf="commande.statut !== 'ANNULEE' && commande.statut !== 'RECUE'"
+              <button *ngIf="canUpdate && commande.statut !== 'ANNULEE' && commande.statut !== 'RECUE'"
                       class="btn-action cancel"
                       (click)="annulerCommande(commande.id!)"
                       title="Annuler la commande">
                 <i class="feather icon-x-circle"></i>
               </button>
 
-              <!-- Delete button - Always show -->
-              <button class="btn-action delete"
+              <!-- Delete button - Show if canDelete -->
+              <button *ngIf="canDelete"
+                      class="btn-action delete"
                       (click)="deleteCommande(commande.id!)"
                       title="Supprimer">
                 <i class="feather icon-trash-2"></i>
