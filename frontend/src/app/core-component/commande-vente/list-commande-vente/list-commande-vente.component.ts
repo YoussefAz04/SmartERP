@@ -92,9 +92,24 @@ export class ListCommandeVenteComponent implements OnInit {
     this.notification.confirm('Marquer cette commande comme livrée ? Le stock sera automatiquement décrémenté.').then(ok => { if (!ok) return;
     this.isLoading = true;
     this.commandeVenteService.livrerCommande(id).subscribe({
-      next: (bon) => {
+      next: (response) => {
         this.loadCommandes();
-        this.notification.success('✅ Commande livrée ! Bon de livraison créé : ' + bon.reference + '. Le stock a été mis à jour.');
+        // Backend now returns { bonLivraison, stockAlerts } (LivraisonResponseDto).
+        // Fall back to the legacy shape (bare BonLivraison) just in case.
+        const bon = response?.bonLivraison ?? response;
+        const alerts: { type?: string; message?: string; articleName?: string }[] =
+          response?.stockAlerts ?? [];
+        this.notification.success('✅ Commande livrée ! Bon de livraison créé : ' + bon?.reference + '. Le stock a été mis à jour.');
+
+        // Immediately warn the user when an article fell to rupture or below
+        // its seuilMinimum after this sale — a red toast per affected article.
+        for (const alert of alerts) {
+          const msg = alert?.message
+            || (alert?.type === 'RUPTURE'
+                ? `RUPTURE DE STOCK : '${alert?.articleName ?? ''}' est épuisé !`
+                : `STOCK FAIBLE : '${alert?.articleName ?? ''}' en dessous du seuil.`);
+          this.notification.error(msg);
+        }
       },
       error: (err) => {
         this.isLoading = false;

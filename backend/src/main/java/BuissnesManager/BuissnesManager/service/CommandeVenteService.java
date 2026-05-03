@@ -2,6 +2,8 @@ package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeVenteDto;
+import BuissnesManager.BuissnesManager.dto.LivraisonResponseDto;
+import BuissnesManager.BuissnesManager.dto.StockAlertDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
@@ -515,7 +517,7 @@ public class CommandeVenteService {
         @CacheEvict(cacheNames = "salesForecast",       allEntries = true)
     })
     @Transactional
-    public BonLivraison livrerCommande(Long id) {
+    public LivraisonResponseDto livrerCommande(Long id) {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
@@ -541,7 +543,8 @@ public class CommandeVenteService {
         BonLivraison savedBon = bonLivraisonRepository.save(bon);
 
         // ✅ Move stock from reserved → sold at the actual physical delivery
-        stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
+        List<StockAlertDto> stockAlerts =
+                stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
 
         if (commande.getEntreprise() != null) {
             notificationService.createCommandeVenteNotification(
@@ -550,9 +553,9 @@ public class CommandeVenteService {
                     commande.getEntreprise());
         }
 
-        logger.info("✅ Commande {} delivered, BonLivraison {} created and stock decremented",
-                id, savedBon.getId());
-        return savedBon;
+        logger.info("✅ Commande {} delivered, BonLivraison {} created and stock decremented ({} stock alert(s))",
+                id, savedBon.getId(), stockAlerts.size());
+        return new LivraisonResponseDto(savedBon, stockAlerts);
     }
 
     public BigDecimal calculateTotal(Long commandeId) {

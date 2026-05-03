@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.StockAlertDto;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.*;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -85,9 +87,14 @@ public class StockAutomationService {
     /**
      * Decrements stock for all articles in a sales order (CommandeVente).
      * Called when the order is marked as delivered (LIVREE).
+     *
+     * @return the list of stock alerts (rupture / faible stock) raised while
+     *         decrementing — used by the controller to inform the frontend
+     *         immediately after the sale.
      */
     @Transactional
-    public void decrementStockFromDelivery(Long commandeVenteId, String referenceCommande) {
+    public List<StockAlertDto> decrementStockFromDelivery(Long commandeVenteId, String referenceCommande) {
+        List<StockAlertDto> alerts = new ArrayList<>();
         List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
         User currentUser = enterpriseSecurityUtil.getCurrentUser().orElse(null);
 
@@ -154,8 +161,37 @@ public class StockAutomationService {
                 notificationService.createLowStockNotification(stock, article, article.getEntreprise(), stock.getQuantiteDisponible());
             }
 
+            // Collect a transient alert for the controller response so the
+            // frontend can show an immediate red toast when stock falls to
+            // 0 (rupture) or below the configured seuilMinimum.
+            BigDecimal remaining = stock.getQuantiteDisponible() != null
+                    ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
+            String articleName = article.getNom() != null ? article.getNom() : ("Article #" + article.getId());
+            if (remaining.compareTo(BigDecimal.ZERO) <= 0) {
+                alerts.add(new StockAlertDto(
+                        "RUPTURE",
+                        article.getId(),
+                        articleName,
+                        remaining,
+                        stock.getSeuilMinimum(),
+                        String.format("RUPTURE DE STOCK : '%s' est épuisé !", articleName)));
+            } else if (stock.getSeuilMinimum() != null
+                    && remaining.compareTo(stock.getSeuilMinimum()) < 0) {
+                alerts.add(new StockAlertDto(
+                        "FAIBLE_STOCK",
+                        article.getId(),
+                        articleName,
+                        remaining,
+                        stock.getSeuilMinimum(),
+                        String.format("STOCK FAIBLE : '%s' en dessous du seuil (reste : %s, seuil : %s).",
+                                articleName,
+                                remaining.stripTrailingZeros().toPlainString(),
+                                stock.getSeuilMinimum().stripTrailingZeros().toPlainString())));
+            }
+
             logger.info("✅ Stock decremented for article {} by {}", article.getId(), quantite);
         }
+        return alerts;
     }
 
     /**
