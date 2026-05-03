@@ -1,0 +1,61 @@
+<div class="page-wrapper">
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <h4>Notifications</h4>
+        <h6>Liste de toutes vos notifications</h6>
+      </div>
+      <div class="page-btn" *ngIf="unreadCount > 0">
+        <button class="btn btn-added" (click)="markAllRead()">
+          <i class="feather icon-check-circle me-2"></i>
+          Tout marquer comme lu
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+        </div>
+
+        <div *ngIf="!isLoading && notifications.length === 0" class="text-center py-5">
+          <i class="feather icon-bell-off text-muted" style="font-size: 3rem;"></i>
+          <p class="mt-3 text-muted">Aucune notification pour le moment.</p>
+        </div>
+
+        <div *ngIf="!isLoading && notifications.length > 0">
+          <div *ngFor="let notif of notifications"
+               class="notification-item d-flex align-items-start p-3 border-bottom"
+               [class.unread]="notif.statut === 'NOUVEAU'">
+            <div class="notification-icon me-3">
+              <span class="icon-circle" [class.active]="notif.statut === 'NOUVEAU'">
+                <i class="feather icon-bell"></i>
+              </span>
+            </div>
+            <div class="notification-content flex-grow-1">
+              <p class="mb-1 notification-message" [class.fw-semibold]="notif.statut === 'NOUVEAU'">
+                {{ notif.message }}
+              </p>
+              <span class="text-muted small">{{ formatDate(notif.createdAt) }}</span>
+            </div>
+            <div class="notification-actions ms-2" *ngIf="notif.statut === 'NOUVEAU'">
+              <button class="btn btn-sm btn-outline-primary"
+                      (click)="markRead(notif.id)"
+                      title="Marquer comme lu">
+                <i class="feather icon-check"></i>
+              </button>
+            </div>
+            <div class="ms-2" *ngIf="notif.statut !== 'NOUVEAU'">
+              <span class="badge bg-secondary">Lu</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

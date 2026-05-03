@@ -110,7 +110,7 @@ export class routes {
     return this.core + '/profile';
   }
   public static get activities(): string {
-    return this.pages + '/activities';
+    return this.core + '/notifications';
   }
   // core pages routes *ends*
 
