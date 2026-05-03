@@ -606,36 +606,37 @@ $t-b: all .22s cubic-bezier(.4,0,.2,1);
   border-collapse: collapse;
   font-size: 13.5px;
 
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
   thead tr {
-    background: linear-gradient(to right, #1e293b 0%, #273549 100%);
+    background: $sl-100;
   }
 
   th {
-    padding: 13px 16px;
-    font-size: 10px;
+    padding: 12px 16px;
+    font-size: 10.5px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: .08em;
-    color: rgba(255,255,255,.65);
-    border-bottom: 2px solid rgba(255,255,255,.06);
-    border-right: 1px solid rgba(255,255,255,.06);
+    letter-spacing: .07em;
+    color: $sl-600;
+    border-bottom: 2px solid $sl-200;
     white-space: nowrap;
-    position: relative;
 
-    &:last-child { border-right: none; }
+    &:not(:last-child) { border-right: 1px solid $sl-200; }
 
     &.sortable {
       cursor: pointer;
       user-select: none;
       transition: $t;
-      &:hover {
-        color: #fff;
-        background: rgba($vi-500,.18);
-      }
+      &:hover { color: $vi-600; background: $vi-50; }
       .sort-icon { font-size: 11px; margin-left: 4px; opacity: .55; }
     }
 
-    &.th-check  { width: 44px; text-align: center; border-right: 1px solid rgba(255,255,255,.06); }
+    &.th-check  { width: 44px; text-align: center; }
     &.th-center { text-align: center; }
   }
 
