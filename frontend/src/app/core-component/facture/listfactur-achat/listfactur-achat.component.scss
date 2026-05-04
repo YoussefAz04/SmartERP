@@ -621,22 +621,12 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
       }
 
       &.reference-cell {
-        .badge-ref {
-          background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+        .ref-text {
+          font-family: 'SFMono-Regular', Consolas, monospace;
+          font-size: 0.82rem;
+          font-weight: 600;
           color: $primary-dark;
-          padding: 0.3rem 0.75rem;
-          border-radius: 8px;
-          font-weight: 700;
-          font-size: 0.8rem;
           white-space: nowrap;
-          display: inline-block;
-          border: 1px solid rgba($primary, 0.18);
-          transition: all 0.2s ease;
-
-          &:hover {
-            background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
-            transform: scale(1.04);
-          }
         }
       }
 
@@ -676,13 +666,9 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
 
       &.payment-cell {
         .payment-badge {
-          background: #f5f3ff;
-          color: $primary-dark;
-          padding: 0.28rem 0.65rem;
-          border-radius: 6px;
-          font-size: 0.78rem;
-          font-weight: 600;
-          border: 1px solid #e0e7ff;
+          color: $text-dark;
+          font-size: 0.85rem;
+          font-weight: 500;
           white-space: nowrap;
         }
       }
@@ -691,27 +677,19 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
         .commande-link {
           display: inline-flex;
           align-items: center;
-          gap: 0.35rem;
-          background: linear-gradient(135deg, #ede9fe, #ddd6fe);
-          padding: 0.28rem 0.65rem;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 0.78rem;
+          gap: 0.3rem;
+          font-size: 0.85rem;
+          font-weight: 500;
           color: $accent-dark;
           text-decoration: none;
-          transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-          border: 1px solid rgba($accent, 0.18);
-          white-space: nowrap;
+          transition: color 0.2s;
 
           &:hover {
-            background: linear-gradient(135deg, $accent, #9333ea);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba($accent, 0.35);
-            border-color: transparent;
+            color: $accent;
+            text-decoration: underline;
           }
 
-          i { font-size: 0.72rem; }
+          i { font-size: 0.78rem; opacity: 0.7; }
         }
         .no-commande {
           color: $text-light;
@@ -731,16 +709,14 @@ $card-shadow-hover: 0 8px 30px rgba(79, 70, 229, 0.2), 0 2px 8px rgba(0, 0, 0, 0
         }
 
         .status-badge {
-          padding: 0.35rem 0.8rem;
+          padding: 0.3rem 0.75rem;
           border-radius: 20px;
-          font-weight: 700;
-          font-size: 0.72rem;
+          font-weight: 600;
+          font-size: 0.78rem;
           display: inline-flex;
           align-items: center;
           gap: 0.3rem;
           white-space: nowrap;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
           cursor: pointer;
           transition: all 0.25s ease;
 

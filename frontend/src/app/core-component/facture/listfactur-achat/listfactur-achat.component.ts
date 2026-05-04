@@ -112,6 +112,28 @@ export class ListfacturAchatComponent implements OnInit{
     return 'status-' + statut.toLowerCase().replace(' ', '-');
   }
 
+  formatModePaiement(mode: string | undefined): string {
+    const labels: Record<string, string> = {
+      'VIREMENT': 'Virement',
+      'CHEQUE': 'Chèque',
+      'ESPECES': 'Espèces',
+      'CARTE_BANCAIRE': 'Carte bancaire',
+      'TRAITE': 'Traite',
+      'A_DEFINIR': 'À définir'
+    };
+    return mode ? (labels[mode] ?? mode) : '—';
+  }
+
+  formatStatut(statut: string | undefined): string {
+    const labels: Record<string, string> = {
+      'PAYEE': 'Payée',
+      'PARTIELLEMENT_PAYEE': 'Partiellement payée',
+      'EN_ATTENTE': 'En attente',
+      'ANNULEE': 'Annulée'
+    };
+    return statut ? (labels[statut] ?? statut) : '—';
+  }
+
   toggleSelectAll(checked: boolean) {
     this.selectAll = checked;
     if (checked) {
