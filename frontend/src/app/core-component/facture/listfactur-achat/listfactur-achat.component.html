@@ -176,7 +176,7 @@
             {{ facture.dateAchat }}
           </td>
           <td class="reference-cell">
-            <span class="badge-ref">{{ facture.referance }}</span>
+            <span class="ref-text">{{ facture.referance }}</span>
           </td>
           <td class="client-cell">
             <span *ngIf="facture.fournisseur?.nom" class="client-name">
@@ -195,7 +195,7 @@
                   (click)="changeModePaiement(facture)"
                   style="cursor: pointer;"
                   title="Cliquer pour changer le mode de paiement">
-              {{ facture.modePaiement }}
+              {{ formatModePaiement(facture.modePaiement) }}
               <i class="feather icon-edit-2" style="font-size: 10px; margin-left: 4px;"></i>
             </span>
           </td>
@@ -204,7 +204,7 @@
                   (click)="changeStatus(facture)"
                   style="cursor: pointer;"
                   title="Cliquer pour changer le statut">
-              {{ facture.statut }}
+              {{ formatStatut(facture.statut) }}
               <i class="feather icon-edit-2" style="font-size: 10px; margin-left: 4px;"></i>
             </span>
           </td>
