@@ -88,11 +88,14 @@
                 <span>{{ group.label }}</span>
                 <span class="group-count">{{ group.results.length }}</span>
               </div>
-              <ul class="results-list" (mousedown)="$event.preventDefault()">
+              <ul class="results-list">
                 <li *ngFor="let result of group.results"
                   class="result-item"
                   [class.result-item--active]="getFlatIndex(result) === selectedIndex">
-                  <a (click)="navigateToResult(result)" tabindex="-1">
+                  <a [routerLink]="getResultRoute(result)"
+                     (click)="clearSearch()"
+                     (mousedown)="$event.preventDefault()"
+                     tabindex="-1">
                     <span class="result-type-icon" [ngClass]="'type-icon-' + result.type.toLowerCase()">
                       <i class="feather {{ group.icon }}"></i>
                     </span>
