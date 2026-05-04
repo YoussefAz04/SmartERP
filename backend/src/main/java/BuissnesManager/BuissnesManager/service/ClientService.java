@@ -106,12 +106,25 @@ public class ClientService {
 
     // ✅ UPDATE CLIENT
     @Transactional
-    public Client updateClient(Client client) {
+    public Client updateClient(Client client, Long idCategorie) {
         Long id = client.getId();
-        if (!clientRepo.existsById(id)) {
-            throw new RuntimeException("Client not found with id: " + id);
+        Client existing = clientRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
+
+        existing.setNom(client.getNom());
+        existing.setPrenom(client.getPrenom());
+        existing.setEmail(client.getEmail());
+        existing.setTelephone(client.getTelephone());
+        existing.setAdresse(client.getAdresse());
+        existing.setSecteurActivite(client.getSecteurActivite());
+
+        if (idCategorie != null) {
+            CategorieClient categorie = categorieClientRepo.findById(idCategorie)
+                .orElseThrow(() -> new RuntimeException("Categorie not found with id: " + idCategorie));
+            existing.setCategorieClient(categorie);
         }
-        return clientRepo.save(client);
+
+        return clientRepo.save(existing);
     }
 
     // ✅ ADD CATEGORY CLIENT

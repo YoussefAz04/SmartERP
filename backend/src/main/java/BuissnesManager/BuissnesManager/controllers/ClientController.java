@@ -97,10 +97,11 @@ public class ClientController {
     // ✅ UPDATE CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/updateClient/{id}")
-    public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client client) {
+    public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client client,
+            @RequestParam(required = false) Long idCategorie) {
         try {
             client.setId(id);
-            Client updatedClient = clientService.updateClient(client);
+            Client updatedClient = clientService.updateClient(client, idCategorie);
             return ResponseEntity.ok(updatedClient);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
