@@ -164,7 +164,9 @@ public class EntrepriseService {
             userRepo.deleteAll(users);
         }
 
-        // 15. Roles (references entreprise)
+        // 15. Roles – first remove any user_roles entries pointing to enterprise roles
+        // (covers edge cases where non-enterprise users were assigned enterprise roles)
+        roleRepo.deleteUserRolesByEntrepriseId(id);
         roleRepo.deleteByEntrepriseId(id);
 
         // 16. Remaining master data

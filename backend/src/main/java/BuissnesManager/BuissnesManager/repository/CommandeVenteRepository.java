@@ -99,6 +99,8 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
            "ORDER BY SUM(lc.montantTTC) DESC")
     List<Object[]> getCategoryPerformance(@Param("entrepriseId") Long entrepriseId);
 
+    @Modifying
     @Transactional
-    void deleteByEntrepriseId(Long entrepriseId);
+    @Query("DELETE FROM CommandeVente c WHERE c.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }
