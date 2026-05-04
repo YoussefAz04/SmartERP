@@ -33,7 +33,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     Long getTotalSKUs(@Param("entrepriseId") Long entrepriseId);
 
     @Modifying
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     @Query("DELETE FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId")
     void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }
