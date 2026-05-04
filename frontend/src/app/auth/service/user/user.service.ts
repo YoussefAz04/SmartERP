@@ -14,10 +14,9 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  registerUser(request: unknown, idEntreprise: number, idEquipe: number): Observable<UserRequest> {
+  registerUser(request: unknown, idEntreprise: number): Observable<UserRequest> {
     const params = new HttpParams()
-      .set('idEntreprise', idEntreprise)
-      .set('idEquipe', idEquipe);
+      .set('idEntreprise', idEntreprise);
     return this.http.post<UserRequest>(`${this.apiUrl}/register`, request, { params });
   }
 

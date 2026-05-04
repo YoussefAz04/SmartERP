@@ -65,16 +65,6 @@ const routes: Routes = [
           ),
       },
       {
-        // Projects: business data – no SUPER_ADMIN
-        path: 'projet',
-        canActivate: [RoleGuard],
-        data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
-        loadChildren: () =>
-          import('./projet/projet.module').then(
-            (m) => m.ProjetModule
-          ),
-      },
-      {
         // Clients: business data – no SUPER_ADMIN
         path: 'client',
         canActivate: [RoleGuard],
@@ -111,14 +101,6 @@ const routes: Routes = [
         data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
         loadChildren: () =>
           import('./stock/stock.module').then((m) => m.StockModule),
-      },
-      {
-        // Budget: business data – no SUPER_ADMIN
-        path: 'budget',
-        canActivate: [RoleGuard],
-        data: { requiredRoles: ['ADMIN'] },
-        loadChildren: () =>
-          import('./budget/budget.module').then((m) => m.BudgetModule),
       },
       {
         // Articles achat: business data – no SUPER_ADMIN
