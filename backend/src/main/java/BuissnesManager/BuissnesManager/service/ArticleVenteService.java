@@ -94,8 +94,18 @@ public class ArticleVenteService {
         if (updated.getUnite() != null) existing.setUnite(updated.getUnite());
         if (updated.getSku() != null) existing.setSku(updated.getSku());
         if (updated.getMarkup() != null) existing.setMarkup(updated.getMarkup());
-        if (updated.getArticleAchat() != null) existing.setArticleAchat(updated.getArticleAchat());
-        if (updated.getClient() != null) existing.setClient(updated.getClient());
+        if (updated.getArticleAchat() != null && updated.getArticleAchat().getId() != null) {
+            Long articleAchatId = updated.getArticleAchat().getId();
+            Article managedArticleAchat = articleRepository.findById(articleAchatId)
+                    .orElseThrow(() -> new RuntimeException("Article achat non trouvé avec id: " + articleAchatId));
+            existing.setArticleAchat(managedArticleAchat);
+        }
+        if (updated.getClient() != null && updated.getClient().getId() != null) {
+            Long clientId = updated.getClient().getId();
+            Client managedClient = clientRepo.findById(clientId)
+                    .orElseThrow(() -> new RuntimeException("Client non trouvé avec id: " + clientId));
+            existing.setClient(managedClient);
+        }
         return articleVenteRepo.save(existing);
     }
 

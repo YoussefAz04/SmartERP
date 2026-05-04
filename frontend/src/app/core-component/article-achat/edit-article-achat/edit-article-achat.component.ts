@@ -98,7 +98,7 @@ export class EditArticleAchatComponent implements OnInit {
         quantite: formValue.quantite,
         unite: formValue.unite?.trim() || '',
         sku: formValue.sku?.trim() || '',
-        fournisseur: formValue.fournisseurId ? { id: formValue.fournisseurId } : null,
+        fournisseurId: formValue.fournisseurId ? Number(formValue.fournisseurId) : null,
       };
 
       this.articleAchatService.updateArticleAchat(this.articleId, articleData).subscribe({
