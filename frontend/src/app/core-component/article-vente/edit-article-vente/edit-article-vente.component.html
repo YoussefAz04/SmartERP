@@ -142,6 +142,10 @@
               <i class="feather icon-info"></i>
               Prix d'achat de référence :&nbsp;<strong>{{ selectedArticleAchatPrice | number:'1.2-2' }} DT</strong>
             </div>
+            <div *ngIf="selectedArticleAchatCategorie" class="info-pill">
+              <i class="feather icon-tag"></i>
+              Catégorie :&nbsp;<strong>{{ selectedArticleAchatCategorie }}</strong>
+            </div>
           </div>
 
           <!-- Markup -->

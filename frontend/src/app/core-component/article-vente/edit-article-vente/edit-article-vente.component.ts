@@ -21,6 +21,7 @@ export class EditArticleVenteComponent implements OnInit {
   submitted = false;
   articleId!: number;
   selectedArticleAchatPrice: number | null = null;
+  selectedArticleAchatCategorie: string | null = null;
   autoCalculated = false;
 
   constructor(private articleVenteService: ArticleVenteService,
@@ -57,9 +58,11 @@ export class EditArticleVenteComponent implements OnInit {
       if (id) {
         const found = this.articlesAchat.find(a => a.id === Number(id));
         this.selectedArticleAchatPrice = found?.prixUnitaire ?? null;
+        this.selectedArticleAchatCategorie = this.extractCategorieLabel(found);
         this.recalculatePrice();
       } else {
         this.selectedArticleAchatPrice = null;
+        this.selectedArticleAchatCategorie = null;
         this.autoCalculated = false;
       }
     });
@@ -67,6 +70,13 @@ export class EditArticleVenteComponent implements OnInit {
     this.articleForm.get('markup')?.valueChanges.subscribe(() => {
       this.recalculatePrice();
     });
+  }
+
+  private extractCategorieLabel(article: ArticleAchat | undefined): string | null {
+    if (!article) return null;
+    const cat: any = (article as any).categorieArticle;
+    if (!cat) return null;
+    return cat.libelle || cat.nom || cat.code || null;
   }
 
   recalculatePrice(): void {
@@ -100,6 +110,7 @@ export class EditArticleVenteComponent implements OnInit {
         if (data.articleAchat?.prixUnitaire) {
           this.selectedArticleAchatPrice = data.articleAchat.prixUnitaire;
         }
+        this.selectedArticleAchatCategorie = this.extractCategorieLabel(data.articleAchat as ArticleAchat | undefined);
         this.isLoading = false;
       },
       error: (err) => {

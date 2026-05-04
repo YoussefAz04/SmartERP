@@ -17,6 +17,7 @@ import { NotificationService } from '../../../shared/notification/notification.s
 export class EditArticleAchatComponent implements OnInit {
   articleForm!: FormGroup;
   fournisseurs: Fournisseur[] = [];
+  categories: any[] = [];
   isLoading = false;
   submitted = false;
   articleId!: number;
@@ -32,6 +33,7 @@ export class EditArticleAchatComponent implements OnInit {
     this.articleId = Number(this.route.snapshot.paramMap.get('id'));
     this.initializeForm();
     this.loadFournisseurs();
+    this.loadCategories();
     if (this.articleId) {
       this.loadArticle();
     }
@@ -45,6 +47,7 @@ export class EditArticleAchatComponent implements OnInit {
       unite: [''],
       sku: [''],
       fournisseurId: [null],
+      categorieArticleId: [null],
     });
   }
 
@@ -60,6 +63,7 @@ export class EditArticleAchatComponent implements OnInit {
           unite: data.unite || '',
           sku: data.sku || '',
           fournisseurId: data.fournisseur?.id || null,
+          categorieArticleId: data.categorieArticle?.id || null,
         });
         this.isLoading = false;
       },
@@ -74,6 +78,13 @@ export class EditArticleAchatComponent implements OnInit {
     this.fournisseurService.getAllFournisseurs().subscribe({
       next: (data) => { this.fournisseurs = data; },
       error: (err) => { console.error('Erreur chargement fournisseurs:', err); }
+    });
+  }
+
+  loadCategories(): void {
+    this.articleAchatService.getCategoriesArticle().subscribe({
+      next: (data) => { this.categories = data; },
+      error: (err) => { console.error('Erreur chargement catégories:', err); }
     });
   }
 
@@ -99,6 +110,7 @@ export class EditArticleAchatComponent implements OnInit {
         unite: formValue.unite?.trim() || '',
         sku: formValue.sku?.trim() || '',
         fournisseurId: formValue.fournisseurId ? Number(formValue.fournisseurId) : null,
+        categorieArticleId: formValue.categorieArticleId ? Number(formValue.categorieArticleId) : null,
       };
 
       this.articleAchatService.updateArticleAchat(this.articleId, articleData).subscribe({
