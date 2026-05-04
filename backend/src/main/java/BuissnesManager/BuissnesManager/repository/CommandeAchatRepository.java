@@ -55,6 +55,8 @@ public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Lo
     @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.statut NOT IN ('ANNULEE', 'RECUE')")
     Long getActiveOrdersCount(@Param("entrepriseId") Long entrepriseId);
 
+    @Modifying
     @Transactional
-    void deleteByEntrepriseId(Long entrepriseId);
+    @Query("DELETE FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }

@@ -2,6 +2,7 @@ package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.entity.FactureVente;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,8 @@ public interface FactureVenteRepository extends JpaRepository<FactureVente, Long
     @Query("SELECT COALESCE(SUM(f.montantTTC), 0) FROM FactureVente f WHERE f.entreprise.id = :entrepriseId AND f.statut != 'PAYEE'")
     Double getAccountsReceivable(@Param("entrepriseId") Long entrepriseId);
 
+    @Modifying
     @Transactional
-    void deleteByEntrepriseId(Long entrepriseId);
+    @Query("DELETE FROM FactureVente f WHERE f.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }

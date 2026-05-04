@@ -25,6 +25,8 @@ public interface FactureAchatRepo extends JpaRepository<FactureAchat,Long> {
     @Query("SELECT COALESCE(SUM(f.montantTTC), 0) FROM FactureAchat f WHERE f.entreprise.id = :entrepriseId AND f.statut != 'PAYEE'")
     Double getAccountsPayable(@Param("entrepriseId") Long entrepriseId);
 
+    @Modifying
     @Transactional
-    void deleteByEntrepriseId(Long entrepriseId);
+    @Query("DELETE FROM FactureAchat f WHERE f.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }

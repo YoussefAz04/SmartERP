@@ -28,6 +28,8 @@ public interface FactureDeVenteRepo extends JpaRepository<FactureDeVente,Long> {
     @Query("UPDATE FactureDeVente f SET f.client = null WHERE f.client.id = :clientId")
     void detachClient(@Param("clientId") Long clientId);
 
+    @Modifying
     @Transactional
-    void deleteByEntrepriseId(Long entrepriseId);
+    @Query("DELETE FROM FactureDeVente f WHERE f.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }

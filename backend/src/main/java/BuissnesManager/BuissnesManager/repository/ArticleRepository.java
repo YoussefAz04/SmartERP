@@ -43,6 +43,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query("SELECT DISTINCT a FROM LigneCommandeAchat l INNER JOIN l.article a LEFT JOIN FETCH a.fournisseur LEFT JOIN FETCH a.categorieArticle LEFT JOIN FETCH a.mesure WHERE l.commandeAchat.fournisseur.id = :fournisseurId")
     List<Article> findArticlesOrderedFromFournisseur(@Param("fournisseurId") Long fournisseurId);
 
+    @Modifying
     @Transactional
-    void deleteByEntrepriseId(Long entrepriseId);
+    @Query("DELETE FROM Article a WHERE a.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }
