@@ -92,8 +92,8 @@
                 <li *ngFor="let result of group.results"
                   class="result-item"
                   [class.result-item--active]="getFlatIndex(result) === selectedIndex">
-                  <a [routerLink]="getResultRoute(result)"
-                     (click)="clearSearch()"
+                  <a [href]="getResultHref(result)"
+                     (click)="onResultClick($event, result)"
                      tabindex="-1">
                     <span class="result-type-icon" [ngClass]="'type-icon-' + result.type.toLowerCase()">
                       <i class="feather {{ group.icon }}"></i>

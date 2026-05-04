@@ -351,6 +351,36 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(this.getResultRoute(result));
   }
 
+  /**
+   * Build an href for a result so the anchor behaves like a real link
+   * (middle-click / Ctrl+click can open it in a new tab). The Angular
+   * router still owns same-tab navigation via onResultClick().
+   */
+  getResultHref(result: SearchResult): string {
+    const segments = this.getResultRoute(result).map(s => String(s));
+    const path = segments
+      .map(s => s.replace(/^\/+|\/+$/g, ''))
+      .filter(s => s.length > 0)
+      .join('/');
+    return '/' + path;
+  }
+
+  /**
+   * Handle clicks on a search result. For plain left-clicks we take over
+   * with the Angular router (so the SPA navigates correctly even when the
+   * dropdown is being torn down by *ngIf). Modifier-key / middle-clicks
+   * fall through to the browser default so the user can open the result
+   * in a new tab.
+   */
+  onResultClick(event: MouseEvent, result: SearchResult): void {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      // Let the browser handle modifier / middle clicks via the href.
+      return;
+    }
+    event.preventDefault();
+    this.navigateToResult(result);
+  }
+
   toggleSidebar(): void {
     const currentState = localStorage.getItem('sidebarState');
     const newState = currentState === 'collapsed' ? 'expanded' : 'collapsed';
