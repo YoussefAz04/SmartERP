@@ -94,7 +94,6 @@
                   [class.result-item--active]="getFlatIndex(result) === selectedIndex">
                   <a [routerLink]="getResultRoute(result)"
                      (click)="clearSearch()"
-                     (mousedown)="$event.preventDefault()"
                      tabindex="-1">
                     <span class="result-type-icon" [ngClass]="'type-icon-' + result.type.toLowerCase()">
                       <i class="feather {{ group.icon }}"></i>
