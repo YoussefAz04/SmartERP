@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,4 +42,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query("SELECT DISTINCT a FROM LigneCommandeAchat l INNER JOIN l.article a LEFT JOIN FETCH a.fournisseur LEFT JOIN FETCH a.categorieArticle LEFT JOIN FETCH a.mesure WHERE l.commandeAchat.fournisseur.id = :fournisseurId")
     List<Article> findArticlesOrderedFromFournisseur(@Param("fournisseurId") Long fournisseurId);
+
+    @Transactional
+    void deleteByEntrepriseId(Long entrepriseId);
 }

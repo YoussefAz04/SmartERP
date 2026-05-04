@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -97,4 +98,7 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
            "GROUP BY c.id, c.libelle, c.code " +
            "ORDER BY SUM(lc.montantTTC) DESC")
     List<Object[]> getCategoryPerformance(@Param("entrepriseId") Long entrepriseId);
+
+    @Transactional
+    void deleteByEntrepriseId(Long entrepriseId);
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +27,7 @@ public interface FactureDeVenteRepo extends JpaRepository<FactureDeVente,Long> {
     @Modifying
     @Query("UPDATE FactureDeVente f SET f.client = null WHERE f.client.id = :clientId")
     void detachClient(@Param("clientId") Long clientId);
+
+    @Transactional
+    void deleteByEntrepriseId(Long entrepriseId);
 }

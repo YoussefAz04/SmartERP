@@ -2,8 +2,10 @@ package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.entity.DetailsFactureDeVente;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,4 +33,9 @@ public interface DetaisFactureDeVenteRepo extends JpaRepository<DetailsFactureDe
            "GROUP BY d.article " +
            "ORDER BY SUM(d.quantite) DESC")
     List<Object[]> getTopProductsFromFactures(@Param("entrepriseId") Long entrepriseId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM DetailsFactureDeVente d WHERE d.factureDeVente.entreprise.id = :entrepriseId")
+    void deleteByFactureDeVenteEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }
