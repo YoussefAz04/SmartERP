@@ -3,9 +3,11 @@ package BuissnesManager.BuissnesManager.repository;
 import BuissnesManager.BuissnesManager.entity.StockMouvement;
 import BuissnesManager.BuissnesManager.entity.TypeMouvement;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,4 +28,9 @@ public interface StockMouvementRepo extends JpaRepository<StockMouvement, Long> 
 
     @Query("SELECT sm FROM StockMouvement sm WHERE sm.utilisateur.id = :utilisateurId AND sm.stock.entreprise.id = :entrepriseId")
     List<StockMouvement> findByUtilisateurIdAndEntrepriseId(@Param("utilisateurId") Long utilisateurId, @Param("entrepriseId") Long entrepriseId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM StockMouvement sm WHERE sm.stock.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }

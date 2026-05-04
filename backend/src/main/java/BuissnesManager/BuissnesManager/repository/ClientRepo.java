@@ -4,6 +4,7 @@ import BuissnesManager.BuissnesManager.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,4 +21,7 @@ public interface ClientRepo extends JpaRepository<Client,Long> {
 
     @Query("SELECT c.categorieClient.id, COUNT(c) FROM Client c GROUP BY c.categorieClient.id")
     List<Object[]> countGroupedByCategorie();
+
+    @Transactional
+    void deleteByEntrepriseId(Long entrepriseId);
 }

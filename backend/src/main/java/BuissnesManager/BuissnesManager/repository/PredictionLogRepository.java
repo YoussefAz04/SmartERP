@@ -2,9 +2,11 @@ package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.entity.PredictionLog;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,4 +33,9 @@ public interface PredictionLogRepository extends JpaRepository<PredictionLog, Lo
     @Query("SELECT p FROM PredictionLog p " +
            "WHERE p.actualValue IS NULL AND p.targetMonth <= :cutoff")
     List<PredictionLog> findAllPendingReconciliation(@Param("cutoff") LocalDate cutoff);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM PredictionLog p WHERE p.entreprise.id = :entrepriseId")
+    void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }

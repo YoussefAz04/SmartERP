@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.repository;
 import BuissnesManager.BuissnesManager.entity.BonReception;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,4 +12,7 @@ public interface BonReceptionRepository extends JpaRepository<BonReception, Long
     List<BonReception> findByEntrepriseId(Long entrepriseId);
     List<BonReception> findByCommandeAchatId(Long commandeAchatId);
     List<BonReception> findByStatut(String statut);
+
+    @Transactional
+    void deleteByEntrepriseId(Long entrepriseId);
 }

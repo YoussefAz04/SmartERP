@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,4 +24,7 @@ public interface FactureAchatRepo extends JpaRepository<FactureAchat,Long> {
 
     @Query("SELECT COALESCE(SUM(f.montantTTC), 0) FROM FactureAchat f WHERE f.entreprise.id = :entrepriseId AND f.statut != 'PAYEE'")
     Double getAccountsPayable(@Param("entrepriseId") Long entrepriseId);
+
+    @Transactional
+    void deleteByEntrepriseId(Long entrepriseId);
 }
