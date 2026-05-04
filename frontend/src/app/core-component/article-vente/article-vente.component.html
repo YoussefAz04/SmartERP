@@ -266,9 +266,9 @@
                 <td>
                   @if (a.markup != null) {
                     <span class="markup-pill"
-                      [class.markup-pill--high]="(a.markup ?? 0) >= 30"
-                      [class.markup-pill--mid]="(a.markup ?? 0) >= 10 && (a.markup ?? 0) < 30"
-                      [class.markup-pill--low]="(a.markup ?? 0) < 10">
+                      [class.markup-pill--high]="a.markup >= 30"
+                      [class.markup-pill--mid]="a.markup >= 10 && a.markup < 30"
+                      [class.markup-pill--low]="a.markup < 10">
                       <i class="feather icon-percent"></i> {{ a.markup }}%
                     </span>
                   } @else {
