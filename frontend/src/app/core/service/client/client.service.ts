@@ -8,6 +8,8 @@ import {CategorieClient} from "../../../model/categorieClient.model";
 export interface ClientUpdateRequest extends Omit<Client, 'categorieClient'> {
   categorieId?: number;
 }
+
+@Injectable({
   providedIn: 'root'
 })
 export class ClientService {
