@@ -375,21 +375,21 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
     transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1);
   }
 
-  &.kpi-emerald {
+  &.kpi-blue {
     background: linear-gradient(145deg, #1e40af 0%, #2563eb 55%, #60a5fa 100%);
     box-shadow: 0 6px 22px rgba(37,99,235,0.30);
     --card-glow: 0 18px 44px rgba(37,99,235,0.42);
     transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1);
   }
 
-  &.kpi-amber {
+  &.kpi-cyan {
     background: linear-gradient(145deg, #164e63 0%, #0e7490 55%, #22d3ee 100%);
     box-shadow: 0 6px 22px rgba(14,116,144,0.30);
     --card-glow: 0 18px 44px rgba(14,116,144,0.42);
     transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1);
   }
 
-  &.kpi-slate {
+  &.kpi-navy {
     background: linear-gradient(145deg, #0b1e3d 0%, #102a50 55%, #1e3a5f 100%);
     box-shadow: 0 6px 22px rgba(16,42,80,0.32);
     --card-glow: 0 18px 44px rgba(16,42,80,0.44);
@@ -517,7 +517,7 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
     .action-arrow i { color: $azure; }
   }
 
-  &.action-teal {
+  &.action-cyan {
     border-color: #dbeafe;
     &:hover { border-color: #93c5fd; background: #f8fbff; }
     .action-icon { background: linear-gradient(135deg, #164e63, #0e7490); box-shadow: 0 4px 12px rgba(14,116,144,0.28); i { color: #fff; } }
@@ -526,7 +526,7 @@ $shadow-lg:  0 8px 28px rgba(0,0,0,.10), 0 20px 48px rgba(0,0,0,.08);
     .action-arrow i { color: #0e7490; }
   }
 
-  &.action-orange {
+  &.action-navy {
     border-color: #dbeafe;
     &:hover { border-color: #93c5fd; background: #f8fbff; }
     .action-icon { background: linear-gradient(135deg, #0b1e3d, #102a50); box-shadow: 0 4px 12px rgba(11,30,61,0.28); i { color: #fff; } }
