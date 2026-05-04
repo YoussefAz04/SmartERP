@@ -8,6 +8,7 @@ import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +61,14 @@ public class EntrepriseService {
         }
     }
 
+    @Transactional
     public void deleteEntreprise(Long id) {
+        // Delete all users belonging to this entreprise first to avoid
+        // foreign key constraint violations and to keep platform data consistent.
+        List<User> users = userRepo.findByEntrepriseId(id);
+        if (!users.isEmpty()) {
+            userRepo.deleteAll(users);
+        }
         entrepriseRepository.deleteById(id);
     }
     public void assignerUserToEntreprise(String username,String nom){
