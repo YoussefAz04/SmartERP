@@ -171,6 +171,9 @@ public class EntrepriseService {
 
         // 16. Remaining master data
         fournisseurRepo.deleteByEntrepriseId(id);
+        // Clean the legacy client_entreprises junction table before deleting clients
+        // to cover rows referencing this enterprise from clients owned by other enterprises.
+        clientRepo.deleteClientEntreprisesByEntrepriseId(id);
         clientRepo.deleteByEntrepriseId(id);
         categorieArticleRepository.deleteByEntrepriseId(id);
         mesureRepository.deleteByEntrepriseId(id);

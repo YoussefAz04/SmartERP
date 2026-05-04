@@ -27,4 +27,19 @@ public interface ClientRepo extends JpaRepository<Client,Long> {
     @Transactional
     @Query("DELETE FROM Client c WHERE c.entreprise.id = :entrepriseId")
     void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
+    /**
+     * Removes all rows from the legacy {@code client_entreprises} many-to-many
+     * junction table that reference the given enterprise on either side
+     * (either as the linked enterprise, or via a client whose primary
+     * enterprise matches). This must be called before deleting the enterprise
+     * to avoid foreign key violations, since JPQL bulk deletes on Client do
+     * not clean up join tables for clients owned by other enterprises.
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM client_entreprises WHERE entreprises_id = :entrepriseId " +
+            "OR client_id IN (SELECT id FROM client WHERE entreprise_id = :entrepriseId)",
+            nativeQuery = true)
+    void deleteClientEntreprisesByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
 }
