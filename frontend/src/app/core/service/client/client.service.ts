@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Client} from "../../../model/client.model";
 import {Observable} from "rxjs";
 import {CategorieClient} from "../../../model/categorieClient.model";
 
-@Injectable({
+export interface ClientUpdateRequest extends Omit<Client, 'categorieClient'> {
+  categorieId?: number;
+}
   providedIn: 'root'
 })
 export class ClientService {
@@ -98,13 +100,15 @@ export class ClientService {
       { headers: this.getHeaders() }
     );
   }
-  updateClient(id: number, client: any): Observable<Client> {
-    const categorieId = client.categorieId;
-    const params = categorieId != null ? `?idCategorie=${categorieId}` : '';
+  updateClient(id: number, client: ClientUpdateRequest): Observable<Client> {
+    let params = new HttpParams();
+    if (client.categorieId != null) {
+      params = params.set('idCategorie', client.categorieId.toString());
+    }
     return this.http.put<Client>(
-      `${this.baseUrl}/updateClient/${id}${params}`,
+      `${this.baseUrl}/updateClient/${id}`,
       client,
-      { headers: this.getHeaders() }
+      { headers: this.getHeaders(), params }
     );
   }
 deleteCategorie(id: number): Observable<any> {
