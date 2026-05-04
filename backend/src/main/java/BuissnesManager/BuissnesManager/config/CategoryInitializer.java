@@ -11,6 +11,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @Order(10)
 public class CategoryInitializer implements CommandLineRunner {
@@ -46,13 +49,15 @@ public class CategoryInitializer implements CommandLineRunner {
             {"SER", "Services",       "Prestations de services"},
             {"AUT", "Autres",         "Produits divers non classifiés"}
         };
-        for (String[] e : entries) {
+        List<CategorieArticle> cats = new ArrayList<>();
+        for (String[] entry : entries) {
             CategorieArticle cat = new CategorieArticle();
-            cat.setCode(e[0]);
-            cat.setLibelle(e[1]);
-            cat.setDescription(e[2]);
-            categorieArticleRepository.save(cat);
+            cat.setCode(entry[0]);
+            cat.setLibelle(entry[1]);
+            cat.setDescription(entry[2]);
+            cats.add(cat);
         }
+        categorieArticleRepository.saveAll(cats);
     }
 
     private void seedCategoriesClient() {
@@ -66,12 +71,14 @@ public class CategoryInitializer implements CommandLineRunner {
             {"Entreprise",     "Société ou organisation cliente"},
             {"Administration", "Organisme public ou administratif"}
         };
-        for (String[] e : entries) {
+        List<CategorieClient> cats = new ArrayList<>();
+        for (String[] entry : entries) {
             CategorieClient cat = new CategorieClient();
-            cat.setNom(e[0]);
-            cat.setDescription(e[1]);
-            categorieClientRepo.save(cat);
+            cat.setNom(entry[0]);
+            cat.setDescription(entry[1]);
+            cats.add(cat);
         }
+        categorieClientRepo.saveAll(cats);
     }
 
     private void seedCategoriesFournisseur() {
@@ -79,19 +86,21 @@ public class CategoryInitializer implements CommandLineRunner {
             return;
         }
         String[][] entries = {
-            {"Industrie",     "Fournisseur industriel"},
-            {"Commerce",      "Fournisseur commercial / distributeur"},
-            {"Services",      "Prestataire de services"},
-            {"Technologie",   "Fournisseur de solutions technologiques"},
+            {"Industrie",      "Fournisseur industriel"},
+            {"Commerce",       "Fournisseur commercial / distributeur"},
+            {"Services",       "Prestataire de services"},
+            {"Technologie",    "Fournisseur de solutions technologiques"},
             {"Agroalimentaire","Fournisseur de produits alimentaires"},
-            {"Logistique",    "Fournisseur de transport et logistique"},
-            {"Autres",        "Fournisseurs divers"}
+            {"Logistique",     "Fournisseur de transport et logistique"},
+            {"Autres",         "Fournisseurs divers"}
         };
-        for (String[] e : entries) {
+        List<CategorieFournisseur> cats = new ArrayList<>();
+        for (String[] entry : entries) {
             CategorieFournisseur cat = new CategorieFournisseur();
-            cat.setNom(e[0]);
-            cat.setDescription(e[1]);
-            categorieFournisseurRepo.save(cat);
+            cat.setNom(entry[0]);
+            cat.setDescription(entry[1]);
+            cats.add(cat);
         }
+        categorieFournisseurRepo.saveAll(cats);
     }
 }
