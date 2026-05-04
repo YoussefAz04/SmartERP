@@ -98,13 +98,15 @@ export class ClientService {
       { headers: this.getHeaders() }
     );
   }
-  updateClient(id: number, client: Client): Observable<Client> {
-  return this.http.put<Client>(
-    `${this.baseUrl}/updateClient/${id}`, 
-    client,
-    { headers: this.getHeaders() }
-  );
-}
+  updateClient(id: number, client: any): Observable<Client> {
+    const categorieId = client.categorieId;
+    const params = categorieId != null ? `?idCategorie=${categorieId}` : '';
+    return this.http.put<Client>(
+      `${this.baseUrl}/updateClient/${id}${params}`,
+      client,
+      { headers: this.getHeaders() }
+    );
+  }
 deleteCategorie(id: number): Observable<any> {
   return this.http.delete(
     `${this.baseUrl}/deleteCategorie/${id}`,
