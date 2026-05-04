@@ -435,7 +435,6 @@ generateSidebarData(modules: ModuleTittle[]) {
     if (t.includes('ia') || t.includes('intellig')) return 'cpu';
     if (t.includes('admin') || t.includes('platform') || t.includes('param')) return 'settings';
     if (t.includes('document')) return 'folder';
-    if (t.includes('projet')) return 'briefcase';
     return 'grid';
   }
 

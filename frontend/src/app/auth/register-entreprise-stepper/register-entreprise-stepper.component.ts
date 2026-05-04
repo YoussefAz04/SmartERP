@@ -101,7 +101,7 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
       await this.createEntreprise();
 
       if (this.userFormGroup.valid) {
-        this.userService.registerUser(this.userFormGroup.value,this.idEntreprise,0).subscribe({
+        this.userService.registerUser(this.userFormGroup.value, this.idEntreprise).subscribe({
           next: () => {
             this.userEntrepriseId = this.idEntreprise;
             console.log("Id entreprise:", this.userEntrepriseId);

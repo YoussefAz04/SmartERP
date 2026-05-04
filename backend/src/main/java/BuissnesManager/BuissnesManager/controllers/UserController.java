@@ -49,7 +49,6 @@ public class UserController {
     public ResponseEntity<?> registerUser(
             @RequestBody UserRequest request,
             @RequestParam Long idEntreprise,
-            @RequestParam Long idEquipe,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             if (authorizationUtil.isAdmin() && !authorizationUtil.isSuperAdmin()) {
@@ -63,7 +62,7 @@ public class UserController {
                             .body("ADMIN can only create users for their own enterprise");
                 }
             }
-            User createdUser = userService.createUserWithEntrepriseAndEquipe(request, idEntreprise, idEquipe);
+            User createdUser = userService.createUserWithEntreprise(request, idEntreprise);
             return ResponseEntity.ok(createdUser);
         } catch (IllegalArgumentException e) {
             logger.error("Validation error creating user: {}", e.getMessage());

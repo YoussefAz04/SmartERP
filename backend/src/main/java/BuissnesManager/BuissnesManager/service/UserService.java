@@ -156,7 +156,7 @@ public class UserService {
 
         return userRepository.save(user);
     }
-    public User createUserWithEntrepriseAndEquipe(UserRequest request, Long idEntreprise, Long idEquipe) {
+    public User createUserWithEntreprise(UserRequest request, Long idEntreprise) {
         if (request == null || request.getUsername() == null || request.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("Le nom d'utilisateur est requis");
         }
