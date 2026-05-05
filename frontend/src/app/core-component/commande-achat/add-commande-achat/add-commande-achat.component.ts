@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { dateLivraisonValidator, DATE_LIVRAISON_ERROR_MESSAGE } from '../../../shared/validators/date.validators';
 import { CommonModule } from '@angular/common';
 import { CommandeAchatService } from '../../../core/service/commande-achat/commande-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
@@ -30,6 +31,7 @@ export class AddCommandeAchatComponent implements OnInit {
   totalHT = 0;
   totalTVA = 0;
   totalTTC = 0;
+  readonly dateLivraisonErrorMessage = DATE_LIVRAISON_ERROR_MESSAGE;
 
   constructor(
     private fb: FormBuilder,
@@ -69,7 +71,7 @@ export class AddCommandeAchatComponent implements OnInit {
       statut: ['EN_ATTENTE'],
       note: [''],
       lignes: this.fb.array([])
-    });
+    }, { validators: dateLivraisonValidator });
   }
 
   // ✅ LOAD ENTERPRISES WITH CALLBACK
@@ -316,7 +318,11 @@ export class AddCommandeAchatComponent implements OnInit {
 
   // ✅ STEP 1: Validate form structure
   if (!this.commandeForm.valid) {
-    this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
+    if (this.commandeForm.hasError('dateLivraisonInvalid')) {
+      this.errorMessage = '❌ ' + DATE_LIVRAISON_ERROR_MESSAGE;
+    } else {
+      this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
+    }
     console.error('❌ Form not valid');
     return;
   }

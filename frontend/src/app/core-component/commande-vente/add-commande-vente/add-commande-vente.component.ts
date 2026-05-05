@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { dateLivraisonValidator, DATE_LIVRAISON_ERROR_MESSAGE } from '../../../shared/validators/date.validators';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CommandeVenteService } from '../../../core/service/commande-vente/commande-vente.service';
@@ -25,6 +26,7 @@ export class AddCommandeVenteComponent implements OnInit {
   isEditMode = false;
   commandeId: number | null = null;
   currentEntrepriseId: number | null = null;
+  readonly dateLivraisonErrorMessage = DATE_LIVRAISON_ERROR_MESSAGE;
 
   constructor(private commandeVenteService: CommandeVenteService,
     private articleVenteService: ArticleVenteService,
@@ -76,7 +78,7 @@ export class AddCommandeVenteComponent implements OnInit {
       clientId: [null],
       note: [''],
       lignes: this.fb.array([])
-    });
+    }, { validators: dateLivraisonValidator });
   }
 
   get lignesArray(): FormArray {
@@ -255,7 +257,11 @@ export class AddCommandeVenteComponent implements OnInit {
         }
       });
     } else {
-      this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      if (this.commandeForm.hasError('dateLivraisonInvalid')) {
+        this.notification.error('❌ ' + DATE_LIVRAISON_ERROR_MESSAGE);
+      } else {
+        this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      }
     }
   }
 }
