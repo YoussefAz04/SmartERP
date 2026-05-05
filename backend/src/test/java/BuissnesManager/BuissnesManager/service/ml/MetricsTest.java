@@ -23,6 +23,35 @@ class MetricsTest {
     }
 
     @Test
+    void mapeUsesSeriesRelativeFloorForNearZeroActuals() {
+        // Revenue-like series: mean ≈ 5000 EUR. A single zero-actual point with a
+        // wildly extrapolated forecast of 50 000 EUR must NOT divide by the 1 EUR
+        // absolute floor — that produced cross-validated MAPE values like 996 504 %.
+        // With the series-relative floor (1 % of mean = 50 EUR) the per-point ratio
+        // is bounded to a reasonable order of magnitude.
+        double[] actual   = {5000, 5000, 5000, 5000, 5000, 5000, 5000, 0.0};
+        double[] forecast = {5000, 5000, 5000, 5000, 5000, 5000, 5000, 50_000};
+        double mape = Metrics.mape(actual, forecast);
+        // With the old 1 EUR floor this would be 50_000 / 8 = 6250 (= 625 000 %).
+        // With the 1 %-of-scale floor (50 EUR) the worst point contributes
+        // 50_000 / 50 = 1000, averaged over 8 points => 125 (= 12 500 %).
+        assertTrue(mape < 200.0,
+                "MAPE should be bounded by the series-relative floor, got " + mape);
+        assertTrue(mape > 100.0,
+                "MAPE should still reflect the bad forecast, got " + mape);
+    }
+
+    @Test
+    void mapeOnHealthyActualsIgnoresRelativeFloor() {
+        // When every |actual_i| stays above 1 % of the series mean, behaviour is
+        // identical to the textbook MAPE — no smoothing leaks into normal cases.
+        double[] a = {100, 110, 120, 130};
+        double[] f = {110, 110, 110, 110};
+        double expected = (10.0/100 + 0.0/110 + 10.0/120 + 20.0/130) / 4.0;
+        assertEquals(expected, Metrics.mape(a, f), 1e-9);
+    }
+
+    @Test
     void smapeStaysBounded() {
         double[] a = {0.0};
         double[] f = {1000.0};

@@ -14,8 +14,23 @@ package BuissnesManager.BuissnesManager.service.ml;
  */
 public final class Metrics {
 
-    /** Tiny floor used to keep MAPE finite when actuals approach zero. */
+    /** Tiny absolute floor used to keep MAPE finite when actuals approach zero. */
     public static final double MAPE_EPS = 1.0;
+
+    /**
+     * Series-relative floor for the MAPE denominator: any single |actual_i|
+     * smaller than {@code MAPE_REL_EPS * mean(|actual|)} is bumped up to that
+     * fraction of the series scale.
+     *
+     * <p>Without this, a single near-zero observation in a revenue series can
+     * inflate the per-point ratio by 4–5 orders of magnitude (e.g. forecast of
+     * 50 000 EUR vs. an actual of 0 EUR ⇒ 50 000× the 1 EUR absolute floor),
+     * producing meaningless cross-validated MAPE values like 996 504 %. A 1 %
+     * series-scale floor caps the per-point worst case to a more interpretable
+     * range while leaving healthy actuals (≥ 1 % of mean) completely
+     * untouched.
+     */
+    public static final double MAPE_REL_EPS = 0.01;
 
     private Metrics() {}
 
@@ -24,13 +39,23 @@ public final class Metrics {
         if (actual == null || forecast == null) return Double.NaN;
         int n = Math.min(actual.length, forecast.length);
         if (n == 0) return Double.NaN;
+        double scaleFloor = MAPE_REL_EPS * meanAbs(actual);
         double sum = 0.0; int ok = 0;
         for (int i = 0; i < n; i++) {
-            double denom = Math.max(MAPE_EPS, Math.abs(actual[i]));
+            double denom = Math.max(MAPE_EPS,
+                    Math.max(scaleFloor, Math.abs(actual[i])));
             sum += Math.abs(actual[i] - forecast[i]) / denom;
             ok++;
         }
         return ok == 0 ? Double.NaN : sum / ok;
+    }
+
+    /** Mean of |x| over a non-null array (0 if empty). */
+    private static double meanAbs(double[] x) {
+        if (x == null || x.length == 0) return 0.0;
+        double s = 0.0;
+        for (double v : x) s += Math.abs(v);
+        return s / x.length;
     }
 
     /** Symmetric MAPE in [0, 2]. NaN if no usable rows. */
