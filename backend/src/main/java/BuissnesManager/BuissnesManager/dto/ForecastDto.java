@@ -19,8 +19,24 @@ public class ForecastDto {
     private Double crossValidatedSmape;
     /** Cross-validated MAPE, [0, 1]. */
     private Double crossValidatedMape;
+    /** Cross-validated MASE — &lt;1 means we beat the seasonal-naive baseline. */
+    private Double crossValidatedMase;
     /** Full ML diagnostics bundle for the methodology panel. */
     private ModelMetricsDto modelMetrics;
+    /**
+     * Outliers detected by the Hampel filter on the historical revenue
+     * series (replaced or flagged depending on {@code forecast.outlier.policy}).
+     * Empty list if none were detected. Surfacing them lets the UI raise
+     * "please verify this invoice" warnings.
+     */
+    private List<ForecastAnomalyDto> anomalies;
+    /**
+     * Per-month status mask aligned with {@link #forecastPoints} historical
+     * entries: {@code "OBSERVED"}, {@code "ZERO_BUSINESS"} (real zero) or
+     * {@code "MISSING"} (no data — chart should render dashed). Optional;
+     * older clients ignore it.
+     */
+    private List<String> historyStatus;
 
     public ForecastDto() {}
 
@@ -53,8 +69,14 @@ public class ForecastDto {
     public void setCrossValidatedSmape(Double crossValidatedSmape) { this.crossValidatedSmape = crossValidatedSmape; }
     public Double getCrossValidatedMape() { return crossValidatedMape; }
     public void setCrossValidatedMape(Double crossValidatedMape) { this.crossValidatedMape = crossValidatedMape; }
+    public Double getCrossValidatedMase() { return crossValidatedMase; }
+    public void setCrossValidatedMase(Double crossValidatedMase) { this.crossValidatedMase = crossValidatedMase; }
     public ModelMetricsDto getModelMetrics() { return modelMetrics; }
     public void setModelMetrics(ModelMetricsDto modelMetrics) { this.modelMetrics = modelMetrics; }
+    public List<ForecastAnomalyDto> getAnomalies() { return anomalies; }
+    public void setAnomalies(List<ForecastAnomalyDto> anomalies) { this.anomalies = anomalies; }
+    public List<String> getHistoryStatus() { return historyStatus; }
+    public void setHistoryStatus(List<String> historyStatus) { this.historyStatus = historyStatus; }
 
     public static class ForecastPointDto {
         private String period;

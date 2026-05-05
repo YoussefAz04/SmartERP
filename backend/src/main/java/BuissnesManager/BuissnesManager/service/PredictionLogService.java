@@ -109,6 +109,23 @@ public class PredictionLogService {
                 row.setMethodology(truncate(dto.getMethodology(), 512));
                 row.setModelName(truncate(dto.getSelectedModel(), 128));
 
+                // Snapshot model diagnostics so we can later compute drift
+                // and A/B reports without retraining historical models.
+                if (dto.getModelMetrics() != null) {
+                    var mm = dto.getModelMetrics();
+                    row.setChallengerModel(truncate(mm.getChallengerModel(), 128));
+                    row.setCvMase(mm.getCvMase());
+                    row.setCvSmape(mm.getCvSmape());
+                    row.setBoxCoxLambda(mm.getBoxCoxLambda());
+                    row.setDataPointsUsed(mm.getSamples());
+                    if (mm.getFeatures() != null) {
+                        row.setFeatureSpec(truncate(mm.getFeatures() <= 4 ? "SMALL" : "WIDE+CAL", 64));
+                    }
+                }
+                if (dto.getAnomalies() != null) {
+                    row.setOutliersDetected(dto.getAnomalies().size());
+                }
+
                 // Don't overwrite a settled actual if reality already arrived
                 // and reconciliation ran in between. (Should be rare since we
                 // only store future horizons, but defensive.)

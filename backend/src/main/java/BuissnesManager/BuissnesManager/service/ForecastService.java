@@ -1,17 +1,27 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.FeatureImportanceDto;
+import BuissnesManager.BuissnesManager.dto.ForecastAnomalyDto;
 import BuissnesManager.BuissnesManager.dto.ForecastDto;
+import BuissnesManager.BuissnesManager.dto.MetricGlossaryEntryDto;
+import BuissnesManager.BuissnesManager.dto.ModelMetricsDto;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
+import BuissnesManager.BuissnesManager.service.ml.CalendarFeatureService;
 import BuissnesManager.BuissnesManager.service.ml.MlForecastEngine;
+import BuissnesManager.BuissnesManager.service.ml.SeriesCleaner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Sales forecasting service.
@@ -60,6 +70,18 @@ public class ForecastService {
      */
     @Autowired(required = false)
     private MlForecastEngine mlForecastEngine;
+
+    /** Optional injection — only attached on the ML path. */
+    @Autowired(required = false)
+    private CalendarFeatureService calendarFeatureService;
+
+    /** Outlier policy from {@code application.yml}: {@code winsorize|reject|raw}. */
+    @Value("${forecast.outlier.policy:winsorize}")
+    private String outlierPolicy;
+
+    /** When false, the engine is told to skip the Box-Cox transform. */
+    @Value("${forecast.boxcox.enabled:true}")
+    private boolean boxCoxEnabled;
 
     private static final String[] MONTH_NAMES_FR = {
         "Jan", "Fév", "Mars", "Avr", "Mai", "Juin",
@@ -241,12 +263,39 @@ public class ForecastService {
             List<Double> historicalSeries, double[] currentValues, double[] prevValues,
             boolean hasPrevYear, int observedCurrentMonths, int currentMonth) {
 
-        double[] series = new double[historicalSeries.size()];
-        for (int i = 0; i < series.length; i++) series[i] = historicalSeries.get(i);
+        double[] rawSeries = new double[historicalSeries.size()];
+        for (int i = 0; i < rawSeries.length; i++) rawSeries[i] = historicalSeries.get(i);
+
+        // Status mask aligned with rawSeries: OBSERVED / ZERO_BUSINESS / MISSING.
+        // We treat trailing/leading all-zero blocks as MISSING (entreprise
+        // wasn't active yet / data not yet ingested) and interior zeros as
+        // genuine ZERO_BUSINESS months.
+        String[] status = computeHistoryStatus(rawSeries);
+
+        // First calendar month covered by the series. Used to compute the
+        // calendar exogenous regressors deterministically.
+        int currentYear = LocalDate.now().getYear();
+        YearMonth firstMonth = hasPrevYear
+                ? YearMonth.of(currentYear - 1, 1)
+                : YearMonth.of(currentYear, 1);
+
+        // Hampel-filter outlier detection. The cleaned series is what we feed
+        // to the regression; the anomalies are surfaced in the DTO so the UI
+        // can warn the user.
+        SeriesCleaner.Policy policy = SeriesCleaner.Policy.parse(outlierPolicy);
+        SeriesCleaner.Result cleaned = SeriesCleaner.clean(rawSeries, policy,
+                SeriesCleaner.DEFAULT_WINDOW, SeriesCleaner.DEFAULT_K);
+        double[] series = cleaned.cleaned;
+        if (policy == SeriesCleaner.Policy.REJECT) {
+            // Linear interpolation across NaN slots so the matrix builder is
+            // not poisoned with NaN. Edge NaNs are filled with the nearest
+            // observed value.
+            interpolateNaN(series);
+        }
 
         MlForecastEngine.MlForecastResult result;
         try {
-            result = mlForecastEngine.forecast(series, 0, 6);
+            result = mlForecastEngine.forecast(series, 0, 6, firstMonth, !boxCoxEnabled);
         } catch (RuntimeException ex) {
             log.warn("ML forecast failed ({}); falling back to Holt-Winters.", ex.getMessage());
             return null;
@@ -254,7 +303,6 @@ public class ForecastService {
 
         int historyOffset = hasPrevYear ? 12 : 0;
         List<ForecastDto.ForecastPointDto> forecastPoints = new ArrayList<>();
-
         // Historical points: only current-year months are shown to the user.
         for (int m = 1; m <= observedCurrentMonths; m++) {
             double actual = currentValues[m - 1];
@@ -269,8 +317,7 @@ public class ForecastService {
             ));
         }
 
-        // Future points: intervals come from the bootstrap (preferred) or fall
-        // back to the classic ±σ·√h band if the bootstrap wasn't produced.
+        // Future points.
         for (int h = 1; h <= result.futurePoint.size(); h++) {
             int futureMonthIdx = ((currentMonth - 1) + h) % 12;
             double forecastValue = result.futurePoint.get(h - 1);
@@ -280,7 +327,6 @@ public class ForecastService {
                     && result.lowerBounds != null && h - 1 < result.lowerBounds.size()) {
                 upper = Math.max(0.0, result.upperBounds.get(h - 1));
                 lower = Math.max(0.0, result.lowerBounds.get(h - 1));
-                // Ensure the point forecast stays inside the interval after clamping.
                 if (upper < forecastValue) upper = forecastValue;
                 if (lower > forecastValue) lower = forecastValue;
             } else {
@@ -305,14 +351,6 @@ public class ForecastService {
         double predictedNext3Months = futureForecasts.stream().limit(3).mapToDouble(Double::doubleValue).sum();
         double predictedNext6Months = futureForecasts.stream().limit(6).mapToDouble(Double::doubleValue).sum();
 
-        // Confidence: a *blended* quality score that fuses
-        //   (1) out-of-sample accuracy (1 − OOS-MAPE from walk-forward CV,
-        //       falling back to in-sample R²),
-        //   (2) data density (fraction of months with non-zero revenue), and
-        //   (3) residual-std stability (1 − min(1, σ/mean)), which penalises
-        //       models whose training residuals are large relative to the
-        //       series mean even if the OOS accuracy looks good on a few folds.
-        // Capped at 95% — we never advertise certainty.
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
         double expectedMonths = hasPrevYear ? 24.0 : 12.0;
         double density = Math.min(1.0, nonZeroMonths / expectedMonths);
@@ -327,7 +365,7 @@ public class ForecastService {
                 .mapToDouble(Double::doubleValue).average().orElse(0.0);
         double stability = seriesMean > 0
                 ? Math.max(0.0, 1.0 - Math.min(1.0, result.residualStd / seriesMean))
-                : 0.5; // neutral when we can't compute ratio
+                : 0.5;
         double confidence = Math.min(95.0, Math.max(0.0,
                 (0.3 * density + 0.5 * accuracySignal + 0.2 * stability) * 100.0));
 
@@ -340,15 +378,22 @@ public class ForecastService {
         dto.setPredictedNext3Months(round2(predictedNext3Months));
         dto.setPredictedNext6Months(round2(predictedNext6Months));
         dto.setConfidenceScore(Math.round(confidence * 10.0) / 10.0);
+
         String mapeText = Double.isNaN(result.walkForwardMape)
                 ? "MAPE-CV n/a"
-                : String.format("MAPE-CV=%.1f%%, sMAPE-CV=%.1f%% (%d plis)",
+                : String.format(java.util.Locale.ROOT,
+                        "MAPE-CV=%.1f%%, sMAPE-CV=%.1f%%, MASE=%.2f (%d plis)",
                         result.walkForwardMape * 100.0,
                         Double.isNaN(result.walkForwardSmape) ? 0.0 : result.walkForwardSmape * 100.0,
+                        Double.isNaN(result.walkForwardMase) ? Double.NaN : result.walkForwardMase,
                         result.walkForwardFolds);
-        dto.setMethodology(String.format(
-            "ML supervisé Smile %s (%d caractéristiques lag/saisonnières, intervalles bootstrap) — R²=%.2f, %s, %d échantillons",
-            result.modelName, result.featureCount, rSquaredClamped, mapeText, result.trainingSamples));
+        String boxCoxText = Double.isNaN(result.boxCoxLambda)
+                ? "" : String.format(java.util.Locale.ROOT, ", Box-Cox λ=%.2f", result.boxCoxLambda);
+        dto.setMethodology(String.format(java.util.Locale.ROOT,
+            "ML supervisé Smile %s (%d caractéristiques lag/saisonnières/calendaires, " +
+                    "intervalles bootstrap, CA exprimé HT) — R² in-sample=%.2f, %s%s, %d échantillons",
+            result.modelName, result.featureCount, rSquaredClamped, mapeText, boxCoxText,
+            result.trainingSamples));
         dto.setSeasonality(seasonality);
         dto.setSelectedModel(result.modelName);
         if (!Double.isNaN(result.walkForwardMape)) {
@@ -360,14 +405,39 @@ public class ForecastService {
         if (!Double.isNaN(result.walkForwardRmse)) {
             dto.setCrossValidatedRmse(Math.round(result.walkForwardRmse * 100.0) / 100.0);
         }
+        if (!Double.isNaN(result.walkForwardMase)) {
+            dto.setCrossValidatedMase(Math.round(result.walkForwardMase * 1000.0) / 1000.0);
+        }
 
-        // Rich diagnostics bundle — feeds the "methodology" panel in the UI.
-        BuissnesManager.BuissnesManager.dto.ModelMetricsDto metrics =
-                new BuissnesManager.BuissnesManager.dto.ModelMetricsDto();
+        // Slice off the prev-year history; only current-year months map to the chart.
+        List<String> visibleStatus = new ArrayList<>(observedCurrentMonths);
+        for (int i = 0; i < observedCurrentMonths && historyOffset + i < status.length; i++) {
+            visibleStatus.add(status[historyOffset + i]);
+        }
+        dto.setHistoryStatus(visibleStatus);
+
+        // Anomalies: shift indices into "current-year" perspective when
+        // possible, but keep the global index when in prev-year (rare).
+        List<ForecastAnomalyDto> anomalies = new ArrayList<>();
+        for (SeriesCleaner.Anomaly a : cleaned.anomalies) {
+            YearMonth ym = firstMonth.plusMonths(a.index);
+            anomalies.add(new ForecastAnomalyDto(
+                    ym.toString(),
+                    round2(a.original),
+                    round2(a.replacement),
+                    Math.round(a.zScore * 100.0) / 100.0));
+        }
+        dto.setAnomalies(anomalies);
+
+        // Rich diagnostics bundle for the methodology panel.
+        ModelMetricsDto metrics = new ModelMetricsDto();
         metrics.setModelName(result.modelName);
+        metrics.setChallengerModel(result.challengerName);
         metrics.setSamples(result.trainingSamples);
         metrics.setFeatures(result.featureCount);
         metrics.setRSquared(Math.round(rSquaredClamped * 1000.0) / 1000.0);
+        metrics.setRSquaredCaveat(
+                "Mesure l'ajustement aux données d'entraînement; n'indique pas la précision sur le futur.");
         if (!Double.isNaN(result.walkForwardMape)) {
             metrics.setCvMape(Math.round(result.walkForwardMape * 10000.0) / 10000.0);
         }
@@ -377,16 +447,132 @@ public class ForecastService {
         if (!Double.isNaN(result.walkForwardRmse)) {
             metrics.setCvRmse(Math.round(result.walkForwardRmse * 100.0) / 100.0);
         }
+        if (!Double.isNaN(result.walkForwardMase)) {
+            metrics.setCvMase(Math.round(result.walkForwardMase * 1000.0) / 1000.0);
+        }
+        if (!Double.isNaN(result.boxCoxLambda)) {
+            metrics.setBoxCoxLambda(Math.round(result.boxCoxLambda * 100.0) / 100.0);
+        }
         metrics.setCvFolds(result.walkForwardFolds);
+        metrics.setFeatureImportances(buildFeatureImportances(result));
+        metrics.setGlossary(buildMetricsGlossary());
         dto.setModelMetrics(metrics);
 
         if (log.isDebugEnabled()) {
-            log.debug("ML forecast: model={}, R²={}, OOS-MAPE={}, residualStd={}, samples={}, confidence={}%",
+            log.debug("ML forecast: model={}, R²={}, OOS-MAPE={}, MASE={}, anomalies={}, λ={}",
                     result.modelName, result.rSquared, result.walkForwardMape,
-                    result.residualStd, result.trainingSamples, confidence);
+                    result.walkForwardMase, anomalies.size(), result.boxCoxLambda);
         }
 
         return dto;
+    }
+
+    /* --------------------------- Helpers (ML path) --------------------------- */
+
+    /**
+     * Per-month observation status:
+     * <ul>
+     *   <li>{@code MISSING} — leading run of all-zero months (entreprise not yet
+     *       active / data not ingested);</li>
+     *   <li>{@code OBSERVED} — strictly positive value;</li>
+     *   <li>{@code ZERO_BUSINESS} — explicit zero between observed months
+     *       (genuine no-business month).</li>
+     * </ul>
+     */
+    static String[] computeHistoryStatus(double[] series) {
+        String[] out = new String[series.length];
+        int firstNonZero = -1;
+        for (int i = 0; i < series.length; i++) if (series[i] > 0) { firstNonZero = i; break; }
+        for (int i = 0; i < series.length; i++) {
+            if (firstNonZero >= 0 && i < firstNonZero) out[i] = "MISSING";
+            else if (series[i] > 0) out[i] = "OBSERVED";
+            else out[i] = "ZERO_BUSINESS";
+        }
+        return out;
+    }
+
+    /** Linear interpolation over NaN entries; edge NaNs use the nearest finite value. */
+    private static void interpolateNaN(double[] series) {
+        int n = series.length;
+        // Forward fill leading NaNs.
+        int firstFinite = -1;
+        for (int i = 0; i < n; i++) if (!Double.isNaN(series[i])) { firstFinite = i; break; }
+        if (firstFinite < 0) { for (int i = 0; i < n; i++) series[i] = 0.0; return; }
+        for (int i = 0; i < firstFinite; i++) series[i] = series[firstFinite];
+        // Interpolate interior NaNs.
+        int i = firstFinite + 1;
+        while (i < n) {
+            if (Double.isNaN(series[i])) {
+                int j = i;
+                while (j < n && Double.isNaN(series[j])) j++;
+                if (j == n) {
+                    for (int k = i; k < n; k++) series[k] = series[i - 1];
+                } else {
+                    double slope = (series[j] - series[i - 1]) / (j - (i - 1));
+                    for (int k = i; k < j; k++) series[k] = series[i - 1] + slope * (k - (i - 1));
+                }
+                i = j;
+            } else i++;
+        }
+    }
+
+    private static List<FeatureImportanceDto> buildFeatureImportances(MlForecastEngine.MlForecastResult r) {
+        List<FeatureImportanceDto> out = new ArrayList<>();
+        if (r == null || r.featureNames == null || r.featureImportances == null) return out;
+        int p = Math.min(r.featureImportances.length, r.featureNames.length - 1);
+        // Sort by absolute magnitude descending so the chart leads with the
+        // dominant driver.
+        Integer[] order = new Integer[p];
+        for (int i = 0; i < p; i++) order[i] = i;
+        java.util.Arrays.sort(order, (a, b) ->
+                Double.compare(Math.abs(r.featureImportances[b]),
+                               Math.abs(r.featureImportances[a])));
+        Map<String, String> calendarGloss = CalendarFeatureService.glossary();
+        for (int idx : order) {
+            String name = r.featureNames[idx + 1];
+            double v = r.featureImportances[idx];
+            int dir = r.importancesSigned ? Integer.signum((int) Math.signum(v)) : 0;
+            String desc = calendarGloss.getOrDefault(name, defaultFeatureDescription(name));
+            out.add(new FeatureImportanceDto(name, Math.round(Math.abs(v) * 1000.0) / 1000.0,
+                    dir, desc));
+        }
+        return out;
+    }
+
+    private static String defaultFeatureDescription(String name) {
+        switch (name) {
+            case "lag1": return "Valeur du mois précédent (composante autorégressive).";
+            case "lag2": return "Valeur d'il y a deux mois.";
+            case "t":    return "Tendance temporelle (indice du mois normalisé).";
+            case "sin_m": case "cos_m": return "Composante saisonnière annuelle (Fourier).";
+            case "sin_2m": case "cos_2m": return "Composante saisonnière semestrielle (Fourier 2x).";
+            default: return name;
+        }
+    }
+
+    private static Map<String, MetricGlossaryEntryDto> buildMetricsGlossary() {
+        Map<String, MetricGlossaryEntryDto> g = new LinkedHashMap<>();
+        g.put("rSquared", new MetricGlossaryEntryDto(
+                "R²",
+                "Part de la variance expliquée par le modèle sur les données d'entraînement.",
+                "[0, 1]",
+                "Mesure d'ajustement in-sample. Une valeur élevée n'implique pas une bonne précision sur le futur."));
+        g.put("mape", new MetricGlossaryEntryDto(
+                "MAPE",
+                "Erreur absolue moyenne en pourcentage.",
+                "[0, +∞)",
+                "MAPE devient instable lorsque le CA approche zéro (division par 0). Nous privilégions sMAPE / MASE."));
+        g.put("smape", new MetricGlossaryEntryDto(
+                "sMAPE",
+                "MAPE symétrique : erreur absolue / moyenne(|réel|, |prévu|).",
+                "[0, 2]",
+                "Plus stable que MAPE près de zéro ; valeurs basses = bon."));
+        g.put("mase", new MetricGlossaryEntryDto(
+                "MASE",
+                "Erreur absolue moyenne mise à l'échelle par la naïve saisonnière (12 mois).",
+                "[0, +∞)",
+                "MASE < 1 = on bat la prévision naïve (référence honnête). MASE ≥ 1 = on perd."));
+        return g;
     }
 
     /* --------------------------- core algorithms --------------------------- */

@@ -79,6 +79,34 @@ public class PredictionLog {
     @Column(name = "model_name", length = 128)
     private String modelName;
 
+    /** Runner-up model name (for A/B reporting once reconciled). */
+    @Column(name = "challenger_model", length = 128)
+    private String challengerModel;
+
+    /** Walk-forward MASE at issue time (for drift / A/B reports). */
+    @Column(name = "cv_mase")
+    private Double cvMase;
+
+    /** Walk-forward sMAPE at issue time. */
+    @Column(name = "cv_smape")
+    private Double cvSmape;
+
+    /** Box-Cox λ used at issue time, if the transform was enabled. */
+    @Column(name = "boxcox_lambda")
+    private Double boxCoxLambda;
+
+    /** Feature spec name (e.g. {@code "SMALL"} or {@code "WIDE+CAL"}) at issue time. */
+    @Column(name = "feature_spec", length = 64)
+    private String featureSpec;
+
+    /** Number of training rows actually used. */
+    @Column(name = "data_points_used")
+    private Integer dataPointsUsed;
+
+    /** Outliers detected by the Hampel filter at issue time. */
+    @Column(name = "outliers_detected")
+    private Integer outliersDetected;
+
     /** Actual realised CA for the target month. Filled by reconciliation once the
      * month is over. */
     @Column(name = "actual_value")

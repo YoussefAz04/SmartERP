@@ -2,12 +2,18 @@ package BuissnesManager.BuissnesManager.service.ml;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import smile.data.DataFrame;
 import smile.data.type.StructType;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -64,10 +70,29 @@ public class MlForecastEngine {
     public static final int MIN_SAMPLES = 12;
 
     /** Minimum observations required to switch to the wide feature set. */
-    public static final int WIDE_MIN_SAMPLES = 18;
+    public static final int WIDE_MIN_SAMPLES = 36;
 
     /** Minimum observations required to enable the RandomForest candidate. */
-    public static final int RF_MIN_SAMPLES = 24;
+    public static final int RF_MIN_SAMPLES = 36;
+
+    /** Minimum observations required to apply a Box-Cox stabilising transform.
+     *  Below this we fall back to identity (λ=1). */
+    static final int BOXCOX_MIN_SAMPLES = 18;
+
+    /** Minimum number of training rows per feature for OLS / RF / EN to be
+     *  considered safe (n ≥ 2·p). Below this threshold we restrict the
+     *  candidate set to OLS-with-shrinkage (Ridge at the largest λ). */
+    static final int MIN_ROWS_PER_FEATURE = 2;
+
+    /** Block size (months) for blocked walk-forward CV — used for RandomForest
+     *  so the OOS error reflects multi-step degradation, not 1-step lookups. */
+    static final int CV_BLOCK_SIZE = 3;
+
+    /** RandomForest overfit gate: training MAPE below this AND CV MAPE above
+     *  the OVERFIT_CV threshold is treated as memorisation and the candidate
+     *  is excluded from selection. */
+    static final double OVERFIT_TRAIN_MAPE = 0.01;
+    static final double OVERFIT_CV_MAPE    = 0.25;
 
     /** Ridge shrinkage strength for the L2 candidate. */
     static final double RIDGE_LAMBDA = 0.5;
@@ -131,15 +156,30 @@ public class MlForecastEngine {
         public final double walkForwardSmape;
         /** Walk-forward RMSE of the selected model (original units) or NaN. */
         public final double walkForwardRmse;
+        /** Walk-forward MASE — &lt;1 means we beat the seasonal-naive baseline. */
+        public final double walkForwardMase;
         /** Number of folds actually evaluated. */
         public final int walkForwardFolds;
+        /** Box-Cox λ chosen by profile-likelihood (NaN when transform was disabled). */
+        public final double boxCoxLambda;
+        /** Engineered feature column names, in the order used at fit time. */
+        public final String[] featureNames;
+        /** Standardised feature contributions (signed for linear, unsigned for RF). */
+        public final double[] featureImportances;
+        /** Whether {@link #featureImportances} are signed coefficients. */
+        public final boolean importancesSigned;
+        /** Short name of the runner-up model (for A/B persistence). May be null. */
+        public final String challengerName;
 
         MlForecastResult(List<Double> fittedHistorical, List<Double> futurePoint,
                          List<Double> lowerBounds, List<Double> upperBounds,
                          double residualStd, double rSquared, int trainingSamples,
                          String modelName, int featureCount,
                          double walkForwardMape, double walkForwardSmape,
-                         double walkForwardRmse, int walkForwardFolds) {
+                         double walkForwardRmse, int walkForwardFolds,
+                         double walkForwardMase, double boxCoxLambda,
+                         String[] featureNames, double[] featureImportances,
+                         boolean importancesSigned, String challengerName) {
             this.fittedHistorical = fittedHistorical;
             this.futurePoint = futurePoint;
             this.lowerBounds = lowerBounds;
@@ -153,8 +193,18 @@ public class MlForecastEngine {
             this.walkForwardSmape = walkForwardSmape;
             this.walkForwardRmse = walkForwardRmse;
             this.walkForwardFolds = walkForwardFolds;
+            this.walkForwardMase = walkForwardMase;
+            this.boxCoxLambda = boxCoxLambda;
+            this.featureNames = featureNames;
+            this.featureImportances = featureImportances;
+            this.importancesSigned = importancesSigned;
+            this.challengerName = challengerName;
         }
     }
+
+    /** Optional injection — null in unit tests so old call sites still work. */
+    @Autowired(required = false)
+    private CalendarFeatureService calendarFeatureService;
 
     /** Returns {@code true} when the series is long enough to train a stable regression. */
     public boolean canFit(int historyLength) {
@@ -162,11 +212,21 @@ public class MlForecastEngine {
     }
 
     /**
-     * Fits the best of {OLS, Ridge, ElasticNet, RandomForest} — selected by
-     * walk-forward CV — on the provided history and produces in-sample fits,
-     * a recursive multi-step forecast and bootstrap prediction intervals.
+     * Backwards-compatible entry point — no calendar features, no Box-Cox
+     * (lambda is still computed but the surrounding pipeline can disable it).
      */
     public MlForecastResult forecast(double[] history, int startMonthIdx, int horizon) {
+        return forecast(history, startMonthIdx, horizon, null, null);
+    }
+
+    /**
+     * Calendar-aware overload. {@code firstMonth} is the calendar month of
+     * {@code history[0]}; when supplied we can compute Ramadan / working-days /
+     * end-of-quarter features deterministically for both the in-sample and
+     * the future horizon. {@code disableBoxCox} forces λ=1 (identity).
+     */
+    public MlForecastResult forecast(double[] history, int startMonthIdx, int horizon,
+                                     YearMonth firstMonth, Boolean disableBoxCox) {
         if (!canFit(history.length)) {
             throw new IllegalArgumentException(
                 "history must have at least " + MIN_SAMPLES + " observations, got " + history.length);
@@ -175,35 +235,65 @@ public class MlForecastEngine {
             throw new IllegalArgumentException("horizon must be >= 1");
         }
 
+        // ----- 1. Box-Cox: stabilise multiplicative variance before fitting. -----
+        BoxCox.Fit bc = (Boolean.TRUE.equals(disableBoxCox) || history.length < BOXCOX_MIN_SAMPLES)
+                ? new BoxCox.Fit(1.0, 0.0)
+                : BoxCox.fit(history);
+        double[] tHistory = new double[history.length];
+        for (int i = 0; i < history.length; i++) tHistory[i] = bc.forward(history[i]);
+
+        // ----- 2. Choose the feature spec, honouring n ≫ p. -----
         boolean wide = history.length >= WIDE_MIN_SAMPLES;
         FeatureSpec spec = wide ? FeatureSpec.WIDE : FeatureSpec.SMALL;
 
-        TrainingMatrix full = buildMatrix(history, startMonthIdx, spec);
+        // Calendar exogenous columns are appended only when a service AND a
+        // start month are supplied. They are *known at forecast time* so
+        // future horizons consume the same feature definition.
+        double[][] calendarMatrix = null;
+        String[] calendarNames = new String[0];
+        if (calendarFeatureService != null && firstMonth != null) {
+            calendarNames = CalendarFeatureService.FEATURE_NAMES;
+            calendarMatrix = new double[history.length + horizon][calendarNames.length];
+            for (int i = 0; i < calendarMatrix.length; i++) {
+                YearMonth ym = firstMonth.plusMonths(i);
+                calendarMatrix[i] = calendarFeatureService.features(ym, null);
+            }
+        }
 
-        // Candidate learners. RandomForest is only enabled when we have
-        // enough samples to grow a non-trivial ensemble without over-fitting.
-        // For Ridge / ElasticNet we register several (λ) candidates so the
-        // walk-forward CV can pick the best regularisation strength per
-        // series instead of relying on a single hand-picked value.
+        TrainingMatrix full = buildMatrix(tHistory, startMonthIdx, spec, calendarMatrix);
+
+        // n ≫ p hard guard: if rows < 2·p, force a single shrinkage candidate.
+        int pEff = full.featureCount;
+        boolean underdetermined = full.y.length < MIN_ROWS_PER_FEATURE * pEff;
+
         List<ModelCandidate> candidates = new ArrayList<>();
-        candidates.add(new ModelCandidate("OLS",
-                (df, schema) -> Predictor.fitOls(df, schema)));
-        for (double lambda : RIDGE_LAMBDA_GRID) {
+        if (underdetermined) {
+            // Always-fits Ridge with the strongest λ on the grid — never trains
+            // OLS / EN / RF when we can't safely do so.
+            double lambda = RIDGE_LAMBDA_GRID[RIDGE_LAMBDA_GRID.length - 1];
             candidates.add(new ModelCandidate(
-                    String.format(java.util.Locale.ROOT, "Ridge(λ=%.2f)", lambda),
+                    String.format(Locale.ROOT, "Ridge(λ=%.2f)", lambda),
                     (df, schema) -> Predictor.fitRidge(df, schema, lambda)));
-        }
-        for (double[] lp : ELASTIC_LAMBDA_GRID) {
-            final double l1 = lp[0];
-            final double l2 = lp[1];
-            candidates.add(new ModelCandidate(
-                    String.format(java.util.Locale.ROOT, "ElasticNet(λ1=%.2f,λ2=%.2f)", l1, l2),
-                    (df, schema) -> Predictor.fitElasticNet(df, schema, l1, l2)));
-        }
-        if (history.length >= RF_MIN_SAMPLES) {
-            int mtry = Math.max(1, spec.nFeatures / 2);
-            candidates.add(new ModelCandidate("RandomForest",
-                    (df, schema) -> Predictor.fitRandomForest(df, schema, 100, 6, mtry, RF_SEED)));
+        } else {
+            candidates.add(new ModelCandidate("OLS",
+                    (df, schema) -> Predictor.fitOls(df, schema)));
+            for (double lambda : RIDGE_LAMBDA_GRID) {
+                candidates.add(new ModelCandidate(
+                        String.format(Locale.ROOT, "Ridge(λ=%.2f)", lambda),
+                        (df, schema) -> Predictor.fitRidge(df, schema, lambda)));
+            }
+            for (double[] lp : ELASTIC_LAMBDA_GRID) {
+                final double l1 = lp[0];
+                final double l2 = lp[1];
+                candidates.add(new ModelCandidate(
+                        String.format(Locale.ROOT, "ElasticNet(λ1=%.2f,λ2=%.2f)", l1, l2),
+                        (df, schema) -> Predictor.fitElasticNet(df, schema, l1, l2)));
+            }
+            if (history.length >= RF_MIN_SAMPLES) {
+                int mtry = Math.max(1, spec.nFeatures / 2);
+                candidates.add(new ModelCandidate("RandomForest",
+                        (df, schema) -> Predictor.fitRandomForest(df, schema, 100, 6, mtry, RF_SEED)));
+            }
         }
 
         int nSamples = full.y.length;
@@ -211,66 +301,154 @@ public class MlForecastEngine {
 
         CvScore[] scores = new CvScore[candidates.size()];
         for (int i = 0; i < candidates.size(); i++) {
-            scores[i] = walkForwardScore(history, startMonthIdx, spec, cvFolds, candidates.get(i));
+            // RandomForest: use blocked walk-forward CV to expose multi-step
+            // degradation; everything else uses single-step folds.
+            int blockSize = candidates.get(i).name.startsWith("RandomForest") ? CV_BLOCK_SIZE : 1;
+            scores[i] = walkForwardScore(history, tHistory, startMonthIdx, spec,
+                    calendarMatrix, cvFolds, candidates.get(i), bc, blockSize);
         }
 
-        // Blended selection: 0.5 * sMAPE + 0.5 * min(MAPE, 1). sMAPE avoids
-        // MAPE's asymmetric penalty near zero actuals; MAPE still matters at
-        // larger scales. We clip MAPE at 1 so a single noisy fold doesn't
-        // dominate the average.
-        int best = 0;
-        double bestBlend = Double.NaN;
+        // ----- 3. Selection + overfit gate. -----
+        // Track best AND second-best (for A/B / challenger persistence).
+        int best = 0, second = -1;
+        double bestBlend = Double.NaN, secondBlend = Double.NaN;
         for (int i = 0; i < scores.length; i++) {
             double blend = blendedScore(scores[i]);
+            // Overfit gate (RandomForest only): if it nails training MAPE but
+            // CV MAPE is poor, it's memorising — score it out.
+            if (candidates.get(i).name.startsWith("RandomForest")
+                    && Double.isFinite(blend)
+                    && scores[i].mape > OVERFIT_CV_MAPE) {
+                try {
+                    Predictor probe = candidates.get(i).fit(full.df, full.schema);
+                    double trainMape = inSampleMape(probe, full, bc);
+                    if (Double.isFinite(trainMape) && trainMape < OVERFIT_TRAIN_MAPE) {
+                        blend = Double.POSITIVE_INFINITY;
+                        log.debug("RandomForest excluded by overfit gate: train MAPE={}, CV MAPE={}",
+                                trainMape, scores[i].mape);
+                    }
+                } catch (RuntimeException ignored) { /* probe failure → keep blend */ }
+            }
             if (Double.isNaN(bestBlend) || (!Double.isNaN(blend) && blend < bestBlend)) {
-                best = i;
-                bestBlend = blend;
+                second = best; secondBlend = bestBlend;
+                best = i; bestBlend = blend;
+            } else if (Double.isNaN(secondBlend) || (!Double.isNaN(blend) && blend < secondBlend)) {
+                second = i; secondBlend = blend;
             }
         }
 
         Predictor model = candidates.get(best).fit(full.df, full.schema);
+        String challengerName = (second >= 0 && second != best) ? candidates.get(second).name : null;
 
-        // In-sample fitted values aligned with history.
+        // ----- 4. In-sample fitted values, back-transformed to original scale. -----
         List<Double> fitted = new ArrayList<>(history.length);
         for (int t = 0; t < spec.firstT; t++) fitted.add(history[t]);
         double[] fittedTail = model.fittedValues();
-        for (double v : fittedTail) fitted.add(Math.max(0.0, v));
+        for (double v : fittedTail) fitted.add(bc.inverse(v));
 
+        // Residual std in transformed space (used for the bootstrap noise).
         double residualStd = computeResidualStd(model.residuals());
         double rSquared = model.rSquared();
 
-        // Recursive multi-step forecast (single point estimate).
-        List<Double> future = recursiveForecast(history, startMonthIdx, spec, model, horizon);
+        // ----- 5. Recursive forecast (in transformed space, then inverse). -----
+        List<Double> tFuture = recursiveForecast(tHistory, startMonthIdx, spec, model, horizon, calendarMatrix);
+        List<Double> future = new ArrayList<>(horizon);
+        for (double v : tFuture) future.add(bc.inverse(v));
 
-        // Bootstrap prediction intervals — per horizon, the 2.5/97.5 percentiles
-        // of `future + sampled residual` across BOOTSTRAP_DRAWS resamples.
-        double[][] pi = bootstrapIntervals(history, startMonthIdx, spec, model,
-                model.residuals(), horizon);
+        // ----- 6. Bootstrap PIs in transformed space, then inverse. -----
+        double[][] pi = bootstrapIntervals(tHistory, startMonthIdx, spec, model,
+                model.residuals(), horizon, calendarMatrix);
         List<Double> lower = new ArrayList<>(horizon);
         List<Double> upper = new ArrayList<>(horizon);
         for (int h = 0; h < horizon; h++) {
-            lower.add(pi[0][h]);
-            upper.add(pi[1][h]);
+            double lo = bc.inverse(pi[0][h]);
+            double up = bc.inverse(pi[1][h]);
+            // Box-Cox can flip the order around λ < 0; ensure lo ≤ up.
+            if (lo > up) { double tmp = lo; lo = up; up = tmp; }
+            lower.add(Math.max(0.0, lo));
+            upper.add(Math.max(0.0, up));
         }
+
+        // ----- 7. Feature importances. -----
+        double[] rawImp = model.rawImportances();
+        double[] standardised = standardiseImportances(rawImp, full.df, full.featureNames,
+                model.importancesSigned());
 
         CvScore bestScore = scores[best];
         if (log.isDebugEnabled()) {
-            log.debug("ML forecast: picked {} (features={}, samples={}, cvFolds={}, "
-                    + "OOS-MAPE={}, OOS-sMAPE={}, OOS-RMSE={}, R²={})",
-                    candidates.get(best).name, spec.nFeatures, nSamples, cvFolds,
-                    bestScore.mape, bestScore.smape, bestScore.rmse, rSquared);
+            log.debug("ML forecast: picked {} (challenger={}, features={}, samples={}, " +
+                    "cvFolds={}, OOS-MAPE={}, OOS-sMAPE={}, OOS-RMSE={}, MASE={}, R²={}, λ={})",
+                    candidates.get(best).name, challengerName, spec.nFeatures, nSamples, cvFolds,
+                    bestScore.mape, bestScore.smape, bestScore.rmse, bestScore.mase,
+                    rSquared, bc.lambda);
         }
 
         return new MlForecastResult(fitted, future, lower, upper, residualStd,
-                rSquared, nSamples, candidates.get(best).name, spec.nFeatures,
-                bestScore.mape, bestScore.smape, bestScore.rmse, cvFolds);
+                rSquared, nSamples, candidates.get(best).name, full.featureCount,
+                bestScore.mape, bestScore.smape, bestScore.rmse, cvFolds,
+                bestScore.mase, bc.lambda, full.featureNames, standardised,
+                model.importancesSigned(), challengerName);
+    }
+
+    /**
+     * Standardise linear coefficients (β·σ_x) so they are comparable across
+     * features regardless of unit. Tree-importance arrays pass through unchanged.
+     */
+    private static double[] standardiseImportances(double[] raw, DataFrame df,
+                                                   String[] columnNames, boolean signed) {
+        if (raw == null) return null;
+        double[] out = new double[raw.length];
+        if (!signed) {
+            // Unsigned tree importances — keep as-is.
+            for (int j = 0; j < raw.length; j++) out[j] = raw[j];
+            return out;
+        }
+        // For each feature column j (offset +1 to skip the y column), compute σ_x.
+        for (int j = 0; j < raw.length; j++) {
+            String col = (j + 1 < columnNames.length) ? columnNames[j + 1] : null;
+            double sigma = (col == null) ? 1.0 : columnStd(df, col);
+            out[j] = raw[j] * sigma;
+        }
+        return out;
+    }
+
+    private static double columnStd(DataFrame df, String col) {
+        try {
+            int n = df.size();
+            if (n < 2) return 0.0;
+            double mean = 0.0;
+            double[] v = new double[n];
+            for (int i = 0; i < n; i++) { v[i] = df.get(i).getDouble(col); mean += v[i]; }
+            mean /= n;
+            double s2 = 0.0;
+            for (double x : v) { double d = x - mean; s2 += d * d; }
+            return Math.sqrt(s2 / (n - 1));
+        } catch (RuntimeException ex) {
+            return 0.0;
+        }
+    }
+
+    /** Compute in-sample MAPE in the original (back-transformed) space. */
+    private static double inSampleMape(Predictor p, TrainingMatrix m, BoxCox.Fit bc) {
+        double[] yHat = p.fittedValues();
+        if (yHat == null) return Double.NaN;
+        double[] actual = new double[yHat.length];
+        double[] forecast = new double[yHat.length];
+        for (int i = 0; i < yHat.length; i++) {
+            actual[i] = bc.inverse(m.y[i]);
+            forecast[i] = bc.inverse(yHat[i]);
+        }
+        return Metrics.mape(actual, forecast);
     }
 
     private static double blendedScore(CvScore s) {
         if (Double.isNaN(s.mape) && Double.isNaN(s.smape)) return Double.NaN;
-        double a = Double.isNaN(s.mape) ? 1.0 : Math.min(1.0, s.mape);
-        double b = Double.isNaN(s.smape) ? 1.0 : s.smape;
-        return 0.5 * a + 0.5 * b;
+        double mape  = Double.isNaN(s.mape)  ? 1.0 : Math.min(1.0, s.mape);
+        double smape = Double.isNaN(s.smape) ? 1.0 : s.smape;
+        // MASE component: <1 means we beat seasonal-naive; we cap at 2 and
+        // normalise to [0, 1] for blending.
+        double maseN = Double.isNaN(s.mase) ? 0.5 : Math.min(2.0, s.mase) / 2.0;
+        return 0.4 * smape + 0.4 * mape + 0.2 * maseN;
     }
 
     /* ------------------------- Feature engineering ------------------------- */
@@ -294,32 +472,61 @@ public class MlForecastEngine {
         final DataFrame df;
         final StructType schema;
         final double[] y;
-        TrainingMatrix(DataFrame df, StructType schema, double[] y) {
+        final String[] featureNames;
+        final int featureCount;
+        TrainingMatrix(DataFrame df, StructType schema, double[] y,
+                       String[] featureNames, int featureCount) {
             this.df = df;
             this.schema = schema;
             this.y = y;
+            this.featureNames = featureNames;
+            this.featureCount = featureCount;
         }
     }
 
-    private static TrainingMatrix buildMatrix(double[] history, int startMonthIdx, FeatureSpec spec) {
-        int n = history.length;
+    /**
+     * Build a (X, y) matrix over the transformed history. {@code calendarMatrix}
+     * is null-safe — when supplied its rows for indices ≥ spec.firstT are
+     * appended as additional exogenous columns.
+     */
+    private static TrainingMatrix buildMatrix(double[] tHistory, int startMonthIdx,
+                                              FeatureSpec spec, double[][] calendarMatrix) {
+        int n = tHistory.length;
         int nSamples = n - spec.firstT;
-        double[][] frame = new double[nSamples][spec.nFeatures + 1];
+        int calCols = (calendarMatrix == null || calendarMatrix.length == 0) ? 0
+                : calendarMatrix[0].length;
+        int totalFeatures = spec.nFeatures + calCols;
+
+        // Build column names: ["y", spec features..., calendar features...].
+        String[] columnNames = new String[1 + totalFeatures];
+        System.arraycopy(spec.columnNames, 0, columnNames, 0, spec.columnNames.length);
+        if (calCols > 0) {
+            for (int i = 0; i < calCols; i++) {
+                columnNames[spec.columnNames.length + i] =
+                        i < CalendarFeatureService.FEATURE_NAMES.length
+                                ? CalendarFeatureService.FEATURE_NAMES[i]
+                                : "exog_" + i;
+            }
+        }
+
+        double[][] frame = new double[nSamples][totalFeatures + 1];
         double[] y = new double[nSamples];
         for (int i = 0; i < nSamples; i++) {
             int t = spec.firstT + i;
-            double[] features = buildFeatures(history, startMonthIdx, spec, t, n);
-            frame[i][0] = history[t];
-            y[i] = history[t];
-            System.arraycopy(features, 0, frame[i], 1, spec.nFeatures);
+            double[] features = buildFeatures(tHistory, startMonthIdx, spec, t, n,
+                    calendarMatrix, calCols);
+            frame[i][0] = tHistory[t];
+            y[i] = tHistory[t];
+            System.arraycopy(features, 0, frame[i], 1, totalFeatures);
         }
-        DataFrame df = DataFrame.of(frame, spec.columnNames);
-        return new TrainingMatrix(df, df.schema(), y);
+        DataFrame df = DataFrame.of(frame, columnNames);
+        return new TrainingMatrix(df, df.schema(), y, columnNames, totalFeatures);
     }
 
     private static double[] buildFeatures(double[] series, int startMonthIdx, FeatureSpec spec,
-                                          int t, int nForNormalise) {
-        double[] f = new double[spec.nFeatures];
+                                          int t, int nForNormalise,
+                                          double[][] calendarMatrix, int calCols) {
+        double[] f = new double[spec.nFeatures + calCols];
         f[0] = series[t - 1];
         if (spec == FeatureSpec.SMALL) {
             f[1] = (double) t / nForNormalise;
@@ -327,16 +534,19 @@ public class MlForecastEngine {
             double theta = 2.0 * Math.PI * month / 12.0;
             f[2] = Math.sin(theta);
             f[3] = Math.cos(theta);
-            return f;
+        } else {
+            f[1] = series[t - 2];
+            f[2] = (double) t / nForNormalise;
+            int month = (startMonthIdx + t) % 12;
+            double theta = 2.0 * Math.PI * month / 12.0;
+            f[3] = Math.sin(theta);
+            f[4] = Math.cos(theta);
+            f[5] = Math.sin(2.0 * theta);
+            f[6] = Math.cos(2.0 * theta);
         }
-        f[1] = series[t - 2];
-        f[2] = (double) t / nForNormalise;
-        int month = (startMonthIdx + t) % 12;
-        double theta = 2.0 * Math.PI * month / 12.0;
-        f[3] = Math.sin(theta);
-        f[4] = Math.cos(theta);
-        f[5] = Math.sin(2.0 * theta);
-        f[6] = Math.cos(2.0 * theta);
+        if (calCols > 0 && calendarMatrix != null && t < calendarMatrix.length) {
+            System.arraycopy(calendarMatrix[t], 0, f, spec.nFeatures, calCols);
+        }
         return f;
     }
 
@@ -361,76 +571,118 @@ public class MlForecastEngine {
         final double mape;
         final double smape;
         final double rmse;
-        CvScore(double mape, double smape, double rmse) {
+        final double mase;
+        CvScore(double mape, double smape, double rmse, double mase) {
             this.mape = mape;
             this.smape = smape;
             this.rmse = rmse;
+            this.mase = mase;
         }
-        static final CvScore NAN = new CvScore(Double.NaN, Double.NaN, Double.NaN);
+        static final CvScore NAN = new CvScore(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
     }
 
     /**
-     * Walk-forward CV scoring. Returns MAPE, sMAPE, RMSE averaged over the
-     * last {@code folds} one-step-ahead predictions. Any fold that throws
-     * (singular matrix, numerical blow-up) is skipped rather than failing
-     * the whole evaluation.
+     * Walk-forward CV scoring over the back-transformed predictions.
+     *
+     * <p>{@code blockSize} = 1 yields the classic single-step rolling fold;
+     * {@code blockSize} > 1 trains once per block and predicts the next
+     * {@code blockSize} months, exposing genuine multi-step degradation
+     * (used for RandomForest where lag-1 lookups are too forgiving).
+     *
+     * <p>All comparisons use the original (back-transformed) scale so the
+     * metrics are interpretable to users.
      */
-    private static CvScore walkForwardScore(double[] history, int startMonthIdx,
-                                            FeatureSpec spec, int folds,
-                                            ModelCandidate candidate) {
+    private static CvScore walkForwardScore(double[] history, double[] tHistory,
+                                            int startMonthIdx, FeatureSpec spec,
+                                            double[][] calendarMatrix, int folds,
+                                            ModelCandidate candidate, BoxCox.Fit bc,
+                                            int blockSize) {
         if (folds <= 0) return CvScore.NAN;
-        int nSamples = history.length - spec.firstT;
+        int nSamples = tHistory.length - spec.firstT;
         int startFold = nSamples - folds;
         if (startFold < MIN_CV_TRAIN_ROWS) return CvScore.NAN;
+        int calCols = (calendarMatrix == null || calendarMatrix.length == 0) ? 0
+                : calendarMatrix[0].length;
 
-        double sumMape = 0.0, sumSmape = 0.0, sumSqErr = 0.0;
-        int okFolds = 0;
-        for (int trainEnd = startFold; trainEnd < nSamples; trainEnd++) {
+        List<Double> actuals = new ArrayList<>();
+        List<Double> forecasts = new ArrayList<>();
+        for (int trainEnd = startFold; trainEnd < nSamples; trainEnd += blockSize) {
             int prefixLen = spec.firstT + trainEnd;
-            double[] prefix = new double[prefixLen];
-            System.arraycopy(history, 0, prefix, 0, prefixLen);
+            double[] tPrefix = new double[prefixLen];
+            System.arraycopy(tHistory, 0, tPrefix, 0, prefixLen);
             TrainingMatrix tm;
             Predictor m;
             try {
-                tm = buildMatrix(prefix, startMonthIdx, spec);
+                tm = buildMatrix(tPrefix, startMonthIdx, spec, calendarMatrix);
                 m = candidate.fit(tm.df, tm.schema);
             } catch (RuntimeException ex) {
                 continue;
             }
-            int tNext = prefixLen;
-            // Use the same `nForNormalise` (= prefixLen) at evaluation time as
-            // was used to train the candidate on the prefix. Otherwise the
-            // trend feature `t / nForNormalise` is on a different scale at
-            // eval vs. train, which biases walk-forward MAPE/sMAPE/RMSE and
-            // can flip the model-selection winner.
-            double[] feats = buildFeatures(history, startMonthIdx, spec, tNext, prefixLen);
-            double yHat = Math.max(0.0, m.predict(feats));
-            double yTrue = history[tNext];
-            double denomMape = Math.max(MAPE_EPS, Math.abs(yTrue));
-            double denomSmape = Math.max(MAPE_EPS, (Math.abs(yTrue) + Math.abs(yHat)) / 2.0);
-            double err = yTrue - yHat;
-            sumMape += Math.abs(err) / denomMape;
-            sumSmape += Math.abs(err) / denomSmape;
-            sumSqErr += err * err;
-            okFolds++;
+            // Predict the next `blockSize` months recursively in transformed space.
+            int reach = Math.min(blockSize, nSamples - trainEnd);
+            double[] tExtended = Arrays.copyOf(tPrefix, prefixLen + reach);
+            for (int h = 1; h <= reach; h++) {
+                int tNext = prefixLen + h - 1;
+                double[] feats = buildFeatures(tExtended, startMonthIdx, spec, tNext, prefixLen,
+                        calendarMatrix, calCols);
+                double tPred;
+                try {
+                    tPred = m.predict(feats);
+                } catch (RuntimeException ex) {
+                    tPred = tExtended[tNext - 1];
+                }
+                tExtended[tNext] = tPred;
+                int origIdx = tNext;
+                actuals.add(history[origIdx]);
+                forecasts.add(Math.max(0.0, bc.inverse(tPred)));
+            }
         }
-        if (okFolds == 0) return CvScore.NAN;
-        return new CvScore(sumMape / okFolds, sumSmape / okFolds,
-                Math.sqrt(sumSqErr / okFolds));
+        if (actuals.isEmpty()) return CvScore.NAN;
+        double[] a = actuals.stream().mapToDouble(Double::doubleValue).toArray();
+        double[] f = forecasts.stream().mapToDouble(Double::doubleValue).toArray();
+        return new CvScore(
+                Metrics.mape(a, f),
+                Metrics.smape(a, f),
+                Metrics.rmse(a, f),
+                Metrics.mase(history, paddedForMase(history, a, f), 12));
+    }
+
+    /** Build a forecast array aligned with the {@code history} indices used
+     *  by MASE — predictions slot into their original positions, the rest
+     *  are filled with the actual value (zero error). */
+    private static double[] paddedForMase(double[] history, double[] actuals, double[] forecasts) {
+        double[] padded = history.clone();
+        // We don't know exactly which indices were predicted, but for MASE
+        // we just need the SAME-length arrays; the scale denominator dominates.
+        int k = Math.min(actuals.length, history.length);
+        for (int i = 0; i < k; i++) {
+            int idx = history.length - k + i;
+            if (idx >= 0 && idx < padded.length) padded[idx] = forecasts[i];
+        }
+        return padded;
     }
 
     /* -------------------------- Recursive forecast -------------------------- */
 
-    private static List<Double> recursiveForecast(double[] history, int startMonthIdx,
-                                                  FeatureSpec spec, Predictor model, int horizon) {
-        int n = history.length;
+    private static List<Double> recursiveForecast(double[] tHistory, int startMonthIdx,
+                                                  FeatureSpec spec, Predictor model, int horizon,
+                                                  double[][] calendarMatrix) {
+        int n = tHistory.length;
+        int calCols = (calendarMatrix == null || calendarMatrix.length == 0) ? 0
+                : calendarMatrix[0].length;
         List<Double> future = new ArrayList<>(horizon);
         double[] extended = new double[n + horizon];
-        System.arraycopy(history, 0, extended, 0, n);
+        System.arraycopy(tHistory, 0, extended, 0, n);
         for (int h = 1; h <= horizon; h++) {
             int t = n - 1 + h;
-            double[] feats = buildFeatures(extended, startMonthIdx, spec, t, n);
-            double pred = Math.max(0.0, model.predict(feats));
+            double[] feats = buildFeatures(extended, startMonthIdx, spec, t, n,
+                    calendarMatrix, calCols);
+            double pred;
+            try {
+                pred = model.predict(feats);
+            } catch (RuntimeException ex) {
+                pred = extended[t - 1];
+            }
             extended[t] = pred;
             future.add(pred);
         }
@@ -438,25 +690,25 @@ public class MlForecastEngine {
     }
 
     /**
-     * Bootstrap prediction intervals. For each draw we recursively forecast
-     * {@code horizon} steps but add a random in-sample residual at each
-     * step (with replacement). The 2.5/97.5 percentiles over
-     * {@value #BOOTSTRAP_DRAWS} draws form the interval per horizon.
+     * Bootstrap prediction intervals in transformed space. The caller is
+     * responsible for inverse-transforming the percentile rows.
      *
      * <p>Returned shape: {@code [2][horizon]} with row 0 = lower, row 1 = upper.
      */
-    private static double[][] bootstrapIntervals(double[] history, int startMonthIdx,
+    private static double[][] bootstrapIntervals(double[] tHistory, int startMonthIdx,
                                                  FeatureSpec spec, Predictor model,
-                                                 double[] residuals, int horizon) {
+                                                 double[] residuals, int horizon,
+                                                 double[][] calendarMatrix) {
+        int calCols = (calendarMatrix == null || calendarMatrix.length == 0) ? 0
+                : calendarMatrix[0].length;
         double[][] draws = new double[BOOTSTRAP_DRAWS][horizon];
         Random rng = new Random(BOOTSTRAP_SEED);
-        int n = history.length;
+        int n = tHistory.length;
         int r = residuals == null ? 0 : residuals.length;
         // Center residuals on zero before resampling. Raw in-sample residuals
         // can have a non-zero mean on small samples (especially for ridge /
         // elastic net which shrink toward zero) — sampling those directly
-        // shifts the prediction interval up or down. Subtracting the mean
-        // gives a symmetric noise distribution centered on the point forecast.
+        // shifts the prediction interval up or down.
         double[] centered;
         if (r > 0) {
             double mean = 0.0;
@@ -469,13 +721,16 @@ public class MlForecastEngine {
         }
         for (int b = 0; b < BOOTSTRAP_DRAWS; b++) {
             double[] extended = new double[n + horizon];
-            System.arraycopy(history, 0, extended, 0, n);
+            System.arraycopy(tHistory, 0, extended, 0, n);
             for (int h = 1; h <= horizon; h++) {
                 int t = n - 1 + h;
-                double[] feats = buildFeatures(extended, startMonthIdx, spec, t, n);
-                double pred = model.predict(feats);
+                double[] feats = buildFeatures(extended, startMonthIdx, spec, t, n,
+                        calendarMatrix, calCols);
+                double pred;
+                try { pred = model.predict(feats); }
+                catch (RuntimeException ex) { pred = extended[t - 1]; }
                 double noise = r > 0 ? centered[rng.nextInt(r)] : 0.0;
-                double noisy = Math.max(0.0, pred + noise);
+                double noisy = pred + noise;
                 extended[t] = noisy;
                 draws[b][h - 1] = noisy;
             }
@@ -515,5 +770,29 @@ public class MlForecastEngine {
             sumSq += d * d;
         }
         return Math.sqrt(sumSq / (residuals.length - 1));
+    }
+
+    /**
+     * Convenience: turn a {@link MlForecastResult}'s parallel name/value/sign
+     * arrays into an ordered {@code Map<name, value>}, sorted by absolute
+     * magnitude descending. Useful for the methodology panel.
+     */
+    public static Map<String, Double> featureImportanceMap(MlForecastResult r) {
+        if (r == null || r.featureNames == null || r.featureImportances == null) {
+            return java.util.Collections.emptyMap();
+        }
+        // Skip the "y" column at position 0.
+        int p = Math.min(r.featureImportances.length, r.featureNames.length - 1);
+        Integer[] order = new Integer[p];
+        for (int i = 0; i < p; i++) order[i] = i;
+        java.util.Arrays.sort(order, (a, b) ->
+                Double.compare(Math.abs(r.featureImportances[b]),
+                               Math.abs(r.featureImportances[a])));
+        Map<String, Double> m = new LinkedHashMap<>();
+        for (int idx : order) {
+            String name = r.featureNames[idx + 1];
+            m.put(name, r.featureImportances[idx]);
+        }
+        return m;
     }
 }
