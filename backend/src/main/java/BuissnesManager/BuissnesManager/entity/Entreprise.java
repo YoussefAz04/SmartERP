@@ -40,6 +40,9 @@ public class Entreprise {
     private String adresse;
     private String Telephone;
 
+    @Column(nullable = false, columnDefinition = "bit default 1")
+    private boolean active = true;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
