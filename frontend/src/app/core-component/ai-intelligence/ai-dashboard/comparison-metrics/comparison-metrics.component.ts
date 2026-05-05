@@ -64,6 +64,9 @@ export class ComparisonMetricsComponent {
     if (this.isNew(p)) return 'NOUV.';
     const v = p.changePercent ?? 0;
     const sign = v >= 0 ? '+' : '';
+    // When the value is at the cap boundary, signal that it is truncated.
+    if (v >= 9999) return '>9999%';
+    if (v <= -9999) return '<-9999%';
     return `${sign}${v.toFixed(1)}%`;
   }
 
@@ -81,5 +84,22 @@ export class ComparisonMetricsComponent {
     if (trend === 'up') return invert ? 'badge-down' : 'badge-up';
     if (trend === 'down') return invert ? 'badge-up' : 'badge-down';
     return 'badge-stable';
+  }
+
+  /** Icon class for a "sales/revenue" category label – green up when growing, red down when shrinking. */
+  salesIconClass(p: PeriodComparison | null | undefined): string {
+    if (!p || p.trend === 'stable') return 'fas fa-minus text-muted';
+    return p.trend === 'up' ? 'fas fa-arrow-up text-success' : 'fas fa-arrow-down text-danger';
+  }
+
+  /** Icon class for a "purchases/cost" category label – inverted: up purchases = red, down = green. */
+  purchaseIconClass(p: PeriodComparison | null | undefined): string {
+    if (!p || p.trend === 'stable') return 'fas fa-minus text-muted';
+    return p.trend === 'up' ? 'fas fa-arrow-up text-danger' : 'fas fa-arrow-down text-success';
+  }
+
+  /** Icon class for a "margin" category label – same direction as sales icon. */
+  marginIconClass(p: PeriodComparison | null | undefined): string {
+    return this.salesIconClass(p);
   }
 }

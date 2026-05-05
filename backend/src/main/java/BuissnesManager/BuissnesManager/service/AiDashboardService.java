@@ -19,6 +19,9 @@ import java.util.Map;
 @Service
 public class AiDashboardService {
 
+    /** Maximum absolute value for a computed change-percent — avoids misleading display when the base is near zero. */
+    private static final double MAX_CHANGE_PERCENT = 9999.0;
+
     @Autowired
     private AnalyticService analyticService;
 
@@ -80,12 +83,12 @@ public class AiDashboardService {
         // Year-over-year revenue growth. When the prior year has no data we
         // report null (nullable Double) rather than 0.0 so the UI can show a
         // "NOUV." badge instead of misleading "0% growth". We also cap extreme
-        // ratios (tiny prev-year anchor → millions of % growth) to ±9999%.
+        // ratios (tiny prev-year anchor → millions of % growth) to ±MAX_CHANGE_PERCENT.
         Double revenueGrowth = null;
         if (revenuePrevYear > 0) {
             double raw = ((revenueCurrentYear - revenuePrevYear) / revenuePrevYear) * 100.0;
-            if (raw >  9999.0) raw =  9999.0;
-            if (raw < -9999.0) raw = -9999.0;
+            if (raw >  MAX_CHANGE_PERCENT) raw =  MAX_CHANGE_PERCENT;
+            if (raw < -MAX_CHANGE_PERCENT) raw = -MAX_CHANGE_PERCENT;
             revenueGrowth = Math.round(raw * 10.0) / 10.0;
         }
         kpi.setRevenueGrowth(revenueGrowth);
@@ -98,13 +101,13 @@ public class AiDashboardService {
         Long ordersPrevYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startPrevYear, endPrevYear);
         long ocy = ordersCurrentYear != null ? ordersCurrentYear : 0L;
         long opy = ordersPrevYear != null ? ordersPrevYear : 0L;
-        // Same treatment as revenueGrowth: null for "no prior data" and ±9999%
+        // Same treatment as revenueGrowth: null for "no prior data" and ±MAX_CHANGE_PERCENT
         // clamp so a single prior-year order doesn't produce absurd percentages.
         Double orderGrowth = null;
         if (opy > 0) {
             double raw = ((ocy - opy) / (double) opy) * 100.0;
-            if (raw >  9999.0) raw =  9999.0;
-            if (raw < -9999.0) raw = -9999.0;
+            if (raw >  MAX_CHANGE_PERCENT) raw =  MAX_CHANGE_PERCENT;
+            if (raw < -MAX_CHANGE_PERCENT) raw = -MAX_CHANGE_PERCENT;
             orderGrowth = Math.round(raw * 10.0) / 10.0;
         }
         kpi.setOrderGrowth(orderGrowth);
@@ -151,9 +154,10 @@ public class AiDashboardService {
         LocalDate mtdStart = LocalDate.of(currentYear, currentMonth, 1);
         LocalDate mtdEnd = today;
 
-        // LTD: first day of last month to last day of last month
+        // LTD: same period in the previous month (fair apples-to-apples comparison with MTD).
+        // e.g. if today is May 5, LTD covers April 1–April 5, not April 1–April 30.
         LocalDate lastMonthStart = mtdStart.minusMonths(1);
-        LocalDate lastMonthEnd = mtdStart.minusDays(1);
+        LocalDate lastMonthEnd = today.minusMonths(1);
 
         Double mtd = commandeVenteRepository.getSalesInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double ltd = commandeVenteRepository.getSalesInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
@@ -256,6 +260,9 @@ public class AiDashboardService {
             }
         } else {
             double changePercent = Math.round((change / Math.abs(previous)) * 1000.0) / 10.0;
+            // Cap extreme ratios (tiny previous base → huge %) to avoid misleading display.
+            if (changePercent >  MAX_CHANGE_PERCENT) changePercent =  MAX_CHANGE_PERCENT;
+            if (changePercent < -MAX_CHANGE_PERCENT) changePercent = -MAX_CHANGE_PERCENT;
             dto.setChangePercent(changePercent);
             if (changePercent > 1.0) {
                 dto.setTrend("up");
