@@ -452,11 +452,11 @@ public class MlForecastEngine {
         Random rng = new Random(BOOTSTRAP_SEED);
         int n = history.length;
         int r = residuals == null ? 0 : residuals.length;
-        // Centre residuals on zero before resampling. Raw in-sample residuals
+        // Center residuals on zero before resampling. Raw in-sample residuals
         // can have a non-zero mean on small samples (especially for ridge /
         // elastic net which shrink toward zero) — sampling those directly
         // shifts the prediction interval up or down. Subtracting the mean
-        // gives a symmetric noise distribution centred on the point forecast.
+        // gives a symmetric noise distribution centered on the point forecast.
         double[] centered;
         if (r > 0) {
             double mean = 0.0;
