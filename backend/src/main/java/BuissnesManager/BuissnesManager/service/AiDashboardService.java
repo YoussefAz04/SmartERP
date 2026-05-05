@@ -154,10 +154,12 @@ public class AiDashboardService {
         LocalDate mtdStart = LocalDate.of(currentYear, currentMonth, 1);
         LocalDate mtdEnd = today;
 
-        // LTD: same period in the previous month (fair apples-to-apples comparison with MTD).
-        // e.g. if today is May 5, LTD covers April 1–April 5, not April 1–April 30.
+        // LTD: full previous month (April 1–April 30 when today is in May).
+        // Using the complete prior month gives a meaningful comparison against the
+        // partial current month (MTD), and avoids showing 0 when orders only existed
+        // after the equivalent day of the previous month.
         LocalDate lastMonthStart = mtdStart.minusMonths(1);
-        LocalDate lastMonthEnd = today.minusMonths(1);
+        LocalDate lastMonthEnd = mtdStart.minusDays(1); // last day of previous month
 
         Double mtd = commandeVenteRepository.getSalesInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double ltd = commandeVenteRepository.getSalesInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
