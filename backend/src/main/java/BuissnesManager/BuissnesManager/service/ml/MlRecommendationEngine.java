@@ -215,7 +215,24 @@ public class MlRecommendationEngine {
             log.debug("Opportunity regression fit failed ({}); skipping.", ex.getMessage());
             return out;
         }
-        double[] scores = model.fittedValues();
+        double[] fitted = model.fittedValues();
+        double[] residuals = model.residuals();
+        // Rank by residual (actual − predicted) so we surface articles that
+        // genuinely *outperform* the regression's expectation given their
+        // features — that is the real "opportunity" signal. Ranking by the
+        // raw fitted value (the previous behaviour) collapses to "sort by
+        // revenue" because revenue dominates the target. If residuals are
+        // numerically tiny (model overfits the small sample and residuals ~0)
+        // we fall back to the fitted ranking to avoid surfacing pure noise.
+        double[] scores;
+        double resAbsMax = 0.0;
+        for (double v : residuals) resAbsMax = Math.max(resAbsMax, Math.abs(v));
+        double fitAbsMax = 0.0;
+        for (double v : fitted) fitAbsMax = Math.max(fitAbsMax, Math.abs(v));
+        // "Collapsed" residuals: residual scale is < 1% of the fitted scale.
+        boolean collapsed = resAbsMax < 1e-9
+                || (fitAbsMax > 0 && resAbsMax / fitAbsMax < 0.01);
+        scores = collapsed ? fitted : residuals;
 
         // Rank by predicted score.
         Integer[] idx = new Integer[n];
