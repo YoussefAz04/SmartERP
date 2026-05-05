@@ -154,7 +154,7 @@ public class AiDashboardService {
         LocalDate mtdStart = LocalDate.of(currentYear, currentMonth, 1);
         LocalDate mtdEnd = today;
 
-        // LTD: full previous month (April 1–April 30 when today is in May).
+        // Previous month (full): April 1–April 30 when today is in May.
         // Using the complete prior month gives a meaningful comparison against the
         // partial current month (MTD), and avoids showing 0 when orders only existed
         // after the equivalent day of the previous month.
