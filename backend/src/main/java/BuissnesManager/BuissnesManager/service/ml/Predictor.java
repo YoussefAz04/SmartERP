@@ -30,6 +30,23 @@ public interface Predictor {
     /** Coefficient of determination on the training set, in [−∞, 1]. */
     double rSquared();
 
+    /**
+     * Raw feature contributions for the methodology panel, length p (matches
+     * the feature columns in the order they were passed at fit time):
+     *
+     * <ul>
+     *   <li>linear models — coefficients (β) excluding the intercept;</li>
+     *   <li>tree ensembles — Smile's mean-decrease-in-impurity importances.</li>
+     * </ul>
+     *
+     * <p>Returns {@code null} when the underlying model does not expose the
+     * information; callers should treat that as "not computed".
+     */
+    default double[] rawImportances() { return null; }
+
+    /** True when {@link #rawImportances()} returns signed coefficients. */
+    default boolean importancesSigned() { return false; }
+
     /** Factory: fit an {@link OLS} regression. */
     static Predictor fitOls(DataFrame df, StructType schema) {
         return new LinearAdapter("OLS", OLS.fit(Formula.lhs("y"), df), schema);
@@ -81,6 +98,20 @@ public interface Predictor {
         @Override public double[] fittedValues() { return model.fittedValues(); }
         @Override public double[] residuals() { return model.residuals(); }
         @Override public double rSquared() { return model.RSquared(); }
+        @Override public double[] rawImportances() {
+            // LinearModel.coefficients() returns intercept + p coefficients.
+            // Strip the intercept so the array aligns with the feature columns.
+            try {
+                double[] all = model.coefficients();
+                if (all == null || all.length <= 1) return null;
+                double[] beta = new double[all.length - 1];
+                System.arraycopy(all, 1, beta, 0, beta.length);
+                return beta;
+            } catch (RuntimeException ex) {
+                return null;
+            }
+        }
+        @Override public boolean importancesSigned() { return true; }
         @SuppressWarnings("unused") public StructType schema() { return schema; }
     }
 
@@ -133,5 +164,14 @@ public interface Predictor {
         @Override public double[] fittedValues() { return fitted; }
         @Override public double[] residuals() { return residuals; }
         @Override public double rSquared() { return rSquared; }
+        @Override public double[] rawImportances() {
+            try {
+                double[] imp = rf.importance();
+                return imp == null ? null : imp.clone();
+            } catch (RuntimeException ex) {
+                return null;
+            }
+        }
+        @Override public boolean importancesSigned() { return false; }
     }
 }

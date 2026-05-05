@@ -105,17 +105,17 @@ class MlForecastEngineTest {
 
     @Test
     void wideFeatureSetOnLongHistory() {
-        // 24 months — well above WIDE_MIN_SAMPLES — so the wide 7-feature
-        // set must be used and walk-forward CV must produce a real MAPE.
-        double[] history = new double[24];
-        for (int t = 0; t < 24; t++) {
+        // 36 months — at WIDE_MIN_SAMPLES — so the wide 7-feature set must
+        // kick in and walk-forward CV must produce a real MAPE.
+        double[] history = new double[36];
+        for (int t = 0; t < 36; t++) {
             history[t] = 1000.0 + 50.0 * t + 200.0 * Math.sin(2.0 * Math.PI * t / 12.0);
         }
         MlForecastEngine.MlForecastResult r = engine.forecast(history, 0, 6);
         assertEquals(7, r.featureCount,
-                "long history should trigger the 7-feature wide model");
+                "history of 36 months should trigger the 7-feature wide model");
         assertFalse(Double.isNaN(r.walkForwardMape),
-                "walk-forward CV should produce a real MAPE on 24-month history");
+                "walk-forward CV should produce a real MAPE on 36-month history");
         assertTrue(r.walkForwardFolds > 0, "CV should evaluate at least one fold");
         assertNotNull(r.modelName);
         assertTrue(r.modelName.startsWith("OLS") || r.modelName.startsWith("Ridge")
