@@ -126,6 +126,13 @@ export class ArticleAchatComponent implements OnInit {
     return [...new Set(names)];
   }
 
+  get uniqueCategories(): string[] {
+    const names = this.articleAchatList
+      .map(a => a.categorieArticle?.nom)
+      .filter((n): n is string => !!n);
+    return [...new Set(names)];
+  }
+
   // --- Filtering ---
   applyFilters(): void {
     let list = [...this.articleAchatList];
