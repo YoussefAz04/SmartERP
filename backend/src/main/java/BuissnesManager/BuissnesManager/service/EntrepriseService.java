@@ -5,6 +5,7 @@ import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +73,7 @@ public class EntrepriseService {
 
 
     public List<Entreprise> getAllEntreprise(){
-        return entrepriseRepository.findAll();
+        return entrepriseRepository.findByActiveTrue();
     }
 
     public Entreprise ajouterEntreprise(Entreprise entreprise) {
@@ -111,78 +112,15 @@ public class EntrepriseService {
 
     @Transactional
     public void deleteEntreprise(Long id) {
-        // 1. Prediction logs (leaf, only references entreprise)
-        predictionLogRepository.deleteByEntrepriseId(id);
-
-        // 2. Notifications (references entreprise, article, stock)
-        notificationRepository.deleteByEntrepriseId(id);
-
-        // 3. Stock movements (references stock -> article -> entreprise)
-        stockMouvementRepo.deleteByEntrepriseId(id);
-
-        // 4. Facture line items (must be deleted before their parent factures)
-        ligneFactureAchatRepository.deleteByFactureAchatEntrepriseId(id);
-        ligneFactureVenteRepository.deleteByFactureVenteEntrepriseId(id);
-
-        // 5. Facture detail records
-        detaisFactureAchatRepo.deleteByFactureAchatEntrepriseId(id);
-        detaisFactureDeVenteRepo.deleteByFactureDeVenteEntrepriseId(id);
-
-        // 6. Factures (references commandes, fournisseurs, clients, entreprise)
-        factureAchatRepo.deleteByEntrepriseId(id);
-        factureDeVenteRepo.deleteByEntrepriseId(id);
-        factureVenteRepository.deleteByEntrepriseId(id);
-
-        // 7. Bons de réception/livraison (reference commandes and entreprise)
-        bonReceptionRepository.deleteByEntrepriseId(id);
-        bonLivraisonRepository.deleteByEntrepriseId(id);
-
-        // 8. Commande line items (must be deleted before their parent commandes)
-        ligneCommandeAchatRepository.deleteByCommandeAchatEntrepriseId(id);
-        ligneCommandeVenteRepository.deleteByCommandeVenteEntrepriseId(id);
-
-        // 9. Commandes (references fournisseurs, clients, entreprise)
-        commandeAchatRepository.deleteByEntrepriseId(id);
-        commandeVenteRepository.deleteByEntrepriseId(id);
-
-        // 10. Article ventes (references article, client, stock)
-        articleVenteRepo.deleteByEntrepriseId(id);
-
-        // 11. Stocks (references article -> entreprise)
-        stockRepository.deleteByEntrepriseId(id);
-
-        // 12. Articles (references categorie, fournisseur, mesure, entreprise)
-        articleRepository.deleteByEntrepriseId(id);
-
-        // 13. Permissions linked to enterprise roles or users (before users and roles)
-        permissionRepo.deleteByUserEntrepriseId(id);
-        permissionRepo.deleteByRoleEntrepriseId(id);
-
-        // 14. Users (Hibernate cleans up the user_roles join table on deleteAll)
-        List<User> users = userRepo.findByEntrepriseId(id);
-        if (!users.isEmpty()) {
-            userRepo.deleteAll(users);
-        }
-
-        // 15. Roles – first remove any user_roles entries pointing to enterprise roles
-        // (covers edge cases where non-enterprise users were assigned enterprise roles)
-        roleRepo.deleteUserRolesByEntrepriseId(id);
-        roleRepo.deleteByEntrepriseId(id);
-
-        // 16. Remaining master data
-        fournisseurRepo.deleteByEntrepriseId(id);
-        // Clean the legacy client_entreprises junction table before deleting clients
-        // to cover rows referencing this enterprise from clients owned by other enterprises.
-        clientRepo.deleteClientEntreprisesByEntrepriseId(id);
-        clientRepo.deleteByEntrepriseId(id);
-        categorieArticleRepository.deleteByEntrepriseId(id);
-        mesureRepository.deleteByEntrepriseId(id);
-
-        // 17. Caracteristique facture entreprise (OneToOne with entreprise)
-        caracteristiqueFactureEntrepriseRepo.deleteByEntrepriseId(id);
-
-        // 18. Finally delete the entreprise itself
-        entrepriseRepository.deleteById(id);
+        // Soft-delete: mark the entreprise as inactive instead of cascading a hard
+        // delete across all related business data. This preserves history (factures,
+        // commandes, stocks, users, etc.) while removing the entreprise from the
+        // active list shown to super admins.
+        Entreprise entreprise = entrepriseRepository.findById(id)
+                .orElseThrow(() -> new EmptyResultDataAccessException(
+                        "Entreprise non trouvée avec ID : " + id, 1));
+        entreprise.setActive(false);
+        entrepriseRepository.save(entreprise);
     }
 
     public void assignerUserToEntreprise(String username,String nom){
