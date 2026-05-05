@@ -379,8 +379,7 @@ public class MlForecastEngine {
                                             FeatureSpec spec, int folds,
                                             ModelCandidate candidate) {
         if (folds <= 0) return CvScore.NAN;
-        int n = history.length;
-        int nSamples = n - spec.firstT;
+        int nSamples = history.length - spec.firstT;
         int startFold = nSamples - folds;
         if (startFold < MIN_CV_TRAIN_ROWS) return CvScore.NAN;
 
@@ -399,7 +398,12 @@ public class MlForecastEngine {
                 continue;
             }
             int tNext = prefixLen;
-            double[] feats = buildFeatures(history, startMonthIdx, spec, tNext, n);
+            // Use the same `nForNormalise` (= prefixLen) at evaluation time as
+            // was used to train the candidate on the prefix. Otherwise the
+            // trend feature `t / nForNormalise` is on a different scale at
+            // eval vs. train, which biases walk-forward MAPE/sMAPE/RMSE and
+            // can flip the model-selection winner.
+            double[] feats = buildFeatures(history, startMonthIdx, spec, tNext, prefixLen);
             double yHat = Math.max(0.0, m.predict(feats));
             double yTrue = history[tNext];
             double denomMape = Math.max(MAPE_EPS, Math.abs(yTrue));
@@ -448,6 +452,21 @@ public class MlForecastEngine {
         Random rng = new Random(BOOTSTRAP_SEED);
         int n = history.length;
         int r = residuals == null ? 0 : residuals.length;
+        // Centre residuals on zero before resampling. Raw in-sample residuals
+        // can have a non-zero mean on small samples (especially for ridge /
+        // elastic net which shrink toward zero) — sampling those directly
+        // shifts the prediction interval up or down. Subtracting the mean
+        // gives a symmetric noise distribution centred on the point forecast.
+        double[] centered;
+        if (r > 0) {
+            double mean = 0.0;
+            for (double v : residuals) mean += v;
+            mean /= r;
+            centered = new double[r];
+            for (int i = 0; i < r; i++) centered[i] = residuals[i] - mean;
+        } else {
+            centered = new double[0];
+        }
         for (int b = 0; b < BOOTSTRAP_DRAWS; b++) {
             double[] extended = new double[n + horizon];
             System.arraycopy(history, 0, extended, 0, n);
@@ -455,7 +474,7 @@ public class MlForecastEngine {
                 int t = n - 1 + h;
                 double[] feats = buildFeatures(extended, startMonthIdx, spec, t, n);
                 double pred = model.predict(feats);
-                double noise = r > 0 ? residuals[rng.nextInt(r)] : 0.0;
+                double noise = r > 0 ? centered[rng.nextInt(r)] : 0.0;
                 double noisy = Math.max(0.0, pred + noise);
                 extended[t] = noisy;
                 draws[b][h - 1] = noisy;
