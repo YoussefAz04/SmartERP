@@ -151,9 +151,10 @@ public class AiDashboardService {
         LocalDate mtdStart = LocalDate.of(currentYear, currentMonth, 1);
         LocalDate mtdEnd = today;
 
-        // LTD: first day of last month to last day of last month
+        // LTD: same period in the previous month (fair apples-to-apples comparison with MTD).
+        // e.g. if today is May 5, LTD covers April 1–April 5, not April 1–April 30.
         LocalDate lastMonthStart = mtdStart.minusMonths(1);
-        LocalDate lastMonthEnd = mtdStart.minusDays(1);
+        LocalDate lastMonthEnd = today.minusMonths(1);
 
         Double mtd = commandeVenteRepository.getSalesInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double ltd = commandeVenteRepository.getSalesInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
@@ -256,6 +257,9 @@ public class AiDashboardService {
             }
         } else {
             double changePercent = Math.round((change / Math.abs(previous)) * 1000.0) / 10.0;
+            // Cap extreme ratios (tiny previous base → huge %) to avoid misleading display.
+            if (changePercent >  9999.0) changePercent =  9999.0;
+            if (changePercent < -9999.0) changePercent = -9999.0;
             dto.setChangePercent(changePercent);
             if (changePercent > 1.0) {
                 dto.setTrend("up");

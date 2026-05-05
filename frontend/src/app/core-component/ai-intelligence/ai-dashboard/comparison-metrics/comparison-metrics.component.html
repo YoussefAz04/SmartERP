@@ -18,7 +18,7 @@
         <!-- Sales MTD -->
         <div class="metric-group">
           <div class="metric-label-row">
-            <span class="metric-cat"><i class="fas fa-arrow-up text-success me-1"></i>Ventes</span>
+            <span class="metric-cat"><i [ngClass]="salesIconClass(comparison.mtdVsLtd)" class="me-1"></i>Ventes</span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.mtdVsLtd)"
                   [class.badge-new]="isNew(comparison.mtdVsLtd)">
               {{ changeLabel(comparison.mtdVsLtd) }}
@@ -51,7 +51,7 @@
         <!-- Purchases MTD -->
         <div class="metric-group" *ngIf="comparison.purchaseMtdVsLtd">
           <div class="metric-label-row">
-            <span class="metric-cat"><i class="fas fa-arrow-down text-danger me-1"></i>Achats</span>
+            <span class="metric-cat"><i [ngClass]="purchaseIconClass(comparison.purchaseMtdVsLtd)" class="me-1"></i>Achats</span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.purchaseMtdVsLtd, true)"
                   [class.badge-new]="isNew(comparison.purchaseMtdVsLtd)">
               {{ changeLabel(comparison.purchaseMtdVsLtd) }}
@@ -137,7 +137,7 @@
         <!-- Sales YTD -->
         <div class="metric-group">
           <div class="metric-label-row">
-            <span class="metric-cat"><i class="fas fa-arrow-up text-success me-1"></i>Ventes YTD</span>
+            <span class="metric-cat"><i [ngClass]="salesIconClass(comparison.ytdVsLastYear)" class="me-1"></i>Ventes YTD</span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.ytdVsLastYear)"
                   [class.badge-new]="isNew(comparison.ytdVsLastYear)">
               {{ changeLabel(comparison.ytdVsLastYear) }}
@@ -170,7 +170,7 @@
         <!-- Purchases YTD -->
         <div class="metric-group" *ngIf="comparison.purchaseYtd">
           <div class="metric-label-row">
-            <span class="metric-cat"><i class="fas fa-arrow-down text-danger me-1"></i>Achats YTD</span>
+            <span class="metric-cat"><i [ngClass]="purchaseIconClass(comparison.purchaseYtd)" class="me-1"></i>Achats YTD</span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.purchaseYtd, true)"
                   [class.badge-new]="isNew(comparison.purchaseYtd)">
               {{ changeLabel(comparison.purchaseYtd) }}
@@ -203,7 +203,7 @@
         <!-- Margin YTD -->
         <div class="metric-group" *ngIf="comparison.marginYtdVsLastYear">
           <div class="metric-label-row">
-            <span class="metric-cat"><i class="fas fa-percentage text-info me-1"></i>Marge YTD</span>
+            <span class="metric-cat"><i [ngClass]="marginIconClass(comparison.marginYtdVsLastYear)" class="me-1"></i>Marge YTD</span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.marginYtdVsLastYear)"
                   [class.badge-new]="isNew(comparison.marginYtdVsLastYear)">
               {{ changeLabel(comparison.marginYtdVsLastYear) }}
@@ -266,6 +266,24 @@
           </div>
         </div>
 
+      </div>
+      <!-- YTD card footer: net sales change vs prior year same period -->
+      <div class="comparison-footer">
+        <div class="change-indicator"
+             [ngClass]="isNew(comparison.ytdVsLastYear) ? 'change-new'
+                        : comparison.ytdVsLastYear.trend === 'up' ? 'change-up'
+                        : comparison.ytdVsLastYear.trend === 'down' ? 'change-down' : 'change-stable'">
+          <i class="fas"
+             [ngClass]="isNew(comparison.ytdVsLastYear) ? 'fa-wand-magic-sparkles'
+                        : comparison.ytdVsLastYear.trend === 'up' ? 'fa-arrow-trend-up'
+                        : comparison.ytdVsLastYear.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'">
+          </i>
+          <span>Ventes {{ changeLabel(comparison.ytdVsLastYear) }}</span>
+        </div>
+        <span class="change-amount"
+              [ngClass]="comparison.ytdVsLastYear.change >= 0 ? 'text-success' : 'text-danger'">
+          {{ comparison.ytdVsLastYear.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear.change) }} TND
+        </span>
       </div>
     </div>
 
