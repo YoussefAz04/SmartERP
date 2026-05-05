@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -40,7 +41,8 @@ public class Entreprise {
     private String adresse;
     private String Telephone;
 
-    @Column(nullable = false, columnDefinition = "bit default 1")
+    @Column(nullable = false)
+    @ColumnDefault("1")
     private boolean active = true;
 
     @CreationTimestamp
