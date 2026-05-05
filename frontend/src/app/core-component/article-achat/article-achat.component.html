@@ -85,18 +85,18 @@
     </div>
   </div>
 
-  <!-- Valeur Stock -->
+  <!-- Catégories Actives -->
   <div class="kpi-card kpi-card--amber kpi-d4">
     <span class="kpi-sheen" aria-hidden="true"></span>
     <span class="kpi-blob"  aria-hidden="true"></span>
     <div class="kpi-top">
-      <div class="kpi-icon-wrap"><i class="feather icon-dollar-sign"></i></div>
-      <span class="kpi-chip"><i class="feather icon-dollar-sign"></i> DT</span>
+      <div class="kpi-icon-wrap"><i class="feather icon-grid"></i></div>
+      <span class="kpi-chip"><i class="feather icon-layers"></i> Catégories</span>
     </div>
-    <div class="kpi-number">{{ totalValue | number:'1.0-0' }}</div>
-    <div class="kpi-label">Valeur Totale Stock</div>
+    <div class="kpi-number">{{ uniqueCategories.length }}</div>
+    <div class="kpi-label">Catégories Actives</div>
     <div class="kpi-footer">
-      <i class="feather icon-trending-up"></i> Inventaire valorisé
+      <i class="feather icon-tag"></i> Diversité catalogue
     </div>
   </div>
 
