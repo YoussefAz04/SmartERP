@@ -1,15 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { AbstractControl, FormBuilder, FormGroup, FormArray, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
-
-function dateLivraisonValidator(group: AbstractControl): ValidationErrors | null {
-  const dateCommande = group.get('dateCommande')?.value;
-  const dateLivraison = group.get('dateLivraisonPrevue')?.value;
-  if (dateCommande && dateLivraison && dateLivraison < dateCommande) {
-    return { dateLivraisonInvalid: true };
-  }
-  return null;
-}
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { dateLivraisonValidator, DATE_LIVRAISON_ERROR_MESSAGE } from '../../../shared/validators/date.validators';
 import { CommonModule } from '@angular/common';
 import { CommandeAchatService } from '../../../core/service/commande-achat/commande-achat.service';
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
@@ -39,6 +31,7 @@ export class AddCommandeAchatComponent implements OnInit {
   totalHT = 0;
   totalTVA = 0;
   totalTTC = 0;
+  readonly dateLivraisonErrorMessage = DATE_LIVRAISON_ERROR_MESSAGE;
 
   constructor(
     private fb: FormBuilder,
@@ -326,7 +319,7 @@ export class AddCommandeAchatComponent implements OnInit {
   // ✅ STEP 1: Validate form structure
   if (!this.commandeForm.valid) {
     if (this.commandeForm.hasError('dateLivraisonInvalid')) {
-      this.errorMessage = '❌ La date de livraison prévue doit être postérieure ou égale à la date de commande';
+      this.errorMessage = '❌ ' + DATE_LIVRAISON_ERROR_MESSAGE;
     } else {
       this.errorMessage = '❌ Veuillez remplir tous les champs obligatoires';
     }

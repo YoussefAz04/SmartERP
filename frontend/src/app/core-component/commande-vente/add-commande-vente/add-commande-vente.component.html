@@ -92,7 +92,7 @@
               <input type="date" class="field-input" formControlName="dateLivraisonPrevue">
             </div>
             <div class="field-error" *ngIf="commandeForm.hasError('dateLivraisonInvalid')">
-              <i class="feather icon-alert-circle"></i> La date de livraison doit être postérieure ou égale à la date de commande
+              <i class="feather icon-alert-circle"></i> {{ dateLivraisonErrorMessage }}
             </div>
           </div>
         </div>
