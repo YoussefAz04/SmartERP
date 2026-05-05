@@ -87,9 +87,12 @@
 
           <div class="field-group">
             <label class="field-label">Date Livraison Prévue <span class="optional-tag">optionnel</span></label>
-            <div class="input-wrap">
+            <div class="input-wrap" [class.invalid]="commandeForm.hasError('dateLivraisonInvalid')">
               <i class="feather icon-truck field-icon"></i>
               <input type="date" class="field-input" formControlName="dateLivraisonPrevue">
+            </div>
+            <div class="field-error" *ngIf="commandeForm.hasError('dateLivraisonInvalid')">
+              <i class="feather icon-alert-circle"></i> La date de livraison doit être postérieure ou égale à la date de commande
             </div>
           </div>
         </div>

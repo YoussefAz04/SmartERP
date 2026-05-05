@@ -1,5 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormArray, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
+
+function dateLivraisonValidator(group: AbstractControl): ValidationErrors | null {
+  const dateCommande = group.get('dateCommande')?.value;
+  const dateLivraison = group.get('dateLivraisonPrevue')?.value;
+  if (dateCommande && dateLivraison && dateLivraison < dateCommande) {
+    return { dateLivraisonInvalid: true };
+  }
+  return null;
+}
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CommandeVenteService } from '../../../core/service/commande-vente/commande-vente.service';
@@ -76,7 +85,7 @@ export class AddCommandeVenteComponent implements OnInit {
       clientId: [null],
       note: [''],
       lignes: this.fb.array([])
-    });
+    }, { validators: dateLivraisonValidator });
   }
 
   get lignesArray(): FormArray {
@@ -255,7 +264,11 @@ export class AddCommandeVenteComponent implements OnInit {
         }
       });
     } else {
-      this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      if (this.commandeForm.hasError('dateLivraisonInvalid')) {
+        this.notification.error('❌ La date de livraison prévue doit être postérieure ou égale à la date de commande');
+      } else {
+        this.notification.warning('⚠ Veuillez remplir correctement tous les champs obligatoires');
+      }
     }
   }
 }
