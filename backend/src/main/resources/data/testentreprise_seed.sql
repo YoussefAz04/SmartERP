@@ -3,6 +3,15 @@
 -- All IDs are explicit and start at 1500/5000 to avoid clashes.
 -- Run inside a transaction; review SET IDENTITY_INSERT statements.
 
+-- The article / article_vente tables have filtered unique indexes
+-- (e.g. on `reference IS NOT NULL`, `stock_id IS NOT NULL`) which
+-- require QUOTED_IDENTIFIER ON for any DML. sqlcmd defaults it OFF,
+-- so without these SET options every INSERT into article and
+-- article_vente fails with: "Msg 1934 ... INSERT failed because the
+-- following SET options have incorrect settings: 'QUOTED_IDENTIFIER'".
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
+
 DECLARE @entId BIGINT = 15;
 
 SET IDENTITY_INSERT categorie_article ON;
