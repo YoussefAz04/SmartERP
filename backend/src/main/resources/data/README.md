@@ -1,6 +1,32 @@
-# Testentreprise (id=15) seed data
+# Testentreprise seed data
 
-This folder contains a synthetic but realistic ERP dataset for the enterprise
+This folder contains synthetic ERP datasets used to exercise the AI/ML pipeline
+(`MlForecastEngine`, `AnalyticService`) and the AI dashboards.
+
+| Entreprise | Generator | SQL | JSON | ID range |
+| ---------- | --------- | --- | ---- | -------- |
+| `id=15` (testentreprise) | `generate_testentreprise_seed.py` | `testentreprise_seed.sql` | `testentreprise_seed.json` | 1500 / 5000 |
+| `id=16` | `generate_testentreprise16_seed.py` | `testentreprise16_seed.sql` | `testentreprise16_seed.json` | 1600 / 5100 |
+
+The **id=16** dataset mirrors the id=15 shape (categories, mesures, suppliers,
+clients, articles + article_vente, purchase/sales orders) and additionally
+seeds **factures** (`facture_achat` / `facture_de_vente` + their line tables),
+one invoice per delivered/received commande, with mixed payment statuses
+(`PAYEE`, `EN_ATTENTE`, `PARTIELLEMENT_PAYEE`) and modes (`VIREMENT`,
+`ESPECES`, `CHEQUE`, `CARTE_BANCAIRE`, `TRAITE`).
+
+Run the id=16 seed against an existing entreprise row (`entreprise.id = 16`):
+
+```bash
+python3 backend/src/main/resources/data/generate_testentreprise16_seed.py
+sqlcmd -S <server> -d <db> -i backend/src/main/resources/data/testentreprise16_seed.sql
+```
+
+---
+
+## Testentreprise (id=15) seed data
+
+This dataset is a synthetic but realistic ERP dataset for the enterprise
 `testentreprise` (`entreprise_id = 15`), generated to improve sales forecasting
 on the existing AI/ML pipeline (`MlForecastEngine`, `AnalyticService`).
 
