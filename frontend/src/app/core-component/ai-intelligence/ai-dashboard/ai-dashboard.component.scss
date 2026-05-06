@@ -600,20 +600,41 @@ $amber-500:  #f59e0b;
 // ── Charts layout ─────────────────────────────────────────────────────────────
 .charts-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.9fr);
-  gap: 18px;
-  margin-bottom: 18px;
+  grid-template-columns: minmax(0, 1.55fr) minmax(310px, 0.85fr);
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: start;
 }
 
 .chart-card,
 .intel-card {
-  border-radius: 22px;
-  padding: 26px;
-  transition: box-shadow .3s, transform .3s;
+  border-radius: 24px;
+  padding: 28px 28px 22px 28px;
+  transition: box-shadow .35s ease, transform .35s ease;
 
   &:hover {
-    box-shadow: 0 10px 36px rgba(37,99,235,.1);
-    transform: translateY(-2px);
+    box-shadow:
+      0 12px 40px rgba(37,99,235,.12),
+      0 2px 8px rgba(37,99,235,.06);
+    transform: translateY(-3px);
+  }
+}
+
+// Chart inner body area — subtle inset to visually frame the chart
+.chart-body {
+  position: relative;
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(248,250,252,.55) 0%, rgba(239,246,255,.40) 100%);
+  padding: 10px 6px 4px;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    border: 1px solid rgba(37,99,235,.06);
+    pointer-events: none;
   }
 }
 
@@ -627,7 +648,19 @@ $amber-500:  #f59e0b;
   flex-wrap: wrap;
 }
 
-.chart-header { margin-bottom: 16px; }
+.chart-header { margin-bottom: 20px; }
+
+// Top accent line on chart cards
+.chart-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 24px 24px 0 0;
+  background: linear-gradient(90deg, $blue-700, $blue-500 50%, $cyan-500);
+  opacity: .8;
+}
+
 
 .chart-header h3,
 .intel-header h3,
@@ -685,7 +718,7 @@ $amber-500:  #f59e0b;
 
 .intel-badge-warn { background: #fff7ed; color: #ea580c; }
 
-.chart-body { position: relative; }
+
 
 .chart-footer {
   display: flex;
@@ -1320,7 +1353,14 @@ body.dark-mode {
 
   .kpi-card:hover   { box-shadow: 0 16px 40px rgba(0,0,0,.55); }
   .chart-card:hover,
-  .intel-card:hover { box-shadow: 0 10px 36px rgba(0,0,0,.5); }
+  .intel-card:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3);
+  }
+
+  .chart-body {
+    background: linear-gradient(160deg, rgba(15,28,55,.5) 0%, rgba(10,22,48,.4) 100%);
+    &::before { border-color: rgba(59,130,246,.08); }
+  }
 
   .kpi-revenue .kpi-icon  { background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #bfdbfe; box-shadow: 0 4px 14px rgba(29,78,216,.3); }
   .kpi-orders .kpi-icon   { background: linear-gradient(135deg, #0c4a6e, #0e5c8a); color: #bae6fd; box-shadow: 0 4px 14px rgba(2,132,199,.3); }
