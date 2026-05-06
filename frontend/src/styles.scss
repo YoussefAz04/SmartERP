@@ -35,7 +35,6 @@ $template-angular-theme: mat.define-light-theme((color: (primary: $template-angu
 // that you are using.
 @include mat.all-component-themes($template-angular-theme);
 @import "/src/assets/scss/main.scss";
-// @import "/src/assets/material/material.scss";
 @import "ngx-owl-carousel-o/lib/styles/scss/owl.carousel";
 @import "ngx-owl-carousel-o/lib/styles/scss/owl.theme.default";
 @import "/src/assets/material/material.scss";
