@@ -164,13 +164,13 @@ public class MlRecommendationEngine {
                     ? "≥ 1 an"
                     : String.format(Locale.FRANCE, "%.0f j", r.daysOfCover);
             String urgencyHint = pStockout > 0.85
-                    ? "Action immédiate requise — émettez un bon de commande sans délai."
-                    : "Planifiez le réapprovisionnement avant expiration de la couverture actuelle.";
+                    ? "Action urgente : passez une commande fournisseur dès aujourd'hui."
+                    : "Passez une commande fournisseur avant que le stock ne soit épuisé.";
             out.add(new RecommendationDto(
                 "ML_RISQUE_STOCK",
-                "Alerte Réapprovisionnement — " + r.articleName,
+                "Risque de rupture — " + r.articleName,
                 String.format(Locale.FRANCE,
-                    "Probabilité de rupture estimée à %.0f %% sur l'horizon de %d jours. Couverture actuelle : %s | Demande moyenne : %.0f unités/mois | Délai fournisseur : %.0f j. Quantité de réapprovisionnement recommandée : %.0f unité(s). %s",
+                    "Cet article a %.0f %% de risque de tomber en rupture dans les %d prochains jours. Il vous reste environ %s de stock. Vous en vendez %.0f par mois en moyenne, et le fournisseur livre en %.0f jours. Quantité à commander : %.0f unité(s). %s",
                     pStockout * 100.0, horizonDays, coverStr,
                     r.avgMonthlyDemand, r.leadTimeDays, suggestedQty, urgencyHint),
                 prio, icon, "Voir Stock"
@@ -244,9 +244,9 @@ public class MlRecommendationEngine {
         ProductRow topRow = rows.get(top);
         out.add(new RecommendationDto(
             "PRODUIT_STAR",
-            "Produit Vedette — " + topRow.productName,
+            "Article à fort potentiel — " + topRow.productName,
             String.format(Locale.FRANCE,
-                "« %s » est identifié par le modèle prédictif comme la référence à plus fort potentiel de croissance. Chiffre d'affaires : %.0f — Unités vendues : %.0f — Marge unitaire estimée : %.0f. Sécurisez le niveau de stock, activez la mise en avant commerciale et testez des offres combinées pour amplifier la dynamique de vente.",
+                "« %s » est l'article qui a le plus fort potentiel de croissance d'après l'analyse. Ventes actuelles : %,.0f — Quantité vendue : %.0f unité(s) — Marge par unité estimée : %,.0f. Gardez un stock suffisant, mettez-le en avant et proposez-le avec d'autres articles complémentaires pour vendre encore plus.",
                 topRow.productName, topRow.revenue, topRow.quantitySold, topRow.marginProxy),
             "BASSE", "fa-star", "Voir Produits"
         ));
@@ -258,19 +258,18 @@ public class MlRecommendationEngine {
             ProductRow r = rows.get(i);
             String hint;
             if (r.velocityTrend > 0.1) {
-                hint = "La tendance récente est favorable — accélérez la mise en avant commerciale.";
+                hint = "Ses ventes progressent — mettez-le davantage en avant pour profiter de la tendance.";
             } else if (r.categoryShare > 0.15) {
-                hint = "Sa part de catégorie (%.0f %%) en fait un levier stratégique — " +
-                       "renforcez l'assortiment associé.";
+                hint = "Il représente %.0f %% de sa famille — étoffez les articles autour de lui.";
                 hint = String.format(Locale.FRANCE, hint, r.categoryShare * 100.0);
             } else {
-                hint = "Investissez en visibilité commerciale pour capitaliser sur ce signal de croissance.";
+                hint = "Mettez-le en avant pour profiter de cette opportunité de croissance.";
             }
             out.add(new RecommendationDto(
                 "OPPORTUNITE",
-                "Opportunité de Croissance — " + r.productName,
+                "Opportunité de vente — " + r.productName,
                 String.format(Locale.FRANCE,
-                    "« %s » se distingue parmi les références à fort potentiel de progression. Chiffre d'affaires : %.0f — Unités écoulées : %.0f. %s",
+                    "« %s » fait partie des articles qui peuvent encore beaucoup progresser. Ventes actuelles : %,.0f — Quantité vendue : %.0f unité(s). %s",
                     r.productName, r.revenue, r.quantitySold, hint),
                 "MOYENNE", "fa-arrow-trend-up", "Voir Produits"
             ));
