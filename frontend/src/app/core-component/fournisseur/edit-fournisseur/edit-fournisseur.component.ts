@@ -59,9 +59,6 @@ export class EditFournisseurComponent implements OnInit {
     return v !== '' && v != null ? Number(v) : 0;
   }
 
-  get tauxCurrentValue(): number { return 0; }
-  get tauxSliderStyle(): { background: string } { return { background: '' }; }
-
   setNotation(val: number): void {
     this.fournisseurForm.patchValue({ notation: val });
     this.fournisseurForm.get('notation')?.markAsTouched();

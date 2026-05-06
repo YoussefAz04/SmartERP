@@ -47,8 +47,6 @@ export class AddFournisseurComponent implements OnInit {
     });
   }
 
-  get notationCurrentValue(): number { return 0; }
-
   isFieldInvalid(fieldName: string): boolean {
     const field = this.fournisseurForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
