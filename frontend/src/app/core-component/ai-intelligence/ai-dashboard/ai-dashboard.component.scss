@@ -1102,11 +1102,83 @@ $amber-500:  #f59e0b;
 }
 
 .rec-desc {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   color: $slate-500;
   font-size: 0.85rem;
   line-height: 1.6;
 }
+
+// ── Metrics grid ─────────────────────────────────────────────────────────────
+.rec-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  background: $slate-50;
+  border: 1px solid $slate-200;
+  border-radius: 10px;
+}
+
+.rec-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rec-metric-label {
+  font-size: 0.67rem;
+  font-weight: 600;
+  color: $slate-400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.rec-metric-value {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $slate-800;
+  line-height: 1.3;
+}
+
+// ── Insight callout ───────────────────────────────────────────────────────────
+.rec-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 13px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, .05) 0%, rgba(99, 102, 241, .06) 100%);
+  border-left: 3px solid $blue-500;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.82rem;
+  color: $slate-700;
+  line-height: 1.55;
+}
+
+.rec-CRITIQUE .rec-insight {
+  background: linear-gradient(135deg, rgba(244, 63, 94, .06), rgba(225, 29, 72, .07));
+  border-left-color: #e11d48;
+}
+.rec-HAUTE .rec-insight {
+  background: linear-gradient(135deg, rgba(251, 146, 60, .07), rgba(234, 88, 12, .08));
+  border-left-color: #ea580c;
+}
+.rec-MOYENNE .rec-insight {
+  background: linear-gradient(135deg, rgba(250, 204, 21, .10), rgba(202, 138, 4, .09));
+  border-left-color: #ca8a04;
+}
+
+.rec-insight-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: $blue-600;
+}
+.rec-CRITIQUE .rec-insight-icon { color: #e11d48; }
+.rec-HAUTE    .rec-insight-icon { color: #ea580c; }
+.rec-MOYENNE  .rec-insight-icon { color: #ca8a04; }
 
 .rec-footer {
   display: flex;
@@ -1412,6 +1484,18 @@ body.dark-mode {
   .rec-desc  { color: #94a3b8; }
   .rec-type  { color: #64748b; }
   .rec-footer { border-top-color: rgba(255, 255, 255, .06); }
+  .rec-metrics {
+    background: rgba(26, 39, 68, 0.7);
+    border-color: rgba(59, 130, 246, 0.12);
+  }
+  .rec-metric-label { color: #475569; }
+  .rec-metric-value { color: #cbd5e1; }
+  .rec-insight {
+    background: linear-gradient(135deg, rgba(37, 99, 235, .10), rgba(99, 102, 241, .10));
+    color: #94a3b8;
+    border-left-color: #3b82f6;
+  }
+  .rec-insight-icon { color: #60a5fa; }
 
   .rec-chip-critical { background: rgba(225,29,72,.15); color: #fb7185; }
   .rec-chip-high     { background: rgba(234,88,12,.12); color: #fb923c; }
