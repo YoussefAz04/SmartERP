@@ -49,7 +49,6 @@ export class EditFournisseurComponent implements OnInit {
       telephone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)\.]{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       secteurActivite: [''],
-      tauxLivraison: [0, [Validators.min(0), Validators.max(100)]],
       notation: [null, [Validators.min(1), Validators.max(5)]],
       categorieId: ['', Validators.required],
     });
@@ -58,18 +57,6 @@ export class EditFournisseurComponent implements OnInit {
   get notationCurrentValue(): number {
     const v = this.fournisseurForm.get('notation')?.value;
     return v !== '' && v != null ? Number(v) : 0;
-  }
-
-  get tauxCurrentValue(): number {
-    const v = this.fournisseurForm.get('tauxLivraison')?.value;
-    return v !== '' && v != null ? Number(v) : 0;
-  }
-
-  get tauxSliderStyle(): { background: string } {
-    const pct = this.tauxCurrentValue;
-    return {
-      background: `linear-gradient(to right, #ff9a44 0%, #ff8224 ${pct}%, #e6eaf0 ${pct}%, #e6eaf0 100%)`
-    };
   }
 
   setNotation(val: number): void {
@@ -89,7 +76,6 @@ export class EditFournisseurComponent implements OnInit {
           telephone: data.telephone,
           adresse: data.adresse,
           secteurActivite: data.secteurActivite || '',
-          tauxLivraison: data.tauxLivraison ?? 0,
           notation: data.notation ?? null,
           categorieId: data.categorieFournisseur?.id || '',
         });
@@ -130,11 +116,6 @@ export class EditFournisseurComponent implements OnInit {
       this.isLoading = true;
       const formValue = this.fournisseurForm.value;
 
-      const tauxRaw = formValue.tauxLivraison;
-      const notationRaw = formValue.notation;
-      const tauxNum = tauxRaw === null || tauxRaw === '' || tauxRaw === undefined ? null : parseFloat(tauxRaw);
-      const notationNum = notationRaw === null || notationRaw === '' || notationRaw === undefined ? null : parseFloat(notationRaw);
-
       const fournisseurData: any = {
         nom: formValue.nom.trim(),
         prenom: formValue.prenom ? formValue.prenom.trim() : '',
@@ -142,8 +123,7 @@ export class EditFournisseurComponent implements OnInit {
         telephone: formValue.telephone.trim(),
         adresse: formValue.adresse.trim(),
         secteurActivite: formValue.secteurActivite ? formValue.secteurActivite.trim() : '',
-        tauxLivraison: tauxNum !== null && !isNaN(tauxNum) ? tauxNum : null,
-        notation: notationNum !== null && !isNaN(notationNum) ? notationNum : null,
+        notation: formValue.notation != null && formValue.notation !== '' ? parseFloat(formValue.notation) : null,
         categorieFournisseur: { id: formValue.categorieId }
       };
 

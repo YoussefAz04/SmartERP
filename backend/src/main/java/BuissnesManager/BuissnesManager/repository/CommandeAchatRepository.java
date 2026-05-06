@@ -59,4 +59,22 @@ public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Lo
     @Transactional
     @Query("DELETE FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId")
     void deleteByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
+    // ── Fournisseur delivery-stat queries (used to compute tauxLivraison & notation) ──
+
+    /** Total non-cancelled orders per fournisseur for an enterprise (bulk). */
+    @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL AND c.statut <> 'ANNULEE' GROUP BY c.fournisseur.id")
+    List<Object[]> countNonCancelledByFournisseur(@Param("entrepriseId") Long entrepriseId);
+
+    /** Received ('RECUE') orders per fournisseur for an enterprise (bulk). */
+    @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL AND c.statut = 'RECUE' GROUP BY c.fournisseur.id")
+    List<Object[]> countReceivedByFournisseur(@Param("entrepriseId") Long entrepriseId);
+
+    /** Total non-cancelled orders for a single fournisseur. */
+    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.fournisseur.id = :fournisseurId AND c.statut <> 'ANNULEE'")
+    long countNonCancelledForFournisseur(@Param("fournisseurId") Long fournisseurId);
+
+    /** Received ('RECUE') orders for a single fournisseur. */
+    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.fournisseur.id = :fournisseurId AND c.statut = 'RECUE'")
+    long countReceivedForFournisseur(@Param("fournisseurId") Long fournisseurId);
 }

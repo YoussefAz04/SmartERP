@@ -82,15 +82,19 @@
         </div>
         <hr>
         <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Taux de Livraison</div>
+          <div class="col-sm-4 fw-bold text-muted">Taux de Livraison
+            <small class="d-block text-muted fw-normal" style="font-size:0.75rem;">(commandes reçues / non annulées)</small>
+          </div>
           <div class="col-sm-8">
             <span *ngIf="fournisseur.tauxLivraison != null">{{ fournisseur.tauxLivraison }}%</span>
-            <span *ngIf="fournisseur.tauxLivraison == null">N/A</span>
+            <span *ngIf="fournisseur.tauxLivraison == null" class="text-muted">Aucune commande enregistrée</span>
           </div>
         </div>
         <hr>
         <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Notation</div>
+          <div class="col-sm-4 fw-bold text-muted">Notation
+            <small class="d-block text-muted fw-normal" style="font-size:0.75rem;">(calculée depuis le taux de livraison)</small>
+          </div>
           <div class="col-sm-8">
             <span class="rating-stars" *ngIf="fournisseur.notation != null" [title]="fournisseur.notation + ' / 5'">
               <i class="feather icon-star" *ngFor="let s of [1,2,3,4,5]"
@@ -98,7 +102,7 @@
                 [class.star-off]="s > (fournisseur.notation || 0)"></i>
               <span class="ms-2">{{ fournisseur.notation }} / 5</span>
             </span>
-            <span *ngIf="fournisseur.notation == null">N/A</span>
+            <span *ngIf="fournisseur.notation == null" class="text-muted">Aucune commande enregistrée</span>
           </div>
         </div>
       </div>

@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FournisseurService {
@@ -62,24 +64,92 @@ public class FournisseurService {
         return saved;
     }
 
+    // ── Delivery-stat helpers ─────────────────────────────────────────────────
+
+    /** Returns delivery rate as a percentage (0–100, 1 decimal) or null when no non-cancelled orders exist. */
+    private Double computeTauxLivraison(long total, long received) {
+        if (total == 0) return null;
+        return Math.round((received * 100.0 / total) * 10.0) / 10.0;
+    }
+
+    /** Maps a delivery rate to a 1–5 star notation. Returns null when taux is null. */
+    private Double computeNotationFromTaux(Double taux) {
+        if (taux == null) return null;
+        if (taux >= 90.0) return 5.0;
+        if (taux >= 70.0) return 4.0;
+        if (taux >= 50.0) return 3.0;
+        if (taux >= 30.0) return 2.0;
+        return 1.0;
+    }
+
+    /**
+     * Enriches a list of fournisseurs with computed tauxLivraison and notation
+     * derived from their CommandeAchat history. Uses two bulk queries to avoid N+1.
+     * When a fournisseur has no non-cancelled orders, tauxLivraison is set to null
+     * and the stored (manual) notation is left unchanged.
+     */
+    private void enrichFournisseurs(List<Fournisseur> fournisseurs, Long entrepriseId) {
+        List<Object[]> totalRows = commandeAchatRepository.countNonCancelledByFournisseur(entrepriseId);
+        List<Object[]> receivedRows = commandeAchatRepository.countReceivedByFournisseur(entrepriseId);
+
+        Map<Long, Long> totalMap = new HashMap<>();
+        for (Object[] row : totalRows) {
+            totalMap.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+        }
+        Map<Long, Long> receivedMap = new HashMap<>();
+        for (Object[] row : receivedRows) {
+            receivedMap.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+        }
+
+        for (Fournisseur f : fournisseurs) {
+            long total = totalMap.getOrDefault(f.getId(), 0L);
+            long received = receivedMap.getOrDefault(f.getId(), 0L);
+            Double taux = computeTauxLivraison(total, received);
+            f.setTauxLivraison(taux);
+            if (taux != null) {
+                f.setNotation(computeNotationFromTaux(taux));
+            }
+            // When taux is null (no orders yet), keep the stored manual notation as fallback
+        }
+    }
+
+    /**
+     * Enriches a single fournisseur with computed tauxLivraison and notation.
+     */
+    private void enrichFournisseur(Fournisseur f) {
+        long total = commandeAchatRepository.countNonCancelledForFournisseur(f.getId());
+        long received = commandeAchatRepository.countReceivedForFournisseur(f.getId());
+        Double taux = computeTauxLivraison(total, received);
+        f.setTauxLivraison(taux);
+        if (taux != null) {
+            f.setNotation(computeNotationFromTaux(taux));
+        }
+    }
+
     // ✅ GET ALL FOURNISSEURS (enterprise-scoped)
     public List<Fournisseur> getAllFournisseurs() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
             throw new RuntimeException("Enterprise context required");
         }
-        return fournisseurRepo.findByEntrepriseId(entrepriseId);
+        List<Fournisseur> fournisseurs = fournisseurRepo.findByEntrepriseId(entrepriseId);
+        enrichFournisseurs(fournisseurs, entrepriseId);
+        return fournisseurs;
     }
 
     // ✅ GET FOURNISSEURS BY ENTERPRISE
     public List<Fournisseur> getFournisseursByEntreprise(Long entrepriseId) {
-        return fournisseurRepo.findByEntrepriseId(entrepriseId);
+        List<Fournisseur> fournisseurs = fournisseurRepo.findByEntrepriseId(entrepriseId);
+        enrichFournisseurs(fournisseurs, entrepriseId);
+        return fournisseurs;
     }
 
     // ✅ GET FOURNISSEUR BY ID
     public Fournisseur getFournisseurById(Long id) {
-        return fournisseurRepo.findById(id)
+        Fournisseur f = fournisseurRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Fournisseur not found with id: " + id));
+        enrichFournisseur(f);
+        return f;
     }
 
     // ✅ DELETE FOURNISSEUR
@@ -106,7 +176,7 @@ public class FournisseurService {
         existing.setTelephone(fournisseur.getTelephone());
         existing.setAdresse(fournisseur.getAdresse());
         existing.setSecteurActivite(fournisseur.getSecteurActivite());
-        existing.setTauxLivraison(fournisseur.getTauxLivraison());
+        // tauxLivraison is computed from commande history — never persisted from form input
         existing.setNotation(fournisseur.getNotation());
         existing.setVille(fournisseur.getVille());
         existing.setPays(fournisseur.getPays());
