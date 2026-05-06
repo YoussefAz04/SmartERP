@@ -35,6 +35,30 @@
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
   background: linear-gradient(90deg, #818cf8, #a78bfa, #38bdf8);
 }
+
+/* Decorative orb blobs */
+.hero-orb {
+  position: absolute; border-radius: 50%; filter: blur(56px); pointer-events: none;
+  opacity: .35;
+}
+.hero-orb--a {
+  width: 260px; height: 260px; top: -80px; right: -60px;
+  background: radial-gradient(circle, #818cf8, transparent 70%);
+}
+.hero-orb--b {
+  width: 180px; height: 180px; bottom: -60px; left: 10%;
+  background: radial-gradient(circle, #a78bfa, transparent 70%);
+}
+
+/* Subtle grid overlay */
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
 .hero-inner {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: space-between;
@@ -73,6 +97,7 @@
   color: rgba(255,255,255,.9);
 }
 .meta-badge--legal { background: rgba(16,185,129,.18); border-color: rgba(16,185,129,.4); color: #a7f3d0; }
+.meta-badge--readonly { background: rgba(245,158,11,.22); border-color: rgba(245,158,11,.45); color: #fde68a; }
 
 /* ── Form Card ───────────────────────────────────────── */
 .form-card {
@@ -94,9 +119,25 @@
   color: #4338ca; border: 1.5px solid rgba(99,102,241,.25);
   display: flex; align-items: center; justify-content: center;
 }
+.title-icon-wrap--view {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e; border-color: rgba(245,158,11,.35);
+}
 .title-icon-wrap i { font-size: 16px; }
 .title-sub { font-size: .72rem; font-weight: 500; color: #94a3b8; margin-left: 4px; }
+.title-sub--readonly { color: #d97706; }
 .form-card__actions { display: flex; align-items: center; gap: 10px; }
+
+/* ── Read-only Banner ────────────────────────────────── */
+.readonly-banner {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 28px; margin: 0;
+  background: linear-gradient(90deg, rgba(245,158,11,.08), rgba(245,158,11,.04));
+  border-bottom: 1.5px solid rgba(245,158,11,.22);
+  color: #92400e; font-size: 13px; line-height: 1.5;
+}
+.readonly-banner i { font-size: 18px; flex-shrink: 0; margin-top: 1px; color: #d97706; }
+.readonly-banner strong { font-weight: 800; }
 
 /* ── Buttons ─────────────────────────────────────────── */
 .btn-ghost {
@@ -159,8 +200,15 @@
 }
 .field-input--padded { padding-left: 42px; }
 .field-input::placeholder { color: #cbd5e1; }
-.field-input:hover:not(:focus) { border-color: #cbd5e1; background: #fff; }
-.field-input:focus { border-color: #818cf8; background: #fff; box-shadow: 0 0 0 3px rgba(129,140,248,.18); }
+.field-input:hover:not(:focus):not([readonly]) { border-color: #cbd5e1; background: #fff; }
+.field-input:focus:not([readonly]) { border-color: #818cf8; background: #fff; box-shadow: 0 0 0 3px rgba(129,140,248,.18); }
+.field-input--readonly,
+.field-input[readonly] {
+  background: #f1f5f9; color: #475569; cursor: default;
+  border-color: #e2e8f0; user-select: text;
+}
+.field-input--readonly:hover,
+.field-input[readonly]:hover { background: #f1f5f9; border-color: #e2e8f0; }
 .field-textarea {
   width: 100%; padding: 12px 14px;
   border: 1.5px solid #e2e8f0; border-radius: 12px;
@@ -169,8 +217,15 @@
   line-height: 1.6; outline: none; transition: all .2s ease; box-sizing: border-box;
 }
 .field-textarea::placeholder { color: #cbd5e1; }
-.field-textarea:hover:not(:focus) { border-color: #cbd5e1; background: #fff; }
-.field-textarea:focus { border-color: #818cf8; background: #fff; box-shadow: 0 0 0 3px rgba(129,140,248,.18); }
+.field-textarea:hover:not(:focus):not([readonly]) { border-color: #cbd5e1; background: #fff; }
+.field-textarea:focus:not([readonly]) { border-color: #818cf8; background: #fff; box-shadow: 0 0 0 3px rgba(129,140,248,.18); }
+.field-textarea--readonly,
+.field-textarea[readonly] {
+  background: #f1f5f9; color: #475569; cursor: default;
+  border-color: #e2e8f0; resize: none; user-select: text;
+}
+.field-textarea--readonly:hover,
+.field-textarea[readonly]:hover { background: #f1f5f9; border-color: #e2e8f0; }
 
 /* ── Form Footer ─────────────────────────────────────── */
 .form-footer {
