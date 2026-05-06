@@ -281,8 +281,8 @@
           <span>Ventes {{ changeLabel(comparison.ytdVsLastYear) }}</span>
         </div>
         <span class="change-amount"
-              [ngClass]="(comparison.ytdVsLastYear?.change ?? 0) >= 0 ? 'text-success' : 'text-danger'">
-          {{ (comparison.ytdVsLastYear?.change ?? 0) >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear?.change) }} TND
+              [ngClass]="comparison.ytdVsLastYear.change >= 0 ? 'text-success' : 'text-danger'">
+          {{ comparison.ytdVsLastYear.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear.change) }} TND
         </span>
       </div>
     </div>
