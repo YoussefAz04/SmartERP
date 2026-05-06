@@ -609,7 +609,7 @@ $amber-500:  #f59e0b;
 .chart-card,
 .intel-card {
   border-radius: 24px;
-  padding: 28px 28px 22px;
+  padding: 28px 28px 22px 28px;
   transition: box-shadow .35s ease, transform .35s ease;
 
   &:hover {
