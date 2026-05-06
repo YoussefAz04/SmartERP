@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
-import { routes } from 'src/app/core/helpers/routes';
 import {EntrepriseService} from "../../core/service/entreprise/entreprise.service";
 import {Entreprise} from "../../model/entreprise.model";
 import {DatePipe, NgForOf, NgIf} from "@angular/common";
@@ -28,7 +27,6 @@ import { NotificationService } from '../../shared/notification/notification.serv
 export class EntrepriseComponent implements OnInit{
 
   permissionEntreprise!: PermissionDto;
-  public routes = routes;
   entreprises: Entreprise[] = [];
   currentEntreprise: Entreprise | null = null;
   currentEntrepriseId: number | null = null;
@@ -179,40 +177,5 @@ export class EntrepriseComponent implements OnInit{
 
   addEntreprise(): void {
     this.router.navigate(['/entreprise/addEntreprise']);
-  }
-
-  connectToEntreprise(e: Entreprise): void {
-    const item = localStorage.getItem('myLSkey');
-    if (!item) {
-      this.notification.error("Session introuvable. Veuillez vous reconnecter.");
-      return;
-    }
-    if (e.id === null || e.id === undefined) {
-      this.notification.error("ID entreprise invalide.");
-      return;
-    }
-    this.entrepriseService.switchEntreprise(e.id).subscribe({
-      next: (response) => {
-        try {
-          const session = JSON.parse(decodeURIComponent(escape(atob(item))));
-          session.token = response.token;
-          session.entrepriseId = response.entrepriseId;
-          session.entrepriseName = response.entrepriseName;
-          session.entreprise = { id: response.entrepriseId, nom: response.entrepriseName };
-          localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(session)))));
-          localStorage.setItem('entrepriseId', String(response.entrepriseId));
-          localStorage.setItem('enterpriseId', String(response.entrepriseId));
-          this.notification.success(`Connecté à l'entreprise : ${e.nom}`);
-          this.router.navigate([routes.adminDashboard]);
-        } catch (err) {
-          console.error('❌ Error storing new session:', err);
-          this.notification.error("Erreur lors de la mise à jour de la session.");
-        }
-      },
-      error: (err) => {
-        console.error('❌ Error switching enterprise:', err);
-        this.notification.error("Erreur lors du changement d'entreprise.");
-      }
-    });
   }
 }
