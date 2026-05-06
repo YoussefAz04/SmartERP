@@ -6,6 +6,7 @@ import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.dto.UserDTO;
 import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
+import BuissnesManager.BuissnesManager.service.AuditLogService;
 import BuissnesManager.BuissnesManager.service.ImageService;
 import BuissnesManager.BuissnesManager.service.UserService;
 import org.slf4j.Logger;
@@ -33,6 +34,8 @@ public class UserController {
     private JWTUtil jwtUtil;
     @Autowired
     private AuthorizationUtil authorizationUtil;
+    @Autowired
+    private AuditLogService auditLogService;
 
     @GetMapping("/test")
     public ResponseEntity<?> testToken() {
@@ -63,6 +66,8 @@ public class UserController {
                 }
             }
             User createdUser = userService.createUserWithEntreprise(request, idEntreprise);
+            auditLogService.log("USER_CREATED",
+                    "Utilisateur créé: " + createdUser.getUsername() + " pour l'entreprise " + idEntreprise);
             return ResponseEntity.ok(createdUser);
         } catch (IllegalArgumentException e) {
             logger.error("Validation error creating user: {}", e.getMessage());
@@ -97,6 +102,8 @@ public class UserController {
                 request.setEnterpriseId(tokenEnterpriseId);
             }
             UserDTO createdUser = userService.createEmployeeWithModules(request);
+            auditLogService.log("USER_CREATED",
+                    "Employé créé: " + createdUser.getUsername() + " pour l'entreprise " + request.getEnterpriseId());
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (IllegalArgumentException e) {
             logger.error("Validation error creating employee: {}", e.getMessage());
@@ -197,6 +204,7 @@ public class UserController {
                 }
             }
             userService.updateUser(userDTO, id);
+            auditLogService.log("USER_UPDATED", "Utilisateur mis à jour, id=" + id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
@@ -222,6 +230,7 @@ public class UserController {
                 }
             }
             userService.deleteUser(id);
+            auditLogService.log("USER_DELETED", "Utilisateur supprimé, id=" + id);
             return ResponseEntity.ok(Map.of("message", "User deleted successfully", "status", "success"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -255,6 +264,8 @@ public class UserController {
                 }
             }
             UserDTO updated = userService.setUserEnabled(id, enabled);
+            auditLogService.log("USER_STATUS_CHANGED",
+                    "Statut utilisateur id=" + id + " changé à: " + (enabled ? "actif" : "inactif"));
             return ResponseEntity.ok(Map.of(
                     "message", enabled ? "Utilisateur activé avec succès" : "Utilisateur désactivé avec succès",
                     "status", "success",

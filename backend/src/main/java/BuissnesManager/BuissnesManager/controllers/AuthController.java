@@ -13,6 +13,7 @@ import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
+import BuissnesManager.BuissnesManager.service.AuditLogService;
 import BuissnesManager.BuissnesManager.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,9 @@ public class AuthController {
 
     @Autowired
     private PermissionService permissionService;
+
+    @Autowired
+    private AuditLogService auditLogService;
 
     /**
      * Register a new user
@@ -121,6 +125,11 @@ public class AuthController {
 
             User savedUser = userRepo.save(newUser);
             System.out.println("✅ User registered successfully: " + savedUser.getUsername());
+
+            Long entrepriseId = savedUser.getEntreprise() != null ? savedUser.getEntreprise().getId() : null;
+            auditLogService.log("USER_CREATED",
+                    "Nouvel utilisateur créé via register: " + savedUser.getUsername(),
+                    savedUser.getUsername(), savedUser.getId(), entrepriseId);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new RegisterResponse("User registered successfully", true, savedUser.getUsername(), savedUser.getId()));
@@ -248,6 +257,11 @@ public class AuthController {
 
             System.out.println("✅ Login successful for: " + user.getUsername());
             System.out.println("✅ Enterprise ID in response: " + entrepriseId);
+
+            auditLogService.log("LOGIN",
+                    "Connexion réussie pour l'utilisateur: " + user.getUsername(),
+                    user.getUsername(), user.getId(), entrepriseId);
+
             return ResponseEntity.ok(response);
         } catch (org.springframework.security.authentication.DisabledException e) {
             System.err.println("❌ Login refused (account disabled): " + request.getUsername());

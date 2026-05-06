@@ -4,6 +4,7 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.dto.ModulePermissionRequest;
 import BuissnesManager.BuissnesManager.dto.PermissionDto;
 import BuissnesManager.BuissnesManager.entity.Permission;
+import BuissnesManager.BuissnesManager.service.AuditLogService;
 import BuissnesManager.BuissnesManager.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ import java.util.List;
 public class PermissionController {
     @Autowired
     private PermissionService permissionService ;
+
+    @Autowired
+    private AuditLogService auditLogService;
 
 
 
@@ -58,6 +62,8 @@ public class PermissionController {
             @RequestBody List<ModulePermissionRequest> permissions) {
         try {
             permissionService.updateUserPermissions(userId, permissions);
+            auditLogService.log("PERMISSION_MODIFIED",
+                    "Permissions mises à jour pour l'utilisateur id=" + userId + " (" + permissions.size() + " module(s))");
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
