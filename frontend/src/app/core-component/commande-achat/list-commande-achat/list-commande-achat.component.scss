@@ -1,31 +1,9 @@
 // =============================================
 // Commandes Achat – Premium Indigo/Blue Theme
 // =============================================
-
-// Override shared-base colour variables (defined before @import)
-$primary:         #3b5bdb;
-$primary-light:   #4c6ef5;
-$primary-lighter: #748ffc;
-$accent:          #74c0fc;
-$accent-light:    #e7f5ff;
-
-// Header gradient (achat uses specific blue intermediate stops)
-$header-bg:           linear-gradient(135deg, #1e3a8a 0%, #3b5bdb 45%, #4c6ef5 80%, #60a5fa 100%);
-$header-shadow-1:     rgba(30,58,138,0.15);
-$blob-1-color:        rgba(116,192,252,0.18);
-$blob-2-color:        rgba(96,165,250,0.15);
-$dot-color:           #60a5fa;
-$dot-shadow:          rgba(96,165,250,0.6);
-$title-main-grad:     linear-gradient(135deg, #93c5fd, #bfdbfe);
-$btn-add-bg:          linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
-$btn-add-color:       #1e3a8a;
-$btn-add-hover-bg:    linear-gradient(135deg, #ffffff 0%, #dbeafe 100%);
-$header-stripe-start: #f0f4ff;
-$table-row-even:      #f8fbff;
-$badge-ref-bg-start:  #eff6ff;
-$badge-ref-bg-end:    #dbeafe;
-$badge-ref-border:    #bfdbfe;
-$modal-header-bg:     linear-gradient(135deg, #1e3a8a 0%, #3b5bdb 100%);
+// The base file defaults ARE the Indigo/Blue (achat) theme, so no color
+// variables need to be redeclared here. See _list-commande-base.scss for
+// the full default palette and structural styles.
 
 @import '../../../../assets/scss/utils/list-commande-base';
 
@@ -58,7 +36,7 @@ $modal-header-bg:     linear-gradient(135deg, #1e3a8a 0%, #3b5bdb 100%);
 // ── Status badges (achat-specific) ───────────────────────────────────────────
 .modern-table tbody td.status-cell .status-badge {
   &.status-recue {
-    background: $accent-light; color: #1d4ed8; border: 1px solid #bfdbfe;
+    background: #e7f5ff; color: #1d4ed8; border: 1px solid #bfdbfe;
   }
 }
 
