@@ -53,26 +53,17 @@
 @import "layout/theme-settings";
 
 /****** Pages ******/
-@import "pages/chat";
+// Pages that are NOT part of this application have been removed:
+// chat, call, notes, pos, product, product-list, file-manager,
+// employees-grid, todo-inbox, barcode, email, transfer-list
 @import "pages/dashboard";
 @import "pages/sales-dashboard";
-@import "pages/email";
 @import "pages/error";
 @import "pages/login";
-@import "pages/product";
-@import "pages/pos";
 @import "pages/profile";
 @import "pages/stocks";
-@import "pages/product-list";
 @import "pages/add-product";
-@import "pages/notes";
-@import "pages/barcode";
-@import "pages/employees-grid";
-@import "pages/todo-inbox";
-@import "pages/transfer-list.scss";
 @import "pages/attendance-employee";
 @import "pages/settings";
 @import "pages/pos-design";
-@import "pages/call";
-@import "pages/file-manager";
 
