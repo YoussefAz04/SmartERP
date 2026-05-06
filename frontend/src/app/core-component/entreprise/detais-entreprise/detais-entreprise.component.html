@@ -114,7 +114,7 @@
             <div class="input-wrap">
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="nom" [(ngModel)]="entreprise.nom" required
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="Nom de l'entreprise">
             </div>
           </div>
@@ -127,7 +127,7 @@
             <div class="input-wrap">
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="raisonSociale" [(ngModel)]="entreprise.raisonSociale"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="Raison sociale">
             </div>
           </div>
@@ -140,7 +140,7 @@
             <div class="input-wrap">
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="secteurActivite" [(ngModel)]="entreprise.secteurActivite"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="Ex: Technologie, Finance…">
             </div>
           </div>
@@ -153,7 +153,7 @@
             <div class="input-wrap">
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="statutJuridique" [(ngModel)]="entreprise.statutJuridique"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="Ex: SARL, SAS, SA…">
             </div>
           </div>
@@ -180,7 +180,7 @@
               <i class="feather icon-phone input-icon"></i>
               <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
                      name="telephone" [(ngModel)]="entreprise.telephone"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="+216 XX XXX XXX">
             </div>
           </div>
@@ -194,7 +194,7 @@
               <i class="feather icon-mail input-icon"></i>
               <input type="email" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
                      name="email" [(ngModel)]="entreprise.email"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="contact@entreprise.com">
             </div>
           </div>
@@ -208,7 +208,7 @@
               <i class="feather icon-globe input-icon"></i>
               <input type="url" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
                      name="siteWeb" [(ngModel)]="entreprise.siteWeb"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="https://www.entreprise.com">
             </div>
           </div>
@@ -222,7 +222,7 @@
               <i class="feather icon-calendar input-icon"></i>
               <input type="date" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
                      name="dateCreation" [(ngModel)]="entreprise.dateCreation"
-                     [attr.readonly]="isSuperAdmin ? '' : null">
+                     [attr.readonly]="isSuperAdmin || null">
             </div>
           </div>
 
@@ -249,7 +249,7 @@
               <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
                      name="numeroIdentificationFiscale"
                      [(ngModel)]="entreprise.numeroIdentificationFiscale"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="Ex: 52145457">
             </div>
           </div>
@@ -263,7 +263,7 @@
               <i class="feather icon-award input-icon"></i>
               <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
                      name="registreCommerce" [(ngModel)]="entreprise.registreCommerce"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="Numéro registre commerce">
             </div>
           </div>
@@ -290,7 +290,7 @@
               <i class="feather icon-map-pin input-icon"></i>
               <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
                      name="adresse" [(ngModel)]="entreprise.adresse"
-                     [attr.readonly]="isSuperAdmin ? '' : null"
+                     [attr.readonly]="isSuperAdmin || null"
                      placeholder="Adresse complète de l'entreprise">
             </div>
           </div>
@@ -302,7 +302,7 @@
             </label>
             <textarea class="field-textarea" [class.field-textarea--readonly]="isSuperAdmin"
                       name="description" [(ngModel)]="entreprise.description"
-                      [attr.readonly]="isSuperAdmin ? '' : null"
+                      [attr.readonly]="isSuperAdmin || null"
                       rows="4"
                       placeholder="Description de l'activité de l'entreprise…"></textarea>
           </div>
