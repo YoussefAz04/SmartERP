@@ -88,13 +88,13 @@ public class RecommendationService {
         if (outOfStockCount != null && outOfStockCount > 0) {
             String detail = worstStockArticle != null
                     ? String.format(Locale.FRANCE,
-                            " Référence la plus impactée : « %s ». Déclenchez un bon de commande en urgence pour rétablir la disponibilité.",
+                            " Article le plus touché : « %s ». Passez une commande fournisseur dès aujourd'hui pour éviter de perdre des ventes.",
                             worstStockArticle)
-                    : " Émettez les bons de commande nécessaires pour prévenir toute rupture de service.";
+                    : " Passez les commandes fournisseurs nécessaires dès aujourd'hui pour éviter de perdre des ventes.";
             String headline = pick(v,
-                    outOfStockCount + " référence(s) en rupture de stock totale.",
-                    outOfStockCount + " article(s) accusent un stock nul.",
-                    "Rupture confirmée sur " + outOfStockCount + " référence(s).");
+                    outOfStockCount + " article(s) sont totalement en rupture de stock.",
+                    outOfStockCount + " article(s) ont un stock à zéro.",
+                    "Stock à zéro sur " + outOfStockCount + " article(s).");
             recommendations.add(new RecommendationDto(
                 "STOCK_CRITIQUE",
                 "Rupture de Stock Détectée",
@@ -108,13 +108,13 @@ public class RecommendationService {
         if (lowStockCount != null && lowStockCount > 0) {
             String detail = worstStockArticle != null && (outOfStockCount == null || outOfStockCount == 0)
                     ? String.format(Locale.FRANCE,
-                            " Référence la plus exposée : « %s ». Planifiez le réapprovisionnement avant rupture.",
+                            " Article le plus exposé : « %s ». Commandez avant qu'il ne tombe à zéro.",
                             worstStockArticle)
-                    : " Planifiez vos commandes fournisseurs pour garantir la continuité opérationnelle.";
+                    : " Passez vos commandes fournisseurs maintenant pour ne pas tomber en rupture.";
             String headline = pick(v,
-                    lowStockCount + " référence(s) ont atteint le seuil de réapprovisionnement.",
-                    "Seuil d'alerte franchi par " + lowStockCount + " référence(s).",
-                    lowStockCount + " article(s) approchent du point de rupture.");
+                    lowStockCount + " article(s) ont un stock faible et doivent être réapprovisionnés.",
+                    lowStockCount + " article(s) sont sous le seuil d'alerte.",
+                    lowStockCount + " article(s) risquent bientôt la rupture de stock.");
             recommendations.add(new RecommendationDto(
                 "STOCK_FAIBLE",
                 "Stock Faible - Action Requise",
@@ -149,14 +149,14 @@ public class RecommendationService {
                     && salesThisMonth < 0.5 * expectedMtd) {
                 double shortfallPct = ((expectedMtd - salesThisMonth) / expectedMtd) * 100.0;
                 String levers = pick(v,
-                        "Activez les actions commerciales prioritaires et relancez votre portefeuille clients.",
-                        "Déclenchez les relances commerciales et envisagez une remise promotionnelle ciblée.",
-                        "Reprenez contact avec les clients dormants et réactivez les campagnes de vente.");
+                        "Lancez vos actions commerciales prioritaires et relancez vos clients existants.",
+                        "Contactez vos clients dormants et proposez une remise ciblée pour relancer les ventes.",
+                        "Reprenez contact avec vos anciens clients et relancez vos campagnes commerciales.");
                 recommendations.add(new RecommendationDto(
                     "VENTES_FAIBLES",
-                    "Performance des Ventes ce Mois",
+                    "Ventes du mois en retard",
                     String.format(Locale.FRANCE,
-                        "Le chiffre d'affaires mensuel accuse un écart de %.0f %% par rapport à la référence historique (réalisé : %.0f — objectif proratisé : %.0f). %s",
+                        "Vos ventes du mois sont %.0f %% en dessous de votre moyenne habituelle (réalisé : %,.0f — attendu à ce stade du mois : %,.0f). %s",
                         shortfallPct, salesThisMonth, expectedMtd, levers),
                     "MOYENNE",
                     "fa-chart-line",
@@ -166,14 +166,14 @@ public class RecommendationService {
                     && salesThisMonth > 1.3 * expectedMtd) {
                 double surgePct = ((salesThisMonth - expectedMtd) / expectedMtd) * 100.0;
                 String advice = pick(v,
-                        "Sécurisez le stock des références leaders et capitalisez sur cette dynamique.",
-                        "Augmentez les volumes commandés auprès des fournisseurs avant la fin du mois.",
-                        "Engagez une action de fidélisation pour consolider les nouveaux acheteurs.");
+                        "Reconstituez le stock de vos meilleurs articles pour ne pas tomber en rupture.",
+                        "Augmentez vos commandes fournisseurs avant la fin du mois pour suivre la demande.",
+                        "Profitez de cette dynamique pour fidéliser vos nouveaux clients.");
                 recommendations.add(new RecommendationDto(
                     "TENDANCE_CROISSANCE",
-                    "Tendance de Ventes Positive",
+                    "Ventes du mois en forte hausse",
                     String.format(Locale.FRANCE,
-                        "Performance commerciale en hausse : le chiffre d'affaires mensuel dépasse la référence historique de %.0f %% (réalisé : %.0f — référence proratisée : %.0f). %s",
+                        "Vos ventes du mois dépassent de %.0f %% votre moyenne habituelle (réalisé : %,.0f — attendu à ce stade du mois : %,.0f). %s",
                         surgePct, salesThisMonth, expectedMtd, advice),
                     "INFO",
                     "fa-rocket",
@@ -194,9 +194,9 @@ public class RecommendationService {
             String topProduct = topProducts.get(0)[0].toString();
             recommendations.add(new RecommendationDto(
                 "PRODUIT_STAR",
-                "Optimisation Produit Vedette",
+                "Article le plus vendu",
                 String.format(Locale.FRANCE,
-                    "« %s » est la référence la plus performante du catalogue. Maintenez un stock optimal et valorisez les ventes croisées pour maximiser la contribution au chiffre d'affaires.",
+                    "« %s » est l'article qui se vend le mieux. Gardez toujours un stock suffisant et proposez-le avec d'autres articles complémentaires pour augmenter vos ventes.",
                     topProduct),
                 "BASSE",
                 "fa-star",
@@ -215,14 +215,14 @@ public class RecommendationService {
             String marginStr = String.format(Locale.FRANCE, "%.1f", margin);
             if (margin < 20.0) {
                 String levers = pick(v,
-                        "Renégociez vos conditions fournisseurs ou réévaluez les prix de vente des références à fort volume.",
-                        "Identifiez les articles à marge négative et ajustez leur tarification ou leur référencement.",
-                        "Comparez vos prix d'achat auprès de fournisseurs alternatifs et envisagez une remise en concurrence.");
+                        "Renégociez vos prix d'achat avec vos fournisseurs ou augmentez vos prix de vente sur les articles les plus vendus.",
+                        "Repérez les articles vendus à perte ou à très faible marge et corrigez leur prix de vente.",
+                        "Comparez vos prix d'achat avec d'autres fournisseurs pour obtenir de meilleures conditions.");
                 recommendations.add(new RecommendationDto(
                     "MARGE_FAIBLE",
-                    "Amélioration de la Marge Commerciale",
+                    "Marge trop faible",
                     String.format(Locale.FRANCE,
-                        "Taux de marge brute : %s %% — Chiffre d'affaires : %.0f | Coût des ventes : %.0f | Marge dégagée : %.0f. %s",
+                        "Votre marge est de seulement %s %%. Sur %,.0f de ventes, vos achats vous coûtent %,.0f, ce qui ne vous laisse que %,.0f de bénéfice. %s",
                         marginStr, totalSales, cogs, grossProfit, levers),
                     "HAUTE",
                     "fa-percentage",
@@ -231,14 +231,14 @@ public class RecommendationService {
             } else if (margin < 35.0) {
                 recommendations.add(new RecommendationDto(
                     "MARGE_CORRECTE",
-                    "Marge Commerciale Acceptable",
+                    "Marge correcte",
                     String.format(Locale.FRANCE,
-                        "Taux de marge brute : %s %% — Chiffre d'affaires : %.0f | Marge dégagée : %.0f. %s",
+                        "Votre marge est de %s %%. Sur %,.0f de ventes, vous gagnez %,.0f. %s",
                         marginStr, totalSales, grossProfit,
                         pick(v,
-                            "Un taux cible de 35 %% renforcerait la résilience financière.",
-                            "Travaillez les conditions fournisseurs pour franchir le palier des 35 %%.",
-                            "Identifiez les références à marge faible pour améliorer le taux global.")),
+                            "Visez 35 %% de marge pour gagner en sécurité financière.",
+                            "Négociez de meilleurs prix d'achat pour atteindre 35 %% de marge.",
+                            "Repérez les articles à faible marge pour améliorer le résultat global.")),
                     "INFO",
                     "fa-percentage",
                     "Voir Détails"
@@ -246,14 +246,14 @@ public class RecommendationService {
             } else {
                 recommendations.add(new RecommendationDto(
                     "BONNE_PERFORMANCE",
-                    "Excellente Marge Commerciale",
+                    "Très bonne marge",
                     String.format(Locale.FRANCE,
-                        "Taux de marge brute : %s %% — Chiffre d'affaires : %.0f | Marge dégagée : %.0f. %s",
+                        "Votre marge est excellente : %s %%. Sur %,.0f de ventes, vous gagnez %,.0f. %s",
                         marginStr, totalSales, grossProfit,
                         pick(v,
-                            "Maintenez la maîtrise des coûts d'approvisionnement pour préserver cette performance.",
-                            "Investissez la marge dégagée dans des actions de fidélisation et de développement client.",
-                            "Sécurisez ces conditions tarifaires par des contrats-cadres avec vos fournisseurs stratégiques.")),
+                            "Continuez à bien négocier vos prix d'achat pour garder cette marge.",
+                            "Utilisez ce bénéfice pour fidéliser vos clients et développer votre activité.",
+                            "Conservez ces bons prix d'achat en signant des accords de longue durée avec vos meilleurs fournisseurs.")),
                     "INFO",
                     "fa-thumbs-up",
                     "Voir Détails"
@@ -264,9 +264,9 @@ public class RecommendationService {
             double ratio = (totalPurchases / totalSales) * 100.0;
             recommendations.add(new RecommendationDto(
                 "RATIO_ACHATS",
-                "Ratio Achats/Ventes",
+                "Comparaison achats / ventes",
                 String.format(Locale.FRANCE,
-                    "Le ratio achats/ventes s'établit à %.1f %% (achats : %.0f | chiffre d'affaires : %.0f). Renseignez les prix d'achat des articles pour activer le calcul automatique de la marge commerciale.",
+                    "Vos achats représentent %.1f %% de vos ventes (achats : %,.0f — ventes : %,.0f). Renseignez le prix d'achat de chaque article pour que le système calcule automatiquement votre marge réelle.",
                     ratio, totalPurchases, totalSales),
                 "INFO",
                 "fa-balance-scale",
@@ -281,14 +281,14 @@ public class RecommendationService {
             String urgency = overdueOrders > 5 ? "HAUTE" : "MOYENNE";
             String icon = overdueOrders > 5 ? "fa-exclamation-circle" : "fa-clock";
             String advice = pick(v,
-                    "Sollicitez vos fournisseurs pour une mise à jour du statut de livraison.",
-                    "Exigez une nouvelle date de livraison ferme et arbitrez si nécessaire.",
-                    "Identifiez les fournisseurs récurrents en retard et révisez leurs conditions contractuelles.");
+                    "Contactez vos fournisseurs pour connaître la nouvelle date de livraison.",
+                    "Demandez à vos fournisseurs une date de livraison ferme et changez de fournisseur si nécessaire.",
+                    "Identifiez les fournisseurs souvent en retard et revoyez vos conditions avec eux.");
             recommendations.add(new RecommendationDto(
                 "LIVRAISON_RETARD",
-                "Commandes en Retard de Livraison",
+                "Commandes en retard",
                 String.format(Locale.FRANCE,
-                    "%d bon(s) de commande dépassent l'échéance de livraison contractuelle. %s",
+                    "%d commande(s) fournisseur ont dépassé la date de livraison prévue. %s",
                     overdueOrders, advice),
                 urgency,
                 icon,
@@ -297,14 +297,14 @@ public class RecommendationService {
         } else if (activeOrders != null && activeOrders > 0) {
             recommendations.add(new RecommendationDto(
                 "LIVRAISON_OK",
-                "Livraisons à Jour",
+                "Livraisons à jour",
                 String.format(Locale.FRANCE,
-                    "L'ensemble des bons de commande actifs (%d) s'exécute dans les délais contractuels. %s",
+                    "Toutes vos commandes fournisseurs en cours (%d) seront livrées dans les délais. %s",
                     activeOrders,
                     pick(v,
-                        "Maintenez le suivi des confirmations fournisseurs pour garantir cette performance.",
-                        "Anticipez les commandes pour les périodes à forte demande prévisionnelle.",
-                        "Bonne maîtrise de la chaîne d'approvisionnement — capitalisez sur ce niveau de service.")),
+                        "Continuez à suivre les confirmations de vos fournisseurs pour garder ce niveau.",
+                        "Anticipez vos commandes pour les périodes de forte demande.",
+                        "Bonne gestion des approvisionnements — gardez le rythme.")),
                 "INFO",
                 "fa-truck",
                 "Voir Commandes"
@@ -338,14 +338,14 @@ public class RecommendationService {
                 double topShare = (topCustomerRev / totalSales) * 100.0;
                 recommendations.add(new RecommendationDto(
                     "CONCENTRATION_CLIENT",
-                    "Risque de Concentration Client",
+                    "Trop dépendant de quelques clients",
                     String.format(Locale.FRANCE,
-                        "Les 3 principaux clients concentrent %.1f %% du chiffre d'affaires (premier client « %s » : %.1f %%). %s",
+                        "Vos 3 plus gros clients représentent %.1f %% de vos ventes (le premier, « %s », pèse à lui seul %.1f %%). Si l'un d'eux part, vos ventes chuteront fortement. %s",
                         concentration, topCustomerName, topShare,
                         pick(v,
-                            "Diversifiez le portefeuille client pour réduire l'exposition au risque de churn.",
-                            "Lancez un programme d'acquisition pour atténuer cette dépendance.",
-                            "Sécurisez ces comptes stratégiques par des engagements contractuels ou des conditions préférentielles.")),
+                            "Cherchez de nouveaux clients pour réduire ce risque.",
+                            "Lancez une action commerciale pour gagner de nouveaux clients.",
+                            "Fidélisez ces clients clés avec des conditions privilégiées ou un contrat.")),
                     "HAUTE",
                     "fa-users",
                     "Voir Clients"
@@ -377,14 +377,14 @@ public class RecommendationService {
                         : "";
                 recommendations.add(new RecommendationDto(
                     "PRODUITS_LENTS",
-                    "Produits à Rotation Faible",
+                    "Articles qui se vendent peu",
                     String.format(Locale.FRANCE,
-                        "%d référence(s) accusent les cinq plus faibles rotations du catalogue.%s %s",
+                        "%d article(s) font partie des 5 qui se vendent le moins.%s %s",
                         slowCount, detail,
                         pick(v,
-                            "Envisagez une promotion ciblée ou un déréférencement pour libérer la trésorerie immobilisée.",
-                            "Regroupez ces références en offres combinées pour accélérer leur écoulement.",
-                            "Réduisez les stocks cibles pour dégager du fonds de roulement.")),
+                            "Faites une promotion ou retirez-les du catalogue pour récupérer la trésorerie immobilisée dans le stock.",
+                            "Vendez-les en lot avec d'autres articles pour les écouler plus vite.",
+                            "Réduisez les quantités commandées pour ces articles afin de libérer de la trésorerie.")),
                     "MOYENNE",
                     "fa-boxes-stacked",
                     "Voir Produits"
@@ -413,14 +413,14 @@ public class RecommendationService {
                 if (rate > 15.0) {
                     recommendations.add(new RecommendationDto(
                         "TAUX_ANNULATION",
-                        "Taux d'Annulation Élevé",
+                        "Trop de commandes annulées",
                         String.format(Locale.FRANCE,
-                            "Le taux d'annulation des commandes de vente s'établit à %.1f %% (%d annulations sur %d commandes). %s",
+                            "%.1f %% de vos commandes de vente sont annulées (%d annulations sur %d commandes). %s",
                             rate, cancelled, totalStatus,
                             pick(v,
-                                "Vérifiez la disponibilité du stock au moment de la prise de commande.",
-                                "Analysez les motifs d'annulation pour identifier la cause racine.",
-                                "Contrôlez les délais de confirmation et la qualité des fiches articles.")),
+                                "Vérifiez que le stock est bien disponible au moment où le client commande.",
+                                "Demandez aux clients pourquoi ils annulent pour comprendre la cause.",
+                                "Vérifiez vos délais de confirmation et la qualité des fiches articles.")),
                         rate > 25.0 ? "HAUTE" : "MOYENNE",
                         "fa-ban",
                         "Voir Commandes"
@@ -448,14 +448,14 @@ public class RecommendationService {
                     if (topShare > 70.0) {
                         recommendations.add(new RecommendationDto(
                             "CATEGORIE_DOMINANTE",
-                            "Concentration par Catégorie",
+                            "Trop dépendant d'une seule famille de produits",
                             String.format(Locale.FRANCE,
-                                "La famille « %s » représente %.1f %% du chiffre d'affaires total. %s",
+                                "La famille « %s » représente à elle seule %.1f %% de vos ventes. Si cette famille perd des ventes, votre activité sera fortement impactée. %s",
                                 topCat, topShare,
                                 pick(v,
-                                    "Diversifiez l'offre pour amortir un éventuel retournement de marché.",
-                                    "Identifiez une ou deux catégories adjacentes à développer.",
-                                    "Renforcez le plan marketing des catégories secondaires pour rééquilibrer le mix produit.")),
+                                    "Développez d'autres familles de produits pour réduire ce risque.",
+                                    "Choisissez une ou deux familles proches à développer en priorité.",
+                                    "Mettez en avant les autres familles de produits pour mieux équilibrer vos ventes.")),
                             "MOYENNE",
                             "fa-layer-group",
                             "Voir Produits"
@@ -486,14 +486,14 @@ public class RecommendationService {
                         if (share > 65.0 && suppliers.size() >= 2) {
                             recommendations.add(new RecommendationDto(
                                 "DIVERSIFICATION_FOURNISSEUR",
-                                "Dépendance Fournisseur",
+                                "Trop dépendant d'un seul fournisseur",
                                 String.format(Locale.FRANCE,
-                                    "Le fournisseur « %s » représente %.1f %% du volume d'achat total. %s",
+                                    "Le fournisseur « %s » représente %.1f %% de vos achats. Si ce fournisseur a un problème, vos approvisionnements seront bloqués. %s",
                                     name, share,
                                     pick(v,
-                                        "Qualifiez un fournisseur de secours pour les références critiques.",
-                                        "Mettez en concurrence vos fournisseurs pour négocier de meilleures conditions.",
-                                        "Sécurisez votre approvisionnement en homologuant un second fournisseur stratégique.")),
+                                        "Trouvez un fournisseur alternatif pour vos articles les plus importants.",
+                                        "Mettez vos fournisseurs en concurrence pour obtenir de meilleurs prix.",
+                                        "Sécurisez vos approvisionnements en ajoutant un deuxième fournisseur principal.")),
                                 "MOYENNE",
                                 "fa-truck-arrow-right",
                                 "Voir Commandes"
@@ -524,14 +524,14 @@ public class RecommendationService {
                         if (notationStars >= 4.0) {
                             recommendations.add(new RecommendationDto(
                                 "FOURNISSEUR_PERFORMANT",
-                                "Fournisseur de Référence",
+                                "Très bon fournisseur",
                                 String.format(Locale.FRANCE,
-                                    "Le fournisseur « %s » obtient une évaluation de %.1f/5 avec un taux de service de %.0f %%. %s",
+                                    "Le fournisseur « %s » a une note de %.1f/5 et livre %.0f %% de ses commandes dans les délais. %s",
                                     best[1].toString(), notationStars, tauxLivPct,
                                     pick(v,
-                                        "Privilégiez-le pour vos approvisionnements stratégiques.",
-                                        "Sécurisez la relation par un contrat-cadre pluriannuel.",
-                                        "Étendez la collaboration sur d'autres familles de produits.")),
+                                        "Privilégiez-le pour vos articles les plus importants.",
+                                        "Sécurisez votre relation avec un contrat de longue durée.",
+                                        "Étendez votre collaboration à d'autres familles de produits.")),
                                 "INFO",
                                 "fa-medal",
                                 "Voir Commandes"
@@ -559,14 +559,14 @@ public class RecommendationService {
                 if (delta < -15.0) {
                     recommendations.add(new RecommendationDto(
                         "PANIER_MOYEN_BAISSE",
-                        "Panier Moyen en Baisse",
+                        "Vos clients dépensent moins par commande",
                         String.format(Locale.FRANCE,
-                            "Le ticket moyen sur les 90 derniers jours (%.0f) est inférieur de %.0f %% à la référence historique (%.0f). %s",
+                            "Sur les 90 derniers jours, vos clients dépensent en moyenne %,.0f par commande, soit %.0f %% de moins qu'avant (moyenne historique : %,.0f). %s",
                             recentAov, Math.abs(delta), aov,
                             pick(v,
-                                "Activez des offres groupées ou des ventes additionnelles pour rehausser le ticket.",
-                                "Révisez la politique de remise pour préserver la valeur unitaire.",
-                                "Identifiez les segments clients qui réduisent leur engagement et adaptez l'offre.")),
+                                "Proposez des lots ou des articles complémentaires pour augmenter le montant des commandes.",
+                                "Limitez les remises pour préserver la valeur de chaque commande.",
+                                "Identifiez les clients qui commandent moins et adaptez votre offre pour eux.")),
                         "MOYENNE",
                         "fa-cart-shopping",
                         "Analyser Ventes"
@@ -574,14 +574,14 @@ public class RecommendationService {
                 } else if (delta > 15.0) {
                     recommendations.add(new RecommendationDto(
                         "PANIER_MOYEN_HAUSSE",
-                        "Panier Moyen en Hausse",
+                        "Vos clients dépensent plus par commande",
                         String.format(Locale.FRANCE,
-                            "Le ticket moyen sur les 90 derniers jours (%.0f) progresse de %.0f %% par rapport à la référence historique (%.0f). %s",
+                            "Sur les 90 derniers jours, vos clients dépensent en moyenne %,.0f par commande, soit %.0f %% de plus qu'avant (moyenne historique : %,.0f). %s",
                             recentAov, delta, aov,
                             pick(v,
-                                "Capitalisez avec des offres premium et des ventes complémentaires.",
-                                "Prolongez le mix produit qui tire le ticket vers le haut.",
-                                "Étendez les bonnes pratiques commerciales à l'ensemble des segments.")),
+                                "Profitez-en pour proposer des articles haut de gamme et des produits complémentaires.",
+                                "Continuez à vendre ensemble les articles qui font monter le montant des commandes.",
+                                "Identifiez ce qui marche actuellement et appliquez-le à tous vos clients.")),
                         "INFO",
                         "fa-cart-arrow-down",
                         "Analyser Ventes"
@@ -604,14 +604,14 @@ public class RecommendationService {
             if (ratio > 1.5 && recentPurchases > 1000.0) {
                 recommendations.add(new RecommendationDto(
                     "CASH_FLOW",
-                    "Pression sur la Trésorerie",
+                    "Attention à votre trésorerie",
                     String.format(Locale.FRANCE,
-                        "Sur les 30 derniers jours, les engagements d'achat (%.0f) excèdent le chiffre d'affaires (%.0f) d'un facteur ×%.1f. %s",
+                        "Sur les 30 derniers jours, vous avez dépensé %,.0f en achats pour seulement %,.0f de ventes (vous dépensez %.1f fois plus que ce que vous encaissez). %s",
                         recentPurchases, recentSales30, ratio,
                         pick(v,
-                            "Échelonnez les commandes fournisseurs ou négociez des délais de paiement élargis.",
-                            "Vérifiez que la constitution de stock est justifiée par la demande prévisionnelle.",
-                            "Priorisez l'écoulement du stock existant avant tout nouvel engagement d'achat.")),
+                            "Étalez vos commandes fournisseurs ou demandez des délais de paiement plus longs.",
+                            "Vérifiez que ces achats correspondent vraiment à la demande prévue.",
+                            "Vendez d'abord le stock que vous avez avant de passer de nouvelles commandes.")),
                     "HAUTE",
                     "fa-wallet",
                     "Voir Commandes"
@@ -633,14 +633,14 @@ public class RecommendationService {
                     if (monthsOfStock > 6.0) {
                         recommendations.add(new RecommendationDto(
                             "VALEUR_STOCK",
-                            "Stock Immobilisé Important",
+                            "Trop de stock immobilisé",
                             String.format(Locale.FRANCE,
-                                "La valeur du stock immobilisé représente %.0f (≈ %.1f mois de chiffre d'affaires). %s",
+                                "Vous avez %,.0f de marchandise en stock, soit environ %.1f mois de ventes. C'est beaucoup de trésorerie bloquée. %s",
                                 stockValue, monthsOfStock,
                                 pick(v,
-                                    "Identifiez les références en surstock pour libérer la trésorerie immobilisée.",
-                                    "Lancez une opération de déstockage ciblée sur les articles à rotation lente.",
-                                    "Révisez les quantités cibles des articles sur-approvisionnés.")),
+                                    "Repérez les articles en surstock pour libérer de la trésorerie.",
+                                    "Lancez un déstockage sur les articles qui se vendent peu.",
+                                    "Réduisez les quantités commandées sur les articles trop stockés.")),
                             "MOYENNE",
                             "fa-warehouse",
                             "Voir Stock"
@@ -656,14 +656,14 @@ public class RecommendationService {
         if (totalOrders != null && totalOrders < 10) {
             recommendations.add(new RecommendationDto(
                 "DONNEES_INSUFFISANTES",
-                "Enrichissez Vos Données",
+                "Ajoutez plus de données",
                 String.format(Locale.FRANCE,
-                    "Base de données insuffisante : %d transaction(s) enregistrée(s). %s",
+                    "Vous n'avez que %d commande(s) enregistrée(s). C'est trop peu pour fournir des analyses fiables. %s",
                     totalOrders,
                     pick(v,
-                        "L'enrichissement des données améliore la précision des modèles prédictifs et la pertinence des analyses.",
-                        "Les moteurs d'analyse avancée se déclenchent à partir de 30 transactions — complétez votre historique pour activer les prévisions.",
-                        "Importez votre historique de commandes pour activer l'ensemble des prévisions et recommandations IA.")),
+                        "Plus vous ajoutez de données, plus les analyses et prévisions seront précises.",
+                        "Les prévisions automatiques s'activent à partir de 30 commandes — continuez à enrichir votre historique.",
+                        "Importez votre historique de commandes pour activer toutes les prévisions et recommandations.")),
                 "INFO",
                 "fa-database",
                 "Ajouter Commandes"
