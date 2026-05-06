@@ -25,9 +25,6 @@ export class AddFournisseurComponent implements OnInit {
   isLoading = false;
   submitted = false;
 
-  readonly starValues = [1, 2, 3, 4, 5];
-  notationHover = 0;
-
   constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
@@ -46,34 +43,11 @@ export class AddFournisseurComponent implements OnInit {
       telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
-      tauxLivraison: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
-      notation: [null, [Validators.required, Validators.min(1), Validators.max(5)]],
       categorieId: ['', Validators.required],
     });
   }
 
-  get notationCurrentValue(): number {
-    const v = this.fournisseurForm.get('notation')?.value;
-    return v !== '' && v != null ? Number(v) : 0;
-  }
-
-  get tauxCurrentValue(): number {
-    const v = this.fournisseurForm.get('tauxLivraison')?.value;
-    return v !== '' && v != null ? Number(v) : 0;
-  }
-
-  get tauxSliderStyle(): { background: string } {
-    const pct = this.tauxCurrentValue;
-    return {
-      background: `linear-gradient(to right, #ff9a44 0%, #ff8224 ${pct}%, #e6eaf0 ${pct}%, #e6eaf0 100%)`
-    };
-  }
-
-  setNotation(val: number): void {
-    this.fournisseurForm.patchValue({ notation: val });
-    this.fournisseurForm.get('notation')?.markAsTouched();
-    this.notationHover = 0;
-  }
+  get notationCurrentValue(): number { return 0; }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.fournisseurForm.get(fieldName);
@@ -99,8 +73,6 @@ export class AddFournisseurComponent implements OnInit {
         telephone: formValue.telephone.trim(),
         adresse: formValue.adresse.trim(),
         secteurActivite: formValue.secteurActivite.trim(),
-        tauxLivraison: parseFloat(formValue.tauxLivraison),
-        notation: parseFloat(formValue.notation),
       };
 
       this.fournisseurService.addFournisseur(fournisseurData, idCategorie).subscribe({

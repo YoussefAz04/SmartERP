@@ -247,32 +247,14 @@
                 </div>
               </div>
 
-              <!-- Taux Livraison Field – range slider -->
+              <!-- Taux Livraison – computed, read-only info -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">
-                    Taux de Livraison
-                    <span class="taux-live-badge">{{ tauxCurrentValue }}%</span>
-                  </label>
-                  <div class="taux-slider-wrap" [class.invalid-wrap]="isFieldInvalid('tauxLivraison')">
-                    <input
-                      type="range"
-                      class="form-range-custom"
-                      formControlName="tauxLivraison"
-                      min="0"
-                      max="100"
-                      step="0.5"
-                      [ngStyle]="tauxSliderStyle"
-                      aria-label="Taux de livraison">
-                    <div class="taux-endpoints">
-                      <span>0% · Gratuit</span>
-                      <span>100%</span>
-                    </div>
+                  <label class="form-label">Taux de Livraison</label>
+                  <div class="alert alert-info mb-0 py-2 px-3" style="font-size:0.85rem;">
+                    <i class="feather icon-info me-1"></i>
+                    Calculé automatiquement à partir des commandes passées (commandes reçues / commandes non annulées × 100).
                   </div>
-                  <span class="error-message" *ngIf="isFieldInvalid('tauxLivraison')">
-                    <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('tauxLivraison')?.hasError('min') || fournisseurForm.get('tauxLivraison')?.hasError('max')">Valeur entre 0 et 100</span>
-                  </span>
                 </div>
               </div>
 
