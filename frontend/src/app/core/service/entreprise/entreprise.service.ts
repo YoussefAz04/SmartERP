@@ -80,20 +80,6 @@ export class EntrepriseService {
     );
   }
 
-  // ✅ SWITCH ENTERPRISE CONTEXT - Super admin only; returns new JWT with target enterprise embedded
-  switchEntreprise(enterpriseId: number): Observable<any> {
-    const token = this.getToken();
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    });
-    return this.http.post<any>(
-      `${environment.apiUrl}/api/auth/switch-enterprise?enterpriseId=${enterpriseId}`,
-      {},
-      { headers }
-    );
-  }
-
   // ✅ GET CURRENT USER'S ENTERPRISE - Reads enterpriseId from localStorage
   getEntrepriseByCurrentUser(): Observable<any> {
     const item = localStorage.getItem('myLSkey');
