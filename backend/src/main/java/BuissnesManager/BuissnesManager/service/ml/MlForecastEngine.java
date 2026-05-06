@@ -264,7 +264,7 @@ public class MlForecastEngine {
 
         // n ≫ p hard guard: if rows < 2·p, force a single shrinkage candidate.
         int pEff = full.featureCount;
-        boolean underdetermined = full.y.length < MIN_ROWS_PER_FEATURE * pEff;
+        boolean underdetermined = isUnderdetermined(full.y.length, pEff);
 
         List<ModelCandidate> candidates = new ArrayList<>();
         if (underdetermined) {
@@ -276,7 +276,7 @@ public class MlForecastEngine {
                     (df, schema) -> Predictor.fitRidge(df, schema, lambda)));
         } else {
             candidates.add(new ModelCandidate("OLS",
-                    (df, schema) -> Predictor.fitOls(df, schema)));
+                    (df, schema) -> Predictor.fitOls(df, schema), true));
             for (double lambda : RIDGE_LAMBDA_GRID) {
                 candidates.add(new ModelCandidate(
                         String.format(Locale.ROOT, "Ridge(λ=%.2f)", lambda),
@@ -558,11 +558,24 @@ public class MlForecastEngine {
     private static final class ModelCandidate {
         final String name;
         final LearnerFit fitter;
+        /** True when the underlying learner requires a full-rank design matrix
+         *  (i.e. plain OLS). Ridge / ElasticNet / RF are always safe to call. */
+        final boolean needsFullRank;
         ModelCandidate(String name, LearnerFit fitter) {
+            this(name, fitter, false);
+        }
+        ModelCandidate(String name, LearnerFit fitter, boolean needsFullRank) {
             this.name = name;
             this.fitter = fitter;
+            this.needsFullRank = needsFullRank;
         }
         Predictor fit(DataFrame df, StructType schema) { return fitter.fit(df, schema); }
+    }
+
+    /** Returns true when a training subset with {@code rows} samples and
+     *  {@code features} predictors is under-determined for plain OLS. */
+    private static boolean isUnderdetermined(int rows, int features) {
+        return rows < MIN_ROWS_PER_FEATURE * features;
     }
 
     /* ------------------------- Walk-forward CV ------------------------- */
@@ -614,6 +627,12 @@ public class MlForecastEngine {
             Predictor m;
             try {
                 tm = buildMatrix(tPrefix, startMonthIdx, spec, calendarMatrix);
+                // Guard: skip full-rank-only learners (OLS) when this fold's
+                // training subset is under-determined. Ridge/EN/RF handle it gracefully;
+                // OLS would produce a rank-deficient matrix and log LAPACK errors.
+                if (candidate.needsFullRank && isUnderdetermined(tm.y.length, tm.featureCount)) {
+                    continue;
+                }
                 m = candidate.fit(tm.df, tm.schema);
             } catch (RuntimeException ex) {
                 continue;
