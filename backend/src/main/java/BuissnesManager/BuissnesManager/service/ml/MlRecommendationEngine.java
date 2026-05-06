@@ -1,7 +1,6 @@
 package BuissnesManager.BuissnesManager.service.ml;
 
 import BuissnesManager.BuissnesManager.dto.RecommendationDto;
-import BuissnesManager.BuissnesManager.dto.RecommendationDto.MetricItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -171,16 +170,11 @@ public class MlRecommendationEngine {
                 "ML_RISQUE_STOCK",
                 "Alerte Réapprovisionnement — " + r.articleName,
                 String.format(Locale.FRANCE,
-                    "Probabilité de rupture estimée à %.0f %% sur un horizon de %d jours.",
-                    pStockout * 100.0, horizonDays),
+                    "Probabilité de rupture estimée à %.0f %% sur l'horizon de %d jours. Couverture actuelle : %s | Demande moyenne : %.0f unités/mois | Délai fournisseur : %.0f j. Quantité de réapprovisionnement recommandée : %.0f unité(s). %s",
+                    pStockout * 100.0, horizonDays, coverStr,
+                    r.avgMonthlyDemand, r.leadTimeDays, suggestedQty, urgencyHint),
                 prio, icon, "Voir Stock"
-            ).withMetrics(
-                new MetricItem("Probabilité de rupture", String.format(Locale.FRANCE, "%.0f %%", pStockout * 100.0)),
-                new MetricItem("Couverture actuelle", coverStr),
-                new MetricItem("Demande moyenne", String.format(Locale.FRANCE, "%.0f unités/mois", r.avgMonthlyDemand)),
-                new MetricItem("Délai fournisseur", String.format(Locale.FRANCE, "%.0f j", r.leadTimeDays)),
-                new MetricItem("Qté recommandée", String.format(Locale.FRANCE, "%.0f unité(s)", suggestedQty))
-            ).withInsight(urgencyHint));
+            ));
         }
         return out;
     }
@@ -252,14 +246,10 @@ public class MlRecommendationEngine {
             "PRODUIT_STAR",
             "Produit Vedette — " + topRow.productName,
             String.format(Locale.FRANCE,
-                "« %s » est identifié par le modèle prédictif comme la référence à plus fort potentiel de croissance.",
-                topRow.productName),
+                "« %s » est identifié par le modèle prédictif comme la référence à plus fort potentiel de croissance. Chiffre d'affaires : %.0f — Unités vendues : %.0f — Marge unitaire estimée : %.0f. Sécurisez le niveau de stock, activez la mise en avant commerciale et testez des offres combinées pour amplifier la dynamique de vente.",
+                topRow.productName, topRow.revenue, topRow.quantitySold, topRow.marginProxy),
             "BASSE", "fa-star", "Voir Produits"
-        ).withMetrics(
-            new MetricItem("Chiffre d'affaires", String.format(Locale.FRANCE, "%.0f TND", topRow.revenue)),
-            new MetricItem("Unités vendues", String.format(Locale.FRANCE, "%.0f", topRow.quantitySold)),
-            new MetricItem("Marge unitaire estimée", String.format(Locale.FRANCE, "%.0f TND", topRow.marginProxy))
-        ).withInsight("Sécurisez le niveau de stock, activez la mise en avant commerciale et testez des offres combinées pour amplifier la dynamique de vente."));
+        ));
 
         // Top 10% of remaining articles → OPPORTUNITÉ, capped at 3 to stay readable.
         int opportunityCap = Math.min(3, Math.max(0, n / 10));
@@ -280,13 +270,10 @@ public class MlRecommendationEngine {
                 "OPPORTUNITE",
                 "Opportunité de Croissance — " + r.productName,
                 String.format(Locale.FRANCE,
-                    "« %s » se distingue parmi les références à fort potentiel de progression.",
-                    r.productName),
+                    "« %s » se distingue parmi les références à fort potentiel de progression. Chiffre d'affaires : %.0f — Unités écoulées : %.0f. %s",
+                    r.productName, r.revenue, r.quantitySold, hint),
                 "MOYENNE", "fa-arrow-trend-up", "Voir Produits"
-            ).withMetrics(
-                new MetricItem("Chiffre d'affaires", String.format(Locale.FRANCE, "%.0f TND", r.revenue)),
-                new MetricItem("Unités écoulées", String.format(Locale.FRANCE, "%.0f", r.quantitySold))
-            ).withInsight(hint));
+            ));
         }
         return out;
     }

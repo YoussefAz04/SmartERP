@@ -66,11 +66,6 @@ export interface ProductIntelligence {
   activeProducts: number;
 }
 
-export interface MetricItem {
-  label: string;
-  value: string;
-}
-
 export interface Recommendation {
   type: string;
   title: string;
@@ -78,8 +73,6 @@ export interface Recommendation {
   priority: string;
   icon: string;
   actionLabel: string;
-  metrics?: MetricItem[];
-  insight?: string;
 }
 
 export interface KpiSummary {
