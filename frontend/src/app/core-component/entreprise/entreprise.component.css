@@ -248,8 +248,8 @@
 }
 .action-btn-view { background: #eef2ff; color: #4338ca; border: 1px solid rgba(99,102,241,.2); }
 .action-btn-view:hover { background: #4338ca; color: #fff; transform: translateY(-2px); border-color: #4338ca; }
-.action-btn-delete { background: #fef2f2; color: #dc2626; border: 1px solid rgba(220,38,38,.2); }
-.action-btn-delete:hover { background: #dc2626; color: #fff; transform: translateY(-2px); border-color: #dc2626; }
+.action-btn-disable { background: #fff7ed; color: #ea580c; border: 1px solid rgba(234,88,12,.2); }
+.action-btn-disable:hover { background: #ea580c; color: #fff; transform: translateY(-2px); border-color: #ea580c; }
 .action-btn-connect { background: #d1fae5; color: #047857; border: 1px solid rgba(16,185,129,.25); }
 .action-btn-connect:hover { background: #047857; color: #fff; transform: translateY(-2px); border-color: #047857; }
 

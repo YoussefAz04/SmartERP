@@ -102,15 +102,16 @@ public class EntrepriseController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteEntreprise(@PathVariable Long id) {
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping("/disable/{id}")
+    public ResponseEntity<?> disableEntreprise(@PathVariable Long id) {
         try {
-            entrepriseService.deleteEntreprise(id);
-            return ResponseEntity.ok("Entreprise supprimée avec succès.");
+            entrepriseService.disableEntreprise(id);
+            return ResponseEntity.ok("Entreprise désactivée avec succès.");
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvée avec ID : " + id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la désactivation : " + e.getMessage());
         }
     }
 

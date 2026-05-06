@@ -111,16 +111,16 @@ public class EntrepriseService {
     }
 
     @Transactional
-    public void deleteEntreprise(Long id) {
-        // Soft-delete: mark the entreprise as inactive instead of cascading a hard
-        // delete across all related business data. This preserves history (factures,
-        // commandes, stocks, users, etc.) while removing the entreprise from the
-        // active list shown to super admins.
+    public void disableEntreprise(Long id) {
         Entreprise entreprise = entrepriseRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException(
                         "Entreprise non trouvée avec ID : " + id, 1));
         entreprise.setActive(false);
         entrepriseRepository.save(entreprise);
+
+        List<User> users = userRepo.findByEntrepriseId(id);
+        users.forEach(user -> user.setEnabled(false));
+        userRepo.saveAll(users);
     }
 
     public void assignerUserToEntreprise(String username,String nom){
