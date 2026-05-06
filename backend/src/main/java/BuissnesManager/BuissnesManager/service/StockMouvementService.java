@@ -26,6 +26,9 @@ public class StockMouvementService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     public List<StockMouvement> getAllMouvements() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
@@ -82,7 +85,16 @@ public class StockMouvementService {
             enterpriseSecurityUtil.getCurrentUser().ifPresent(mouvement::setUtilisateur);
         }
 
-        return stockMouvementRepo.save(mouvement);
+        StockMouvement saved = stockMouvementRepo.save(mouvement);
+
+        String stockInfo = saved.getStock() != null ? "stock id=" + saved.getStock().getId() : "stock inconnu";
+        auditLogService.log("STOCK_MOUVEMENT",
+                "Mouvement de stock: " + saved.getTypeMouvement()
+                        + ", quantité=" + saved.getQuantite()
+                        + ", " + stockInfo
+                        + (saved.getMotif() != null ? ", motif=" + saved.getMotif() : ""));
+
+        return saved;
     }
 
     public void deleteMouvement(Long id) {

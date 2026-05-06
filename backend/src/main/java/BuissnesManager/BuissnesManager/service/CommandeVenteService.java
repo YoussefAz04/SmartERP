@@ -58,6 +58,9 @@ public class CommandeVenteService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     @Caching(evict = {
         @CacheEvict(cacheNames = "productIntelligence", allEntries = true),
         @CacheEvict(cacheNames = "salesAnalysis",       allEntries = true),
@@ -475,7 +478,11 @@ public class CommandeVenteService {
 
         logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={} ({} stock alert(s))",
             id, savedFacture.getId(), totalHT, totalTVA, totalTTC, stockAlerts.size());
-        
+
+        auditLogService.log("COMMANDE_VENTE_VALIDEE",
+                "Commande de vente validée: " + commande.getReference()
+                        + " (id=" + id + "), facture: " + savedFacture.getReferance());
+
         return new ValidationResponseDto(savedFacture, stockAlerts);
     }
 

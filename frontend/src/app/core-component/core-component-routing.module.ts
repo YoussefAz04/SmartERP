@@ -145,6 +145,14 @@ const routes: Routes = [
           import('./notifications/notifications.component').then((m) => m.NotificationsComponent),
       },
       {
+        // Audit log: accessible by SUPER_ADMIN and ADMIN
+        path: 'audit-log',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['SUPER_ADMIN', 'ADMIN'] },
+        loadComponent: () =>
+          import('./audit-log/audit-log.component').then((m) => m.AuditLogComponent),
+      },
+      {
         // AI analytics: enterprise business data – no SUPER_ADMIN
         path: 'ai-intelligence',
         canActivate: [RoleGuard],

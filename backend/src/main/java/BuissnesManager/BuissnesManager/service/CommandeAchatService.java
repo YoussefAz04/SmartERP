@@ -54,6 +54,9 @@ public class CommandeAchatService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     // ✅ FIXED: Proper enterprise scoping with error handling
     public List<CommandeAchat> getAllCommandes() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
@@ -446,6 +449,11 @@ public class CommandeAchatService {
         // ✅ Stock is NOT touched at confirmation. It will be incremented
         // only when the order is physically received via recevoirCommande().
         logger.info("✅ Order confirmed and invoice created - Order ID: {}, Invoice ID: {}", id, savedFacture.getId());
+
+        auditLogService.log("COMMANDE_ACHAT_VALIDEE",
+                "Commande d'achat validée: " + commande.getReference()
+                        + " (id=" + id + "), facture: " + savedFacture.getReferance());
+
         return savedFacture;
     }
 

@@ -379,6 +379,24 @@ generateSidebarData(modules: ModuleTittle[]) {
           }
         ]
       });
+      result.push({
+        tittle: 'Administration',
+        showAsTab: false,
+        separateRoute: false,
+        hasSubRoute: false,
+        showSubRoute: true,
+        menu: [
+          {
+            menuValue: "Journal d'Audit",
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'clipboard',
+            route: 'audit-log',
+            base1: 'audit-log',
+            subMenus: []
+          }
+        ]
+      });
     }
 
     // Platform Administration section is only visible to SUPER_ADMIN
@@ -415,6 +433,15 @@ generateSidebarData(modules: ModuleTittle[]) {
             icon: 'shield',
             route: 'user-management/roles-permissions',
             base1: 'user-management',
+            subMenus: []
+          },
+          {
+            menuValue: "Journal d'Audit",
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'clipboard',
+            route: 'audit-log',
+            base1: 'audit-log',
             subMenus: []
           }
         ]
