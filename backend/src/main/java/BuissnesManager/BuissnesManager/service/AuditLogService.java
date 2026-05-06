@@ -42,9 +42,6 @@ public class AuditLogService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
             username = auth.getName();
-            enterpriseSecurityUtil.getCurrentUser().ifPresent(u -> {
-                // We need a local record so we can pass values up — capture via the overload
-            });
         }
 
         // Resolve userId from current user
