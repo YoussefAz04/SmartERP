@@ -335,6 +335,21 @@
           </div>
           <h4 class="rec-title">{{ rec.title }}</h4>
           <p class="rec-desc">{{ rec.description }}</p>
+
+          <!-- Structured metrics grid -->
+          <div class="rec-metrics" *ngIf="rec.metrics && rec.metrics.length">
+            <div class="rec-metric-item" *ngFor="let m of rec.metrics">
+              <span class="rec-metric-label">{{ m.label }}</span>
+              <span class="rec-metric-value">{{ m.value }}</span>
+            </div>
+          </div>
+
+          <!-- Action insight callout -->
+          <div class="rec-insight" *ngIf="rec.insight">
+            <i class="fas fa-lightbulb rec-insight-icon"></i>
+            <span>{{ rec.insight }}</span>
+          </div>
+
           <div class="rec-footer">
             <span class="rec-type" [title]="rec.type">{{ formatRecType(rec.type) }}</span>
             <button class="btn-action" (click)="navigateFromRecommendation(rec)">

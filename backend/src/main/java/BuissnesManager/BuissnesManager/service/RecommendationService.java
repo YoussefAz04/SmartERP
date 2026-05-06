@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.dto.RecommendationDto;
+import BuissnesManager.BuissnesManager.dto.RecommendationDto.MetricItem;
 import BuissnesManager.BuissnesManager.entity.Stock;
 import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
@@ -88,13 +89,25 @@ public class RecommendationService {
         if (outOfStockCount != null && outOfStockCount > 0) {
             String detail = worstStockArticle != null
                     ? String.format(Locale.FRANCE,
-                            " Référence la plus impactée : « %s ». Déclenchez un bon de commande en urgence pour rétablir la disponibilité.",
+                            " Référence la plus impactée : « %s ».",
                             worstStockArticle)
-                    : " Émettez les bons de commande nécessaires pour prévenir toute rupture de service.";
+                    : "";
             String headline = pick(v,
                     outOfStockCount + " référence(s) en rupture de stock totale.",
                     outOfStockCount + " article(s) accusent un stock nul.",
                     "Rupture confirmée sur " + outOfStockCount + " référence(s).");
+            String insight = pick(v,
+                    "Déclenchez un bon de commande en urgence pour rétablir la disponibilité.",
+                    "Émettez les bons de commande nécessaires pour prévenir toute rupture de service.",
+                    "Traitez ces ruptures en priorité absolue — chaque jour de rupture se traduit en perte de vente.");
+            MetricItem[] metrics = worstStockArticle != null
+                    ? new MetricItem[]{
+                        new MetricItem("Articles en rupture", String.valueOf(outOfStockCount)),
+                        new MetricItem("Référence la plus impactée", worstStockArticle)
+                      }
+                    : new MetricItem[]{
+                        new MetricItem("Articles en rupture", String.valueOf(outOfStockCount))
+                      };
             recommendations.add(new RecommendationDto(
                 "STOCK_CRITIQUE",
                 "Rupture de Stock Détectée",
@@ -102,27 +115,35 @@ public class RecommendationService {
                 "CRITIQUE",
                 "fa-exclamation-triangle",
                 "Voir Stock"
-            ));
+            ).withMetrics(metrics).withInsight(insight));
         }
 
         if (lowStockCount != null && lowStockCount > 0) {
-            String detail = worstStockArticle != null && (outOfStockCount == null || outOfStockCount == 0)
+            String insightLow = worstStockArticle != null && (outOfStockCount == null || outOfStockCount == 0)
                     ? String.format(Locale.FRANCE,
-                            " Référence la plus exposée : « %s ». Planifiez le réapprovisionnement avant rupture.",
+                            "Référence la plus exposée : « %s ». Planifiez le réapprovisionnement avant rupture.",
                             worstStockArticle)
-                    : " Planifiez vos commandes fournisseurs pour garantir la continuité opérationnelle.";
+                    : "Planifiez vos commandes fournisseurs pour garantir la continuité opérationnelle.";
             String headline = pick(v,
                     lowStockCount + " référence(s) ont atteint le seuil de réapprovisionnement.",
                     "Seuil d'alerte franchi par " + lowStockCount + " référence(s).",
                     lowStockCount + " article(s) approchent du point de rupture.");
+            MetricItem[] metricsLow = worstStockArticle != null && (outOfStockCount == null || outOfStockCount == 0)
+                    ? new MetricItem[]{
+                        new MetricItem("Articles en alerte stock", String.valueOf(lowStockCount)),
+                        new MetricItem("Référence la plus exposée", worstStockArticle)
+                      }
+                    : new MetricItem[]{
+                        new MetricItem("Articles en alerte stock", String.valueOf(lowStockCount))
+                      };
             recommendations.add(new RecommendationDto(
                 "STOCK_FAIBLE",
                 "Stock Faible - Action Requise",
-                headline + detail,
+                headline,
                 "HAUTE",
                 "fa-boxes",
                 "Gérer Stock"
-            ));
+            ).withMetrics(metricsLow).withInsight(insightLow));
         }
 
         // === 2. Sales velocity (day-of-month-adjusted) ===
@@ -156,12 +177,16 @@ public class RecommendationService {
                     "VENTES_FAIBLES",
                     "Performance des Ventes ce Mois",
                     String.format(Locale.FRANCE,
-                        "Le chiffre d'affaires mensuel accuse un écart de %.0f %% par rapport à la référence historique (réalisé : %.0f — objectif proratisé : %.0f). %s",
-                        shortfallPct, salesThisMonth, expectedMtd, levers),
+                        "Le chiffre d'affaires mensuel accuse un écart de %.0f %% par rapport à la référence historique.",
+                        shortfallPct),
                     "MOYENNE",
                     "fa-chart-line",
                     "Analyser Ventes"
-                ));
+                ).withMetrics(
+                    new MetricItem("Réalisé (mois en cours)", String.format(Locale.FRANCE, "%.0f TND", salesThisMonth)),
+                    new MetricItem("Objectif proratisé", String.format(Locale.FRANCE, "%.0f TND", expectedMtd)),
+                    new MetricItem("Écart", String.format(Locale.FRANCE, "−%.0f %%", shortfallPct))
+                ).withInsight(levers));
             } else if (expectedMtd > 0 && now.getDayOfMonth() >= 10
                     && salesThisMonth > 1.3 * expectedMtd) {
                 double surgePct = ((salesThisMonth - expectedMtd) / expectedMtd) * 100.0;
@@ -173,12 +198,16 @@ public class RecommendationService {
                     "TENDANCE_CROISSANCE",
                     "Tendance de Ventes Positive",
                     String.format(Locale.FRANCE,
-                        "Performance commerciale en hausse : le chiffre d'affaires mensuel dépasse la référence historique de %.0f %% (réalisé : %.0f — référence proratisée : %.0f). %s",
-                        surgePct, salesThisMonth, expectedMtd, advice),
+                        "Performance commerciale en hausse : le chiffre d'affaires mensuel dépasse la référence historique de %.0f %%.",
+                        surgePct),
                     "INFO",
                     "fa-rocket",
                     "Analyser Ventes"
-                ));
+                ).withMetrics(
+                    new MetricItem("Réalisé (mois en cours)", String.format(Locale.FRANCE, "%.0f TND", salesThisMonth)),
+                    new MetricItem("Référence proratisée", String.format(Locale.FRANCE, "%.0f TND", expectedMtd)),
+                    new MetricItem("Hausse", String.format(Locale.FRANCE, "+%.0f %%", surgePct))
+                ).withInsight(advice));
             }
         }
 
@@ -196,12 +225,14 @@ public class RecommendationService {
                 "PRODUIT_STAR",
                 "Optimisation Produit Vedette",
                 String.format(Locale.FRANCE,
-                    "« %s » est la référence la plus performante du catalogue. Maintenez un stock optimal et valorisez les ventes croisées pour maximiser la contribution au chiffre d'affaires.",
+                    "« %s » est la référence la plus performante du catalogue.",
                     topProduct),
                 "BASSE",
                 "fa-star",
                 "Voir Produits"
-            ));
+            ).withMetrics(
+                new MetricItem("Produit vedette", topProduct)
+            ).withInsight("Maintenez un stock optimal et valorisez les ventes croisées pour maximiser la contribution au chiffre d'affaires."));
         }
 
         // === 4. Gross margin ===
@@ -221,43 +252,48 @@ public class RecommendationService {
                 recommendations.add(new RecommendationDto(
                     "MARGE_FAIBLE",
                     "Amélioration de la Marge Commerciale",
-                    String.format(Locale.FRANCE,
-                        "Taux de marge brute : %s %% — Chiffre d'affaires : %.0f | Coût des ventes : %.0f | Marge dégagée : %.0f. %s",
-                        marginStr, totalSales, cogs, grossProfit, levers),
+                    String.format(Locale.FRANCE, "Taux de marge brute insuffisant : %s %%.", marginStr),
                     "HAUTE",
                     "fa-percentage",
                     "Analyser Achats"
-                ));
+                ).withMetrics(
+                    new MetricItem("Taux de marge brute", marginStr + " %"),
+                    new MetricItem("Chiffre d'affaires", String.format(Locale.FRANCE, "%.0f TND", totalSales)),
+                    new MetricItem("Coût des ventes", String.format(Locale.FRANCE, "%.0f TND", cogs)),
+                    new MetricItem("Marge dégagée", String.format(Locale.FRANCE, "%.0f TND", grossProfit))
+                ).withInsight(levers));
             } else if (margin < 35.0) {
                 recommendations.add(new RecommendationDto(
                     "MARGE_CORRECTE",
                     "Marge Commerciale Acceptable",
-                    String.format(Locale.FRANCE,
-                        "Taux de marge brute : %s %% — Chiffre d'affaires : %.0f | Marge dégagée : %.0f. %s",
-                        marginStr, totalSales, grossProfit,
-                        pick(v,
-                            "Un taux cible de 35 %% renforcerait la résilience financière.",
-                            "Travaillez les conditions fournisseurs pour franchir le palier des 35 %%.",
-                            "Identifiez les références à marge faible pour améliorer le taux global.")),
+                    String.format(Locale.FRANCE, "Taux de marge brute : %s %%.", marginStr),
                     "INFO",
                     "fa-percentage",
                     "Voir Détails"
-                ));
+                ).withMetrics(
+                    new MetricItem("Taux de marge brute", marginStr + " %"),
+                    new MetricItem("Chiffre d'affaires", String.format(Locale.FRANCE, "%.0f TND", totalSales)),
+                    new MetricItem("Marge dégagée", String.format(Locale.FRANCE, "%.0f TND", grossProfit))
+                ).withInsight(pick(v,
+                    "Un taux cible de 35 % renforcerait la résilience financière.",
+                    "Travaillez les conditions fournisseurs pour franchir le palier des 35 %.",
+                    "Identifiez les références à marge faible pour améliorer le taux global.")));
             } else {
                 recommendations.add(new RecommendationDto(
                     "BONNE_PERFORMANCE",
                     "Excellente Marge Commerciale",
-                    String.format(Locale.FRANCE,
-                        "Taux de marge brute : %s %% — Chiffre d'affaires : %.0f | Marge dégagée : %.0f. %s",
-                        marginStr, totalSales, grossProfit,
-                        pick(v,
-                            "Maintenez la maîtrise des coûts d'approvisionnement pour préserver cette performance.",
-                            "Investissez la marge dégagée dans des actions de fidélisation et de développement client.",
-                            "Sécurisez ces conditions tarifaires par des contrats-cadres avec vos fournisseurs stratégiques.")),
+                    String.format(Locale.FRANCE, "Taux de marge brute : %s %%.", marginStr),
                     "INFO",
                     "fa-thumbs-up",
                     "Voir Détails"
-                ));
+                ).withMetrics(
+                    new MetricItem("Taux de marge brute", marginStr + " %"),
+                    new MetricItem("Chiffre d'affaires", String.format(Locale.FRANCE, "%.0f TND", totalSales)),
+                    new MetricItem("Marge dégagée", String.format(Locale.FRANCE, "%.0f TND", grossProfit))
+                ).withInsight(pick(v,
+                    "Maintenez la maîtrise des coûts d'approvisionnement pour préserver cette performance.",
+                    "Investissez la marge dégagée dans des actions de fidélisation et de développement client.",
+                    "Sécurisez ces conditions tarifaires par des contrats-cadres avec vos fournisseurs stratégiques.")));
             }
         } else if (totalSales != null && totalPurchases != null
                 && totalSales > 0 && totalPurchases > 0) {
@@ -266,12 +302,15 @@ public class RecommendationService {
                 "RATIO_ACHATS",
                 "Ratio Achats/Ventes",
                 String.format(Locale.FRANCE,
-                    "Le ratio achats/ventes s'établit à %.1f %% (achats : %.0f | chiffre d'affaires : %.0f). Renseignez les prix d'achat des articles pour activer le calcul automatique de la marge commerciale.",
-                    ratio, totalPurchases, totalSales),
+                    "Le ratio achats/ventes s'établit à %.1f %%.", ratio),
                 "INFO",
                 "fa-balance-scale",
                 "Voir Détails"
-            ));
+            ).withMetrics(
+                new MetricItem("Ratio achats / ventes", String.format(Locale.FRANCE, "%.1f %%", ratio)),
+                new MetricItem("Achats", String.format(Locale.FRANCE, "%.0f TND", totalPurchases)),
+                new MetricItem("Chiffre d'affaires", String.format(Locale.FRANCE, "%.0f TND", totalSales))
+            ).withInsight("Renseignez les prix d'achat des articles pour activer le calcul automatique de la marge commerciale."));
         }
 
         // === 5. Delivery quality ===
@@ -288,27 +327,31 @@ public class RecommendationService {
                 "LIVRAISON_RETARD",
                 "Commandes en Retard de Livraison",
                 String.format(Locale.FRANCE,
-                    "%d bon(s) de commande dépassent l'échéance de livraison contractuelle. %s",
-                    overdueOrders, advice),
+                    "%d bon(s) de commande dépassent l'échéance de livraison contractuelle.",
+                    overdueOrders),
                 urgency,
                 icon,
                 "Voir Commandes"
-            ));
+            ).withMetrics(
+                new MetricItem("Commandes en retard", String.valueOf(overdueOrders))
+            ).withInsight(advice));
         } else if (activeOrders != null && activeOrders > 0) {
             recommendations.add(new RecommendationDto(
                 "LIVRAISON_OK",
                 "Livraisons à Jour",
                 String.format(Locale.FRANCE,
-                    "L'ensemble des bons de commande actifs (%d) s'exécute dans les délais contractuels. %s",
-                    activeOrders,
-                    pick(v,
-                        "Maintenez le suivi des confirmations fournisseurs pour garantir cette performance.",
-                        "Anticipez les commandes pour les périodes à forte demande prévisionnelle.",
-                        "Bonne maîtrise de la chaîne d'approvisionnement — capitalisez sur ce niveau de service.")),
+                    "L'ensemble des bons de commande actifs (%d) s'exécute dans les délais contractuels.",
+                    activeOrders),
                 "INFO",
                 "fa-truck",
                 "Voir Commandes"
-            ));
+            ).withMetrics(
+                new MetricItem("Commandes actives", String.valueOf(activeOrders)),
+                new MetricItem("Commandes en retard", "0")
+            ).withInsight(pick(v,
+                "Maintenez le suivi des confirmations fournisseurs pour garantir cette performance.",
+                "Anticipez les commandes pour les périodes à forte demande prévisionnelle.",
+                "Bonne maîtrise de la chaîne d'approvisionnement — capitalisez sur ce niveau de service.")));
         }
 
         // === 6. Customer concentration risk ===
@@ -340,16 +383,18 @@ public class RecommendationService {
                     "CONCENTRATION_CLIENT",
                     "Risque de Concentration Client",
                     String.format(Locale.FRANCE,
-                        "Les 3 principaux clients concentrent %.1f %% du chiffre d'affaires (premier client « %s » : %.1f %%). %s",
-                        concentration, topCustomerName, topShare,
-                        pick(v,
-                            "Diversifiez le portefeuille client pour réduire l'exposition au risque de churn.",
-                            "Lancez un programme d'acquisition pour atténuer cette dépendance.",
-                            "Sécurisez ces comptes stratégiques par des engagements contractuels ou des conditions préférentielles.")),
+                        "Les 3 principaux clients concentrent %.1f %% du chiffre d'affaires.",
+                        concentration),
                     "HAUTE",
                     "fa-users",
                     "Voir Clients"
-                ));
+                ).withMetrics(
+                    new MetricItem("Part top 3 clients", String.format(Locale.FRANCE, "%.1f %%", concentration)),
+                    new MetricItem("1er client — " + topCustomerName, String.format(Locale.FRANCE, "%.1f %% du CA", topShare))
+                ).withInsight(pick(v,
+                    "Diversifiez le portefeuille client pour réduire l'exposition au risque de churn.",
+                    "Lancez un programme d'acquisition pour atténuer cette dépendance.",
+                    "Sécurisez ces comptes stratégiques par des engagements contractuels ou des conditions préférentielles.")));
             }
         }
 
@@ -375,20 +420,27 @@ public class RecommendationService {
                 String detail = firstSlowName != null
                         ? String.format(Locale.FRANCE, " Exemple : « %s ».", firstSlowName)
                         : "";
+                MetricItem[] slowMetrics = firstSlowName != null
+                        ? new MetricItem[]{
+                            new MetricItem("Références concernées", String.valueOf(slowCount)),
+                            new MetricItem("Exemple de référence lente", firstSlowName)
+                          }
+                        : new MetricItem[]{
+                            new MetricItem("Références concernées", String.valueOf(slowCount))
+                          };
                 recommendations.add(new RecommendationDto(
                     "PRODUITS_LENTS",
                     "Produits à Rotation Faible",
                     String.format(Locale.FRANCE,
-                        "%d référence(s) accusent les cinq plus faibles rotations du catalogue.%s %s",
-                        slowCount, detail,
-                        pick(v,
-                            "Envisagez une promotion ciblée ou un déréférencement pour libérer la trésorerie immobilisée.",
-                            "Regroupez ces références en offres combinées pour accélérer leur écoulement.",
-                            "Réduisez les stocks cibles pour dégager du fonds de roulement.")),
+                        "%d référence(s) accusent les cinq plus faibles rotations du catalogue.%s",
+                        slowCount, detail),
                     "MOYENNE",
                     "fa-boxes-stacked",
                     "Voir Produits"
-                ));
+                ).withMetrics(slowMetrics).withInsight(pick(v,
+                    "Envisagez une promotion ciblée ou un déréférencement pour libérer la trésorerie immobilisée.",
+                    "Regroupez ces références en offres combinées pour accélérer leur écoulement.",
+                    "Réduisez les stocks cibles pour dégager du fonds de roulement.")));
             }
         }
 
@@ -415,16 +467,19 @@ public class RecommendationService {
                         "TAUX_ANNULATION",
                         "Taux d'Annulation Élevé",
                         String.format(Locale.FRANCE,
-                            "Le taux d'annulation des commandes de vente s'établit à %.1f %% (%d annulations sur %d commandes). %s",
-                            rate, cancelled, totalStatus,
-                            pick(v,
-                                "Vérifiez la disponibilité du stock au moment de la prise de commande.",
-                                "Analysez les motifs d'annulation pour identifier la cause racine.",
-                                "Contrôlez les délais de confirmation et la qualité des fiches articles.")),
+                            "Le taux d'annulation des commandes de vente s'établit à %.1f %%.",
+                            rate),
                         rate > 25.0 ? "HAUTE" : "MOYENNE",
                         "fa-ban",
                         "Voir Commandes"
-                    ));
+                    ).withMetrics(
+                        new MetricItem("Taux d'annulation", String.format(Locale.FRANCE, "%.1f %%", rate)),
+                        new MetricItem("Commandes annulées", String.valueOf(cancelled)),
+                        new MetricItem("Total commandes", String.valueOf(totalStatus))
+                    ).withInsight(pick(v,
+                        "Vérifiez la disponibilité du stock au moment de la prise de commande.",
+                        "Analysez les motifs d'annulation pour identifier la cause racine.",
+                        "Contrôlez les délais de confirmation et la qualité des fiches articles.")));
                 }
             }
         }
@@ -450,16 +505,18 @@ public class RecommendationService {
                             "CATEGORIE_DOMINANTE",
                             "Concentration par Catégorie",
                             String.format(Locale.FRANCE,
-                                "La famille « %s » représente %.1f %% du chiffre d'affaires total. %s",
-                                topCat, topShare,
-                                pick(v,
-                                    "Diversifiez l'offre pour amortir un éventuel retournement de marché.",
-                                    "Identifiez une ou deux catégories adjacentes à développer.",
-                                    "Renforcez le plan marketing des catégories secondaires pour rééquilibrer le mix produit.")),
+                                "La famille « %s » représente %.1f %% du chiffre d'affaires total.",
+                                topCat, topShare),
                             "MOYENNE",
                             "fa-layer-group",
                             "Voir Produits"
-                        ));
+                        ).withMetrics(
+                            new MetricItem("Catégorie principale", topCat),
+                            new MetricItem("Part de marché", String.format(Locale.FRANCE, "%.1f %%", topShare))
+                        ).withInsight(pick(v,
+                            "Diversifiez l'offre pour amortir un éventuel retournement de marché.",
+                            "Identifiez une ou deux catégories adjacentes à développer.",
+                            "Renforcez le plan marketing des catégories secondaires pour rééquilibrer le mix produit.")));
                     }
                 }
             }
@@ -488,16 +545,18 @@ public class RecommendationService {
                                 "DIVERSIFICATION_FOURNISSEUR",
                                 "Dépendance Fournisseur",
                                 String.format(Locale.FRANCE,
-                                    "Le fournisseur « %s » représente %.1f %% du volume d'achat total. %s",
-                                    name, share,
-                                    pick(v,
-                                        "Qualifiez un fournisseur de secours pour les références critiques.",
-                                        "Mettez en concurrence vos fournisseurs pour négocier de meilleures conditions.",
-                                        "Sécurisez votre approvisionnement en homologuant un second fournisseur stratégique.")),
+                                    "Le fournisseur « %s » représente %.1f %% du volume d'achat total.",
+                                    name, share),
                                 "MOYENNE",
                                 "fa-truck-arrow-right",
                                 "Voir Commandes"
-                            ));
+                            ).withMetrics(
+                                new MetricItem("Fournisseur principal", name),
+                                new MetricItem("Part des achats", String.format(Locale.FRANCE, "%.1f %%", share))
+                            ).withInsight(pick(v,
+                                "Qualifiez un fournisseur de secours pour les références critiques.",
+                                "Mettez en concurrence vos fournisseurs pour négocier de meilleures conditions.",
+                                "Sécurisez votre approvisionnement en homologuant un second fournisseur stratégique.")));
                         }
                     }
                     // Highlight best-rated supplier when ratings are filled in.
@@ -522,16 +581,19 @@ public class RecommendationService {
                                 "FOURNISSEUR_PERFORMANT",
                                 "Fournisseur de Référence",
                                 String.format(Locale.FRANCE,
-                                    "Le fournisseur « %s » obtient une évaluation de %.1f/5 avec un taux de service de %.0f %%. %s",
-                                    best[1].toString(), notation, tauxLiv,
-                                    pick(v,
-                                        "Privilégiez-le pour vos approvisionnements stratégiques.",
-                                        "Sécurisez la relation par un contrat-cadre pluriannuel.",
-                                        "Étendez la collaboration sur d'autres familles de produits.")),
+                                    "Le fournisseur « %s » obtient une évaluation de %.1f/5 avec un taux de service de %.0f %%.",
+                                    best[1].toString(), notation, tauxLiv),
                                 "INFO",
                                 "fa-medal",
                                 "Voir Commandes"
-                            ));
+                            ).withMetrics(
+                                new MetricItem("Fournisseur", best[1].toString()),
+                                new MetricItem("Note", String.format(Locale.FRANCE, "%.1f / 5", notation)),
+                                new MetricItem("Taux de service", String.format(Locale.FRANCE, "%.0f %%", tauxLiv))
+                            ).withInsight(pick(v,
+                                "Privilégiez-le pour vos approvisionnements stratégiques.",
+                                "Sécurisez la relation par un contrat-cadre pluriannuel.",
+                                "Étendez la collaboration sur d'autres familles de produits.")));
                         }
                     }
                 }
@@ -557,31 +619,37 @@ public class RecommendationService {
                         "PANIER_MOYEN_BAISSE",
                         "Panier Moyen en Baisse",
                         String.format(Locale.FRANCE,
-                            "Le ticket moyen sur les 90 derniers jours (%.0f) est inférieur de %.0f %% à la référence historique (%.0f). %s",
-                            recentAov, Math.abs(delta), aov,
-                            pick(v,
-                                "Activez des offres groupées ou des ventes additionnelles pour rehausser le ticket.",
-                                "Révisez la politique de remise pour préserver la valeur unitaire.",
-                                "Identifiez les segments clients qui réduisent leur engagement et adaptez l'offre.")),
+                            "Le ticket moyen sur les 90 derniers jours est inférieur de %.0f %% à la référence historique.",
+                            Math.abs(delta)),
                         "MOYENNE",
                         "fa-cart-shopping",
                         "Analyser Ventes"
-                    ));
+                    ).withMetrics(
+                        new MetricItem("Ticket moyen récent (90j)", String.format(Locale.FRANCE, "%.0f TND", recentAov)),
+                        new MetricItem("Référence historique", String.format(Locale.FRANCE, "%.0f TND", aov)),
+                        new MetricItem("Variation", String.format(Locale.FRANCE, "−%.0f %%", Math.abs(delta)))
+                    ).withInsight(pick(v,
+                        "Activez des offres groupées ou des ventes additionnelles pour rehausser le ticket.",
+                        "Révisez la politique de remise pour préserver la valeur unitaire.",
+                        "Identifiez les segments clients qui réduisent leur engagement et adaptez l'offre.")));
                 } else if (delta > 15.0) {
                     recommendations.add(new RecommendationDto(
                         "PANIER_MOYEN_HAUSSE",
                         "Panier Moyen en Hausse",
                         String.format(Locale.FRANCE,
-                            "Le ticket moyen sur les 90 derniers jours (%.0f) progresse de %.0f %% par rapport à la référence historique (%.0f). %s",
-                            recentAov, delta, aov,
-                            pick(v,
-                                "Capitalisez avec des offres premium et des ventes complémentaires.",
-                                "Prolongez le mix produit qui tire le ticket vers le haut.",
-                                "Étendez les bonnes pratiques commerciales à l'ensemble des segments.")),
+                            "Le ticket moyen sur les 90 derniers jours progresse de %.0f %% par rapport à la référence historique.",
+                            delta),
                         "INFO",
                         "fa-cart-arrow-down",
                         "Analyser Ventes"
-                    ));
+                    ).withMetrics(
+                        new MetricItem("Ticket moyen récent (90j)", String.format(Locale.FRANCE, "%.0f TND", recentAov)),
+                        new MetricItem("Référence historique", String.format(Locale.FRANCE, "%.0f TND", aov)),
+                        new MetricItem("Variation", String.format(Locale.FRANCE, "+%.0f %%", delta))
+                    ).withInsight(pick(v,
+                        "Capitalisez avec des offres premium et des ventes complémentaires.",
+                        "Prolongez le mix produit qui tire le ticket vers le haut.",
+                        "Étendez les bonnes pratiques commerciales à l'ensemble des segments.")));
                 }
             }
         }
@@ -602,16 +670,19 @@ public class RecommendationService {
                     "CASH_FLOW",
                     "Pression sur la Trésorerie",
                     String.format(Locale.FRANCE,
-                        "Sur les 30 derniers jours, les engagements d'achat (%.0f) excèdent le chiffre d'affaires (%.0f) d'un facteur ×%.1f. %s",
-                        recentPurchases, recentSales30, ratio,
-                        pick(v,
-                            "Échelonnez les commandes fournisseurs ou négociez des délais de paiement élargis.",
-                            "Vérifiez que la constitution de stock est justifiée par la demande prévisionnelle.",
-                            "Priorisez l'écoulement du stock existant avant tout nouvel engagement d'achat.")),
+                        "Sur les 30 derniers jours, les engagements d'achat excèdent le chiffre d'affaires d'un facteur ×%.1f.",
+                        ratio),
                     "HAUTE",
                     "fa-wallet",
                     "Voir Commandes"
-                ));
+                ).withMetrics(
+                    new MetricItem("Achats (30 derniers jours)", String.format(Locale.FRANCE, "%.0f TND", recentPurchases)),
+                    new MetricItem("CA (30 derniers jours)", String.format(Locale.FRANCE, "%.0f TND", recentSales30)),
+                    new MetricItem("Ratio achats / CA", String.format(Locale.FRANCE, "×%.1f", ratio))
+                ).withInsight(pick(v,
+                    "Échelonnez les commandes fournisseurs ou négociez des délais de paiement élargis.",
+                    "Vérifiez que la constitution de stock est justifiée par la demande prévisionnelle.",
+                    "Priorisez l'écoulement du stock existant avant tout nouvel engagement d'achat.")));
             }
         }
 
@@ -631,16 +702,18 @@ public class RecommendationService {
                             "VALEUR_STOCK",
                             "Stock Immobilisé Important",
                             String.format(Locale.FRANCE,
-                                "La valeur du stock immobilisé représente %.0f (≈ %.1f mois de chiffre d'affaires). %s",
-                                stockValue, monthsOfStock,
-                                pick(v,
-                                    "Identifiez les références en surstock pour libérer la trésorerie immobilisée.",
-                                    "Lancez une opération de déstockage ciblée sur les articles à rotation lente.",
-                                    "Révisez les quantités cibles des articles sur-approvisionnés.")),
+                                "La valeur du stock immobilisé représente l'équivalent de %.1f mois de chiffre d'affaires.",
+                                monthsOfStock),
                             "MOYENNE",
                             "fa-warehouse",
                             "Voir Stock"
-                        ));
+                        ).withMetrics(
+                            new MetricItem("Valeur du stock immobilisé", String.format(Locale.FRANCE, "%.0f TND", stockValue)),
+                            new MetricItem("Couverture en mois de CA", String.format(Locale.FRANCE, "%.1f mois", monthsOfStock))
+                        ).withInsight(pick(v,
+                            "Identifiez les références en surstock pour libérer la trésorerie immobilisée.",
+                            "Lancez une opération de déstockage ciblée sur les articles à rotation lente.",
+                            "Révisez les quantités cibles des articles sur-approvisionnés.")));
                     }
                 }
             }
@@ -654,16 +727,18 @@ public class RecommendationService {
                 "DONNEES_INSUFFISANTES",
                 "Enrichissez Vos Données",
                 String.format(Locale.FRANCE,
-                    "Base de données insuffisante : %d transaction(s) enregistrée(s). %s",
-                    totalOrders,
-                    pick(v,
-                        "L'enrichissement des données améliore la précision des modèles prédictifs et la pertinence des analyses.",
-                        "Les moteurs d'analyse avancée se déclenchent à partir de 30 transactions — complétez votre historique pour activer les prévisions.",
-                        "Importez votre historique de commandes pour activer l'ensemble des prévisions et recommandations IA.")),
+                    "Base de données insuffisante : %d transaction(s) enregistrée(s).",
+                    totalOrders),
                 "INFO",
                 "fa-database",
                 "Ajouter Commandes"
-            ));
+            ).withMetrics(
+                new MetricItem("Transactions enregistrées", String.valueOf(totalOrders)),
+                new MetricItem("Seuil d'activation IA", "30 transactions")
+            ).withInsight(pick(v,
+                "L'enrichissement des données améliore la précision des modèles prédictifs et la pertinence des analyses.",
+                "Les moteurs d'analyse avancée se déclenchent à partir de 30 transactions — complétez votre historique pour activer les prévisions.",
+                "Importez votre historique de commandes pour activer l'ensemble des prévisions et recommandations IA.")));
         }
 
         return recommendations;
