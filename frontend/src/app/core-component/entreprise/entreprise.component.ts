@@ -155,22 +155,22 @@ export class EntrepriseComponent implements OnInit{
     }
   }
 
-  deleteEntreprise(id: number | undefined): void {
+  disableEntreprise(id: number | undefined): void {
     if (!id) {
       this.notification.error("ID entreprise invalide");
       return;
     }
 
-    this.notification.confirm("Voulez-vous vraiment supprimer cette entreprise ?").then(ok => {
+    this.notification.confirm("Voulez-vous vraiment désactiver cette entreprise et tous ses utilisateurs ?").then(ok => {
       if (ok) {
-        this.entrepriseService.deleteEntreprise(id).subscribe({
+        this.entrepriseService.disableEntreprise(id).subscribe({
           next: () => {
-            this.notification.success("Entreprise supprimée avec succès !");
+            this.notification.success("Entreprise désactivée avec succès !");
             this.loadEntreprises();
           },
           error: (err) => {
-            console.error('❌ Error deleting entreprise:', err);
-            this.notification.error("Erreur : impossible de supprimer l'entreprise.");
+            console.error('❌ Error disabling entreprise:', err);
+            this.notification.error("Erreur : impossible de désactiver l'entreprise.");
           }
         });
       }

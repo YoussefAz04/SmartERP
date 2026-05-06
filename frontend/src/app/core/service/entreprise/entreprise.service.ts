@@ -71,11 +71,12 @@ export class EntrepriseService {
     );
   }
 
-  // ✅ DELETE ENTERPRISE - Matches backend: DELETE /entreprise/delete/{id}
-  deleteEntreprise(id: number): Observable<any> {
-    return this.http.delete<any>(
-      `${this.baseUrl}/delete/${id}`,
-      { headers: this.getHeaders() }
+  // ✅ DISABLE ENTERPRISE - Matches backend: PUT /entreprise/disable/{id}
+  disableEntreprise(id: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}/disable/${id}`,
+      {},
+      { headers: this.getHeaders(), responseType: 'text' as 'json' }
     );
   }
 
