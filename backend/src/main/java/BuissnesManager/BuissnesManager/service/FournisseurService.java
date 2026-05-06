@@ -66,10 +66,19 @@ public class FournisseurService {
 
     // ── Delivery-stat helpers ─────────────────────────────────────────────────
 
-    /** Returns delivery rate as a percentage (0–100, 1 decimal) or null when no non-cancelled orders exist. */
-    private Double computeTauxLivraison(long total, long received) {
-        if (total == 0) return null;
-        return Math.round((received * 100.0 / total) * 10.0) / 10.0;
+    /**
+     * Returns the on-time delivery rate as a percentage (0–100, 1 decimal),
+     * or null when there are no delivered orders with a planned delivery date
+     * to compute the rate from.
+     *
+     * <p>This measures supplier reliability — the share of delivered orders
+     * (status RECUE with a recorded BonReception) that arrived on or before
+     * their {@code dateLivraisonPrevue}. Pending/confirmed orders are excluded
+     * because the supplier has not yet had the chance to deliver.</p>
+     */
+    private Double computeTauxLivraison(long deliveredWithPlanned, long onTime) {
+        if (deliveredWithPlanned == 0) return null;
+        return Math.round((onTime * 100.0 / deliveredWithPlanned) * 10.0) / 10.0;
     }
 
     /** Maps a delivery rate to a 1–5 star notation. Returns null when taux is null. */
@@ -84,32 +93,33 @@ public class FournisseurService {
 
     /**
      * Enriches a list of fournisseurs with computed tauxLivraison and notation
-     * derived from their CommandeAchat history. Uses two bulk queries to avoid N+1.
-     * When a fournisseur has no non-cancelled orders, tauxLivraison is set to null
-     * and the stored (manual) notation is left unchanged.
+     * derived from their CommandeAchat / BonReception history. Uses two bulk
+     * queries to avoid N+1. When a fournisseur has no delivered orders with a
+     * planned delivery date, tauxLivraison is set to null and the stored
+     * (manual) notation is left unchanged.
      */
     private void enrichFournisseurs(List<Fournisseur> fournisseurs, Long entrepriseId) {
-        List<Object[]> totalRows = commandeAchatRepository.countNonCancelledByFournisseur(entrepriseId);
-        List<Object[]> receivedRows = commandeAchatRepository.countReceivedByFournisseur(entrepriseId);
+        List<Object[]> totalRows = commandeAchatRepository.countDeliveredWithPlannedDateByFournisseur(entrepriseId);
+        List<Object[]> onTimeRows = commandeAchatRepository.countOnTimeDeliveredByFournisseur(entrepriseId);
 
         Map<Long, Long> totalMap = new HashMap<>();
         for (Object[] row : totalRows) {
             totalMap.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
         }
-        Map<Long, Long> receivedMap = new HashMap<>();
-        for (Object[] row : receivedRows) {
-            receivedMap.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+        Map<Long, Long> onTimeMap = new HashMap<>();
+        for (Object[] row : onTimeRows) {
+            onTimeMap.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
         }
 
         for (Fournisseur f : fournisseurs) {
             long total = totalMap.getOrDefault(f.getId(), 0L);
-            long received = receivedMap.getOrDefault(f.getId(), 0L);
-            Double taux = computeTauxLivraison(total, received);
+            long onTime = onTimeMap.getOrDefault(f.getId(), 0L);
+            Double taux = computeTauxLivraison(total, onTime);
             f.setTauxLivraison(taux);
             if (taux != null) {
                 f.setNotation(computeNotationFromTaux(taux));
             }
-            // When taux is null (no orders yet), keep the stored manual notation as fallback
+            // When taux is null (no delivered orders with planned dates), keep the stored manual notation as fallback
         }
     }
 
@@ -117,9 +127,9 @@ public class FournisseurService {
      * Enriches a single fournisseur with computed tauxLivraison and notation.
      */
     private void enrichFournisseur(Fournisseur f) {
-        long total = commandeAchatRepository.countNonCancelledForFournisseur(f.getId());
-        long received = commandeAchatRepository.countReceivedForFournisseur(f.getId());
-        Double taux = computeTauxLivraison(total, received);
+        long total = commandeAchatRepository.countDeliveredWithPlannedDateForFournisseur(f.getId());
+        long onTime = commandeAchatRepository.countOnTimeDeliveredForFournisseur(f.getId());
+        Double taux = computeTauxLivraison(total, onTime);
         f.setTauxLivraison(taux);
         if (taux != null) {
             f.setNotation(computeNotationFromTaux(taux));

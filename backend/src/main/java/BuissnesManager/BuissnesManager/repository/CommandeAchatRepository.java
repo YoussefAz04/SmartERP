@@ -62,19 +62,44 @@ public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Lo
 
     // ── Fournisseur delivery-stat queries (used to compute tauxLivraison & notation) ──
 
-    /** Total non-cancelled orders per fournisseur for an enterprise (bulk). */
-    @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL AND c.statut <> 'ANNULEE' GROUP BY c.fournisseur.id")
-    List<Object[]> countNonCancelledByFournisseur(@Param("entrepriseId") Long entrepriseId);
+    /**
+     * Per-fournisseur count of RECUE orders that have a planned delivery date.
+     * Used as the denominator for on-time delivery rate.
+     */
+    @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c "
+            + "WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL "
+            + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL "
+            + "GROUP BY c.fournisseur.id")
+    List<Object[]> countDeliveredWithPlannedDateByFournisseur(@Param("entrepriseId") Long entrepriseId);
 
-    /** Received ('RECUE') orders per fournisseur for an enterprise (bulk). */
-    @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL AND c.statut = 'RECUE' GROUP BY c.fournisseur.id")
-    List<Object[]> countReceivedByFournisseur(@Param("entrepriseId") Long entrepriseId);
+    /**
+     * Per-fournisseur count of RECUE orders whose first reception date
+     * (MIN BonReception.dateReception) is on or before the planned delivery date.
+     * Used as the numerator for on-time delivery rate. Using MIN ensures partial
+     * deliveries are evaluated against the earliest fulfilment, not any later
+     * top-up shipment.
+     */
+    @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c "
+            + "WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL "
+            + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL "
+            + "AND (SELECT MIN(br.dateReception) FROM BonReception br "
+            + "      WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL) "
+            + "    <= c.dateLivraisonPrevue "
+            + "GROUP BY c.fournisseur.id")
+    List<Object[]> countOnTimeDeliveredByFournisseur(@Param("entrepriseId") Long entrepriseId);
 
-    /** Total non-cancelled orders for a single fournisseur. */
-    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.fournisseur.id = :fournisseurId AND c.statut <> 'ANNULEE'")
-    long countNonCancelledForFournisseur(@Param("fournisseurId") Long fournisseurId);
+    /** Single-fournisseur version of {@link #countDeliveredWithPlannedDateByFournisseur}. */
+    @Query("SELECT COUNT(c) FROM CommandeAchat c "
+            + "WHERE c.fournisseur.id = :fournisseurId "
+            + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL")
+    long countDeliveredWithPlannedDateForFournisseur(@Param("fournisseurId") Long fournisseurId);
 
-    /** Received ('RECUE') orders for a single fournisseur. */
-    @Query("SELECT COUNT(c) FROM CommandeAchat c WHERE c.fournisseur.id = :fournisseurId AND c.statut = 'RECUE'")
-    long countReceivedForFournisseur(@Param("fournisseurId") Long fournisseurId);
+    /** Single-fournisseur version of {@link #countOnTimeDeliveredByFournisseur}. */
+    @Query("SELECT COUNT(c) FROM CommandeAchat c "
+            + "WHERE c.fournisseur.id = :fournisseurId "
+            + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL "
+            + "AND (SELECT MIN(br.dateReception) FROM BonReception br "
+            + "      WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL) "
+            + "    <= c.dateLivraisonPrevue")
+    long countOnTimeDeliveredForFournisseur(@Param("fournisseurId") Long fournisseurId);
 }
