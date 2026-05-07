@@ -306,7 +306,7 @@ $modal-header-bg:     linear-gradient(135deg, #1e3a8a 0%, $primary 100%) !defaul
 
     &:hover {
       transform: translateY(-6px) scale(1.02);
-      .kpi-icon-wrap { animation: iconFloat 4s ease-in-out infinite; }
+      .kpi-icon-wrap { transform: translateY(-4px) scale(1.08); }
     }
 
     .kpi-bg-shape {
@@ -652,7 +652,7 @@ $modal-header-bg:     linear-gradient(135deg, #1e3a8a 0%, $primary 100%) !defaul
   tbody {
     tr {
       border-bottom: 1px solid $border-light;
-      transition: background 0.15s ease, transform 0.15s ease;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
       animation: fadeInRow 0.35s ease both;
 
       &:nth-child(1)  { animation-delay: 0.05s; }
@@ -668,7 +668,6 @@ $modal-header-bg:     linear-gradient(135deg, #1e3a8a 0%, $primary 100%) !defaul
 
       &.table-row:hover {
         background: rgba($primary, 0.06) !important;
-        transform: translateX(3px);
         box-shadow: inset 3px 0 0 0 $primary-light;
       }
 
