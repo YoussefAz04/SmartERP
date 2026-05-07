@@ -107,7 +107,15 @@
         <option *ngFor="let s of statuts" [value]="s">{{ getStatutLabel(s) }}</option>
       </select>
     </div>
-    <button class="btn-reset" (click)="searchTerm=''; selectedStatut=''; applyFilters()" title="Réinitialiser les filtres">
+    <div class="filter-date-wrapper">
+      <i class="feather icon-calendar filter-icon"></i>
+      <input type="date" class="filter-date" [(ngModel)]="dateDebut" (ngModelChange)="applyFilters()" title="Date début">
+    </div>
+    <div class="filter-date-wrapper">
+      <i class="feather icon-calendar filter-icon"></i>
+      <input type="date" class="filter-date" [(ngModel)]="dateFin" (ngModelChange)="applyFilters()" title="Date fin">
+    </div>
+    <button class="btn-reset" (click)="searchTerm=''; selectedStatut=''; dateDebut=''; dateFin=''; applyFilters()" title="Réinitialiser les filtres">
       <i class="feather icon-x-circle"></i>
       Réinitialiser
     </button>
@@ -233,8 +241,8 @@
             <div class="empty-message">
               <i class="feather icon-inbox"></i>
               <p>Aucune commande vente trouvée</p>
-              <small *ngIf="searchTerm || selectedStatut">Essayez de modifier vos filtres de recherche</small>
-              <small *ngIf="!searchTerm && !selectedStatut">Commencez par créer une nouvelle commande de vente</small>
+              <small *ngIf="searchTerm || selectedStatut || dateDebut || dateFin">Essayez de modifier vos filtres de recherche</small>
+              <small *ngIf="!searchTerm && !selectedStatut && !dateDebut && !dateFin">Commencez par créer une nouvelle commande de vente</small>
             </div>
           </td>
         </tr>
