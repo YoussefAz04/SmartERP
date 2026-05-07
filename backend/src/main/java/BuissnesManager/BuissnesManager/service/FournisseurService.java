@@ -35,6 +35,8 @@ public class FournisseurService {
 
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private AuditLogService auditLogService;
 
     @Autowired
     private CommandeAchatRepository commandeAchatRepository;
@@ -61,6 +63,8 @@ public class FournisseurService {
         if (saved.getEntreprise() != null) {
             notificationService.createFournisseurAddedNotification(saved, saved.getEntreprise());
         }
+        auditLogService.log("FOURNISSEUR_CREATED",
+                "Fournisseur créé: " + saved.getNom() + " " + saved.getPrenom() + " (id=" + saved.getId() + ")");
         return saved;
     }
 
@@ -165,14 +169,15 @@ public class FournisseurService {
     // ✅ DELETE FOURNISSEUR
     @Transactional
     public void deleteFournisseur(Long id) {
-        if (!fournisseurRepo.existsById(id)) {
-            throw new RuntimeException("Fournisseur not found with id: " + id);
-        }
+        Fournisseur fournisseur = fournisseurRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Fournisseur not found with id: " + id));
         // Nullify fournisseur FK in commande_achat, article, and facture_achat in a single query each
         commandeAchatRepository.detachFournisseur(id);
         articleRepository.detachFournisseur(id);
         factureAchatRepo.detachFournisseur(id);
         fournisseurRepo.deleteById(id);
+        auditLogService.log("FOURNISSEUR_DELETED",
+                "Fournisseur supprimé: " + fournisseur.getNom() + " " + fournisseur.getPrenom() + " (id=" + id + ")");
     }
 
     // ✅ UPDATE FOURNISSEUR
@@ -199,7 +204,10 @@ public class FournisseurService {
                 .orElseThrow(() -> new RuntimeException("Categorie not found with id: " + fournisseur.getCategorieFournisseur().getId()));
             existing.setCategorieFournisseur(categorie);
         }
-        return fournisseurRepo.save(existing);
+        Fournisseur updated = fournisseurRepo.save(existing);
+        auditLogService.log("FOURNISSEUR_UPDATED",
+                "Fournisseur mis à jour: " + updated.getNom() + " " + updated.getPrenom() + " (id=" + updated.getId() + ")");
+        return updated;
     }
 
     // ✅ ADD CATEGORIE FOURNISSEUR
