@@ -85,16 +85,31 @@ export class AuditLogComponent implements OnInit, OnDestroy {
 
   getActionBadgeClass(action: string): string {
     switch (action) {
-      case 'LOGIN': return 'bg-success';
-      case 'USER_CREATED': return 'bg-primary';
-      case 'USER_UPDATED': return 'bg-info';
-      case 'USER_DELETED': return 'bg-danger';
-      case 'USER_STATUS_CHANGED': return 'bg-warning';
-      case 'PERMISSION_MODIFIED': return 'bg-secondary';
-      case 'COMMANDE_VENTE_VALIDEE':
-      case 'COMMANDE_ACHAT_VALIDEE': return 'bg-success';
-      case 'STOCK_MOUVEMENT': return 'bg-info';
-      default: return 'bg-dark';
+      case 'LOGIN':                  return 'al-badge-login';
+      case 'USER_CREATED':           return 'al-badge-created';
+      case 'USER_UPDATED':           return 'al-badge-updated';
+      case 'USER_DELETED':           return 'al-badge-deleted';
+      case 'USER_STATUS_CHANGED':    return 'al-badge-status';
+      case 'PERMISSION_MODIFIED':    return 'al-badge-permission';
+      case 'COMMANDE_VENTE_VALIDEE': return 'al-badge-commande';
+      case 'COMMANDE_ACHAT_VALIDEE': return 'al-badge-commande';
+      case 'STOCK_MOUVEMENT':        return 'al-badge-stock';
+      default:                       return 'al-badge-default';
+    }
+  }
+
+  getActionIcon(action: string): string {
+    switch (action) {
+      case 'LOGIN':                  return 'icon-log-in';
+      case 'USER_CREATED':           return 'icon-user-plus';
+      case 'USER_UPDATED':           return 'icon-edit-2';
+      case 'USER_DELETED':           return 'icon-user-x';
+      case 'USER_STATUS_CHANGED':    return 'icon-toggle-right';
+      case 'PERMISSION_MODIFIED':    return 'icon-key';
+      case 'COMMANDE_VENTE_VALIDEE': return 'icon-shopping-bag';
+      case 'COMMANDE_ACHAT_VALIDEE': return 'icon-package';
+      case 'STOCK_MOUVEMENT':        return 'icon-layers';
+      default:                       return 'icon-activity';
     }
   }
 
