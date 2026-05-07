@@ -19,6 +19,8 @@ export class ListCommandeAchatComponent implements OnInit {
   isLoading = false;
   searchTerm = '';
   selectedStatut = '';
+  dateDebut = '';
+  dateFin = '';
   lastGeneratedFacture: any = null;
   showFactureModal = false;
   errorMessage = '';
@@ -94,12 +96,18 @@ export class ListCommandeAchatComponent implements OnInit {
   }
 
   applyFilters(): void {
+    const debut = this.dateDebut ? new Date(this.dateDebut) : null;
+    const fin = this.dateFin ? new Date(new Date(this.dateFin).setHours(23, 59, 59, 999)) : null;
+
     this.filteredCommandes = this.commandes.filter(c => {
       const matchSearch = !this.searchTerm ||
         c.reference?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         c.fournisseur?.nom?.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchStatut = !this.selectedStatut || c.statut === this.selectedStatut;
-      return matchSearch && matchStatut;
+      const date = c.dateCommande ? new Date(c.dateCommande) : null;
+      const matchDebut = !debut || (date !== null && date >= debut);
+      const matchFin = !fin || (date !== null && date <= fin);
+      return matchSearch && matchStatut && matchDebut && matchFin;
     });
   }
 
