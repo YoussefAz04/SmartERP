@@ -30,11 +30,18 @@ export class ProfileComponent implements OnInit {
   isSubmitting = false;
   loadError = false;
 
-  // Read-only flag: only ADMIN / SUPER_ADMIN can update via /api/users/updateUser
+  // Read-only flag: only ADMIN / SUPER_ADMIN can update username/email/phone
   canEdit = false;
 
   // Avatar initials derived from username
   initials = '';
+
+  // Change-password form (available to all roles)
+  showPasswordForm = false;
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  isChangingPassword = false;
 
   constructor(
     private userService: UserService,
@@ -180,6 +187,43 @@ export class ProfileComponent implements OnInit {
 
   cancel(): void {
     this.loadCurrentUser();
+  }
+
+  togglePasswordForm(): void {
+    this.showPasswordForm = !this.showPasswordForm;
+    if (!this.showPasswordForm) {
+      this.currentPassword = '';
+      this.newPassword = '';
+      this.confirmPassword = '';
+    }
+  }
+
+  onChangePassword(): void {
+    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
+      this.notification.error('Veuillez remplir tous les champs.');
+      return;
+    }
+    if (this.newPassword.length < 6) {
+      this.notification.error('Le nouveau mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.notification.error('Les nouveaux mots de passe ne correspondent pas.');
+      return;
+    }
+    this.isChangingPassword = true;
+    this.userService.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.isChangingPassword = false;
+        this.notification.success('Mot de passe mis à jour avec succès.');
+        this.togglePasswordForm();
+      },
+      error: (err) => {
+        this.isChangingPassword = false;
+        const message = err?.error?.error || err?.error?.message || 'Erreur lors du changement de mot de passe.';
+        this.notification.error(typeof message === 'string' ? message : 'Erreur lors du changement de mot de passe.');
+      },
+    });
   }
 
   logout(): void {

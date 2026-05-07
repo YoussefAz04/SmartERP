@@ -322,6 +322,26 @@ public class UserService {
     }
 
     /**
+     * Change the password of the authenticated user identified by their username.
+     * Verifies {@code currentPassword} against the stored hash before updating.
+     *
+     * @throws IllegalArgumentException if the current password is wrong or the
+     *                                  new password does not meet minimum length.
+     */
+    public void changePasswordForUsername(String username, String currentPassword, String newPassword) {
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new IllegalArgumentException("Le nouveau mot de passe doit contenir au moins 6 caractères.");
+        }
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé : " + username));
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Le mot de passe actuel est incorrect.");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    /**
      * Activate or deactivate a user account by toggling the {@code enabled} flag.
      * A deactivated user keeps their data but is denied at login by
      * {@code CustomUserDetailsService}.

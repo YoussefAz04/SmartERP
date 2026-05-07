@@ -222,6 +222,37 @@ export interface PredictionAccuracy {
   history: PredictionLog[];
 }
 
+export interface WhatIfDeltas {
+  workingDays?: number;
+  marketingSpend?: number;
+  ramadan?: boolean;
+  promo?: boolean;
+}
+
+export interface WhatIfScenario {
+  name: string;
+  deltas: WhatIfDeltas;
+}
+
+export interface WhatIfForecastPoint {
+  period: string;
+  actual: number | null;
+  forecast: number | null;
+  upperBound: number | null;
+  lowerBound: number | null;
+}
+
+export interface WhatIfScenarioResult {
+  name: string;
+  multiplier: number;
+  forecastPoints: WhatIfForecastPoint[];
+}
+
+export interface WhatIfResult {
+  baseline: { forecastPoints: WhatIfForecastPoint[] };
+  scenarios: WhatIfScenarioResult[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -278,5 +309,9 @@ export class AiIntelligenceService {
 
   reconcilePredictions(): Observable<{ settled: number }> {
     return this.http.post<{ settled: number }>(`${this.baseUrl}/predictions/reconcile`, {}, { headers: this.getHeaders() });
+  }
+
+  whatIfForecast(scenarios: WhatIfScenario[]): Observable<WhatIfResult> {
+    return this.http.post<WhatIfResult>(`${this.baseUrl}/forecast/what-if`, { scenarios }, { headers: this.getHeaders() });
   }
 }

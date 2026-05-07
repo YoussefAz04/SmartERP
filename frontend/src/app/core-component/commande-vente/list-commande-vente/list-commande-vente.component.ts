@@ -263,6 +263,30 @@ export class ListCommandeVenteComponent implements OnInit {
     return this.commandes.filter(c => c.statut === 'LIVREE').length;
   }
 
+  exportCSV(): void {
+    const headers = ['Référence', 'Date Commande', 'Date Livraison Prévue', 'Client', 'Statut', 'Montant HT', 'Montant TVA', 'Montant TTC'];
+    const rows = this.filteredCommandes.map(c => [
+      c.reference ?? '',
+      c.dateCommande ?? '',
+      c.dateLivraisonPrevue ?? '',
+      c.client?.nom ?? '',
+      this.getStatutLabel(c.statut),
+      c.montantHT ?? 0,
+      c.montantTVA ?? 0,
+      c.montantTTC ?? 0,
+    ]);
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `commandes-vente-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   getStatutBadgeClass(statut?: string): string {
     switch (statut) {
       case 'CONFIRMEE':  return 'badge bg-success';

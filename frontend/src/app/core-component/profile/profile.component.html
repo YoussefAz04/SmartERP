@@ -221,6 +221,79 @@
         </form>
       </div>
     </div>
+
+    <!-- ── Change Password Card ───────────────────────────────────────── -->
+    <div class="profile-form-card" style="margin-top: 20px;">
+      <div class="profile-form-header">
+        <div class="profile-form-header-left">
+          <span class="profile-form-header-icon"><i class="feather icon-lock"></i></span>
+          <div>
+            <h5 class="profile-form-title">Changer le mot de passe</h5>
+            <p class="profile-form-subtitle">Sécurisez votre compte avec un nouveau mot de passe</p>
+          </div>
+        </div>
+        <button type="button" class="profile-btn-cancel" (click)="togglePasswordForm()">
+          {{ showPasswordForm ? 'Fermer' : 'Modifier' }}
+        </button>
+      </div>
+
+      <div class="profile-form-body" *ngIf="showPasswordForm">
+        <div class="profile-fields-grid">
+          <div class="profile-field-group">
+            <label for="currentPassword" class="profile-field-label">
+              <i class="feather icon-lock"></i>Mot de passe actuel
+            </label>
+            <input
+              type="password"
+              id="currentPassword"
+              name="currentPassword"
+              class="profile-field-input"
+              [(ngModel)]="currentPassword"
+              [disabled]="isChangingPassword"
+              placeholder="••••••••"
+            />
+          </div>
+          <div class="profile-field-group">
+            <label for="newPassword" class="profile-field-label">
+              <i class="feather icon-key"></i>Nouveau mot de passe
+            </label>
+            <input
+              type="password"
+              id="newPassword"
+              name="newPassword"
+              class="profile-field-input"
+              [(ngModel)]="newPassword"
+              [disabled]="isChangingPassword"
+              placeholder="6 caractères minimum"
+            />
+          </div>
+          <div class="profile-field-group">
+            <label for="confirmPassword" class="profile-field-label">
+              <i class="feather icon-check-circle"></i>Confirmer le mot de passe
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              class="profile-field-input"
+              [(ngModel)]="confirmPassword"
+              [disabled]="isChangingPassword"
+              placeholder="Répétez le nouveau mot de passe"
+            />
+          </div>
+        </div>
+        <div class="profile-form-actions">
+          <button type="button" class="profile-btn-cancel" (click)="togglePasswordForm()" [disabled]="isChangingPassword">
+            Annuler
+          </button>
+          <button type="button" class="profile-btn-save" (click)="onChangePassword()" [disabled]="isChangingPassword">
+            <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <i class="feather icon-check me-2" *ngIf="!isChangingPassword"></i>
+            Mettre à jour
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
