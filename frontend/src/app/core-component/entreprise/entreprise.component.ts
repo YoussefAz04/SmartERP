@@ -51,7 +51,7 @@ export class EntrepriseComponent implements OnInit{
     );
   }
 
-  get totalCount(): number { return this.entreprises.length; }
+  get totalCount(): number { return this.entreprises.filter(e => e.active === true).length; }
   get uniqueSectors(): number { return new Set(this.entreprises.map(e => e.secteurActivite).filter(Boolean)).size; }
 
   resetFilters(): void { this.searchTerm = ''; }
@@ -68,7 +68,7 @@ export class EntrepriseComponent implements OnInit{
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.entrepriseService.getAllEntreprises().subscribe({
+    this.entrepriseService.getAllEntreprisesWithInactive().subscribe({
       next: (data) => {
         this.entreprises = data;
         this.isLoading = false;
@@ -169,6 +169,28 @@ export class EntrepriseComponent implements OnInit{
           error: (err) => {
             console.error('❌ Error disabling entreprise:', err);
             this.notification.error("Erreur : impossible de désactiver l'entreprise.");
+          }
+        });
+      }
+    });
+  }
+
+  enableEntreprise(id: number | undefined): void {
+    if (!id) {
+      this.notification.error("ID entreprise invalide");
+      return;
+    }
+
+    this.notification.confirm("Voulez-vous vraiment réactiver cette entreprise et tous ses utilisateurs ?").then(ok => {
+      if (ok) {
+        this.entrepriseService.enableEntreprise(id).subscribe({
+          next: () => {
+            this.notification.success("Entreprise réactivée avec succès !");
+            this.loadEntreprises();
+          },
+          error: (err) => {
+            console.error('❌ Error enabling entreprise:', err);
+            this.notification.error("Erreur : impossible de réactiver l'entreprise.");
           }
         });
       }

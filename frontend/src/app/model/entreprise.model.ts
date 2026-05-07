@@ -15,5 +15,6 @@ export interface Entreprise {
   telephone : string ;
   adresse : string ;
   email : string ;
+  active?: boolean;
   caracteristiqueFactureEntreprise?: CaracteristiqueFactureEntreprise ;
 }

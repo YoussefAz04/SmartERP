@@ -80,6 +80,23 @@ export class EntrepriseService {
     );
   }
 
+  // ✅ ENABLE ENTERPRISE - Matches backend: PUT /entreprise/enable/{id}
+  enableEntreprise(id: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}/enable/${id}`,
+      {},
+      { headers: this.getHeaders(), responseType: 'text' as 'json' }
+    );
+  }
+
+  // ✅ GET ALL ENTERPRISES INCLUDING INACTIVE - Matches backend: GET /entreprise/getAllWithInactive
+  getAllEntreprisesWithInactive(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/getAllWithInactive`,
+      { headers: this.getHeaders() }
+    );
+  }
+
   // ✅ GET CURRENT USER'S ENTERPRISE - Reads enterpriseId from localStorage
   getEntrepriseByCurrentUser(): Observable<any> {
     const item = localStorage.getItem('myLSkey');

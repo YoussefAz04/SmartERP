@@ -123,6 +123,19 @@ public class EntrepriseService {
         userRepo.saveAll(users);
     }
 
+    @Transactional
+    public void enableEntreprise(Long id) {
+        Entreprise entreprise = entrepriseRepository.findById(id)
+                .orElseThrow(() -> new EmptyResultDataAccessException(
+                        "Entreprise non trouvée avec ID : " + id, 1));
+        entreprise.setActive(true);
+        entrepriseRepository.save(entreprise);
+
+        List<User> users = userRepo.findByEntrepriseId(id);
+        users.forEach(user -> user.setEnabled(true));
+        userRepo.saveAll(users);
+    }
+
     public void assignerUserToEntreprise(String username,String nom){
         Entreprise entreprise = entrepriseRepository.findByNom(nom).orElse(null);
         User user =userRepo.findByUsername(username).orElse(null);

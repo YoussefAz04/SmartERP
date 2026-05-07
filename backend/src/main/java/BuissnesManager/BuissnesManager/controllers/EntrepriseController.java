@@ -115,12 +115,35 @@ public class EntrepriseController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping("/enable/{id}")
+    public ResponseEntity<?> enableEntreprise(@PathVariable Long id) {
+        try {
+            entrepriseService.enableEntreprise(id);
+            return ResponseEntity.ok("Entreprise réactivée avec succès.");
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvée avec ID : " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la réactivation : " + e.getMessage());
+        }
+    }
+
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllEntreprise() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getAllEntreprise());
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvee");
+        }
+    }
+
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @GetMapping("/getAllWithInactive")
+    public ResponseEntity<?> getAllEntreprisesWithInactive() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getAllEntreprises());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors du chargement : " + e.getMessage());
         }
     }
 
