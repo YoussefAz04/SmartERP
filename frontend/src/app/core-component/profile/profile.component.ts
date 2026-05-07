@@ -220,9 +220,7 @@ export class ProfileComponent implements OnInit {
       },
       error: (err) => {
         this.isChangingPassword = false;
-        const message =
-          (err?.error?.error || err?.error?.message || err?.error) ||
-          'Erreur lors du changement de mot de passe.';
+        const message = err?.error?.error || err?.error?.message || 'Erreur lors du changement de mot de passe.';
         this.notification.error(typeof message === 'string' ? message : 'Erreur lors du changement de mot de passe.');
       },
     });
