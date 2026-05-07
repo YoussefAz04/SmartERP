@@ -63,4 +63,8 @@ export class UserService {
   setUserStatus(userId: number, enabled: boolean): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${userId}/status`, { enabled });
   }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/me/change-password`, { currentPassword, newPassword });
+  }
 }

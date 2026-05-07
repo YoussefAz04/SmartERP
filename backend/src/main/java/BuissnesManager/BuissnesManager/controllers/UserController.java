@@ -277,6 +277,40 @@ public class UserController {
         }
     }
 
+    /**
+     * Authenticated change-password endpoint.
+     * Any logged-in user (EMPLOYEE, ADMIN, SUPER_ADMIN) may change their own
+     * password by providing the current password for verification.
+     * Body: { "currentPassword": "...", "newPassword": "..." }
+     */
+    @PutMapping("/me/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody Map<String, String> body) {
+        try {
+            String currentPassword = body == null ? null : body.get("currentPassword");
+            String newPassword = body == null ? null : body.get("newPassword");
+            if (currentPassword == null || currentPassword.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Le mot de passe actuel est requis."));
+            }
+            if (newPassword == null || newPassword.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Le nouveau mot de passe est requis."));
+            }
+            String username = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getName();
+            userService.changePasswordForUsername(username, currentPassword, newPassword);
+            auditLogService.log("USER_UPDATED", "Mot de passe changé pour l'utilisateur: " + username);
+            return ResponseEntity.ok(Map.of("message", "Mot de passe mis à jour avec succès."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error changing password: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erreur lors du changement de mot de passe."));
+        }
+    }
+
     // ----------------------------------------------------------------
     // Helper
     // ----------------------------------------------------------------

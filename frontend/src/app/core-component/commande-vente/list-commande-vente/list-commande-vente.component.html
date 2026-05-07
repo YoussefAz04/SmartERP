@@ -131,6 +131,12 @@
         {{ filteredCommandes.length }}
       </span>
     </div>
+    <div class="card-header-right">
+      <button class="btn-header-action btn-export" (click)="exportCSV()" title="Exporter en CSV" [disabled]="filteredCommandes.length === 0">
+        <span class="btn-icon"><i class="feather icon-download"></i></span>
+        <span>Exporter CSV</span>
+      </button>
+    </div>
   </div>
 
   <!-- Loading State -->

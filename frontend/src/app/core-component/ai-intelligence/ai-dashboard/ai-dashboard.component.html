@@ -240,6 +240,76 @@
       </div>
     </div>
 
+    <!-- What-If Scenario Analysis -->
+    <div class="chart-card chart-forecast mb-4">
+      <div class="chart-header">
+        <h3><i class="fas fa-flask me-2"></i>Analyse de Scénarios — What-If</h3>
+        <button class="btn-refresh" (click)="toggleWhatIf()" style="margin-left: auto;">
+          <i class="fas" [ngClass]="showWhatIf ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          {{ showWhatIf ? 'Masquer' : 'Afficher les scénarios' }}
+        </button>
+      </div>
+
+      <div *ngIf="showWhatIf">
+        <p style="color: #64748b; font-size: 0.85rem; margin: 0 0 16px 0; padding: 0 4px;">
+          Simulez l'impact de différents facteurs sur la prévision du mois prochain (perturbation multiplicative sur la prévision de base).
+        </p>
+
+        <!-- Loading -->
+        <div *ngIf="whatIfLoading" style="text-align:center; padding: 24px;">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p style="margin-top: 8px; color:#64748b;">Calcul des scénarios…</p>
+        </div>
+
+        <!-- Error -->
+        <div *ngIf="!whatIfLoading && whatIfError" style="color:#dc2626; padding: 12px;">
+          <i class="fas fa-exclamation-circle me-2"></i>{{ whatIfError }}
+          <button class="btn-retry" (click)="runWhatIf()" style="margin-left: 12px;">Réessayer</button>
+        </div>
+
+        <!-- Results table -->
+        <div *ngIf="!whatIfLoading && whatIfResult" class="table-responsive">
+          <table class="intel-table">
+            <thead>
+              <tr>
+                <th>Scénario</th>
+                <th>Multiplicateur</th>
+                <th *ngFor="let p of whatIfResult.baseline.forecastPoints">{{ p.period }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Baseline row -->
+              <tr>
+                <td><strong>Baseline</strong></td>
+                <td><span class="perf-label perf-STAR">×1.000</span></td>
+                <td *ngFor="let p of whatIfResult.baseline.forecastPoints">
+                  <span *ngIf="p.actual != null">{{ formatCurrency(p.actual) }} <small style="color:#94a3b8">(réel)</small></span>
+                  <span *ngIf="p.actual == null">{{ formatCurrency(p.forecast ?? 0) }}</span>
+                </td>
+              </tr>
+              <!-- Scenario rows -->
+              <tr *ngFor="let sc of whatIfResult.scenarios">
+                <td>{{ sc.name }}</td>
+                <td>
+                  <span class="perf-label" [ngClass]="sc.multiplier >= 1 ? 'perf-STAR' : 'perf-SLOW'">
+                    ×{{ sc.multiplier | number:'1.3-3' }}
+                  </span>
+                </td>
+                <td *ngFor="let p of sc.forecastPoints">
+                  <span *ngIf="p.actual != null">{{ formatCurrency(p.actual) }} <small style="color:#94a3b8">(réel)</small></span>
+                  <span *ngIf="p.actual == null">{{ formatCurrency(p.forecast ?? 0) }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button *ngIf="!whatIfLoading" class="btn-refresh" (click)="runWhatIf()" style="margin-top: 12px;">
+          <i class="fas fa-sync-alt"></i> Recalculer
+        </button>
+      </div>
+    </div>
+
     <!-- Intelligence Produits & Recommandations -->
     <div class="bottom-row">
 
