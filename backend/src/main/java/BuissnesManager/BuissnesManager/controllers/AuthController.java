@@ -99,7 +99,7 @@ public class AuthController {
             User newUser = new User();
             newUser.setUsername(request.getUsername());
             newUser.setEmail(request.getEmail());
-            newUser.setPassword(request.getPassword());
+            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
             newUser.setEnabled(true);
 
             // Assign enterprise if provided
@@ -182,6 +182,14 @@ public class AuthController {
 
             User user = userRepo.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found after authentication"));
+
+            // Transparently upgrade legacy plaintext passwords to BCrypt now that
+            // we have verified the raw password is correct.
+            if (passwordEncoder.upgradeEncoding(user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+                user = userRepo.save(user);
+                System.out.println("✅ Password rehashed (BCrypt upgrade) for user: " + user.getUsername());
+            }
 
             String token = jwtUtil.generateToken(user);
             
