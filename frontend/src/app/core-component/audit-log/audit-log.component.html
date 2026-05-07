@@ -1,87 +1,112 @@
-<div class="page-wrapper">
-  <div class="content">
-    <div class="page-header">
-      <div class="page-title">
-        <h4>Journal d'Audit</h4>
-        <h6>Historique des actions importantes du système</h6>
-      </div>
+<!-- Page Header -->
+<div class="al-page-header">
+  <div class="al-header-left">
+    <div class="al-header-icon">
+      <i class="feather icon-shield"></i>
     </div>
+    <div class="al-header-text">
+      <h1>Journal d'Audit</h1>
+      <p>Historique des actions importantes du système</p>
+    </div>
+  </div>
+  <div class="al-header-right">
+    <div class="al-stats-badge">
+      <i class="feather icon-activity"></i>
+      <span>{{ filteredLogs.length }} entrée{{ filteredLogs.length !== 1 ? 's' : '' }}</span>
+    </div>
+  </div>
+</div>
 
-    <!-- Filters -->
-    <div class="card mb-3">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-md-5">
-            <label class="form-label">Recherche</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="feather icon-search"></i></span>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Utilisateur, détail..."
-                [(ngModel)]="searchText"
-                (ngModelChange)="applyFilters()"
-              />
+<!-- Filter Toolbar -->
+<div class="al-list-card">
+  <div class="al-toolbar">
+    <div class="al-search-box">
+      <i class="feather icon-search al-search-icon"></i>
+      <input
+        type="search"
+        class="al-search-input"
+        placeholder="Rechercher par utilisateur, détail…"
+        [(ngModel)]="searchText"
+        (ngModelChange)="applyFilters()"
+      />
+    </div>
+    <div class="al-toolbar-right">
+      <div class="al-action-select">
+        <i class="feather icon-filter al-select-icon"></i>
+        <select class="al-select" [(ngModel)]="selectedAction" (ngModelChange)="applyFilters()">
+          <option value="">Toutes les actions</option>
+          <option *ngFor="let action of uniqueActions" [value]="action">
+            {{ getActionLabel(action) }}
+          </option>
+        </select>
+      </div>
+      <button
+        type="button"
+        class="al-btn-reset"
+        *ngIf="searchText || selectedAction"
+        (click)="searchText = ''; selectedAction = ''; applyFilters()"
+        title="Réinitialiser les filtres"
+      >
+        <i class="feather icon-x"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="al-empty-state">
+    <div class="al-spinner"></div>
+    <p>Chargement du journal…</p>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!isLoading && filteredLogs.length === 0" class="al-empty-state">
+    <div class="al-empty-icon">
+      <i class="feather icon-clipboard"></i>
+    </div>
+    <h3>Aucune entrée trouvée</h3>
+    <p>Essayez d'ajuster vos critères de recherche ou de filtrage.</p>
+  </div>
+
+  <!-- Table -->
+  <div class="al-table-wrap" *ngIf="!isLoading && filteredLogs.length > 0">
+    <table class="al-table">
+      <thead>
+        <tr>
+          <th class="al-th-date">Date</th>
+          <th class="al-th-action">Action</th>
+          <th>Utilisateur</th>
+          <th>Détails</th>
+          <th>IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of filteredLogs; let i = index" class="al-row" [style.animation-delay]="(i * 0.03) + 's'">
+          <td class="al-td-date">
+            <i class="feather icon-clock al-date-icon"></i>
+            {{ formatDate(log.createdAt) }}
+          </td>
+          <td class="al-td-action">
+            <span class="al-action-badge" [ngClass]="getActionBadgeClass(log.action)">
+              <i class="feather" [ngClass]="getActionIcon(log.action)"></i>
+              {{ getActionLabel(log.action) }}
+            </span>
+          </td>
+          <td class="al-td-user">
+            <div class="al-user-cell" *ngIf="log.username; else noUser">
+              <div class="al-avatar">{{ log.username.charAt(0).toUpperCase() }}</div>
+              <span>{{ log.username }}</span>
             </div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Filtrer par action</label>
-            <select class="form-select" [(ngModel)]="selectedAction" (ngModelChange)="applyFilters()">
-              <option value="">Toutes les actions</option>
-              <option *ngFor="let action of uniqueActions" [value]="action">
-                {{ getActionLabel(action) }}
-              </option>
-            </select>
-          </div>
-          <div class="col-md-3 text-end">
-            <span class="text-muted small">{{ filteredLogs.length }} entrée(s)</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-body p-0">
-
-        <div *ngIf="isLoading" class="text-center py-5">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Chargement...</span>
-          </div>
-        </div>
-
-        <div *ngIf="!isLoading && filteredLogs.length === 0" class="text-center py-5">
-          <i class="feather icon-clipboard text-muted" style="font-size: 3rem;"></i>
-          <p class="mt-3 text-muted">Aucune entrée d'audit trouvée.</p>
-        </div>
-
-        <div *ngIf="!isLoading && filteredLogs.length > 0" class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th style="width: 165px;">Date</th>
-                <th style="width: 200px;">Action</th>
-                <th style="width: 130px;">Utilisateur</th>
-                <th>Détails</th>
-                <th style="width: 120px;">IP</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let log of filteredLogs">
-                <td class="text-nowrap small text-muted">{{ formatDate(log.createdAt) }}</td>
-                <td>
-                  <span class="badge" [ngClass]="getActionBadgeClass(log.action)">
-                    {{ getActionLabel(log.action) }}
-                  </span>
-                </td>
-                <td class="small">{{ log.username || '—' }}</td>
-                <td class="small">{{ log.details || '—' }}</td>
-                <td class="small text-muted">{{ log.ipAddress || '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-    </div>
+            <ng-template #noUser><span class="al-dash">—</span></ng-template>
+          </td>
+          <td class="al-td-details">{{ log.details || '—' }}</td>
+          <td class="al-td-ip">
+            <span class="al-ip-badge" *ngIf="log.ipAddress; else noIp">
+              <i class="feather icon-wifi"></i> {{ log.ipAddress }}
+            </span>
+            <ng-template #noIp><span class="al-dash">—</span></ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

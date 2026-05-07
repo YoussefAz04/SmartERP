@@ -1,11 +1,565 @@
-.table th,
-.table td {
-  vertical-align: middle;
+// ============================================================
+// AUDIT LOG - PREMIUM UI
+// Color system: Slate primary, purple/indigo accent
+// ============================================================
+
+$indigo:        #6366F1;
+$indigo-dark:   #4F46E5;
+$indigo-darker: #3730A3;
+$indigo-light:  #EEF2FF;
+$purple:        #8B5CF6;
+$purple-light:  #EDE9FE;
+$green:         #10B981;
+$green-dark:    #059669;
+$green-light:   #D1FAE5;
+$blue:          #3B82F6;
+$blue-light:    #DBEAFE;
+$amber:         #F59E0B;
+$amber-light:   #FEF3C7;
+$red:           #EF4444;
+$red-light:     #FEE2E2;
+$orange:        #F97316;
+$orange-light:  #FFEDD5;
+$teal:          #14B8A6;
+$teal-light:    #CCFBF1;
+$slate:         #64748B;
+$slate-dark:    #334155;
+$slate-light:   #F1F5F9;
+
+$bg-card:    #FFFFFF;
+$text-h:     #1E293B;
+$text-body:  #475569;
+$text-muted: #94A3B8;
+$border:     #E2E8F0;
+
+$shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+$shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
+
+// ============================================================
+// PAGE HEADER
+// ============================================================
+.al-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  padding: 1.75rem 2rem;
+  background: linear-gradient(135deg, $indigo-darker 0%, $indigo 55%, $purple 100%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: alHeaderIn .5s cubic-bezier(.16,1,.3,1) both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -5%;
+    width: 260px;
+    height: 260px;
+    background: rgba(white, .05);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: 10%;
+    width: 170px;
+    height: 170px;
+    background: rgba(white, .04);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+}
+
+.al-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.al-header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(white, .15);
+  border: 1px solid rgba(white, .2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+
+  i {
+    font-size: 1.5rem;
+    color: white;
+  }
+}
+
+.al-header-text {
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    letter-spacing: -.3px;
+  }
+
+  p {
+    font-size: .9rem;
+    color: rgba(white, .75);
+    margin: .25rem 0 0;
+  }
+}
+
+.al-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.al-stats-badge {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1.1rem;
+  background: rgba(white, .15);
+  border: 1px solid rgba(white, .25);
+  border-radius: 50px;
+  color: white;
+  font-size: .875rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+
+  i { font-size: .95rem; }
+}
+
+// ============================================================
+// LIST CARD
+// ============================================================
+.al-list-card {
+  background: $bg-card;
+  border-radius: 18px;
+  border: 1.5px solid $border;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  animation: alFadeUp .4s .1s cubic-bezier(.16,1,.3,1) both;
+}
+
+// ============================================================
+// TOOLBAR
+// ============================================================
+.al-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1.5px solid $border;
+  flex-wrap: wrap;
+}
+
+.al-search-box {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: $slate-light;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  padding: 0 1rem;
+  transition: all .3s ease;
+
+  &:focus-within {
+    border-color: $indigo;
+    box-shadow: 0 0 0 3px rgba($indigo, .12);
+    background: white;
+  }
+}
+
+.al-search-icon {
+  color: $text-muted;
+  font-size: .95rem;
+  flex-shrink: 0;
+  transition: color .3s;
+
+  .al-search-box:focus-within & { color: $indigo; }
+}
+
+.al-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: .75rem 0;
+  font-size: .9rem;
+  color: $text-h;
+
+  &::placeholder { color: $text-muted; }
+}
+
+.al-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-shrink: 0;
+}
+
+.al-action-select {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: $slate-light;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  padding: 0 .9rem;
+  height: 42px;
+  transition: all .3s ease;
+
+  &:focus-within {
+    border-color: $indigo;
+    box-shadow: 0 0 0 3px rgba($indigo, .1);
+    background: white;
+  }
+}
+
+.al-select-icon {
+  color: $text-muted;
+  font-size: .9rem;
+  flex-shrink: 0;
+}
+
+.al-select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: .875rem;
+  color: $text-h;
+  padding: 0;
+  cursor: pointer;
+  min-width: 160px;
+
+  option { color: $text-h; }
+}
+
+.al-btn-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 1.5px solid $border;
+  background: $slate-light;
+  color: $text-body;
+  cursor: pointer;
+  transition: all .25s ease;
+
+  i { font-size: .9rem; }
+
+  &:hover {
+    background: $red-light;
+    border-color: rgba($red, .3);
+    color: $red;
+  }
+}
+
+// ============================================================
+// TABLE
+// ============================================================
+.al-table-wrap { overflow-x: auto; }
+
+.al-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+
+  thead tr {
+    background: linear-gradient(90deg, #F8FAFC 0%, $slate-light 100%);
+    border-bottom: 2px solid $border;
+
+    th {
+      padding: 1rem 1.25rem;
+      font-size: .72rem;
+      font-weight: 700;
+      color: $text-body;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      white-space: nowrap;
+      border: none;
+
+      &.al-th-date  { width: 170px; }
+      &.al-th-action { width: 210px; }
+    }
+  }
+
+  tbody .al-row {
+    border-bottom: 1px solid rgba($border, .7);
+    opacity: 0;
+    animation: alRowIn .35s cubic-bezier(.16,1,.3,1) forwards;
+    transition: background .2s ease;
+
+    &:last-child { border-bottom: none; }
+
+    &:hover { background: linear-gradient(90deg, $indigo-light 0%, rgba($purple-light, .25) 100%); }
+
+    td {
+      padding: .9rem 1.25rem;
+      vertical-align: middle;
+      border: none;
+    }
+  }
+}
+
+.al-td-date {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .8rem;
+  color: $text-muted;
   white-space: nowrap;
 }
 
-.table td:nth-child(4) {
-  white-space: normal;
+.al-date-icon { font-size: .8rem; opacity: .7; }
+
+// ============================================================
+// ACTION BADGES
+// ============================================================
+.al-action-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .3rem .75rem;
+  border-radius: 50px;
+  font-size: .75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1.5px solid transparent;
+
+  i { font-size: .75rem; }
+
+  &.al-badge-login {
+    background: $green-light;
+    color: $green-dark;
+    border-color: rgba($green, .25);
+  }
+
+  &.al-badge-created {
+    background: $blue-light;
+    color: darken($blue, 10%);
+    border-color: rgba($blue, .25);
+  }
+
+  &.al-badge-updated {
+    background: $indigo-light;
+    color: $indigo-dark;
+    border-color: rgba($indigo, .25);
+  }
+
+  &.al-badge-deleted {
+    background: $red-light;
+    color: darken($red, 5%);
+    border-color: rgba($red, .25);
+  }
+
+  &.al-badge-status {
+    background: $amber-light;
+    color: darken($amber, 12%);
+    border-color: rgba($amber, .3);
+  }
+
+  &.al-badge-permission {
+    background: $purple-light;
+    color: darken($purple, 10%);
+    border-color: rgba($purple, .25);
+  }
+
+  &.al-badge-commande {
+    background: $teal-light;
+    color: darken($teal, 10%);
+    border-color: rgba($teal, .25);
+  }
+
+  &.al-badge-stock {
+    background: $orange-light;
+    color: darken($orange, 10%);
+    border-color: rgba($orange, .25);
+  }
+
+  &.al-badge-default {
+    background: $slate-light;
+    color: $slate-dark;
+    border-color: rgba($slate, .25);
+  }
+}
+
+// ============================================================
+// USER CELL
+// ============================================================
+.al-user-cell {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+}
+
+.al-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, $indigo 0%, $purple 100%);
+  color: white;
+  font-weight: 700;
+  font-size: .8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba($indigo, .3);
+}
+
+.al-td-user {
+  font-size: .875rem;
+  color: $text-h;
+  font-weight: 500;
+}
+
+// ============================================================
+// DETAILS & IP
+// ============================================================
+.al-td-details {
+  font-size: .85rem;
+  color: $text-body;
+  max-width: 340px;
   word-break: break-word;
-  max-width: 320px;
+}
+
+.al-ip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .78rem;
+  color: $text-muted;
+  background: $slate-light;
+  padding: .2rem .6rem;
+  border-radius: 6px;
+  border: 1px solid $border;
+  white-space: nowrap;
+
+  i { font-size: .75rem; }
+}
+
+.al-dash { color: $text-muted; font-size: .875rem; }
+
+// ============================================================
+// LOADING / EMPTY STATE
+// ============================================================
+.al-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.al-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba($indigo, .15);
+  border-top-color: $indigo;
+  border-radius: 50%;
+  animation: alSpin .8s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+
+.al-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, $indigo-light 0%, $purple-light 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+
+  i { font-size: 1.75rem; color: $indigo; opacity: .7; }
+}
+
+.al-empty-state h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text-h;
+  margin: 0 0 .4rem;
+}
+
+.al-empty-state p {
+  font-size: .875rem;
+  color: $text-muted;
+  margin: 0;
+}
+
+// ============================================================
+// ANIMATIONS
+// ============================================================
+@keyframes alHeaderIn {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes alFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes alRowIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes alSpin {
+  to { transform: rotate(360deg); }
+}
+
+// ============================================================
+// RESPONSIVE
+// ============================================================
+@media (max-width: 768px) {
+  .al-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+  }
+
+  .al-header-right { width: 100%; }
+
+  .al-toolbar {
+    flex-direction: column;
+    gap: .75rem;
+
+    .al-search-box { min-width: 100%; }
+
+    .al-toolbar-right { width: 100%; }
+
+    .al-action-select { flex: 1; }
+  }
+
+  .al-table thead tr th {
+    padding: .75rem .75rem;
+    font-size: .68rem;
+  }
+
+  .al-table tbody .al-row td {
+    padding: .75rem .75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .al-header-text h1 { font-size: 1.25rem; }
+  .al-stats-badge { display: none; }
+  .al-td-details { max-width: 180px; }
 }
