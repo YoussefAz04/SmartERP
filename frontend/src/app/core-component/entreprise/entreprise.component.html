@@ -130,14 +130,15 @@
               <th>Site Web</th>
               <th>NIF / RC</th>
               <th>Date Création</th>
+              <th class="text-center">Statut</th>
               <th class="text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let e of filteredEntreprises">
+            <tr *ngFor="let e of filteredEntreprises" [class.ent-row-inactive]="e.active === false">
               <td>
                 <div class="ent-name-cell">
-                  <div class="ent-avatar">{{ (e.nom || '?').charAt(0).toUpperCase() }}</div>
+                  <div class="ent-avatar" [class.ent-avatar-inactive]="e.active === false">{{ (e.nom || '?').charAt(0).toUpperCase() }}</div>
                   <div>
                     <strong>{{ e.nom }}</strong>
                     <div class="ent-meta">{{ e.adresse || '—' }}</div>
@@ -178,19 +179,30 @@
                 </div>
               </td>
               <td class="date-cell">{{ e.dateCreation | date:'dd/MM/yyyy' }}</td>
+              <td class="text-center">
+                <span class="active-badge active-badge-on" *ngIf="e.active !== false">
+                  <i class="feather icon-check-circle"></i> Actif
+                </span>
+                <span class="active-badge active-badge-off" *ngIf="e.active === false">
+                  <i class="feather icon-x-circle"></i> Inactif
+                </span>
+              </td>
               <td>
                 <div class="action-btns">
                   <button type="button" class="action-btn action-btn-view" (click)="editEntreprise(e.id)" title="Voir / Modifier">
                     <i class="feather icon-eye"></i>
                   </button>
-                  <button type="button" class="action-btn action-btn-disable" (click)="disableEntreprise(e.id)" title="Désactiver">
+                  <button type="button" class="action-btn action-btn-disable" (click)="disableEntreprise(e.id)" title="Désactiver" *ngIf="e.active !== false">
                     <i class="feather icon-slash"></i>
+                  </button>
+                  <button type="button" class="action-btn action-btn-enable" (click)="enableEntreprise(e.id)" title="Réactiver" *ngIf="e.active === false">
+                    <i class="feather icon-check-circle"></i>
                   </button>
                 </div>
               </td>
             </tr>
             <tr *ngIf="filteredEntreprises.length === 0 && !isLoading">
-              <td colspan="9">
+              <td colspan="10">
                 <div class="empty-state">
                   <i class="feather icon-briefcase empty-icon"></i>
                   <p>Aucune entreprise trouvée</p>
