@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { routes } from 'src/app/core/helpers/routes';
 import { AuthService } from "../../service/auth.service";
@@ -12,7 +12,7 @@ import { ModuleService } from "../../../core/service/Module/module.service";
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.scss'
 })
-export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SigninComponent implements OnInit {
   public routes = routes;
 
   loginForm: FormGroup;
@@ -20,8 +20,6 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
   errorMessage = '';
   rememberMe = false;
 
-  private counterTimers: number[] = [];
-  
   constructor(
     private router: Router, 
     private fb: FormBuilder,
@@ -35,49 +33,6 @@ export class SigninComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit(): void {
-    this.animateCounters();
-  }
-
-  private animateCounters(): void {
-    const elements = document.querySelectorAll<HTMLElement>('.stat-value[data-target]');
-    elements.forEach(el => {
-      const target = parseFloat(el.getAttribute('data-target') || '0');
-      const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
-      const duration = 2200;
-      const startTime = performance.now();
-
-      const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
-
-      let frameId = 0;
-      const animate = (currentTime: number) => {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = easeOutQuart(progress);
-        const rawValue = easedProgress * target;
-        const current = decimals > 0
-          ? Number(rawValue.toFixed(decimals))
-          : Math.floor(rawValue);
-
-        el.textContent = current.toLocaleString('fr-FR', {
-          minimumFractionDigits: decimals,
-          maximumFractionDigits: decimals
-        });
-
-        if (progress < 1) {
-          frameId = requestAnimationFrame(animate);
-        }
-      };
-
-      frameId = requestAnimationFrame(animate);
-      this.counterTimers.push(frameId);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.counterTimers.forEach(id => cancelAnimationFrame(id));
   }
 
   responseLogin!: PermissionDto;

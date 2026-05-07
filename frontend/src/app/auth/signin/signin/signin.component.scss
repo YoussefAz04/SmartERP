@@ -10,51 +10,7 @@
   --text-muted: #6b7280;
 }
 
-// ----- Animations -----
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(30px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes shapeFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50%      { transform: translate(12px, -12px) scale(1.05); }
-}
-
-@keyframes progressGrow {
-  from { width: 0; }
-}
-
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.25); }
-  50%      { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
-}
-
-@keyframes gridPulse {
-  0%, 100% { opacity: 0.03; }
-  50%      { opacity: 0.06; }
-}
-
-@keyframes auroraShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes glowFloat {
-  0%, 100% { transform: translateY(0); opacity: 0.5; }
-  50% { transform: translateY(-10px); opacity: 0.8; }
-}
 
 // =============================================
 // Wrapper – full-page two-column layout
@@ -86,8 +42,6 @@
 .login-stats-panel {
   position: relative;
   background: linear-gradient(140deg, #0f172a, #1e1b4b, #312e81, #1e1b4b);
-  background-size: 220% 220%;
-  animation: auroraShift 16s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,7 +60,6 @@
       linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
     background-size: 48px 48px;
-    animation: gridPulse 6s ease-in-out infinite;
     pointer-events: none;
   }
 
@@ -127,7 +80,6 @@
         background: rgba(99, 102, 241, 0.15);
         top: -120px;
         right: -100px;
-        animation: shapeFloat 14s ease-in-out infinite;
       }
 
       &.shape-2 {
@@ -136,7 +88,6 @@
         background: rgba(139, 92, 246, 0.12);
         bottom: -80px;
         left: -80px;
-        animation: shapeFloat 18s ease-in-out infinite reverse;
       }
 
       &.shape-3 {
@@ -145,7 +96,6 @@
         background: rgba(79, 70, 229, 0.1);
         top: 45%;
         left: 25%;
-        animation: shapeFloat 10s ease-in-out infinite 2s;
       }
     }
   }
@@ -156,7 +106,6 @@
     width: 100%;
     max-width: 580px;
     padding: clamp(1rem, 2vw, 1.5rem);
-    animation: fadeSlideIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
   // ----- Brand header -----
@@ -206,11 +155,9 @@
 
       .highlight {
         background: linear-gradient(90deg, #a78bfa, #c4b5fd, #818cf8);
-        background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: shimmer 4s linear infinite;
       }
     }
 
@@ -240,10 +187,8 @@
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    animation: fadeSlideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: background 0.25s ease, border-color 0.25s ease;
     &:hover {
-      transform: translateY(-4px);
       background: rgba(255, 255, 255, 0.13);
       border-color: rgba(199, 210, 254, 0.45);
       border-top-color: rgba(167, 139, 250, 0.6);
@@ -345,9 +290,6 @@
           height: 100%;
           border-radius: 4px;
           background: linear-gradient(90deg, #6366f1, #818cf8);
-          animation: progressGrow 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-          animation-delay: 0.8s;
-          width: 0;
 
           &.growth-bar {
             background: linear-gradient(90deg, #059669, #34d399);
@@ -420,7 +362,6 @@
       &:hover {
         background: rgba(99, 102, 241, 0.12);
         border-color: rgba(99, 102, 241, 0.3);
-        transform: translateY(-2px);
       }
     }
   }
@@ -435,7 +376,6 @@
   align-items: center;
   justify-content: center;
   padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
-  animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   position: relative;
   overflow-y: auto;
 
@@ -460,7 +400,6 @@
     border-radius: 50%;
     background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.12) 40%, rgba(99, 102, 241, 0) 70%);
     filter: blur(4px);
-    animation: glowFloat 12s ease-in-out infinite;
     pointer-events: none;
   }
 
@@ -489,10 +428,9 @@
     0 8px 24px rgba(79, 70, 229, 0.08),
     0 24px 64px rgba(79, 70, 229, 0.12),
     0 0 0 1px rgba(99, 102, 241, 0.12);
-  transition: box-shadow 0.35s ease, transform 0.35s ease;
+  transition: box-shadow 0.25s ease;
 
   &:hover {
-    transform: translateY(-3px);
     box-shadow:
       0 2px 4px rgba(79, 70, 229, 0.04),
       0 12px 32px rgba(79, 70, 229, 0.12),
@@ -826,13 +764,8 @@
     }
 
     &:hover:not(:disabled) {
-      transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
       background-position: right center;
-
-      .btn-arrow {
-        transform: translateX(4px);
-      }
     }
 
     &:active:not(:disabled) {
@@ -874,16 +807,5 @@
 
   .login-form-panel {
     padding: 24px 16px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
