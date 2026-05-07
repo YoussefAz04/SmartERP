@@ -51,7 +51,7 @@ export class EntrepriseComponent implements OnInit{
     );
   }
 
-  get totalCount(): number { return this.entreprises.filter(e => e.active !== false).length; }
+  get totalCount(): number { return this.entreprises.filter(e => e.active === true).length; }
   get uniqueSectors(): number { return new Set(this.entreprises.map(e => e.secteurActivite).filter(Boolean)).size; }
 
   resetFilters(): void { this.searchTerm = ''; }
