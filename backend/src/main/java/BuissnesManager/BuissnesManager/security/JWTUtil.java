@@ -31,40 +31,32 @@ public class JWTUtil {
     }
 
     /**
-     * ✅ FIXED: Generate JWT token with all required claims including enterpriseId
+     * Generate a minimal JWT token: {sub, enterpriseId, roles, exp}.
+     * Sensitive fields (email, username copy, id) are intentionally excluded
+     * to limit exposure if the token is ever decoded by a third party.
      */
     public String generateToken(User user) {
-        logger.info("🔐 Generating JWT token for user: {} (ID: {})", user.getUsername(), user.getId());
+        logger.info("🔐 Generating JWT token for user: {}", user.getUsername());
 
         Map<String, Object> claims = new HashMap<>();
 
-        // ✅ ADD USER CLAIMS
-        claims.put("id", user.getId());
-        claims.put("username", user.getUsername());
-        claims.put("email", user.getEmail());
-
-        // ✅ ADD ENTERPRISE CLAIM (CRITICAL!)
+        // Minimal payload: only enterpriseId and roles beyond the standard sub/exp
         if (user.getEntreprise() != null) {
             claims.put("enterpriseId", user.getEntreprise().getId());
-            claims.put("entrepriseId", user.getEntreprise().getId());  // Also add French version
-            claims.put("enterpriseName", user.getEntreprise().getNom());
-            logger.info("   ✅ Enterprise added to JWT: {} (ID: {})", 
+            logger.info("   ✅ Enterprise added to JWT: {} (ID: {})",
                 user.getEntreprise().getNom(), user.getEntreprise().getId());
         } else {
             logger.warn("   ⚠️ WARNING: User has NO enterprise assigned!");
         }
 
-        // ✅ ADD ROLES/AUTHORITIES
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             List<String> roleNames = user.getRoles().stream()
                     .map(Role::getName)
                     .collect(Collectors.toList());
-            
             claims.put("roles", roleNames);
             logger.info("   ✅ Roles added to JWT: {}", roleNames);
         }
 
-        // ✅ BUILD TOKEN
         long now = System.currentTimeMillis();
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -103,19 +95,16 @@ public class JWTUtil {
     }
 
     /**
-     * Get user ID from token
+     * Get user ID from token — no longer stored in token; kept for API compatibility, always returns null.
+     * @deprecated Retrieve user ID from the database using the authenticated username instead.
      */
+    @Deprecated
     public Long getUserIdFromToken(String token) {
-        Claims claims = extractClaims(token);
-        if (claims != null && claims.containsKey("id")) {
-            Object id = claims.get("id");
-            return id instanceof Long ? (Long) id : ((Integer) id).longValue();
-        }
         return null;
     }
 
     /**
-     * ✅ NEW: Get enterprise ID from token
+     * Get enterprise ID from token
      */
     public Long getEnterpriseIdFromToken(String token) {
         Claims claims = extractClaims(token);
@@ -167,19 +156,13 @@ public class JWTUtil {
     }
 
     /**
-     * Generate a JWT token for a user but with an overridden enterprise context.
+     * Generate a minimal JWT token for a user with an overridden enterprise context.
      * Used exclusively by the super-admin enterprise-switch endpoint.
      */
     public String generateTokenWithEnterprise(User user, Long enterpriseId, String enterpriseName) {
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put("id", user.getId());
-        claims.put("username", user.getUsername());
-        claims.put("email", user.getEmail());
-
         claims.put("enterpriseId", enterpriseId);
-        claims.put("entrepriseId", enterpriseId);
-        claims.put("enterpriseName", enterpriseName != null ? enterpriseName : "");
 
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             List<String> roleNames = user.getRoles().stream()

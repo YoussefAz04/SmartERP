@@ -51,8 +51,8 @@ public class SecurityConfig {
         // Allow all headers including Authorization
         config.setAllowedHeaders(Collections.singletonList("*"));
 
-        // Expose Authorization header in response
-        config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        // Expose Authorization header and Set-Cookie in response
+        config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Set-Cookie"));
 
         // Allow credentials (cookies, auth headers)
         config.setAllowCredentials(true);

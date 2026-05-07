@@ -6,16 +6,22 @@ import BuissnesManager.BuissnesManager.dto.RegisterRequest;
 import BuissnesManager.BuissnesManager.dto.RegisterResponse;
 import BuissnesManager.BuissnesManager.dto.Response;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
+import BuissnesManager.BuissnesManager.entity.RefreshToken;
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.RoleType;
 import BuissnesManager.BuissnesManager.entity.User;
 import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
+import BuissnesManager.BuissnesManager.repository.RefreshTokenRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.AuditLogService;
 import BuissnesManager.BuissnesManager.service.PermissionService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,8 +29,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +44,14 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AuthController {
+
+    /** Access-token cookie TTL in seconds (matches JWT expiration: 15 minutes). */
+    private static final int ACCESS_COOKIE_MAX_AGE = 15 * 60;
+
+    /** Refresh-token cookie TTL in seconds (7 days). */
+    private static final int REFRESH_COOKIE_MAX_AGE = 7 * 24 * 60 * 60;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -62,6 +76,66 @@ public class AuthController {
 
     @Autowired
     private AuditLogService auditLogService;
+
+    @Autowired
+    private RefreshTokenRepo refreshTokenRepo;
+
+    // ───────────────────────────────────────────────────────────
+    // Cookie helpers
+    // ───────────────────────────────────────────────────────────
+
+    private Cookie buildAccessCookie(String token) {
+        Cookie cookie = new Cookie("access_token", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // set to true in production (HTTPS)
+        cookie.setPath("/");
+        cookie.setMaxAge(ACCESS_COOKIE_MAX_AGE);
+        // SameSite=Strict via response header — Cookie API does not expose it directly
+        return cookie;
+    }
+
+    private Cookie buildRefreshCookie(String token) {
+        Cookie cookie = new Cookie("refresh_token", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // set to true in production (HTTPS)
+        cookie.setPath("/api/auth/refresh");
+        cookie.setMaxAge(REFRESH_COOKIE_MAX_AGE);
+        return cookie;
+    }
+
+    private Cookie buildClearCookie(String name, String path) {
+        Cookie cookie = new Cookie(name, "");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath(path);
+        cookie.setMaxAge(0);
+        return cookie;
+    }
+
+    private void addSameSiteStrict(HttpServletResponse response) {
+        // Append SameSite=Strict to every Set-Cookie header issued by this response.
+        // The Servlet API does not natively expose SameSite, so we rewrite the headers.
+        java.util.Collection<String> setCookieHeaders = response.getHeaders("Set-Cookie");
+        boolean first = true;
+        for (String header : setCookieHeaders) {
+            if (!header.contains("SameSite")) {
+                header = header + "; SameSite=Strict";
+            }
+            if (first) {
+                response.setHeader("Set-Cookie", header);
+                first = false;
+            } else {
+                response.addHeader("Set-Cookie", header);
+            }
+        }
+    }
+
+    private RefreshToken createRefreshToken(User user) {
+        refreshTokenRepo.revokeAllByUser(user);
+        String rawToken = UUID.randomUUID().toString();
+        RefreshToken rt = new RefreshToken(rawToken, user, Instant.now().plusSeconds(REFRESH_COOKIE_MAX_AGE));
+        return refreshTokenRepo.save(rt);
+    }
 
     /**
      * Register a new user
@@ -142,11 +216,13 @@ public class AuthController {
     }
 
     /**
-     * Login user and return JWT token
+     * Login user — sets httpOnly access_token + refresh_token cookies and returns
+     * user info (without the raw token) in the JSON body.
      * POST /api/auth/login
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+    @Transactional
+    public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse httpResponse) {
         System.out.println("✅ Login endpoint hit for username: " + request.getUsername());
         
         List<PermissionDto> permissionDtoList = new ArrayList<>();
@@ -191,7 +267,8 @@ public class AuthController {
                 System.out.println("✅ Password rehashed (BCrypt upgrade) for user: " + user.getUsername());
             }
 
-            String token = jwtUtil.generateToken(user);
+            String accessToken = jwtUtil.generateToken(user);
+            RefreshToken refreshToken = createRefreshToken(user);
             
             System.out.println("✅ User connected: " + user.getUsername());
 
@@ -210,48 +287,45 @@ public class AuthController {
                 permissionDtoList = userPermissions;
             }
 
-            // Build response
+            // Build response — include token in body for backwards compatibility
+            // (the Angular app still reads it from the JSON response to populate
+            //  the in-memory BehaviorSubject / localStorage during migration).
             Response response = new Response();
             response.setId(user.getId());
             response.setUsername(user.getUsername());
             response.setEmail(user.getEmail());
             response.setName(user.getUsername());
-            response.setToken(token);
+            response.setToken(accessToken);
             response.setEnabled(user.isEnabled());
             
             List<String> roleNames = new ArrayList<>();
             if (user.getRoles() != null && !user.getRoles().isEmpty()) {
                 for (Role role : user.getRoles()) {
-                    roleNames.add(role.getName().toUpperCase());  // ✅ FIX: Convert to uppercase
+                    roleNames.add(role.getName().toUpperCase());
                 }
             }
             response.setRoles(roleNames);
             response.setPermission(permissionDtoList);
 
-            // ✅ COMPUTE NUMERIC roleId: SUPER_ADMIN=0, ADMIN=1, EMPLOYEE=2
-            // These values must match the frontend constants in entreprise.component.ts
+            // COMPUTE NUMERIC roleId: SUPER_ADMIN=0, ADMIN=1, EMPLOYEE=2
             final int ROLE_SUPER_ADMIN = 0;
             final int ROLE_ADMIN = 1;
             final int ROLE_EMPLOYEE = 2;
-            int computedRoleId = ROLE_EMPLOYEE; // default to least-privileged role
+            int computedRoleId = ROLE_EMPLOYEE;
             if (user.getRoles() != null) {
                 for (Role role : user.getRoles()) {
                     if (role.getRoleType() == RoleType.SUPER_ADMIN) {
                         computedRoleId = ROLE_SUPER_ADMIN;
-                        break; // highest privilege, no need to check further
+                        break;
                     } else if (role.getRoleType() == RoleType.ADMIN && computedRoleId > ROLE_ADMIN) {
-                        // only elevate to ADMIN if not already at a higher-privilege level
                         computedRoleId = ROLE_ADMIN;
                     }
                 }
             }
             response.setRoleId(computedRoleId);
 
-            // ✅ SET ENTERPRISE ID - Get from user's assigned enterprise
             Long entrepriseId = null;
             String entrepriseName = null;
-
-            // ✅ GET FROM USER IF AVAILABLE
             if (user.getEntreprise() != null) {
                 entrepriseId = user.getEntreprise().getId();
                 entrepriseName = user.getEntreprise().getNom();
@@ -264,7 +338,11 @@ public class AuthController {
             response.setEntrepriseName(entrepriseName);
 
             System.out.println("✅ Login successful for: " + user.getUsername());
-            System.out.println("✅ Enterprise ID in response: " + entrepriseId);
+
+            // Set httpOnly cookies
+            httpResponse.addCookie(buildAccessCookie(accessToken));
+            httpResponse.addCookie(buildRefreshCookie(refreshToken.getToken()));
+            addSameSiteStrict(httpResponse);
 
             auditLogService.log("LOGIN",
                     "Connexion réussie pour l'utilisateur: " + user.getUsername(),
@@ -297,6 +375,81 @@ public class AuthController {
             body.put("message", "Identifiants invalides. Veuillez réessayer.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
         }
+    }
+
+    /**
+     * Refresh access token using the refresh_token httpOnly cookie.
+     * POST /api/auth/refresh
+     * Returns a new access_token cookie and updated JSON body.
+     */
+    @PostMapping("/refresh")
+    @Transactional
+    public ResponseEntity<?> refresh(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        String rawRefreshToken = null;
+        if (httpRequest.getCookies() != null) {
+            for (Cookie cookie : httpRequest.getCookies()) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    rawRefreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "MISSING_REFRESH_TOKEN"));
+        }
+
+        Optional<RefreshToken> rtOpt = refreshTokenRepo.findByToken(rawRefreshToken);
+        if (rtOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "INVALID_REFRESH_TOKEN"));
+        }
+
+        RefreshToken rt = rtOpt.get();
+        if (rt.isRevoked() || rt.isExpired()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "REFRESH_TOKEN_EXPIRED"));
+        }
+
+        User user = rt.getUser();
+        if (!user.isEnabled()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ACCOUNT_DISABLED"));
+        }
+
+        // Issue new access token; rotate refresh token
+        String newAccessToken = jwtUtil.generateToken(user);
+        RefreshToken newRefreshToken = createRefreshToken(user);
+
+        httpResponse.addCookie(buildAccessCookie(newAccessToken));
+        httpResponse.addCookie(buildRefreshCookie(newRefreshToken.getToken()));
+        addSameSiteStrict(httpResponse);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("token", newAccessToken);
+        body.put("username", user.getUsername());
+        return ResponseEntity.ok(body);
+    }
+
+    /**
+     * Logout — revokes the refresh token and clears auth cookies.
+     * POST /api/auth/logout
+     */
+    @PostMapping("/logout")
+    @Transactional
+    public ResponseEntity<?> logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        if (httpRequest.getCookies() != null) {
+            for (Cookie cookie : httpRequest.getCookies()) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    refreshTokenRepo.findByToken(cookie.getValue())
+                            .ifPresent(rt -> {
+                                rt.setRevoked(true);
+                                refreshTokenRepo.save(rt);
+                            });
+                    break;
+                }
+            }
+        }
+        httpResponse.addCookie(buildClearCookie("access_token", "/"));
+        httpResponse.addCookie(buildClearCookie("refresh_token", "/api/auth/refresh"));
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
 
     /**
