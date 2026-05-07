@@ -66,7 +66,7 @@ public class UserService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
 
         Entreprise entreprise = entrepriseRepo.findById(request.getEnterpriseId())
@@ -133,7 +133,7 @@ public class UserService {
         user.setUsername(username);
         user.setEmail(email);
         user.setPhone(phone);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setEnabled(true);
         user.setEntreprise(entrepriseRepo.findById(enterpriseId)
                 .orElseThrow(() -> new RuntimeException("Enterprise not found")));
@@ -151,7 +151,7 @@ public class UserService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
 
         return userRepository.save(user);
@@ -169,7 +169,7 @@ public class UserService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
 
         Entreprise entreprise = entrepriseRepo.findById(idEntreprise)
