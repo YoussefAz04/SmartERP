@@ -115,13 +115,32 @@
     .brand-logo {
       display: flex;
       align-items: center;
+      gap: 12px;
       margin-bottom: 32px;
 
-      .brand-logo-img {
-        height: 52px;
-        width: auto;
-        object-fit: contain;
-        filter: drop-shadow(0 0 16px rgba(129, 140, 248, 0.4));
+      .brand-icon-svg {
+        filter: drop-shadow(0 0 16px rgba(129, 140, 248, 0.5));
+        flex-shrink: 0;
+      }
+
+      .brand-text {
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.3px;
+      }
+
+      .brand-smart {
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .brand-erp {
+        font-weight: 800;
+        background: linear-gradient(135deg, #818cf8, #c4b5fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
     }
 
@@ -428,12 +447,35 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
 
-      .login-logo-img {
-        height: 56px;
-        width: auto;
-        object-fit: contain;
-        filter: drop-shadow(0 4px 10px rgba(79, 70, 229, 0.2));
+      .login-logo-svg {
+        filter: drop-shadow(0 4px 10px rgba(79, 70, 229, 0.25));
+        flex-shrink: 0;
+      }
+
+      .login-logo-text {
+        font-size: clamp(1.45rem, 2.1vw, 1.62rem);
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: baseline;
+      }
+
+      .login-logo-smart {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+      }
+
+      .login-logo-erp {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 800;
       }
     }
 
