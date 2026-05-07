@@ -47,7 +47,8 @@ public class PasswordEncoderConfig {
             @Override
             public boolean upgradeEncoding(String encodedPassword) {
                 // Anything not already BCrypt-hashed should be upgraded.
-                return encodedPassword == null || !isBCrypt(encodedPassword);
+                // A null/blank stored password cannot be re-encoded here.
+                return encodedPassword != null && !isBCrypt(encodedPassword);
             }
 
             private boolean isBCrypt(String encoded) {
