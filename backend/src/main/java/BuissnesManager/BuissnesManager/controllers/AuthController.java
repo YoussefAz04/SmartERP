@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.time.LocalDateTime;
 
 @RestController
@@ -80,6 +82,9 @@ public class AuthController {
     @Autowired
     private RefreshTokenRepo refreshTokenRepo;
 
+    @Value("${cookie.secure:false}")
+    private boolean cookieSecure;
+
     // ───────────────────────────────────────────────────────────
     // Cookie helpers
     // ───────────────────────────────────────────────────────────
@@ -87,7 +92,7 @@ public class AuthController {
     private Cookie buildAccessCookie(String token) {
         Cookie cookie = new Cookie("access_token", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // set to true in production (HTTPS)
+        cookie.setSecure(cookieSecure);
         cookie.setPath("/");
         cookie.setMaxAge(ACCESS_COOKIE_MAX_AGE);
         // SameSite=Strict via response header — Cookie API does not expose it directly
@@ -97,7 +102,7 @@ public class AuthController {
     private Cookie buildRefreshCookie(String token) {
         Cookie cookie = new Cookie("refresh_token", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // set to true in production (HTTPS)
+        cookie.setSecure(cookieSecure);
         cookie.setPath("/api/auth/refresh");
         cookie.setMaxAge(REFRESH_COOKIE_MAX_AGE);
         return cookie;
@@ -106,7 +111,7 @@ public class AuthController {
     private Cookie buildClearCookie(String name, String path) {
         Cookie cookie = new Cookie(name, "");
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(cookieSecure);
         cookie.setPath(path);
         cookie.setMaxAge(0);
         return cookie;
@@ -130,9 +135,13 @@ public class AuthController {
         }
     }
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     private RefreshToken createRefreshToken(User user) {
         refreshTokenRepo.revokeAllByUser(user);
-        String rawToken = UUID.randomUUID().toString();
+        byte[] bytes = new byte[32];
+        SECURE_RANDOM.nextBytes(bytes);
+        String rawToken = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
         RefreshToken rt = new RefreshToken(rawToken, user, Instant.now().plusSeconds(REFRESH_COOKIE_MAX_AGE));
         return refreshTokenRepo.save(rt);
     }
@@ -396,22 +405,22 @@ public class AuthController {
         }
 
         if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "MISSING_REFRESH_TOKEN"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "AUTHENTICATION_FAILED"));
         }
 
         Optional<RefreshToken> rtOpt = refreshTokenRepo.findByToken(rawRefreshToken);
         if (rtOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "INVALID_REFRESH_TOKEN"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "AUTHENTICATION_FAILED"));
         }
 
         RefreshToken rt = rtOpt.get();
         if (rt.isRevoked() || rt.isExpired()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "REFRESH_TOKEN_EXPIRED"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "AUTHENTICATION_FAILED"));
         }
 
         User user = rt.getUser();
         if (!user.isEnabled()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ACCOUNT_DISABLED"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "AUTHENTICATION_FAILED"));
         }
 
         // Issue new access token; rotate refresh token

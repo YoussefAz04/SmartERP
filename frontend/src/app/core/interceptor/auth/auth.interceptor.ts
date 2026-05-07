@@ -57,7 +57,12 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private isRefreshRequest(req: HttpRequest<unknown>): boolean {
-    return req.url.includes('/api/auth/refresh') || req.url.includes('/api/auth/login');
+    try {
+      const url = new URL(req.url, window.location.origin);
+      return url.pathname === '/api/auth/refresh' || url.pathname === '/api/auth/login';
+    } catch {
+      return req.url.endsWith('/api/auth/refresh') || req.url.endsWith('/api/auth/login');
+    }
   }
 
   private handleUnauthorized(
