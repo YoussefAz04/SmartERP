@@ -650,7 +650,7 @@ $amber-500:  #f59e0b;
 
 .chart-header { margin-bottom: 20px; }
 
-// Top accent line on chart cards
+// Top accent line on chart cards — each chart gets its own distinct gradient
 .chart-card::before {
   content: '';
   position: absolute;
@@ -659,6 +659,21 @@ $amber-500:  #f59e0b;
   border-radius: 24px 24px 0 0;
   background: linear-gradient(90deg, $blue-700, $blue-500 50%, $cyan-500);
   opacity: .8;
+}
+
+// Sales chart: blue → emerald
+.chart-card.chart-sales::before {
+  background: linear-gradient(90deg, #2563EB, #1d97e0 50%, #10B981);
+}
+
+// Forecast chart: amber → purple
+.chart-card.chart-forecast::before {
+  background: linear-gradient(90deg, #F59E0B, #d46b14 50%, #9333EA);
+}
+
+// Donut chart: rose → teal
+.chart-card.chart-donut::before {
+  background: linear-gradient(90deg, #E11D48, #9b1fa0 50%, #0D9488);
 }
 
 

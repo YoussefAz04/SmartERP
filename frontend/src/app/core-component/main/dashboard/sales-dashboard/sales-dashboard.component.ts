@@ -80,7 +80,7 @@ export class SalesDashboardComponent {
           enabled: false,
         },
       },
-      colors: ['#4f6ef7'],
+      colors: ['#7C3AED'],
       dataLabels: {
         enabled: false,
       },
