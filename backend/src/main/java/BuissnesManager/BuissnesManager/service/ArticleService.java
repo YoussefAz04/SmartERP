@@ -28,6 +28,8 @@ public class ArticleService {
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private AuditLogService auditLogService;
 
     public Article createArticle(ArticleDto dto) {
         Article article = new Article();
@@ -70,6 +72,8 @@ public class ArticleService {
         }
 
         notificationService.createArticleAddedNotification(saved, saved.getEntreprise());
+        auditLogService.log("ARTICLE_CREATED",
+                "Article créé: " + saved.getNom() + " (ref=" + saved.getReference() + ", id=" + saved.getId() + ")");
 
         return saved;
     }
@@ -117,7 +121,10 @@ public class ArticleService {
                     .orElseThrow(() -> new RuntimeException("Mesure non trouvée"));
             article.setMesure(mesure);
         }
-        return articleRepository.save(article);
+        Article updated = articleRepository.save(article);
+        auditLogService.log("ARTICLE_UPDATED",
+                "Article mis à jour: " + updated.getNom() + " (ref=" + updated.getReference() + ", id=" + updated.getId() + ")");
+        return updated;
     }
 
     public List<CategorieArticle> getAllCategories() {
@@ -129,9 +136,10 @@ public class ArticleService {
     }
 
     public void deleteArticle(Long id) {
-        if (!articleRepository.existsById(id)) {
-            throw new RuntimeException("Article non trouvé avec id: " + id);
-        }
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article non trouvé avec id: " + id));
         articleRepository.deleteById(id);
+        auditLogService.log("ARTICLE_DELETED",
+                "Article supprimé: " + article.getNom() + " (ref=" + article.getReference() + ", id=" + id + ")");
     }
 }

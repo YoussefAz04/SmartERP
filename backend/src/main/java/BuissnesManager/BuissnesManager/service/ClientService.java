@@ -46,6 +46,8 @@ public class ClientService {
 
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private AuditLogService auditLogService;
 
     // ✅ ADD CLIENT
     @Transactional
@@ -63,6 +65,8 @@ public class ClientService {
         if (saved.getEntreprise() != null) {
             notificationService.createClientAddedNotification(saved, saved.getEntreprise());
         }
+        auditLogService.log("CLIENT_CREATED",
+                "Client créé: " + saved.getNom() + " " + saved.getPrenom() + " (id=" + saved.getId() + ")");
         return saved;
     }
 
@@ -89,9 +93,8 @@ public class ClientService {
     // ✅ DELETE CLIENT
     @Transactional
     public void deleteClient(Long id) {
-        if (!clientRepo.existsById(id)) {
-            throw new RuntimeException("Client not found with id: " + id);
-        }
+        Client client = clientRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
         // Detach any article_vente rows that reference this client before deletion
         List<ArticleVente> relatedArticles = articleVenteRepo.findByClientId(id);
         for (ArticleVente av : relatedArticles) {
@@ -102,6 +105,8 @@ public class ClientService {
         factureDeVenteRepo.detachClient(id);
         commandeVenteRepository.detachClient(id);
         clientRepo.deleteById(id);
+        auditLogService.log("CLIENT_DELETED",
+                "Client supprimé: " + client.getNom() + " " + client.getPrenom() + " (id=" + id + ")");
     }
 
     // ✅ UPDATE CLIENT
@@ -124,7 +129,10 @@ public class ClientService {
             existing.setCategorieClient(categorie);
         }
 
-        return clientRepo.save(existing);
+        Client updated = clientRepo.save(existing);
+        auditLogService.log("CLIENT_UPDATED",
+                "Client mis à jour: " + updated.getNom() + " " + updated.getPrenom() + " (id=" + updated.getId() + ")");
+        return updated;
     }
 
     // ✅ ADD CATEGORY CLIENT
