@@ -304,7 +304,10 @@ $modal-header-bg:     linear-gradient(135deg, #1e3a8a 0%, $primary 100%) !defaul
     &:nth-child(3) { animation: kpiEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.3s both; }
     &:nth-child(4) { animation: kpiEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.4s both; }
 
-    &:hover { transform: translateY(-6px) scale(1.02); }
+    &:hover {
+      transform: translateY(-6px) scale(1.02);
+      .kpi-icon-wrap { animation: iconFloat 4s ease-in-out infinite; }
+    }
 
     .kpi-bg-shape {
       position: absolute;
@@ -335,14 +338,13 @@ $modal-header-bg:     linear-gradient(135deg, #1e3a8a 0%, $primary 100%) !defaul
       backdrop-filter: blur(6px);
       border: 1.5px solid rgba(255,255,255,0.3);
       box-shadow: 0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25);
-      animation: iconFloat 4s ease-in-out infinite;
+      transition: transform 0.3s ease;
 
       .kpi-icon-ring {
         position: absolute;
         inset: -5px;
         border-radius: 50%;
         border: 1.5px solid rgba(255,255,255,0.2);
-        animation: ringPulse 3s ease-out infinite;
       }
 
       i { font-size: 1.5rem; color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
