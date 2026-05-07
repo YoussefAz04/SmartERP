@@ -40,11 +40,36 @@
           </option>
         </select>
       </div>
+      <div class="al-date-range">
+        <div class="al-date-input-wrap">
+          <i class="feather icon-calendar al-date-cal-icon"></i>
+          <input
+            type="date"
+            class="al-date-input"
+            [(ngModel)]="filterDateFrom"
+            (ngModelChange)="applyFilters()"
+            title="Date de début"
+            aria-label="Filtrer à partir du"
+          />
+        </div>
+        <span class="al-date-sep">–</span>
+        <div class="al-date-input-wrap">
+          <i class="feather icon-calendar al-date-cal-icon"></i>
+          <input
+            type="date"
+            class="al-date-input"
+            [(ngModel)]="filterDateTo"
+            (ngModelChange)="applyFilters()"
+            title="Date de fin"
+            aria-label="Filtrer jusqu'au"
+          />
+        </div>
+      </div>
       <button
         type="button"
         class="al-btn-reset"
-        *ngIf="searchText || selectedAction"
-        (click)="searchText = ''; selectedAction = ''; applyFilters()"
+        *ngIf="hasActiveFilters"
+        (click)="resetFilters()"
         title="Réinitialiser les filtres"
       >
         <i class="feather icon-x"></i>

@@ -170,6 +170,7 @@ $shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
 .al-search-box {
   flex: 1;
   min-width: 220px;
+  height: 42px;
   display: flex;
   align-items: center;
   gap: .5rem;
@@ -177,7 +178,7 @@ $shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
   border: 1.5px solid $border;
   border-radius: 10px;
   padding: 0 1rem;
-  transition: all .3s ease;
+  transition: border-color .3s ease, box-shadow .3s ease, background .3s ease;
 
   &:focus-within {
     border-color: $indigo;
@@ -223,7 +224,7 @@ $shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
   border-radius: 10px;
   padding: 0 .9rem;
   height: 42px;
-  transition: all .3s ease;
+  transition: border-color .3s ease, box-shadow .3s ease, background .3s ease;
 
   &:focus-within {
     border-color: $indigo;
@@ -262,7 +263,8 @@ $shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
   background: $slate-light;
   color: $text-body;
   cursor: pointer;
-  transition: all .25s ease;
+  transition: background .25s ease, border-color .25s ease, color .25s ease;
+  flex-shrink: 0;
 
   i { font-size: .9rem; }
 
@@ -270,6 +272,65 @@ $shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
     background: $red-light;
     border-color: rgba($red, .3);
     color: $red;
+  }
+}
+
+// ============================================================
+// DATE RANGE FILTER
+// ============================================================
+.al-date-range {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-shrink: 0;
+}
+
+.al-date-sep {
+  color: $text-muted;
+  font-size: .85rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.al-date-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: $slate-light;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  padding: 0 .75rem;
+  height: 42px;
+  transition: border-color .3s ease, box-shadow .3s ease, background .3s ease;
+
+  &:focus-within {
+    border-color: $indigo;
+    box-shadow: 0 0 0 3px rgba($indigo, .1);
+    background: white;
+  }
+}
+
+.al-date-cal-icon {
+  color: $text-muted;
+  font-size: .85rem;
+  flex-shrink: 0;
+
+  .al-date-input-wrap:focus-within & { color: $indigo; }
+}
+
+.al-date-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: .85rem;
+  color: $text-h;
+  cursor: pointer;
+  min-width: 120px;
+
+  &::-webkit-calendar-picker-indicator {
+    opacity: .5;
+    cursor: pointer;
+    &:hover { opacity: .9; }
   }
 }
 
@@ -543,9 +604,19 @@ $shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
 
     .al-search-box { min-width: 100%; }
 
-    .al-toolbar-right { width: 100%; }
+    .al-toolbar-right {
+      width: 100%;
+      flex-wrap: wrap;
+    }
 
     .al-action-select { flex: 1; }
+
+    .al-date-range {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .al-date-input-wrap { flex: 1; min-width: 130px; }
   }
 
   .al-table thead tr th {
