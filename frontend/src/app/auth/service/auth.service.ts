@@ -62,7 +62,11 @@ export class AuthService {
   }
 
   logout(): void {
-    
+    // Revoke the refresh token server-side and clear auth cookies
+    this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).subscribe({
+      error: () => { /* ignore network errors during logout */ }
+    });
+
     localStorage.removeItem('authToken');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
