@@ -1,120 +1,127 @@
-<div class="account-content">
-    <div class="login-wrapper register-wrap bg-img">
-        <div class="login-content">
-            <form [formGroup]="registerForm">
-                <div class="login-userset">
-                    <div class="login-logo logo-normal">
-                        <img src="assets/img/logo.png" alt="img">
-                    </div>
-                    <a [routerLink]="routes.adminDashboard" class="login-logo logo-white">
-                        <img src="assets/img/logo-white.png" alt="">
-                    </a>
-                    <div class="login-userheading">
-                        <h3>Register</h3>
-                        <h4>Create New Dreamspos Account</h4>
-                    </div>
-                    <div class="form-login">
-                        <label>Name</label>
-                        <div class="form-addons">
-                            <input type="text" class="form-control" formControlName="name" placeholder="Enter your name">
-                            <img src="assets/img/icons/user-icon.svg" alt="img">
-                        </div>
-                        <small *ngIf="f['name'].invalid && f['name'].touched" class="text-danger">
-                            Name is required (min 3 characters)
-                        </small>
-                    </div>
-                    <div class="form-login">
-                        <label>Email Address</label>
-                        <div class="form-addons">
-                            <input type="email" class="form-control" formControlName="email" placeholder="Enter your email">
-                            <img src="assets/img/icons/mail.svg" alt="img">
-                        </div>
-                        <small *ngIf="f['email'].invalid && f['email'].touched" class="text-danger">
-                            Valid email is required
-                        </small>
-                    </div>
-                    <div class="form-login">
-                        <label>Password</label>
-                        <div class="pass-group">
-                            <input [type]="password[1] ? 'text' : 'password'" class="pass-input" formControlName="password" placeholder="Min 6 characters">
-                            <span class="fas toggle-password" [ngClass]="password[1] ? 'fa-eye' : 'fa-eye-slash'"
-                                (click)="togglePassword(1)"></span>
-                        </div>
-                        <small *ngIf="f['password'].invalid && f['password'].touched" class="text-danger">
-                            Password is required (min 6 characters)
-                        </small>
-                    </div>
-                    <div class="form-login">
-                        <label>Confirm Password</label>
-                        <div class="pass-group">
-                            <input [type]="password[2] ? 'text' : 'password'" class="pass-input" formControlName="confirmPassword" placeholder="Confirm your password">
-                            <span class="fas toggle-passwords" [ngClass]="password[2] ? 'fa-eye' : 'fa-eye-slash'"
-                                (click)="togglePassword(2)"></span>
-                        </div>
-                        <small *ngIf="registerForm.errors?.['passwordMismatch'] && f['confirmPassword'].touched" class="text-danger">
-                            Passwords do not match
-                        </small>
-                    </div>
-                    <div class="form-login authentication-check">
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <div class="custom-control custom-checkbox custom-class-check justify-content-start">
-                                    <div class="custom-control custom-checkbox custom-class-check">
-                                        <label class="checkboxs ps-4 mb-0 pb-0 line-height-1">
-                                            <input type="checkbox">
-                                            <span class="checkmarks"></span>I agree to the <a href="javascript:void(0);"
-                                                class="hover-a">Terms & Privacy</a>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="register-page-wrapper">
+  <!-- Background shapes -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+  <div class="grid-overlay"></div>
 
-                    <div *ngIf="successMessage" class="alert alert-success" role="alert">
-                        ✅ {{ successMessage }}
-                    </div>
-
-                    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-                        ❌ {{ errorMessage }}
-                    </div>
-
-                    <div class="form-login">
-                        <button type="button" class="btn btn-login" (click)="navigation()" [disabled]="isLoading">
-                            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
-                        </button>
-                    </div>
-                    <div class="signinform">
-                        <h4>Already have an account ? <a routerLink="/auth/signin" class="hover-a">Sign In Instead</a></h4>
-                    </div>
-                    <div class="form-setlogin or-text">
-                        <h4>OR</h4>
-                    </div>
-                    <div class="form-sociallink">
-                        <ul class="d-flex">
-                            <li>
-                                <a href="javascript:void(0);" class="facebook-logo">
-                                    <img src="assets/img/icons/facebook-logo.svg" alt="Facebook">
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <img src="assets/img/icons/google.png" alt="Google">
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="apple-logo">
-                                    <img src="assets/img/icons/apple-logo.svg" alt="Apple">
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="my-4 d-flex justify-content-center align-items-center copyright-text">
-                  
-                    </div>
-                </div>
-            </form>
-        </div>
+  <div class="register-card">
+    <!-- Header -->
+    <div class="card-header">
+      <div class="brand-logo">
+        <svg width="40" height="40" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="regLogoGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+          <rect width="36" height="36" rx="10" fill="url(#regLogoGrad)"/>
+          <rect x="7" y="22" width="5" height="8" rx="2" fill="rgba(255,255,255,0.42)"/>
+          <rect x="15.5" y="16" width="5" height="14" rx="2" fill="rgba(255,255,255,0.70)"/>
+          <rect x="24" y="8" width="5" height="22" rx="2" fill="white"/>
+        </svg>
+        <span class="brand-text"><span class="brand-smart">Smart</span><span class="brand-erp">ERP</span></span>
+      </div>
+      <h2>Créer un compte</h2>
+      <p>Rejoignez SmartERP pour gérer votre entreprise intelligemment</p>
     </div>
+
+    <!-- Form -->
+    <form [formGroup]="registerForm" class="modern-form">
+
+      <!-- Name -->
+      <div class="field-group">
+        <div class="input-wrapper" [class.input-error]="f['name'].invalid && f['name'].touched">
+          <i class="fas fa-user field-icon"></i>
+          <input type="text" id="reg-name" formControlName="name" class="modern-input" placeholder=" " autocomplete="name">
+          <label for="reg-name" class="floating-label">Nom complet</label>
+        </div>
+        <span class="field-error" *ngIf="f['name'].invalid && f['name'].touched">
+          <i class="fas fa-info-circle"></i> Nom requis (3 caractères minimum)
+        </span>
+      </div>
+
+      <!-- Email -->
+      <div class="field-group">
+        <div class="input-wrapper" [class.input-error]="f['email'].invalid && f['email'].touched">
+          <i class="fas fa-envelope field-icon"></i>
+          <input type="email" id="reg-email" formControlName="email" class="modern-input" placeholder=" " autocomplete="email">
+          <label for="reg-email" class="floating-label">Adresse e-mail</label>
+        </div>
+        <span class="field-error" *ngIf="f['email'].invalid && f['email'].touched">
+          <i class="fas fa-info-circle"></i> Adresse e-mail valide requise
+        </span>
+      </div>
+
+      <!-- Password -->
+      <div class="field-group">
+        <div class="input-wrapper" [class.input-error]="f['password'].invalid && f['password'].touched">
+          <i class="fas fa-lock field-icon"></i>
+          <input [type]="password[1] ? 'text' : 'password'" id="reg-password" formControlName="password"
+                 class="modern-input" placeholder=" " autocomplete="new-password">
+          <label for="reg-password" class="floating-label">Mot de passe</label>
+          <span class="toggle-password fas"
+                [class.fa-eye]="!password[1]"
+                [class.fa-eye-slash]="password[1]"
+                role="button" tabindex="0"
+                (click)="togglePassword(1)"
+                (keydown.enter)="togglePassword(1)"
+                (keydown.space)="togglePassword(1)">
+          </span>
+        </div>
+        <span class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
+          <i class="fas fa-info-circle"></i> Mot de passe requis (6 caractères minimum)
+        </span>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="field-group">
+        <div class="input-wrapper" [class.input-error]="registerForm.errors?.['passwordMismatch'] && f['confirmPassword'].touched">
+          <i class="fas fa-lock field-icon"></i>
+          <input [type]="password[2] ? 'text' : 'password'" id="reg-confirm" formControlName="confirmPassword"
+                 class="modern-input" placeholder=" " autocomplete="new-password">
+          <label for="reg-confirm" class="floating-label">Confirmer le mot de passe</label>
+          <span class="toggle-password fas"
+                [class.fa-eye]="!password[2]"
+                [class.fa-eye-slash]="password[2]"
+                role="button" tabindex="0"
+                (click)="togglePassword(2)"
+                (keydown.enter)="togglePassword(2)"
+                (keydown.space)="togglePassword(2)">
+          </span>
+        </div>
+        <span class="field-error" *ngIf="registerForm.errors?.['passwordMismatch'] && f['confirmPassword'].touched">
+          <i class="fas fa-info-circle"></i> Les mots de passe ne correspondent pas
+        </span>
+      </div>
+
+      <!-- Success / Error banners -->
+      <div *ngIf="successMessage" class="success-banner">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+      <div *ngIf="errorMessage" class="error-banner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Submit -->
+      <button type="button" class="btn-submit" (click)="navigation()" [disabled]="isLoading"
+              [attr.aria-label]="isLoading ? 'Création en cours' : 'Créer le compte'">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"></span>
+        <span>{{ isLoading ? 'Création en cours...' : 'Créer le compte' }}</span>
+        <i *ngIf="!isLoading" class="fas fa-arrow-right btn-arrow"></i>
+      </button>
+
+      <!-- Sign in link -->
+      <div class="form-footer">
+        <span>Vous avez déjà un compte ?</span>
+        <a routerLink="/auth/signin" class="signin-link">Se connecter</a>
+      </div>
+
+    </form>
+  </div>
 </div>
