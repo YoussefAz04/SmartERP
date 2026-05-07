@@ -147,12 +147,21 @@ for i,(c,l) in enumerate(MESURES):
     mesures.append({"id": OFF_MESURE+i, "code": c, "libelle": l})
 json_data["mesure"] = mesures
 
+def compute_notation_from_taux(taux_pct):
+    """Map taux de livraison (0-100 %) to a 1-5 star notation, matching FournisseurService logic."""
+    if taux_pct >= 90: return 5.0
+    if taux_pct >= 70: return 4.0
+    if taux_pct >= 50: return 3.0
+    if taux_pct >= 30: return 2.0
+    return 1.0
+
 # 3. Fournisseurs (12)
 fournisseurs = []
 for i,name in enumerate(FRN_NAMES):
     region = random.choice(REGIONS)
-    notation = round(random.uniform(55, 98), 1)
     taux_liv = round(random.uniform(0.7, 0.99), 2)
+    # notation stored on 1-5 scale to match FournisseurService.computeNotationFromTaux
+    notation = compute_notation_from_taux(taux_liv * 100)
     fournisseurs.append({
         "id": OFF_FRN+i, "nom": name, "prenom": "",
         "email": f"contact{i+1}@{name.split()[0].lower()}-e16.tn",
@@ -636,7 +645,38 @@ for la in lignes_achat:
     )
 L += ["SET IDENTITY_INSERT ligne_commande_achat OFF;",""]
 
-# CommandeVente
+# BonReception – one per RECUE commande_achat, date reflects fournisseur reliability
+bons_reception = []
+br_seq = 0
+frn_taux_by_id = {f["id"]: f["taux_livraison"] for f in fournisseurs}
+for c in commandes_achat:
+    if c["statut"] != "RECUE":
+        continue
+    ca_id = c["id"]
+    dlp = date.fromisoformat(c["delivery_date"])
+    frn_id = c["supplier_id"]
+    taux = frn_taux_by_id.get(frn_id, 0.85)
+    pseudo_rand = ((ca_id * 7 + 13) % 100) / 100.0
+    on_time = pseudo_rand < taux
+    reception_date = dlp - timedelta(days=1) if on_time else dlp + timedelta(days=3)
+    if reception_date >= TODAY:
+        reception_date = TODAY - timedelta(days=1)
+    bons_reception.append({
+        "id": OFF_FRN + br_seq,
+        "reference": f"BR-CA-{ca_id:05d}",
+        "date_reception": reception_date.isoformat(),
+        "commande_achat_id": ca_id,
+    })
+    br_seq += 1
+
+L.append("SET IDENTITY_INSERT bon_reception ON;")
+for br in bons_reception:
+    L.append(
+        "INSERT INTO bon_reception (id, reference, date_reception, statut, note, created_at, updated_at, commande_achat_id, entreprise_id) VALUES "
+        f"({br['id']}, {sql_str(br['reference'])}, {sql_date(date.fromisoformat(br['date_reception']))}, "
+        f"'COMPLET', NULL, {NOW}, {NOW}, {br['commande_achat_id']}, @entId);"
+    )
+L += ["SET IDENTITY_INSERT bon_reception OFF;",""]
 L.append("SET IDENTITY_INSERT commande_vente ON;")
 for c in commandes_vente:
     L.append(

@@ -63,43 +63,50 @@ public interface CommandeAchatRepository extends JpaRepository<CommandeAchat, Lo
     // ── Fournisseur delivery-stat queries (used to compute tauxLivraison & notation) ──
 
     /**
-     * Per-fournisseur count of RECUE orders that have a planned delivery date.
+     * Per-fournisseur count of RECUE orders that have a planned delivery date AND
+     * at least one BonReception with a recorded reception date.
      * Used as the denominator for on-time delivery rate.
+     * Orders without any BonReception are excluded so that taux is null (unknown)
+     * rather than incorrectly showing 0 % when no reception data exists.
      */
     @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c "
             + "WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL "
             + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL "
+            + "AND EXISTS (SELECT br FROM BonReception br "
+            + "            WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL) "
             + "GROUP BY c.fournisseur.id")
     List<Object[]> countDeliveredWithPlannedDateByFournisseur(@Param("entrepriseId") Long entrepriseId);
 
     /**
-     * Per-fournisseur count of RECUE orders whose first reception date
-     * (MIN BonReception.dateReception) is on or before the planned delivery date.
-     * Used as the numerator for on-time delivery rate. Using MIN ensures partial
-     * deliveries are evaluated against the earliest fulfilment, not any later
-     * top-up shipment.
+     * Per-fournisseur count of RECUE orders for which a BonReception with
+     * dateReception &lt;= dateLivraisonPrevue exists (i.e., delivered on time).
+     * Uses EXISTS to avoid the NULL-comparison pitfall of a MIN-based subquery
+     * (NULL &lt;= date evaluates to UNKNOWN which some ORM/DB combinations treat
+     * inconsistently).
      */
     @Query("SELECT c.fournisseur.id, COUNT(c) FROM CommandeAchat c "
             + "WHERE c.entreprise.id = :entrepriseId AND c.fournisseur IS NOT NULL "
             + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL "
-            + "AND (SELECT MIN(br.dateReception) FROM BonReception br "
-            + "      WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL) "
-            + "    <= c.dateLivraisonPrevue "
+            + "AND EXISTS (SELECT br FROM BonReception br "
+            + "            WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL "
+            + "            AND br.dateReception <= c.dateLivraisonPrevue) "
             + "GROUP BY c.fournisseur.id")
     List<Object[]> countOnTimeDeliveredByFournisseur(@Param("entrepriseId") Long entrepriseId);
 
     /** Single-fournisseur version of {@link #countDeliveredWithPlannedDateByFournisseur}. */
     @Query("SELECT COUNT(c) FROM CommandeAchat c "
             + "WHERE c.fournisseur.id = :fournisseurId "
-            + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL")
+            + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL "
+            + "AND EXISTS (SELECT br FROM BonReception br "
+            + "            WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL)")
     long countDeliveredWithPlannedDateForFournisseur(@Param("fournisseurId") Long fournisseurId);
 
     /** Single-fournisseur version of {@link #countOnTimeDeliveredByFournisseur}. */
     @Query("SELECT COUNT(c) FROM CommandeAchat c "
             + "WHERE c.fournisseur.id = :fournisseurId "
             + "AND c.statut = 'RECUE' AND c.dateLivraisonPrevue IS NOT NULL "
-            + "AND (SELECT MIN(br.dateReception) FROM BonReception br "
-            + "      WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL) "
-            + "    <= c.dateLivraisonPrevue")
+            + "AND EXISTS (SELECT br FROM BonReception br "
+            + "            WHERE br.commandeAchat = c AND br.dateReception IS NOT NULL "
+            + "            AND br.dateReception <= c.dateLivraisonPrevue)")
     long countOnTimeDeliveredForFournisseur(@Param("fournisseurId") Long fournisseurId);
 }
