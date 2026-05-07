@@ -18,6 +18,8 @@ export class AuditLogComponent implements OnInit, OnDestroy {
   isLoading = true;
   searchText = '';
   selectedAction = '';
+  filterDateFrom = '';
+  filterDateTo = '';
   private destroy$ = new Subject<void>();
 
   readonly actionLabels: Record<string, string> = {
@@ -64,6 +66,21 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     if (this.selectedAction) {
       result = result.filter(l => l.action === this.selectedAction);
     }
+    if (this.filterDateFrom || this.filterDateTo) {
+      const fromMs = this.filterDateFrom
+        ? (() => { const d = new Date(this.filterDateFrom); d.setHours(0, 0, 0, 0); return d.getTime(); })()
+        : null;
+      const toMs = this.filterDateTo
+        ? (() => { const d = new Date(this.filterDateTo); d.setHours(23, 59, 59, 999); return d.getTime(); })()
+        : null;
+      result = result.filter(l => {
+        if (!l.createdAt) return false;
+        const ts = Date.parse(l.createdAt);
+        if (fromMs !== null && ts < fromMs) return false;
+        if (toMs !== null && ts > toMs) return false;
+        return true;
+      });
+    }
     if (this.searchText.trim()) {
       const q = this.searchText.trim().toLowerCase();
       result = result.filter(l =>
@@ -73,6 +90,18 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       );
     }
     this.filteredLogs = result;
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!(this.searchText || this.selectedAction || this.filterDateFrom || this.filterDateTo);
+  }
+
+  resetFilters(): void {
+    this.searchText = '';
+    this.selectedAction = '';
+    this.filterDateFrom = '';
+    this.filterDateTo = '';
+    this.applyFilters();
   }
 
   get uniqueActions(): string[] {
