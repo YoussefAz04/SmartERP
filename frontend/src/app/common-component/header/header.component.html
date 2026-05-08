@@ -191,7 +191,7 @@
           </span>
           <span class="user-info">
             <span class="user-name">{{ userName }}</span>
-            <span class="user-role">{{ roleName[0] || 'User' }}</span>
+            <span class="user-role" [ngClass]="roleClass">{{ formattedRole }}</span>
           </span>
           <i class="feather icon-chevron-down chevron-icon" [class.chevron-open]="showProfile"></i>
         </button>
@@ -206,7 +206,7 @@
             </div>
             <div class="profile-details">
               <h6 class="profile-name">{{ userName }}</h6>
-              <p class="profile-role">{{ roleName[0] || 'User' }}</p>
+              <p class="profile-role">{{ formattedRole }}</p>
               <p class="profile-org" *ngIf="entrepriseName">
                 <i class="feather icon-briefcase"></i> {{ entrepriseName }}
               </p>

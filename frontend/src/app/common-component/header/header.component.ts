@@ -326,6 +326,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  // ===== ROLE LABEL =====
+  get formattedRole(): string {
+    if (this.isSuperAdmin) return 'Super Admin';
+    const upperRoleName = (this.roleName[0] || '').toUpperCase();
+    if (upperRoleName.includes('ADMIN')) return 'Admin';
+    if (upperRoleName.includes('EMPLOYEE')) return 'Employee';
+    if (upperRoleName.length) {
+      return upperRoleName
+        .replace(/^ROLE_/, '')
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/\b\w/g, (c: string) => c.toUpperCase());
+    }
+    return 'User';
+  }
+
+  get roleClass(): string {
+    if (this.isSuperAdmin) return 'role-super-admin';
+    const upperRoleName = (this.roleName[0] || '').toUpperCase();
+    if (upperRoleName.includes('ADMIN')) return 'role-admin';
+    if (upperRoleName.includes('EMPLOYEE')) return 'role-employee';
+    return '';
+  }
+
   // ===== OTHER METHODS =====
   getResultRoute(result: SearchResult): string[] {
     if (result.route?.length) {
