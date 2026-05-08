@@ -379,7 +379,7 @@ public class AiDashboardService {
 
         // Build status breakdown map: supplierId -> list of StatusCountDto
         Map<Long, List<AiDashboardDto.StatusCountDto>> statusMap = new HashMap<>();
-        // Also count cancelled/delivered orders per supplier for the rating features.
+        // Also count cancelled/delivered orders per supplier for the fallback delivery-rate.
         Map<Long, Long> cancelledMap = new HashMap<>();
         Map<Long, Long> deliveredMap = new HashMap<>();
         Map<Long, Long> totalMap = new HashMap<>();
@@ -402,6 +402,22 @@ public class AiDashboardService {
             }
         }
 
+        // On-time delivery data (BonReception date vs dateLivraisonPrevue).
+        // This is the primary delivery-rate signal; it varies across suppliers and
+        // avoids the "always 100%" problem caused by counting RECUE/nonCancelled.
+        Map<Long, Long> onTimeTotalMap = new HashMap<>();
+        for (Object[] row : commandeAchatRepository.countDeliveredWithPlannedDateByFournisseur(entrepriseId)) {
+            if (row[0] != null) {
+                onTimeTotalMap.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+            }
+        }
+        Map<Long, Long> onTimeMap = new HashMap<>();
+        for (Object[] row : commandeAchatRepository.countOnTimeDeliveredByFournisseur(entrepriseId)) {
+            if (row[0] != null) {
+                onTimeMap.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+            }
+        }
+
         // First pass: collect up to 10 suppliers' raw data so we can peer-group
         // them with the ML rating engine before emitting the DTOs.
         List<Object[]> selectedRows = new ArrayList<>();
@@ -411,12 +427,10 @@ public class AiDashboardService {
             Long supplierId = row[0] != null ? ((Number) row[0]).longValue() : null;
             Long orderCount = row[3] != null ? ((Number) row[3]).longValue() : 0L;
             Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+            double deliveryRate = computeDeliveryRate(supplierId, totalMap, deliveredMap,
+                    cancelledMap, onTimeTotalMap, onTimeMap, orderCount);
             double totalForSupplier = totalMap.getOrDefault(supplierId, orderCount);
-            double delivered = deliveredMap.getOrDefault(supplierId, 0L);
             double cancelled = cancelledMap.getOrDefault(supplierId, 0L);
-            // Compute delivery rate as percentage of delivered vs non-cancelled orders
-            double nonCancelled = totalForSupplier - cancelled;
-            double deliveryRate = nonCancelled > 0 ? (delivered / nonCancelled) * 100.0 : 0.0;
             double cancelledRatio = totalForSupplier > 0 ? cancelled / totalForSupplier : 0.0;
             selectedRows.add(row);
             inputs.add(new SupplierRatingEngine.Input(
@@ -434,12 +448,8 @@ public class AiDashboardService {
             String supplierName = prenom.isEmpty() ? nom : nom + " " + prenom;
             Long orderCount = row[3] != null ? ((Number) row[3]).longValue() : 0L;
             Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
-            // Compute delivery rate dynamically from actual order statuses
-            double totalForSupplier = totalMap.getOrDefault(supplierId, orderCount);
-            double delivered = deliveredMap.getOrDefault(supplierId, 0L);
-            double cancelled = cancelledMap.getOrDefault(supplierId, 0L);
-            double nonCancelled = totalForSupplier - cancelled;
-            double deliveryRate = nonCancelled > 0 ? (delivered / nonCancelled) * 100.0 : 0.0;
+            double deliveryRate = computeDeliveryRate(supplierId, totalMap, deliveredMap,
+                    cancelledMap, onTimeTotalMap, onTimeMap, orderCount);
             // Replace the legacy persisted `notation` with the ML peer-group
             // rating so the dashboard reflects real-time relative performance.
             Double rating = ratings.get(i).ratingStars;
@@ -456,5 +466,34 @@ public class AiDashboardService {
         }
 
         return result;
+    }
+
+    /**
+     * Computes the delivery rate (0–100) for a supplier using on-time delivery
+     * (BonReception date ≤ dateLivraisonPrevue) as the primary signal.
+     *
+     * <p>On-time delivery varies meaningfully across suppliers and avoids the
+     * "always 100%" issue produced by the raw RECUE/nonCancelled formula (which
+     * is trivially 100% whenever all orders have been received and none cancelled).
+     *
+     * <p>Falls back to the order-status-based rate when on-time data is
+     * unavailable (e.g. orders have no planned delivery date or no BonReceptions).
+     */
+    private double computeDeliveryRate(Long supplierId,
+                                       Map<Long, Long> totalMap,
+                                       Map<Long, Long> deliveredMap,
+                                       Map<Long, Long> cancelledMap,
+                                       Map<Long, Long> onTimeTotalMap,
+                                       Map<Long, Long> onTimeMap,
+                                       long orderCount) {
+        long onTimeTotal = onTimeTotalMap.getOrDefault(supplierId, 0L);
+        if (onTimeTotal > 0) {
+            long onTime = onTimeMap.getOrDefault(supplierId, 0L);
+            return (onTime * 100.0) / onTimeTotal;
+        }
+        // Fallback: share of received orders out of all orders placed.
+        double total = totalMap.getOrDefault(supplierId, orderCount);
+        double delivered = deliveredMap.getOrDefault(supplierId, 0L);
+        return total > 0 ? (delivered / total) * 100.0 : 0.0;
     }
 }
