@@ -501,12 +501,15 @@ public class RecommendationService {
                         }
                     }
                     // Highlight best-rated supplier when ratings are filled in.
-                    // notation is stored on a 0-5 scale; tauxLivraison is stored as a 0-100 percentage.
+                    // notation may be stored on a 0-5 scale or a 0-100 scale; normalise to 0-5 before use.
+                    // tauxLivraison is always stored as a 0-100 percentage.
                     Object[] best = null;
                     double bestScore = -1.0;
                     for (Object[] row : suppliers) {
                         if (row == null || row.length < 7) continue;
-                        double notation = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0;
+                        double rawNotation = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0;
+                        // Normalise: values > 5 are on the 0-100 scale — convert to 0-5.
+                        double notation = rawNotation > 5.0 ? rawNotation / 20.0 : rawNotation;
                         double tauxLiv = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
                         // notation is 0-5, tauxLiv is a 0-100 percentage — combine into a weighted score.
                         double score = notation * 20.0 + tauxLiv;
@@ -516,7 +519,9 @@ public class RecommendationService {
                         }
                     }
                     if (best != null && best[1] != null && best[6] != null) {
-                        double notation = ((Number) best[6]).doubleValue();
+                        double rawNotation = ((Number) best[6]).doubleValue();
+                        // Normalise to 0-5 scale.
+                        double notation = rawNotation > 5.0 ? rawNotation / 20.0 : rawNotation;
                         double tauxLiv = best[5] != null ? ((Number) best[5]).doubleValue() : 0.0;
                         if (notation >= 4.0) {
                             recommendations.add(new RecommendationDto(
