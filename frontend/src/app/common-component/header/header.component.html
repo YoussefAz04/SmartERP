@@ -191,11 +191,7 @@
           </span>
           <span class="user-info">
             <span class="user-name">{{ userName }}</span>
-            <span class="user-role" [ngClass]="{
-              'role-super-admin': isSuperAdmin,
-              'role-admin': !isSuperAdmin && (roleName[0] || '').toUpperCase().includes('ADMIN'),
-              'role-employee': (roleName[0] || '').toUpperCase().includes('EMPLOYEE')
-            }">{{ formattedRole }}</span>
+            <span class="user-role" [ngClass]="roleClass">{{ formattedRole }}</span>
           </span>
           <i class="feather icon-chevron-down chevron-icon" [class.chevron-open]="showProfile"></i>
         </button>
