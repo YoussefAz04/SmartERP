@@ -501,15 +501,15 @@ public class RecommendationService {
                         }
                     }
                     // Highlight best-rated supplier when ratings are filled in.
-                    // notation is stored on a 0-100 scale; tauxLivraison is stored as a 0-1 ratio.
+                    // notation is stored on a 0-5 scale; tauxLivraison is stored as a 0-100 percentage.
                     Object[] best = null;
                     double bestScore = -1.0;
                     for (Object[] row : suppliers) {
                         if (row == null || row.length < 7) continue;
                         double notation = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0;
                         double tauxLiv = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
-                        // notation is 0-100, tauxLiv is a 0-1 ratio — combine into a weighted score.
-                        double score = notation + tauxLiv * 50.0;
+                        // notation is 0-5, tauxLiv is a 0-100 percentage — combine into a weighted score.
+                        double score = notation * 20.0 + tauxLiv;
                         if (notation > 0 && score > bestScore) {
                             bestScore = score;
                             best = row;
@@ -518,16 +518,13 @@ public class RecommendationService {
                     if (best != null && best[1] != null && best[6] != null) {
                         double notation = ((Number) best[6]).doubleValue();
                         double tauxLiv = best[5] != null ? ((Number) best[5]).doubleValue() : 0.0;
-                        // Convert to display scales: notation 0-100 → 0-5 stars; tauxLivraison 0-1 → percentage.
-                        double notationStars = notation / 20.0;
-                        double tauxLivPct = tauxLiv * 100.0;
-                        if (notationStars >= 4.0) {
+                        if (notation >= 4.0) {
                             recommendations.add(new RecommendationDto(
                                 "FOURNISSEUR_PERFORMANT",
                                 "Très bon fournisseur",
                                 String.format(Locale.FRANCE,
                                     "Le fournisseur « %s » a une note de %.1f/5 et livre %.0f %% de ses commandes dans les délais. %s",
-                                    best[1].toString(), notationStars, tauxLivPct,
+                                    best[1].toString(), notation, tauxLiv,
                                     pick(v,
                                         "Privilégiez-le pour vos articles les plus importants.",
                                         "Sécurisez votre relation avec un contrat de longue durée.",
