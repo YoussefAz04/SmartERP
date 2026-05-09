@@ -35,7 +35,6 @@ export class ListfacturAchatComponent implements OnInit{
   sortBy: string = 'dateAchat';
   sortOrder: 'asc' | 'desc' = 'desc';
   isLoading: boolean = false;
-  importing: boolean = false;
   deletingIds: Set<number> = new Set();
   selectedFactures: Set<number> = new Set();
   selectAll: boolean = false;
@@ -494,85 +493,5 @@ export class ListfacturAchatComponent implements OnInit{
         }
       })
     }
-  }
-
-  /**
-   * Importer une facture d'achat depuis un PDF : extrait les champs via OCR
-   * (zones FACTURE_ACHAT), affiche un aperçu puis sauvegarde après confirmation.
-   */
-  onImportPdfSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files && input.files[0];
-    if (!file) return;
-    if (file.type !== 'application/pdf') {
-      this.notify.warning('Veuillez sélectionner un PDF.');
-      input.value = '';
-      return;
-    }
-
-    this.importing = true;
-    this.factureService.importFromPdf(file).subscribe({
-      next: (data: Record<string, unknown>) => {
-        this.showImportPreview(file, data);
-        this.importing = false;
-        input.value = '';
-      },
-      error: () => {
-        this.importing = false;
-        input.value = '';
-        this.notify.error("L'extraction OCR a échoué. Vérifiez que des zones FACTURE_ACHAT ont été enregistrées.");
-      }
-    });
-  }
-
-  private showImportPreview(file: File, data: Record<string, unknown>) {
-    if (data?.['warning']) {
-      this.notify.warning(String(data['warning']));
-      return;
-    }
-
-    const fmt = (v: unknown) => (v === null || v === undefined || v === '') ? '<em>—</em>' : String(v);
-    const html = `
-      <div style="text-align:left;font-size:0.95em;">
-        <div><strong>Référence :</strong> ${fmt(data['referance'])}</div>
-        <div><strong>Date :</strong> ${fmt(data['dateAchat'])}</div>
-        <div><strong>Montant HT :</strong> ${fmt(data['montantHT'])}</div>
-        <div><strong>Montant TVA :</strong> ${fmt(data['montantTVA'])}</div>
-        <div><strong>Montant TTC :</strong> ${fmt(data['montantTTC'])}</div>
-        <div><strong>Remise :</strong> ${fmt(data['remise'])}</div>
-        <div><strong>Mode paiement :</strong> ${fmt(data['modePaiement'])}</div>
-        <div><strong>Statut :</strong> ${fmt(data['statut'])}</div>
-        <div><strong>Description :</strong> ${fmt(data['description'])}</div>
-      </div>
-    `;
-
-    Swal.fire({
-      title: 'Aperçu de la facture extraite',
-      html,
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonText: 'Sauvegarder',
-      cancelButtonText: 'Annuler',
-      reverseButtons: true
-    }).then((res) => {
-      if (res.isConfirmed) {
-        this.saveImportedFromPdf(file);
-      }
-    });
-  }
-
-  private saveImportedFromPdf(file: File) {
-    this.importing = true;
-    this.factureService.saveFromPdf(file).subscribe({
-      next: () => {
-        this.importing = false;
-        this.notify.success('La facture d\'achat a été créée avec succès.');
-        this.getAllFactureAchat();
-      },
-      error: () => {
-        this.importing = false;
-        this.notify.error('Impossible d\'enregistrer la facture importée.');
-      }
-    });
   }
 }

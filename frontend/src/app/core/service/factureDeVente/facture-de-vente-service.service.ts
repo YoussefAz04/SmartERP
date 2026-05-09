@@ -46,18 +46,6 @@ export class FactureDeVenteServiceService {
     return this.http.delete<void>(`${this.baseUrl}/deleteFacture/${id}`);
   }
 
-  /**
-   * Importer une facture de vente depuis un PDF en utilisant les zones OCR
-   * sauvegardées (typeDeDocument = "FACTURE_VENTE"). La réponse correspond à
-   * la structure du formulaire d'ajout (dateAchat, montantHT, ...,
-   * detaisFactureDeVente).
-   */
-  importFromPdf(file: File): Observable<Record<string, unknown>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<Record<string, unknown>>(`${this.baseUrl}/import-pdf`, formData);
-  }
-
 
 
 

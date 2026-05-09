@@ -2,22 +2,9 @@
   <div class="card shadow-lg">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Ajouter une Facture de Vente</h5>
-      <div>
-        <input type="file" #pdfImportInput accept="application/pdf"
-               (change)="onImportPdfSelected($event)"
-               style="display: none;" />
-        <button type="button" class="btn btn-light btn-sm"
-                (click)="pdfImportInput.click()" [disabled]="importing">
-          <i class="bi bi-file-earmark-pdf"></i>
-          {{ importing ? 'Import en cours...' : 'Importer PDF' }}
-        </button>
-      </div>
     </div>
 
     <div class="card-body">
-      <div *ngIf="importMessage" class="alert alert-info py-2 mb-3">
-        {{ importMessage }}
-      </div>
       <form [formGroup]="factureForm" (ngSubmit)="onSubmit()">
 
         <!-- Infos facture -->
