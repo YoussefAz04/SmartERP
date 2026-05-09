@@ -20,10 +20,15 @@
             "outputPath": "dist/template",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
             "styles": [
               "node_modules/@syncfusion/ej2-material-theme/styles/material.css",
               "src/assets/icons/fontawesome/css/fontawesome.min.css",
@@ -106,18 +111,52 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles.scss"],
-            "scripts": []
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "scripts": [],
+            "include": [
+              "src/app/core/guard/auth/auth.guard.spec.ts",
+              "src/app/core/service/settings/settings.service.spec.ts",
+              "src/app/core/service/spinner/spinner.service.spec.ts",
+              "src/app/core/service/common/common.service.spec.ts",
+              "src/app/core/interceptor/spinner/spinner.interceptor.spec.ts",
+              "src/app/shared/custom-pagination/pagination.service.spec.ts",
+              "src/app/shared/custom-pagination/custom-pagination.component.spec.ts",
+              "src/app/shared/sweetalert/sweetalert.service.spec.ts",
+              "src/app/core-component/stock/view-stock/view-stock.component.spec.ts",
+              "src/app/core-component/stock/adjust-stock/adjust-stock.component.spec.ts",
+              "src/app/core-component/stock/list-stock-movements/list-stock-movements.component.spec.ts",
+              "src/app/core-component/stock/list-stock/list-stock.component.spec.ts",
+              "src/app/core-component/stock/list-stock-dashboard/list-stock-dashboard.component.spec.ts",
+              "src/app/core-component/facture/list-facture-de-vente/list-facture-de-vente.component.spec.ts",
+              "src/app/core-component/facture/generate-pdf-facture-de-vente/generate-pdf-facture-de-vente.component.spec.ts",
+              "src/app/core-component/facture/facture.component.spec.ts",
+              "src/app/core-component/client/edit-client/edit-client.component.spec.ts",
+              "src/app/core-component/client/client.component.spec.ts",
+              "src/app/core-component/client/add-client/add-client.component.spec.ts",
+              "src/app/common-component/loader/loader.component.spec.ts",
+              "src/app/common-component/layout/layout.component.spec.ts"
+            ]
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
