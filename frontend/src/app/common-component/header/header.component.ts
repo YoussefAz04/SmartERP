@@ -2,7 +2,7 @@
 import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import { Subject, of, interval, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil, filter } from 'rxjs/operators';
 import { CommonService, SettingsService, SidebarService } from 'src/app/core/core.index';
 import { WebstorageService } from 'src/app/shared/webstorage.service';
 import { routes } from 'src/app/core/helpers/routes';
@@ -76,12 +76,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private headerService: HeaderService
   ) {
     this.activePath = this.router.url.split('/')[2];
-    this.router.events.subscribe((data: RouterEvent) => {
-      if (data instanceof NavigationStart) {
-        this.activePath = data.url.split('/')[2];
-        this.getUserAuthData();
-      }
-    });
+    // Track only the active path on navigation. The previous code re-decoded
+    // the full user session from localStorage on every NavigationStart, which
+    // is unnecessary work since auth data does not change between navigations.
+    this.router.events
+      .pipe(
+        filter((event: RouterEvent) => event instanceof NavigationStart),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((data) => {
+        this.activePath = (data as NavigationStart).url.split('/')[2];
+      });
   }
 
   ngOnInit(): void {
