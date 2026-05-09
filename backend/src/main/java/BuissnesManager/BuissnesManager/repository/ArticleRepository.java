@@ -19,6 +19,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findByActifTrue();
     List<Article> findByEntrepriseIdAndActifTrue(Long entrepriseId);
 
+    @Query("SELECT COUNT(a) FROM Article a WHERE a.entreprise.id = :entrepriseId")
+    long countByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
     @Query("SELECT a FROM Article a LEFT JOIN FETCH a.categorieArticle LEFT JOIN FETCH a.fournisseur LEFT JOIN FETCH a.mesure")
     List<Article> findAllWithRelations();
 

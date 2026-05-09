@@ -409,7 +409,7 @@
               <td>
                 <span class="ref-id">#{{ cmd.id }}</span>
               </td>
-              <td class="text-muted">{{ cmd.client?.nom || '—' }}</td>
+              <td class="text-muted">{{ cmd.clientNom || '—' }}</td>
               <td><strong>{{ (cmd.montantTTC || 0) | number:'1.2-2' }} TND</strong></td>
               <td class="text-muted">{{ cmd.dateCommande | date:'dd/MM/yyyy' }}</td>
               <td>
