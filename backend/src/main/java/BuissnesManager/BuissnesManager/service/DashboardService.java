@@ -12,6 +12,7 @@ import BuissnesManager.BuissnesManager.repository.FactureAchatRepo;
 import BuissnesManager.BuissnesManager.repository.FactureVenteRepository;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -51,6 +52,15 @@ public class DashboardService {
     @Autowired(required = false)
     private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
 
+    /**
+     * Dashboard stats are aggregated from many tables and the dashboard is opened
+     * on every login / tab switch. Cache results in 5-minute buckets per
+     * enterprise so repeated visits don't re-run ~25 aggregation queries each time.
+     * The bucketed key auto-expires (no eviction needed) and stays fresh enough
+     * for an at-a-glance overview.
+     */
+    @Cacheable(cacheNames = "dashboardStats",
+               key = "#entrepriseId + '-' + (T(java.lang.System).currentTimeMillis() / 300000)")
     public DashboardStatsDto getDashboardStats(Long entrepriseId) {
         DashboardStatsDto stats = new DashboardStatsDto();
 
