@@ -1,18 +1,22 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto;
 import BuissnesManager.BuissnesManager.dto.DashboardStatsDto;
 import BuissnesManager.BuissnesManager.dto.MonthlySalesDto;
 import BuissnesManager.BuissnesManager.dto.TopCustomerDto;
 import BuissnesManager.BuissnesManager.dto.TopProductDto;
+import BuissnesManager.BuissnesManager.repository.ArticleRepository;
 import BuissnesManager.BuissnesManager.repository.ClientRepo;
 import BuissnesManager.BuissnesManager.repository.CommandeAchatRepository;
 import BuissnesManager.BuissnesManager.repository.CommandeVenteRepository;
 import BuissnesManager.BuissnesManager.repository.DetaisFactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.repository.FactureAchatRepo;
 import BuissnesManager.BuissnesManager.repository.FactureVenteRepository;
+import BuissnesManager.BuissnesManager.repository.FournisseurRepo;
 import BuissnesManager.BuissnesManager.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,6 +42,12 @@ public class DashboardService {
 
     @Autowired
     private ClientRepo clientRepo;
+
+    @Autowired
+    private FournisseurRepo fournisseurRepo;
+
+    @Autowired
+    private ArticleRepository articleRepository;
 
     @Autowired
     private FactureVenteRepository factureVenteRepository;
@@ -226,5 +236,35 @@ public class DashboardService {
 
     private Long orZeroLong(Long value) {
         return value != null ? value : 0L;
+    }
+
+    /**
+     * Lightweight payload for the /dashboard/admin-dashboard landing page.
+     * Replaces the previous client-side approach of fetching every client,
+     * fournisseur, article, stock and commande just to compute four counts and
+     * five recent rows. Server-side aggregation + slim DTOs keep the response
+     * tiny, and a 60-second per-enterprise cache absorbs repeated visits and
+     * dashboard re-mounts.
+     */
+    @Cacheable(cacheNames = "dashboardHomeSummary",
+               key = "#entrepriseId + '-' + (T(java.lang.System).currentTimeMillis() / 60000)")
+    public DashboardHomeSummaryDto getHomeSummary(Long entrepriseId) {
+        DashboardHomeSummaryDto dto = new DashboardHomeSummaryDto();
+
+        // --- Counts (all single-row aggregate queries) ---
+        Long totalClients = clientRepo.getTotalClients(entrepriseId);
+        dto.setTotalClients(totalClients != null ? totalClients : 0L);
+        dto.setTotalFournisseurs(fournisseurRepo.countByEntrepriseId(entrepriseId));
+        dto.setTotalArticles(articleRepository.countByEntrepriseId(entrepriseId));
+        dto.setTotalCommandes(commandeVenteRepository.countByEntrepriseId(entrepriseId));
+
+        // --- Recent rows (LIMIT 5 via Pageable, slim projections) ---
+        PageRequest top5 = PageRequest.of(0, 5);
+        dto.setRecentClients(clientRepo.findRecentByEntreprise(entrepriseId, top5));
+        dto.setRecentFournisseurs(fournisseurRepo.findRecentByEntreprise(entrepriseId, top5));
+        dto.setRecentStocks(stockRepository.findRecentByEntreprise(entrepriseId, top5));
+        dto.setRecentCommandes(commandeVenteRepository.findRecentByEntreprise(entrepriseId, top5));
+
+        return dto;
     }
 }

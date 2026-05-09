@@ -1,7 +1,9 @@
 package BuissnesManager.BuissnesManager.repository;
 
+import BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto;
 import BuissnesManager.BuissnesManager.entity.CommandeStatut;
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,6 +28,23 @@ public interface CommandeVenteRepository extends JpaRepository<CommandeVente, Lo
     List<CommandeVente> findByStatut(String statut);
     List<CommandeVente> findByEntrepriseIdAndStatut(Long entrepriseId, String statut);
     List<CommandeVente> findByClientId(Long clientId);
+
+    @Query("SELECT COUNT(c) FROM CommandeVente c WHERE c.entreprise.id = :entrepriseId")
+    long countByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
+    /**
+     * Slim projection for the home dashboard "commandes récentes" panel.
+     * Casts {@code montantTTC} (BigDecimal) to Double so the dashboard can
+     * render the numeric column without loading the full commande graph.
+     */
+    @Query("SELECT new BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto$RecentCommandeDto(" +
+           "c.id, c.dateCommande, " +
+           "CAST(COALESCE(c.montantTTC, 0) AS double), " +
+           "c.statut, cl.nom) " +
+           "FROM CommandeVente c LEFT JOIN c.client cl " +
+           "WHERE c.entreprise.id = :entrepriseId ORDER BY c.id DESC")
+    List<DashboardHomeSummaryDto.RecentCommandeDto> findRecentByEntreprise(
+            @Param("entrepriseId") Long entrepriseId, Pageable pageable);
 
     @Modifying
     @Query("UPDATE CommandeVente c SET c.client = null WHERE c.client.id = :clientId")

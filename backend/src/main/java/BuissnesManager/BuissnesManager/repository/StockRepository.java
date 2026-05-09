@@ -1,6 +1,8 @@
 package BuissnesManager.BuissnesManager.repository;
 
+import BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto;
 import BuissnesManager.BuissnesManager.entity.Stock;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +21,21 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     @Query("SELECT s FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId")
     List<Stock> findByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
+    @Query("SELECT COUNT(s) FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId")
+    long countByEntrepriseId(@Param("entrepriseId") Long entrepriseId);
+
+    /**
+     * Slim projection for the home dashboard "articles en stock" panel.
+     * Casts {@code quantiteDisponible} (BigDecimal) to Double so the DTO can
+     * stay JSON-friendly without dragging the article entity graph along.
+     */
+    @Query("SELECT new BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto$RecentStockDto(" +
+           "s.id, s.articleAchat.id, s.articleAchat.nom, " +
+           "CAST(COALESCE(s.quantiteDisponible, 0) AS double)) " +
+           "FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId ORDER BY s.id DESC")
+    List<DashboardHomeSummaryDto.RecentStockDto> findRecentByEntreprise(
+            @Param("entrepriseId") Long entrepriseId, Pageable pageable);
 
     @Query("SELECT COALESCE(SUM(s.quantiteDisponible * s.articleAchat.prixAchat), 0) FROM Stock s WHERE s.articleAchat.entreprise.id = :entrepriseId")
     Double getTotalStockValue(@Param("entrepriseId") Long entrepriseId);

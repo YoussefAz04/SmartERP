@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.controllers;
 
+import BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto;
 import BuissnesManager.BuissnesManager.dto.DashboardStatsDto;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.DashboardService;
@@ -38,6 +39,33 @@ public class DashboardController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error fetching dashboard stats. Please try again later.");
+        }
+    }
+
+    /**
+     * Lightweight summary for the home dashboard landing page: 4 counts +
+     * 5 most-recent rows of clients / fournisseurs / stocks / commandes.
+     * Keeps the dashboard snappy by replacing five full-list "getAll" calls
+     * with a single cached aggregate query.
+     */
+    @GetMapping("/home-summary")
+    public ResponseEntity<?> getHomeSummary(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long entrepriseId = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                entrepriseId = jwtUtil.getEntrepriseIdFromToken(token);
+            }
+            if (entrepriseId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Unable to determine enterprise from token");
+            }
+            DashboardHomeSummaryDto summary = dashboardService.getHomeSummary(entrepriseId);
+            return ResponseEntity.ok(summary);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching dashboard home summary. Please try again later.");
         }
     }
 }

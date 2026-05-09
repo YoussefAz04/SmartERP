@@ -1,6 +1,8 @@
 package BuissnesManager.BuissnesManager.repository;
 
+import BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto;
 import BuissnesManager.BuissnesManager.entity.Client;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +18,17 @@ public interface ClientRepo extends JpaRepository<Client,Long> {
 
     @Query("SELECT COUNT(c) FROM Client c WHERE c.entreprise.id = :entrepriseId")
     Long getTotalClients(@Param("entrepriseId") Long entrepriseId);
+
+    /**
+     * Slim projection used by the home dashboard summary endpoint. Selects only
+     * the columns needed to render the recent-clients table, ordered by id desc
+     * and paged so callers can ask for "top N" without loading every client.
+     */
+    @Query("SELECT new BuissnesManager.BuissnesManager.dto.DashboardHomeSummaryDto$RecentClientDto(" +
+           "c.id, c.nom, c.prenom, c.email, c.telephone) " +
+           "FROM Client c WHERE c.entreprise.id = :entrepriseId ORDER BY c.id DESC")
+    List<DashboardHomeSummaryDto.RecentClientDto> findRecentByEntreprise(
+            @Param("entrepriseId") Long entrepriseId, Pageable pageable);
 
     @Query("SELECT c.categorieClient.id, COUNT(c) FROM Client c WHERE c.entreprise.id = :entrepriseId GROUP BY c.categorieClient.id")
     List<Object[]> countGroupedByCategorieAndEntreprise(@Param("entrepriseId") Long entrepriseId);
