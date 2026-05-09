@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import { SidebarService } from 'src/app/core/core.index';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidebar-three',
@@ -15,15 +16,19 @@ export class SidebarThreeComponent implements OnInit, OnDestroy {
   public sidebarData: Array<any> = [];
 
   private dataSub?: Subscription;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(private sidebar: SidebarService, private router: Router) {
     this.activePath = this.router.url.split('/')[1];
-    this.router.events.subscribe((data: RouterEvent) => {
-      if (data instanceof NavigationStart) {
-        this.activePath = data.url.split('/')[1];
-      }
-      this.opendSubMenu[0] = ''
-    });
+    this.router.events
+      .pipe(
+        filter((data: RouterEvent) => data instanceof NavigationStart),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((data) => {
+        this.activePath = (data as NavigationStart).url.split('/')[1];
+        this.opendSubMenu[0] = '';
+      });
   }
 
   ngOnInit(): void {
@@ -35,6 +40,8 @@ export class SidebarThreeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.dataSub?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
