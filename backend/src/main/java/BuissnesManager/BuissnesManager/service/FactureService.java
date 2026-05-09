@@ -31,6 +31,9 @@ public class FactureService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
 
 
     public FactureAchat AjouterFactureAchat(Long idDocument) throws Exception {
@@ -84,6 +87,10 @@ public class FactureService {
         factureAchatRepo.save(factureAchat);
         detaisFactureAchat.setFactureAchat(factureAchat);
         detaisFactureAchatRepo.save(detaisFactureAchat);
+        auditLogService.log("FACTURE_ACHAT_CREATED",
+                "Facture d'achat créée: ref=" + factureAchat.getReferance()
+                        + ", id=" + factureAchat.getId()
+                        + ", montantTTC=" + factureAchat.getMontantTTC());
         return factureAchat ;
     }
 
@@ -102,6 +109,7 @@ public FactureAchat getById(Long id){
     public FactureAchat updateFactureAchat(Long id, FactureAchat updatedFacture) {
         return factureAchatRepo.findById(id)
                 .map(existingFacture -> {
+                    String previousStatut = existingFacture.getStatut();
                     existingFacture.setDateAchat(updatedFacture.getDateAchat());
                     existingFacture.setReferance(updatedFacture.getReferance());
                     existingFacture.setMontantTotal(updatedFacture.getMontantTotal());
@@ -113,17 +121,22 @@ public FactureAchat getById(Long id){
                     existingFacture.setStatut(updatedFacture.getStatut());
                     existingFacture.setDescription(updatedFacture.getDescription());
                     existingFacture.setCheminFichier(updatedFacture.getCheminFichier());
-                    //
-                    return factureAchatRepo.save(existingFacture);
+                    FactureAchat saved = factureAchatRepo.save(existingFacture);
+                    auditLogService.log("FACTURE_ACHAT_UPDATED",
+                            "Facture d'achat mise à jour: ref=" + saved.getReferance()
+                                    + " (id=" + saved.getId() + "), statut: "
+                                    + previousStatut + " -> " + saved.getStatut());
+                    return saved;
                 })
                 .orElseThrow(() -> new RuntimeException("FactureAchat non trouvée avec id " + id));
     }
 
     public void deleteFactureAchat(Long id) {
-        if (!factureAchatRepo.existsById(id)) {
-            throw new RuntimeException("FactureAchat non trouvée avec id " + id);
-        }
+        FactureAchat existing = factureAchatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("FactureAchat non trouvée avec id " + id));
         factureAchatRepo.deleteById(id);
+        auditLogService.log("FACTURE_ACHAT_DELETED",
+                "Facture d'achat supprimée: ref=" + existing.getReferance() + " (id=" + id + ")");
     }
 
 

@@ -15,6 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST controller for sales invoices (FactureDeVente) under the {@code /factures-vente} prefix.
+ * <p>This is the canonical entry point for all sales invoice operations:
+ * CRUD ({@code ajouterFacture}, {@code getAllFactures}, {@code updateFacture/{id}},
+ * {@code deleteFacture/{id}}), client assignment, email send, and OCR PDF import.
+ * Purchase invoices (FactureAchat) live in {@link FactureController} under {@code /facture}.</p>
+ */
 @RestController
 @RequestMapping("factures-vente")
 public class FactureDeVenteController {

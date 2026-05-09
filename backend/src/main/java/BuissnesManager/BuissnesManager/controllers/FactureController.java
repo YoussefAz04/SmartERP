@@ -18,6 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.Map;
 
+/**
+ * REST controller for purchase invoices (FactureAchat) under the {@code /facture} prefix.
+ * <p>This is the canonical entry point for all purchase invoice operations
+ * (CRUD + OCR PDF import). Sales invoices (FactureDeVente) live in
+ * {@link FactureDeVenteController} under {@code /factures-vente}.</p>
+ */
 @RestController
 @RequestMapping("facture")
 public class FactureController {
