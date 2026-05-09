@@ -1,7 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { SidebarService, routes } from 'src/app/core/core.index';
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router';
 import { url } from 'src/app/shared/model/sidebar.model';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 interface MenuItem {
   menuValue: string;
@@ -46,7 +48,7 @@ interface SidebarSection {
   templateUrl: './sidebar-one.component.html',
   styleUrls: ['./sidebar-one.component.scss'],
 })
-export class SidebarOneComponent implements OnInit {
+export class SidebarOneComponent implements OnInit, OnDestroy {
   public routes = routes;
   base = '';
   page = '';
@@ -55,20 +57,28 @@ export class SidebarOneComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public side_bar_data: Array<any> = [];
 
+  private readonly destroy$ = new Subject<void>();
+
   constructor(
     private sidebar: SidebarService,
     private router: Router,
   ) {
-    router.events.subscribe((event: RouterEvent) => {
-      if (event instanceof NavigationEnd) {
-        this.getRoutes(event);
-      }
-    });
+    router.events
+      .pipe(
+        filter((event: RouterEvent) => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event) => {
+        this.getRoutes(event as NavigationEnd);
+      });
     this.getRoutes(this.router);
-    this.sidebar.sidebarData$.subscribe(data => {
-      // Filter out sections with no active menu items to avoid orphaned section headers
-      this.side_bar_data = data.filter((section: SidebarSection) => section.menu && section.menu.length > 0);
-    });  }
+    this.sidebar.sidebarData$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        // Filter out sections with no active menu items to avoid orphaned section headers
+        this.side_bar_data = data.filter((section: SidebarSection) => section.menu && section.menu.length > 0);
+      });
+  }
 
   private getRoutes(route: url): void {
     const splitVal = route.url.split('/');
@@ -136,6 +146,11 @@ export class SidebarOneComponent implements OnInit {
     // For EMPLOYEE users, permissions are refreshed from the backend to pick up any
     // changes made by the admin since the employee last logged in.
     this.sidebar.loadSidebarWithRefresh();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 
