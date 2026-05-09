@@ -223,7 +223,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let c of recentClients; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
+            <tr *ngFor="let c of recentClients; let i = index; trackBy: trackById" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
               <td>
                 <div class="avatar-cell">
                   <div class="avatar">{{ (c.nom || '?')[0].toUpperCase() }}</div>
@@ -280,7 +280,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let f of recentFournisseurs; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
+            <tr *ngFor="let f of recentFournisseurs; let i = index; trackBy: trackById" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
               <td>
                 <div class="avatar-cell">
                   <div class="avatar avatar--orange">{{ (f.nom || '?')[0].toUpperCase() }}</div>
@@ -336,7 +336,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let a of recentArticles; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
+            <tr *ngFor="let a of recentArticles; let i = index; trackBy: trackById" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
               <td><span class="article-name">{{ a.name }}</span></td>
               <td>
                 <div class="progress-cell">
@@ -405,7 +405,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let cmd of recentCommandes; let i = index" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
+            <tr *ngFor="let cmd of recentCommandes; let i = index; trackBy: trackByCommandeId" class="row-anim" [style.animation-delay]="(i * 0.06) + 's'">
               <td>
                 <span class="ref-id">#{{ cmd.id }}</span>
               </td>

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin, of, Subject } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 import { ClientService } from 'src/app/core/service/client/client.service';
 import { FournisseurService } from 'src/app/core/service/fournisseur/fournisseur.service';
 import { ArticleAchatService } from 'src/app/core/service/article-achat/article-achat.service';
@@ -33,8 +33,9 @@ export interface RecentArticleView {
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
   private readonly LOW_STOCK_THRESHOLD = 10;
+  private readonly destroy$ = new Subject<void>();
 
   public userName = 'Administrateur';
   public entrepriseName = '';
@@ -80,6 +81,21 @@ export class AdminDashboardComponent implements OnInit {
     this.loadAllData();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // trackBy helpers — keep DOM nodes stable across change detection cycles so
+  // Angular doesn't tear down and recreate every <tr> on each re-render.
+  trackById(_index: number, item: { id?: number | null }): number {
+    return item?.id ?? _index;
+  }
+
+  trackByCommandeId(_index: number, item: CommandeVente): number {
+    return (item?.id as number) ?? _index;
+  }
+
   loadEnterpriseContext(): void {
     try {
       const item = localStorage.getItem('myLSkey');
@@ -121,7 +137,7 @@ export class AdminDashboardComponent implements OnInit {
       commandes: this.commandeService.getAllCommandes().pipe(
         catchError(err => this.handleLoadError(err, 'commandes', () => this.errorCommandes = true))
       ),
-    }).subscribe({
+    }).pipe(takeUntil(this.destroy$)).subscribe({
       next: ({ clients, fournisseurs, articles, stocks, commandes }) => {
         // Stats
         this.stats = {
