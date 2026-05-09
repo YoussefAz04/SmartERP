@@ -152,6 +152,28 @@ class MlForecastEngineTest {
         }
     }
 
+    @Test
+    void handlesConstantSeriesWithoutLapackErrors() {
+        // A flat (constant) series produces a zero-variance response and
+        // collinear lag features — the design matrix is rank-deficient. The
+        // engine must avoid plain OLS in that case (which would log LAPACK
+        // TRTRS / GETRF errors and warn "Matrix is not of full rank") and
+        // fall back to the always-fits Ridge candidate.
+        double[] history = new double[24];
+        for (int t = 0; t < 24; t++) history[t] = 500.0;
+
+        MlForecastEngine.MlForecastResult r = engine.forecast(history, 0, 6);
+
+        assertNotNull(r);
+        assertEquals(6, r.futurePoint.size());
+        assertEquals("Naive(flat)", r.modelName,
+                "rank-deficient (constant) series must short-circuit to the naive flat forecast");
+        // Future values should equal the constant series value.
+        for (Double v : r.futurePoint) {
+            assertEquals(500.0, v, 1e-9);
+        }
+    }
+
     private static double[] linearSeries(int n) {
         double[] s = new double[n];
         for (int t = 0; t < n; t++) {
