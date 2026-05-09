@@ -506,18 +506,6 @@ public class AnalyticService {
         return best;
     }
 
-    /** Returns [mean, sampleStdDev] for a non-empty array. */
-    private static double[] meanStd(double[] v) {
-        if (v.length == 0) return new double[]{0.0, 0.0};
-        double sum = 0.0;
-        for (double x : v) sum += x;
-        double mean = sum / v.length;
-        if (v.length < 2) return new double[]{mean, 0.0};
-        double sq = 0.0;
-        for (double x : v) { double d = x - mean; sq += d * d; }
-        return new double[]{mean, Math.sqrt(sq / (v.length - 1))};
-    }
-
     /* =========================== log-OLS growth =========================== */
 
     /** Result of {@link #estimateAnnualGrowth(List)}. */

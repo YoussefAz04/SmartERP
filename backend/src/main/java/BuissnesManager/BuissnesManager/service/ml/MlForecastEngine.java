@@ -10,10 +10,8 @@ import smile.data.type.StructType;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -117,9 +115,6 @@ public class MlForecastEngine {
 
     /** Minimum training rows a CV fold must leave behind. */
     private static final int MIN_CV_TRAIN_ROWS = 6;
-
-    /** Small epsilon to avoid div-by-zero in (s)MAPE calculations. */
-    private static final double MAPE_EPS = 1.0;
 
     /** Number of bootstrap draws for the prediction intervals. */
     private static final int BOOTSTRAP_DRAWS = 200;
@@ -789,29 +784,5 @@ public class MlForecastEngine {
             sumSq += d * d;
         }
         return Math.sqrt(sumSq / (residuals.length - 1));
-    }
-
-    /**
-     * Convenience: turn a {@link MlForecastResult}'s parallel name/value/sign
-     * arrays into an ordered {@code Map<name, value>}, sorted by absolute
-     * magnitude descending. Useful for the methodology panel.
-     */
-    public static Map<String, Double> featureImportanceMap(MlForecastResult r) {
-        if (r == null || r.featureNames == null || r.featureImportances == null) {
-            return java.util.Collections.emptyMap();
-        }
-        // Skip the "y" column at position 0.
-        int p = Math.min(r.featureImportances.length, r.featureNames.length - 1);
-        Integer[] order = new Integer[p];
-        for (int i = 0; i < p; i++) order[i] = i;
-        java.util.Arrays.sort(order, (a, b) ->
-                Double.compare(Math.abs(r.featureImportances[b]),
-                               Math.abs(r.featureImportances[a])));
-        Map<String, Double> m = new LinkedHashMap<>();
-        for (int idx : order) {
-            String name = r.featureNames[idx + 1];
-            m.put(name, r.featureImportances[idx]);
-        }
-        return m;
     }
 }
