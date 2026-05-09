@@ -151,6 +151,8 @@ export class AiDashboardComponent implements OnInit {
         type: 'line',
         fontFamily: this.chartFontFamily,
         toolbar: { show: false },
+        zoom: { enabled: false },
+        selection: { enabled: false },
         background: 'transparent',
         animations: { enabled: true, speed: 800, animateGradually: { enabled: true, delay: 100 } },
         dropShadow: {
@@ -164,6 +166,12 @@ export class AiDashboardComponent implements OnInit {
         },
       },
       colors: ['#2563EB', '#10B981'],
+      // Disable ApexCharts' active-state darken filter so clicking a column
+      // doesn't wipe the gradient-filled mixed (column + area) series.
+      states: {
+        hover: { filter: { type: 'lighten', value: 0.04 } },
+        active: { allowMultipleDataPointsSelection: false, filter: { type: 'none' } },
+      },
       plotOptions: {
         bar: {
           borderRadius: 10,
