@@ -6,8 +6,6 @@ import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 @Service
@@ -17,16 +15,6 @@ public class FactureService {
     private FactureAchatRepo factureAchatRepo ;
     @Autowired
     private FactureDeVenteRepo factureDeVenteRepo ;
-    @Autowired
-    private DetaisFactureAchatRepo detaisFactureAchatRepo ;
-    @Autowired
-    private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo ;
-    @Autowired
-    private DocumentService documentService;
-    @Autowired
-    private OcrPdfService ocrPdfService ;
-    @Autowired
-    private DocumentRepo documentRepo ;
 
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
@@ -35,64 +23,6 @@ public class FactureService {
     private AuditLogService auditLogService;
 
 
-
-    public FactureAchat AjouterFactureAchat(Long idDocument) throws Exception {
-
-        Document document = documentRepo.findById(idDocument)
-                .orElseThrow(() -> new FileNotFoundException("Document not found with ID: " + idDocument));
-
-        FactureAchat factureAchat = new FactureAchat();
-        DetailsFactureAchat detaisFactureAchat = new DetailsFactureAchat() ;
-
-        if (document.getType().equalsIgnoreCase("FACTURE D'ACHAT")) {
-            List<ZoneSelectionneeDeDocument> zones = documentService.getZonesDeDocument(document.getId());
-            File pdfFile = documentService.downloadPdfFromUrl(document.getId());
-            factureAchat.setCheminFichier(document.getFileChemin().getUrLPdf());
-
-            for (ZoneSelectionneeDeDocument zone : zones) {
-               String text = ocrPdfService.extractZoneFromPdf(
-                        pdfFile,
-                        zone.getX(),
-                        zone.getY(),
-                        zone.getWidth(),
-                        zone.getHeight(),
-                        zone.getCanvasWidth(),
-                        zone.getCanvasHeight(),
-                        zone.getPageNumber()
-                );
-                if (zone.getType().equalsIgnoreCase("montantTotal")) {
-                    factureAchat.setMontantTotal(Double.parseDouble(text));
-                } else if (zone.getType().equalsIgnoreCase("montantTTC")) {
-                    factureAchat.setMontantTTC(Double.parseDouble(text));
-                }else if (zone.getType().equalsIgnoreCase("montantTVA")){
-                    factureAchat.setMontantTVA(Double.parseDouble(text.replace(",", ".")));
-                }else if (zone.getType().equalsIgnoreCase("dateAchat")){
-                    factureAchat.setDateAchat(text);
-                }else if (zone.getType().equalsIgnoreCase("remise")){
-                    factureAchat.setRemise(Double.parseDouble(text));
-                }else if (zone.getType().equalsIgnoreCase("montantHT")){
-                    factureAchat.setMontantHT(Double.parseDouble(text));
-                }else if (zone.getType().equalsIgnoreCase("quantite")){
-                    detaisFactureAchat.setQuantite(Integer.parseInt(text.trim()));
-                }else if (zone.getType().equalsIgnoreCase("article")){
-                    detaisFactureAchat.setArticle(text);
-                }else if (zone.getType().equalsIgnoreCase("tva")){
-                    detaisFactureAchat.setTva(Double.parseDouble(text.replace(",", ".")));
-                }else if (zone.getType().equalsIgnoreCase("Referanc")){
-                    factureAchat.setReferance(text);
-                }
-            }
-        }
-
-        factureAchatRepo.save(factureAchat);
-        detaisFactureAchat.setFactureAchat(factureAchat);
-        detaisFactureAchatRepo.save(detaisFactureAchat);
-        auditLogService.log("FACTURE_ACHAT_CREATED",
-                "Facture d'achat créée: ref=" + factureAchat.getReferance()
-                        + ", id=" + factureAchat.getId()
-                        + ", montantTTC=" + factureAchat.getMontantTTC());
-        return factureAchat ;
-    }
 
 public List<FactureAchat> getAllFactureAchat(){
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();

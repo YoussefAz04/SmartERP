@@ -820,8 +820,7 @@ GO
 -- ============================================================
 -- 10. DOCUMENT DOMAIN
 --     Tables: categorie_document, file_chemin, document,
---             categorie_document_documents,
---             zone_selectionnee_de_document
+--             categorie_document_documents
 -- ============================================================
 
 SET ANSI_NULLS ON
@@ -881,29 +880,6 @@ GO
 CREATE TABLE [dbo].[categorie_document_documents] (
     [categorie_document_id] BIGINT NOT NULL,
     [documents_id]          BIGINT NOT NULL
-) ON [PRIMARY]
-GO
-
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[zone_selectionnee_de_document] (
-    [id]              BIGINT IDENTITY(1,1) NOT NULL,
-    [canvas_height]   REAL NOT NULL,
-    [canvas_width]    REAL NOT NULL,
-    [height]          REAL NOT NULL,
-    [page_number]     INT NOT NULL,
-    [pdf_height]      REAL NOT NULL,
-    [pdf_width]       REAL NOT NULL,
-    [type]            VARCHAR(255) NULL,
-    [type_de_document] VARCHAR(255) NULL,
-    [width]           REAL NOT NULL,
-    [x]               REAL NOT NULL,
-    [y]               REAL NOT NULL,
-    CONSTRAINT [PK_zone_selectionnee_de_document] PRIMARY KEY CLUSTERED ([id] ASC)
-      WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF,
-            ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
@@ -1726,23 +1702,6 @@ VALUES (10, N'vvf', N'facture', CAST(N'2025-08-26T15:28:26.3671270' AS DateTime2
 INSERT [dbo].[document] ([id], [nom], [type], [date_ajout], [categorie_document_id], [file_chemin_id], [created_at], [updated_at])
 VALUES (11, N'testccc', N'FACTURE D''ACHAT', CAST(N'2025-08-26T15:30:37.3571930' AS DateTime2), 1, 102, GETDATE(), GETDATE())
 SET IDENTITY_INSERT [dbo].[document] OFF
-GO
-
--- Zone selectionnee de document
-SET IDENTITY_INSERT [dbo].[zone_selectionnee_de_document] ON
-INSERT [dbo].[zone_selectionnee_de_document] ([id], [canvas_height], [canvas_width], [height], [page_number],
-    [pdf_height], [pdf_width], [type], [type_de_document], [width], [x], [y])
-VALUES (1, 1262, 892, 27, 1, 841.89, 595.28, N'article', N'FACTURE', 109, 60, 524)
-INSERT [dbo].[zone_selectionnee_de_document] ([id], [canvas_height], [canvas_width], [height], [page_number],
-    [pdf_height], [pdf_width], [type], [type_de_document], [width], [x], [y])
-VALUES (2, 1262, 892, 32, 1, 841.89, 595.28, N'quantite', N'FACTURE', 32, 486, 514)
-INSERT [dbo].[zone_selectionnee_de_document] ([id], [canvas_height], [canvas_width], [height], [page_number],
-    [pdf_height], [pdf_width], [type], [type_de_document], [width], [x], [y])
-VALUES (3, 1262, 892, 27, 1, 841.89, 595.28, N'prixUnitaireHT', N'FACTURE', 54, 618, 520)
-INSERT [dbo].[zone_selectionnee_de_document] ([id], [canvas_height], [canvas_width], [height], [page_number],
-    [pdf_height], [pdf_width], [type], [type_de_document], [width], [x], [y])
-VALUES (4, 1262, 892, 24, 1, 841.89, 595.28, N'montantHT', N'FACTURE', 67, 753, 679)
-SET IDENTITY_INSERT [dbo].[zone_selectionnee_de_document] OFF
 GO
 
 -- ============================================================

@@ -3,13 +3,10 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.entity.CategorieDocument;
 import BuissnesManager.BuissnesManager.entity.Document;
 import BuissnesManager.BuissnesManager.entity.FileChemin;
-import BuissnesManager.BuissnesManager.entity.ZoneSelectionneeDeDocument;
 import BuissnesManager.BuissnesManager.service.CloudinaryService;
 import BuissnesManager.BuissnesManager.service.DocumentService;
 import BuissnesManager.BuissnesManager.service.FileCheminService;
 
-import BuissnesManager.BuissnesManager.service.OcrPdfService;
-import net.sourceforge.tess4j.TesseractException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 
 
 @RestController
@@ -57,13 +53,6 @@ public class DocumentController {
     public ResponseEntity<?> supprimerDocument(@PathVariable Long id) {
         documentService.supprimerDocument(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("ajouterZone/{documentId}")
-    public ResponseEntity<?> ajouterZone(
-                                                                  @RequestBody ZoneSelectionneeDeDocument zone) {
-        ZoneSelectionneeDeDocument savedZone = documentService.ajouterZone( zone);
-        return ResponseEntity.ok(savedZone);
     }
 
 
@@ -131,49 +120,5 @@ public class DocumentController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=document.pdf")
                 .body(resource);
     }
-
-
-    @GetMapping("/downloadPdfAndScanner/{id}")
-    public ResponseEntity<InputStreamResource> downloadPdfAndScanner(@PathVariable Long id) throws Exception {
-        File pdfFile = documentService.downloadPdfFromUrl(id);
-
-        List<ZoneSelectionneeDeDocument> zones = documentService.getZonesDeDocument(id);
-        for (ZoneSelectionneeDeDocument zone : zones) {
-            String text = ocrService.extractZoneFromPdf(
-                    pdfFile,
-                    zone.getX(),
-                    zone.getY(),
-                    zone.getWidth(),
-                    zone.getHeight(),
-                    zone.getCanvasWidth(),
-                    zone.getCanvasHeight(),
-                    zone.getPageNumber()
-            );
-         System.out.println("Zone " + zone.getType() + " : " + text);
-        }
-
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(pdfFile));
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=document.pdf")
-                .body(resource);
-    }
-
-
-
-
-    private final OcrPdfService ocrService;
-
-    public DocumentController(OcrPdfService ocrService) {
-        this.ocrService = ocrService;
-    }
-    @PostMapping("/addImage")
-    public ResponseEntity<String> getImageToString(
-            @RequestParam("multipartFile") MultipartFile multipartFile) throws TesseractException {
-        return ResponseEntity.ok(ocrService.getImageString(multipartFile));
-    }
-
-
-
 
 }

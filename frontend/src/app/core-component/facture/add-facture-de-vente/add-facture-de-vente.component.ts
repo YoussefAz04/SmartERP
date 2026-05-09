@@ -3,27 +3,6 @@ import { Validators, FormBuilder, FormGroup, ReactiveFormsModule } from "@angula
 import { NgForOf, NgIf } from "@angular/common";
 import { FactureDeVenteServiceService } from "../../../core/service/factureDeVente/facture-de-vente-service.service";
 import {FactureVente} from "../../../model/FactureDeVente.model";
-import { NotificationService } from "../../../shared/notification/notification.service";
-
-interface ImportedFactureDeVentePayload {
-  dateAchat?: string | null;
-  referance?: string | null;
-  remise?: number | null;
-  modePaiement?: string | null;
-  statut?: string | null;
-  description?: string | null;
-  montantHT?: number | null;
-  montantTVA?: number | null;
-  montantTTC?: number | null;
-  montantTotal?: number | null;
-  detaisFactureDeVente?: {
-    article?: string | null;
-    quantite?: number | null;
-    prixUnitaireHT?: number | null;
-    tva?: number | null;
-  } | null;
-  warning?: string | null;
-}
 
 @Component({
   selector: 'app-add-facture-de-vente',
@@ -38,14 +17,10 @@ interface ImportedFactureDeVentePayload {
 })
 export class AddFactureDeVenteComponent {
   factureForm!: FormGroup;
-  importing = false;
-  importMessage: string | null = null;
-  importMissingFields: string[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private factureService: FactureDeVenteServiceService,
-    private notification: NotificationService
+    private factureService: FactureDeVenteServiceService
   ) {
     this.initializeForm();
   }
@@ -145,81 +120,6 @@ export class AddFactureDeVenteComponent {
   private resetForm() {
     this.factureForm.reset();
     this.initializeForm();
-  }
-
-  /** Ouvre le sélecteur de fichier pour importer un PDF de facture de vente. */
-  onImportPdfSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files && input.files[0];
-    if (!file) return;
-    if (file.type !== 'application/pdf') {
-      this.notification.warning('Veuillez sélectionner un fichier PDF.');
-      input.value = '';
-      return;
-    }
-
-    this.importing = true;
-    this.importMessage = null;
-    this.importMissingFields = [];
-
-    this.factureService.importFromPdf(file).subscribe({
-      next: (data: ImportedFactureDeVentePayload) => {
-        this.applyImportedData(data);
-        this.importing = false;
-        input.value = '';
-      },
-      error: (err) => {
-        console.error('Erreur import PDF:', err);
-        this.importing = false;
-        this.notification.error("Échec de l'import PDF. Vérifiez que des zones FACTURE_VENTE sont enregistrées.");
-        input.value = '';
-      }
-    });
-  }
-
-  /** Applique le payload renvoyé par /factures-vente/import-pdf au formulaire. */
-  private applyImportedData(data: ImportedFactureDeVentePayload) {
-    if (!data) return;
-
-    if (data.warning) {
-      this.notification.warning(data.warning);
-    }
-
-    const headerKeys: (keyof ImportedFactureDeVentePayload)[] = [
-      'dateAchat', 'referance', 'remise', 'modePaiement', 'statut',
-      'description', 'montantHT', 'montantTVA', 'montantTTC', 'montantTotal'
-    ];
-    const patch: Record<string, unknown> = {};
-    const missing: string[] = [];
-    headerKeys.forEach(k => {
-      const v = data[k];
-      if (v !== null && v !== undefined && v !== '') {
-        patch[k as string] = v;
-      } else {
-        missing.push(k as string);
-      }
-    });
-
-    const detailIn = data.detaisFactureDeVente;
-    if (detailIn) {
-      const detailPatch: Record<string, unknown> = {};
-      (['article', 'quantite', 'prixUnitaireHT', 'tva'] as const).forEach(k => {
-        const v = detailIn[k];
-        if (v !== null && v !== undefined && v !== '') {
-          detailPatch[k] = v;
-        }
-      });
-      patch['detaisFactureDeVente'] = detailPatch;
-    }
-
-    this.factureForm.patchValue(patch, { emitEvent: false });
-    this.updateTotal();
-
-    this.importMissingFields = missing;
-    const filled = headerKeys.length - missing.length;
-    this.importMessage = `Import terminé : ${filled} champ(s) renseigné(s) sur ${headerKeys.length}.`
-      + (missing.length ? ` Champs manquants : ${missing.join(', ')}.` : '');
-    this.notification.success(this.importMessage);
   }
 
 

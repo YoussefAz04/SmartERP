@@ -3,7 +3,6 @@ import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CategorieDocument} from "../../../model/CategorieDocument.model";
-import {ZoneSelectionneeDeDocumentModel} from "../../../model/ZoneSelectionneeDeDocument.model";
 import {Document, FileChemin} from "../../../model/Document.model";
 
 @Injectable({
@@ -24,10 +23,6 @@ export class DocumentService {
 
   supprimerDocument(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/supprimerDocument/${id}`);
-  }
-
-  ajouterZone(documentId: number, zone: ZoneSelectionneeDeDocumentModel): Observable<ZoneSelectionneeDeDocumentModel> {
-    return this.http.post<ZoneSelectionneeDeDocumentModel>(`${this.apiUrl}/ajouterZone/${documentId}`, zone);
   }
 
   uploadFile(file: File): Observable<FileChemin> {

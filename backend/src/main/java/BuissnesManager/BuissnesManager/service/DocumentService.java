@@ -3,16 +3,13 @@ package BuissnesManager.BuissnesManager.service;
 import BuissnesManager.BuissnesManager.entity.CategorieDocument;
 import BuissnesManager.BuissnesManager.entity.Document;
 import BuissnesManager.BuissnesManager.entity.FileChemin;
-import BuissnesManager.BuissnesManager.entity.ZoneSelectionneeDeDocument;
 import BuissnesManager.BuissnesManager.repository.CategorieDocumentRepo;
 import BuissnesManager.BuissnesManager.repository.DocumentRepo;
 import BuissnesManager.BuissnesManager.repository.FileCheminRepo;
-import BuissnesManager.BuissnesManager.repository.ZoneSelectionneeDeDocumentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,15 +22,11 @@ public class DocumentService {
     @Autowired
     private DocumentRepo documentRepo;
     @Autowired
-    private ZoneSelectionneeDeDocumentRepo zoneSelectionneeDeDocumentRepo;
-    @Autowired
     private CategorieDocumentRepo categorieDocumentRepo;
     @Autowired
     private CloudinaryService cloudinaryService;
     @Autowired
     private FileCheminRepo fileCheminRepo;
-    @Autowired
-    private OcrPdfService ocrPdfService;
 
 
     public Document ajouterDocument(Document document, Long categorieId) {
@@ -57,11 +50,6 @@ public class DocumentService {
 
     public void supprimerDocument(Long id) {
         documentRepo.deleteById(id);
-    }
-
-    public ZoneSelectionneeDeDocument ajouterZone(ZoneSelectionneeDeDocument zone) {
-
-        return zoneSelectionneeDeDocumentRepo.save(zone);
     }
 
     public CategorieDocument addCategorieDocument(CategorieDocument categorieDocument) {
@@ -147,24 +135,5 @@ public class DocumentService {
 
         return tempFile;
     }
-
-    public List<ZoneSelectionneeDeDocument> getZonesDeDocument(Long idDocument) throws IOException{
-        Document document = documentRepo.findById(idDocument)
-                .orElseThrow(() -> new FileNotFoundException("Document not found with ID: " + idDocument));
-
-
-        return zoneSelectionneeDeDocumentRepo.findAllByTypeDeDocument(document.getType());
-    }
-
-
-
-
-
-
-
-
-
-
-
 
 }
