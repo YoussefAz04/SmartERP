@@ -257,6 +257,17 @@ public class MlForecastEngine {
 
         TrainingMatrix full = buildMatrix(tHistory, startMonthIdx, spec, calendarMatrix);
 
+        // Degenerate-series short-circuit: when y is constant or any feature
+        // column is constant, the design matrix is rank-deficient. Plain OLS
+        // would log LAPACK TRTRS / GETRF errors and warn "Matrix is not of
+        // full rank, try SVD instead", and Smile's RidgeRegression rejects
+        // constant columns outright. There is no signal to learn from, so
+        // return a naive flat forecast (mean of history) and skip fitting.
+        if (isRankDeficient(full)) {
+            return naiveFlatForecast(history, horizon, full.featureCount,
+                    full.featureNames, bc.lambda);
+        }
+
         // n ≫ p hard guard: if rows < 2·p, force a single shrinkage candidate.
         int pEff = full.featureCount;
         boolean underdetermined = isUnderdetermined(full.y.length, pEff);
@@ -573,6 +584,88 @@ public class MlForecastEngine {
         return rows < MIN_ROWS_PER_FEATURE * features;
     }
 
+    /** Variance threshold below which a column is considered constant and the
+     *  design matrix is treated as rank-deficient. */
+    private static final double VARIANCE_EPSILON = 1e-12;
+
+    /**
+     * Returns true when the design matrix is rank-deficient in a way that
+     * would make plain OLS log LAPACK TRTRS / GETRF errors and fall back to
+     * SVD. We detect the two common degenerate cases for short monthly
+     * series:
+     * <ul>
+     *   <li>The response {@code y} is (nearly) constant — there is no signal
+     *       to fit, so the normal equations are singular.</li>
+     *   <li>At least one feature column is (nearly) constant — that column
+     *       is collinear with the intercept, dropping the rank.</li>
+     * </ul>
+     * Ridge / ElasticNet / RandomForest handle these cases gracefully, so
+     * callers should swap to the always-fits Ridge path when this returns
+     * {@code true}.
+     */
+    private static boolean isRankDeficient(TrainingMatrix tm) {
+        if (tm == null || tm.y == null || tm.y.length < 2) return true;
+        if (variance(tm.y) <= VARIANCE_EPSILON) return true;
+        int n = tm.y.length;
+        // Column 0 of the underlying frame is the response "y"; feature
+        // columns occupy indices 1 .. featureCount.
+        for (int c = 1; c <= tm.featureCount; c++) {
+            double[] col = new double[n];
+            for (int i = 0; i < n; i++) {
+                col[i] = tm.df.getDouble(i, c);
+            }
+            if (variance(col) <= VARIANCE_EPSILON) return true;
+        }
+        return false;
+    }
+
+    private static double variance(double[] v) {
+        if (v == null || v.length == 0) return 0.0;
+        double mean = 0.0;
+        for (double x : v) mean += x;
+        mean /= v.length;
+        double s = 0.0;
+        for (double x : v) {
+            double d = x - mean;
+            s += d * d;
+        }
+        return s / v.length;
+    }
+
+    /**
+     * Naive flat-line forecast used for degenerate (rank-deficient) series.
+     * The future and the in-sample fit are both equal to the mean of the
+     * input history (clamped at zero). Prediction intervals collapse onto
+     * the point forecast — there is no residual variance to bootstrap from.
+     */
+    private static MlForecastResult naiveFlatForecast(double[] history, int horizon,
+                                                      int featureCount,
+                                                      String[] featureNames,
+                                                      double boxCoxLambda) {
+        double mean = 0.0;
+        for (double v : history) mean += v;
+        mean /= Math.max(1, history.length);
+        mean = Math.max(0.0, mean);
+
+        List<Double> fitted = new ArrayList<>(history.length);
+        for (int i = 0; i < history.length; i++) fitted.add(mean);
+        List<Double> future = new ArrayList<>(horizon);
+        List<Double> lower = new ArrayList<>(horizon);
+        List<Double> upper = new ArrayList<>(horizon);
+        for (int h = 0; h < horizon; h++) {
+            future.add(mean);
+            lower.add(mean);
+            upper.add(mean);
+        }
+        log.debug("ML forecast: degenerate series — falling back to naive flat={} for {} months",
+                mean, horizon);
+        return new MlForecastResult(fitted, future, lower, upper, 0.0,
+                0.0, history.length, "Naive(flat)", featureCount,
+                Double.NaN, Double.NaN, Double.NaN, 0,
+                Double.NaN, boxCoxLambda, featureNames, null,
+                false, null);
+    }
+
     /* ------------------------- Walk-forward CV ------------------------- */
 
     private static final class CvScore {
@@ -623,9 +716,12 @@ public class MlForecastEngine {
             try {
                 tm = buildMatrix(tPrefix, startMonthIdx, spec, calendarMatrix);
                 // Guard: skip full-rank-only learners (OLS) when this fold's
-                // training subset is under-determined. Ridge/EN/RF handle it gracefully;
-                // OLS would produce a rank-deficient matrix and log LAPACK errors.
-                if (candidate.needsFullRank && isUnderdetermined(tm.y.length, tm.featureCount)) {
+                // training subset is under-determined or rank-deficient.
+                // Ridge/EN/RF handle it gracefully; OLS would produce a
+                // rank-deficient matrix and log LAPACK errors.
+                if (candidate.needsFullRank
+                        && (isUnderdetermined(tm.y.length, tm.featureCount)
+                            || isRankDeficient(tm))) {
                     continue;
                 }
                 m = candidate.fit(tm.df, tm.schema);
