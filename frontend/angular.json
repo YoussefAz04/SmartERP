@@ -30,7 +30,6 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/@syncfusion/ej2-material-theme/styles/material.css",
               "src/assets/icons/fontawesome/css/fontawesome.min.css",
               "src/assets/icons/fontawesome/css/all.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
@@ -63,8 +62,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "9mb",
-                  "maximumError": "10mb"
+                  "maximumWarning": "5mb",
+                  "maximumError": "6mb"
                 },
                 {
                   "type": "anyComponentStyle",

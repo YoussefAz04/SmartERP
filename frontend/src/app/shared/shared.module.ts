@@ -12,7 +12,6 @@ import { CustomPaginationModule } from './custom-pagination/custom-pagination.mo
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { NgxbootstrapModule } from 'src/app/shared/ngx-bootstrap/ngxbootstrap.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { NgChartsModule } from 'ng2-charts';
 import { NgxEditorModule } from 'ngx-editor';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -52,7 +51,6 @@ const icons = {
     NgxMaskModule.forRoot({
       showMaskTyped: false,
     }),
-    NgChartsModule.forRoot(),
     FullCalendarModule,
     NgxbootstrapModule,
     NgxEditorModule,
@@ -84,7 +82,6 @@ const icons = {
     CarouselModule,
     CustomPaginationModule,
     DragDropModule,
-    NgChartsModule,
     FullCalendarModule,
     NgxbootstrapModule,
     NgxMaskModule,
