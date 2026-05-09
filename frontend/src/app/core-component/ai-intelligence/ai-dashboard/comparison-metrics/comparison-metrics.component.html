@@ -1,289 +1,357 @@
 <div class="comparison-section">
   <h2 class="section-title">
-    <i class="fas fa-chart-bar me-2"></i>Comparaison des Périodes
+    <i class="fas fa-chart-bar"></i>
+    <span>Comparaison des Périodes</span>
   </h2>
+
   <div class="comparison-grid" *ngIf="comparison">
 
     <!-- ═══════════════  MTD vs LTD  ═══════════════ -->
-    <div class="comparison-card">
-      <div class="comparison-header">
-        <div class="comparison-title">
-          <i class="fas fa-calendar-day"></i>
-          <span>Mois en cours vs Mois précédent</span>
-        </div>
-        <span class="period-badge">MTD vs LTD</span>
-      </div>
+    <div class="cmp-card cmp-card--mtd">
+      <div class="cmp-card__accent"></div>
 
-      <div class="comparison-body">
-        <!-- Sales MTD -->
-        <div class="metric-group">
-          <div class="metric-label-row">
-            <span class="metric-cat"><i [ngClass]="salesIconClass(comparison.mtdVsLtd)" class="me-1"></i>Ventes</span>
+      <header class="cmp-card__header">
+        <div class="cmp-card__title">
+          <span class="cmp-card__icon"><i class="fas fa-calendar-day"></i></span>
+          <div class="cmp-card__title-text">
+            <span class="cmp-card__title-main">Mois en cours vs Mois précédent</span>
+            <span class="cmp-card__title-sub">Suivi mensuel des performances</span>
+          </div>
+        </div>
+        <span class="cmp-card__badge">MTD vs LTD</span>
+      </header>
+
+      <!-- Hero: current sales for the month -->
+      <section class="cmp-hero">
+        <div class="cmp-hero__main">
+          <span class="cmp-hero__label">Ventes ce mois</span>
+          <span class="cmp-hero__value">
+            {{ formatCurrency(comparison.mtdVsLtd.current) }}
+            <small>TND</small>
+          </span>
+          <span class="cmp-hero__sub">
+            vs {{ formatCurrency(comparison.mtdVsLtd.previous) }} TND le mois précédent
+          </span>
+        </div>
+        <div class="cmp-hero__delta"
+             [ngClass]="isNew(comparison.mtdVsLtd) ? 'is-new'
+                        : comparison.mtdVsLtd.trend === 'up' ? 'is-up'
+                        : comparison.mtdVsLtd.trend === 'down' ? 'is-down' : 'is-stable'">
+          <i class="fas"
+             [ngClass]="isNew(comparison.mtdVsLtd) ? 'fa-wand-magic-sparkles'
+                        : comparison.mtdVsLtd.trend === 'up' ? 'fa-arrow-trend-up'
+                        : comparison.mtdVsLtd.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'"></i>
+          <span class="cmp-hero__delta-pct">{{ changeLabel(comparison.mtdVsLtd) }}</span>
+          <span class="cmp-hero__delta-abs"
+                *ngIf="!isNew(comparison.mtdVsLtd)">
+            {{ comparison.mtdVsLtd.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.mtdVsLtd.change) }} TND
+          </span>
+        </div>
+      </section>
+
+      <div class="cmp-card__body">
+        <!-- Sales MTD detail -->
+        <div class="metric-block">
+          <div class="metric-block__head">
+            <span class="metric-block__cat">
+              <i [ngClass]="salesIconClass(comparison.mtdVsLtd)"></i>
+              Ventes
+            </span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.mtdVsLtd)"
                   [class.badge-new]="isNew(comparison.mtdVsLtd)">
               {{ changeLabel(comparison.mtdVsLtd) }}
             </span>
           </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Ce mois (MTD)</span>
-              <span class="period-value current">{{ formatCurrency(comparison.mtdVsLtd.current) }} TND</span>
+          <div class="metric-block__rows">
+            <div class="period-line">
+              <span class="period-line__dot dot-current"></span>
+              <span class="period-line__label">Ce mois (MTD)</span>
+              <span class="period-line__value current">{{ formatCurrency(comparison.mtdVsLtd.current) }} TND</span>
             </div>
-            <div class="progress-track">
-              <div class="progress-bar current-bar"
-                   [style.width.%]="getProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)">
-              </div>
+            <div class="period-line">
+              <span class="period-line__dot dot-previous"></span>
+              <span class="period-line__label">Mois précédent</span>
+              <span class="period-line__value previous">{{ formatCurrency(comparison.mtdVsLtd.previous) }} TND</span>
             </div>
-          </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Mois précédent (complet)</span>
-              <span class="period-value previous">{{ formatCurrency(comparison.mtdVsLtd.previous) }} TND</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-bar previous-bar"
-                   [style.width.%]="getPreviousProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)">
-              </div>
+            <div class="dual-track">
+              <div class="dual-track__bar dual-track__bar--current"
+                   [style.width.%]="getProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)"></div>
+              <div class="dual-track__bar dual-track__bar--previous"
+                   [style.width.%]="getPreviousProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)"></div>
             </div>
           </div>
         </div>
 
         <!-- Purchases MTD -->
-        <div class="metric-group" *ngIf="comparison.purchaseMtdVsLtd">
-          <div class="metric-label-row">
-            <span class="metric-cat"><i [ngClass]="purchaseIconClass(comparison.purchaseMtdVsLtd)" class="me-1"></i>Achats</span>
+        <div class="metric-block" *ngIf="comparison.purchaseMtdVsLtd">
+          <div class="metric-block__head">
+            <span class="metric-block__cat">
+              <i [ngClass]="purchaseIconClass(comparison.purchaseMtdVsLtd)"></i>
+              Achats
+            </span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.purchaseMtdVsLtd, true)"
                   [class.badge-new]="isNew(comparison.purchaseMtdVsLtd)">
               {{ changeLabel(comparison.purchaseMtdVsLtd) }}
             </span>
           </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Ce mois</span>
-              <span class="period-value purchase">{{ formatCurrency(comparison.purchaseMtdVsLtd.current) }} TND</span>
+          <div class="metric-block__rows">
+            <div class="period-line">
+              <span class="period-line__dot dot-purchase"></span>
+              <span class="period-line__label">Ce mois</span>
+              <span class="period-line__value purchase">{{ formatCurrency(comparison.purchaseMtdVsLtd.current) }} TND</span>
             </div>
-            <div class="progress-track">
-              <div class="progress-bar purchase-bar"
-                   [style.width.%]="getProgressWidth(comparison.purchaseMtdVsLtd.current, comparison.purchaseMtdVsLtd.previous)">
-              </div>
+            <div class="period-line">
+              <span class="period-line__dot dot-previous"></span>
+              <span class="period-line__label">Mois précédent</span>
+              <span class="period-line__value previous">{{ formatCurrency(comparison.purchaseMtdVsLtd.previous) }} TND</span>
             </div>
-          </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Mois précédent</span>
-              <span class="period-value previous">{{ formatCurrency(comparison.purchaseMtdVsLtd.previous) }} TND</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-bar previous-bar"
-                   [style.width.%]="getPreviousProgressWidth(comparison.purchaseMtdVsLtd.current, comparison.purchaseMtdVsLtd.previous)">
-              </div>
+            <div class="dual-track">
+              <div class="dual-track__bar dual-track__bar--purchase"
+                   [style.width.%]="getProgressWidth(comparison.purchaseMtdVsLtd.current, comparison.purchaseMtdVsLtd.previous)"></div>
+              <div class="dual-track__bar dual-track__bar--previous"
+                   [style.width.%]="getPreviousProgressWidth(comparison.purchaseMtdVsLtd.current, comparison.purchaseMtdVsLtd.previous)"></div>
             </div>
           </div>
         </div>
 
-        <!-- Summary KPIs -->
-        <div class="ytd-kpi-row">
-          <div class="ytd-kpi" *ngIf="comparison.marginMtdVsLtd">
-            <span class="ytd-kpi-label">Marge Brute MTD</span>
-            <span class="ytd-kpi-value" [ngClass]="getMtdMarginClass()">
-              {{ formatCurrency(comparison.marginMtdVsLtd.current) }} TND
-            </span>
-            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.marginMtdVsLtd)"
-                  [class.badge-new]="isNew(comparison.marginMtdVsLtd)">
-              {{ changeLabel(comparison.marginMtdVsLtd) }}
-            </span>
+        <!-- KPI tiles -->
+        <div class="kpi-row">
+          <div class="kpi-tile" *ngIf="comparison.marginMtdVsLtd">
+            <div class="kpi-tile__icon kpi-tile__icon--margin">
+              <i class="fas fa-percentage"></i>
+            </div>
+            <div class="kpi-tile__body">
+              <span class="kpi-tile__label">Marge Brute MTD</span>
+              <span class="kpi-tile__value" [ngClass]="getMtdMarginClass()">
+                {{ formatCurrency(comparison.marginMtdVsLtd.current) }} <small>TND</small>
+              </span>
+              <span class="metric-trend-badge metric-trend-badge--sm"
+                    [ngClass]="badgeClass(comparison.marginMtdVsLtd)"
+                    [class.badge-new]="isNew(comparison.marginMtdVsLtd)">
+                {{ changeLabel(comparison.marginMtdVsLtd) }}
+              </span>
+            </div>
           </div>
-          <div class="ytd-kpi" *ngIf="comparison.orderCountMtdVsLtd">
-            <span class="ytd-kpi-label">Cmdes MTD</span>
-            <span class="ytd-kpi-value text-primary">{{ comparison.orderCountMtdVsLtd.current | number:'1.0-0' }}</span>
-            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.orderCountMtdVsLtd)"
-                  [class.badge-new]="isNew(comparison.orderCountMtdVsLtd)">
-              {{ changeLabel(comparison.orderCountMtdVsLtd) }}
-            </span>
+          <div class="kpi-tile" *ngIf="comparison.orderCountMtdVsLtd">
+            <div class="kpi-tile__icon kpi-tile__icon--orders">
+              <i class="fas fa-receipt"></i>
+            </div>
+            <div class="kpi-tile__body">
+              <span class="kpi-tile__label">Commandes MTD</span>
+              <span class="kpi-tile__value text-primary">
+                {{ comparison.orderCountMtdVsLtd.current | number:'1.0-0' }}
+              </span>
+              <span class="metric-trend-badge metric-trend-badge--sm"
+                    [ngClass]="badgeClass(comparison.orderCountMtdVsLtd)"
+                    [class.badge-new]="isNew(comparison.orderCountMtdVsLtd)">
+                {{ changeLabel(comparison.orderCountMtdVsLtd) }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="comparison-footer">
-        <div class="change-indicator"
-             [ngClass]="isNew(comparison.mtdVsLtd) ? 'change-new'
-                        : comparison.mtdVsLtd.trend === 'up' ? 'change-up'
-                        : comparison.mtdVsLtd.trend === 'down' ? 'change-down' : 'change-stable'">
-          <i class="fas"
-             [ngClass]="isNew(comparison.mtdVsLtd) ? 'fa-wand-magic-sparkles'
-                        : comparison.mtdVsLtd.trend === 'up' ? 'fa-arrow-trend-up'
-                        : comparison.mtdVsLtd.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'">
-          </i>
-          <span>{{ changeLabel(comparison.mtdVsLtd) }}</span>
-        </div>
-        <span class="change-amount"
-              [ngClass]="comparison.mtdVsLtd.change >= 0 ? 'text-success' : 'text-danger'">
-          {{ comparison.mtdVsLtd.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.mtdVsLtd.change) }} TND
-        </span>
       </div>
     </div>
 
     <!-- ═══════════════  YTD Multi-Dim  ═══════════════ -->
-    <div class="comparison-card">
-      <div class="comparison-header">
-        <div class="comparison-title">
-          <i class="fas fa-calendar-check"></i>
-          <span>Bilan YTD — Ventes · Achats · Marge</span>
-        </div>
-        <span class="period-badge">YTD Multi-Dim</span>
-      </div>
+    <div class="cmp-card cmp-card--ytd">
+      <div class="cmp-card__accent cmp-card__accent--ytd"></div>
 
-      <div class="comparison-body">
+      <header class="cmp-card__header">
+        <div class="cmp-card__title">
+          <span class="cmp-card__icon cmp-card__icon--ytd"><i class="fas fa-calendar-check"></i></span>
+          <div class="cmp-card__title-text">
+            <span class="cmp-card__title-main">Bilan YTD</span>
+            <span class="cmp-card__title-sub">Ventes · Achats · Marge cumulés</span>
+          </div>
+        </div>
+        <span class="cmp-card__badge cmp-card__badge--ytd">YTD Multi-Dim</span>
+      </header>
+
+      <!-- Hero: current YTD sales -->
+      <section class="cmp-hero">
+        <div class="cmp-hero__main">
+          <span class="cmp-hero__label">Ventes cumulées (YTD)</span>
+          <span class="cmp-hero__value">
+            {{ formatCurrency(comparison.ytdVsLastYear.current) }}
+            <small>TND</small>
+          </span>
+          <span class="cmp-hero__sub">
+            vs {{ formatCurrency(comparison.ytdVsLastYear.previous) }} TND l'année précédente
+          </span>
+        </div>
+        <div class="cmp-hero__delta"
+             [ngClass]="isNew(comparison.ytdVsLastYear) ? 'is-new'
+                        : comparison.ytdVsLastYear.trend === 'up' ? 'is-up'
+                        : comparison.ytdVsLastYear.trend === 'down' ? 'is-down' : 'is-stable'">
+          <i class="fas"
+             [ngClass]="isNew(comparison.ytdVsLastYear) ? 'fa-wand-magic-sparkles'
+                        : comparison.ytdVsLastYear.trend === 'up' ? 'fa-arrow-trend-up'
+                        : comparison.ytdVsLastYear.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'"></i>
+          <span class="cmp-hero__delta-pct">{{ changeLabel(comparison.ytdVsLastYear) }}</span>
+          <span class="cmp-hero__delta-abs"
+                *ngIf="!isNew(comparison.ytdVsLastYear)">
+            {{ comparison.ytdVsLastYear.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear.change) }} TND
+          </span>
+        </div>
+      </section>
+
+      <div class="cmp-card__body">
         <!-- Sales YTD -->
-        <div class="metric-group">
-          <div class="metric-label-row">
-            <span class="metric-cat"><i [ngClass]="salesIconClass(comparison.ytdVsLastYear)" class="me-1"></i>Ventes YTD</span>
+        <div class="metric-block">
+          <div class="metric-block__head">
+            <span class="metric-block__cat">
+              <i [ngClass]="salesIconClass(comparison.ytdVsLastYear)"></i>
+              Ventes YTD
+            </span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.ytdVsLastYear)"
                   [class.badge-new]="isNew(comparison.ytdVsLastYear)">
               {{ changeLabel(comparison.ytdVsLastYear) }}
             </span>
           </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Cette année</span>
-              <span class="period-value current">{{ formatCurrency(comparison.ytdVsLastYear.current) }} TND</span>
+          <div class="metric-block__rows">
+            <div class="period-line">
+              <span class="period-line__dot dot-current"></span>
+              <span class="period-line__label">Cette année</span>
+              <span class="period-line__value current">{{ formatCurrency(comparison.ytdVsLastYear.current) }} TND</span>
             </div>
-            <div class="progress-track">
-              <div class="progress-bar current-bar"
-                   [style.width.%]="getProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)">
-              </div>
+            <div class="period-line">
+              <span class="period-line__dot dot-previous"></span>
+              <span class="period-line__label">Année précédente</span>
+              <span class="period-line__value previous">{{ formatCurrency(comparison.ytdVsLastYear.previous) }} TND</span>
             </div>
-          </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Année précédente</span>
-              <span class="period-value previous">{{ formatCurrency(comparison.ytdVsLastYear.previous) }} TND</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-bar previous-bar"
-                   [style.width.%]="getPreviousProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)">
-              </div>
+            <div class="dual-track">
+              <div class="dual-track__bar dual-track__bar--current"
+                   [style.width.%]="getProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)"></div>
+              <div class="dual-track__bar dual-track__bar--previous"
+                   [style.width.%]="getPreviousProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)"></div>
             </div>
           </div>
         </div>
 
         <!-- Purchases YTD -->
-        <div class="metric-group" *ngIf="comparison.purchaseYtd">
-          <div class="metric-label-row">
-            <span class="metric-cat"><i [ngClass]="purchaseIconClass(comparison.purchaseYtd)" class="me-1"></i>Achats YTD</span>
+        <div class="metric-block" *ngIf="comparison.purchaseYtd">
+          <div class="metric-block__head">
+            <span class="metric-block__cat">
+              <i [ngClass]="purchaseIconClass(comparison.purchaseYtd)"></i>
+              Achats YTD
+            </span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.purchaseYtd, true)"
                   [class.badge-new]="isNew(comparison.purchaseYtd)">
               {{ changeLabel(comparison.purchaseYtd) }}
             </span>
           </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Cette année</span>
-              <span class="period-value purchase">{{ formatCurrency(comparison.purchaseYtd.current) }} TND</span>
+          <div class="metric-block__rows">
+            <div class="period-line">
+              <span class="period-line__dot dot-purchase"></span>
+              <span class="period-line__label">Cette année</span>
+              <span class="period-line__value purchase">{{ formatCurrency(comparison.purchaseYtd.current) }} TND</span>
             </div>
-            <div class="progress-track">
-              <div class="progress-bar purchase-bar"
-                   [style.width.%]="getProgressWidth(comparison.purchaseYtd.current, comparison.purchaseYtd.previous)">
-              </div>
+            <div class="period-line">
+              <span class="period-line__dot dot-previous"></span>
+              <span class="period-line__label">Année précédente</span>
+              <span class="period-line__value previous">{{ formatCurrency(comparison.purchaseYtd.previous) }} TND</span>
             </div>
-          </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Année précédente</span>
-              <span class="period-value previous">{{ formatCurrency(comparison.purchaseYtd.previous) }} TND</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-bar previous-bar"
-                   [style.width.%]="getPreviousProgressWidth(comparison.purchaseYtd.current, comparison.purchaseYtd.previous)">
-              </div>
+            <div class="dual-track">
+              <div class="dual-track__bar dual-track__bar--purchase"
+                   [style.width.%]="getProgressWidth(comparison.purchaseYtd.current, comparison.purchaseYtd.previous)"></div>
+              <div class="dual-track__bar dual-track__bar--previous"
+                   [style.width.%]="getPreviousProgressWidth(comparison.purchaseYtd.current, comparison.purchaseYtd.previous)"></div>
             </div>
           </div>
         </div>
 
         <!-- Margin YTD -->
-        <div class="metric-group" *ngIf="comparison.marginYtdVsLastYear">
-          <div class="metric-label-row">
-            <span class="metric-cat"><i [ngClass]="marginIconClass(comparison.marginYtdVsLastYear)" class="me-1"></i>Marge YTD</span>
+        <div class="metric-block" *ngIf="comparison.marginYtdVsLastYear">
+          <div class="metric-block__head">
+            <span class="metric-block__cat">
+              <i [ngClass]="marginIconClass(comparison.marginYtdVsLastYear)"></i>
+              Marge YTD
+            </span>
             <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.marginYtdVsLastYear)"
                   [class.badge-new]="isNew(comparison.marginYtdVsLastYear)">
               {{ changeLabel(comparison.marginYtdVsLastYear) }}
             </span>
           </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Cette année</span>
-              <span class="period-value" [ngClass]="comparison.marginYtdVsLastYear.current >= 0 ? 'current' : 'text-danger'">
+          <div class="metric-block__rows">
+            <div class="period-line">
+              <span class="period-line__dot"
+                    [class.dot-current]="comparison.marginYtdVsLastYear.current >= 0"
+                    [class.dot-negative]="comparison.marginYtdVsLastYear.current < 0"></span>
+              <span class="period-line__label">Cette année</span>
+              <span class="period-line__value"
+                    [ngClass]="comparison.marginYtdVsLastYear.current >= 0 ? 'current' : 'text-danger'">
                 {{ formatCurrency(comparison.marginYtdVsLastYear.current) }} TND
               </span>
             </div>
-            <div class="progress-track">
-              <div class="progress-bar"
-                   [class.current-bar]="comparison.marginYtdVsLastYear.current >= 0"
-                   [class.negative-bar]="comparison.marginYtdVsLastYear.current < 0"
-                   [style.width.%]="getProgressWidth(comparison.marginYtdVsLastYear.current, comparison.marginYtdVsLastYear.previous)">
-              </div>
+            <div class="period-line">
+              <span class="period-line__dot dot-previous"></span>
+              <span class="period-line__label">Année précédente</span>
+              <span class="period-line__value previous">{{ formatCurrency(comparison.marginYtdVsLastYear.previous) }} TND</span>
             </div>
-          </div>
-          <div class="period-row">
-            <div class="period-info">
-              <span class="period-label">Année précédente</span>
-              <span class="period-value previous">{{ formatCurrency(comparison.marginYtdVsLastYear.previous) }} TND</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-bar previous-bar"
-                   [style.width.%]="getPreviousProgressWidth(comparison.marginYtdVsLastYear.current, comparison.marginYtdVsLastYear.previous)">
-              </div>
+            <div class="dual-track">
+              <div class="dual-track__bar"
+                   [class.dual-track__bar--current]="comparison.marginYtdVsLastYear.current >= 0"
+                   [class.dual-track__bar--negative]="comparison.marginYtdVsLastYear.current < 0"
+                   [style.width.%]="getProgressWidth(comparison.marginYtdVsLastYear.current, comparison.marginYtdVsLastYear.previous)"></div>
+              <div class="dual-track__bar dual-track__bar--previous"
+                   [style.width.%]="getPreviousProgressWidth(comparison.marginYtdVsLastYear.current, comparison.marginYtdVsLastYear.previous)"></div>
             </div>
           </div>
         </div>
 
-        <!-- Summary KPIs -->
-        <div class="ytd-kpi-row">
-          <div class="ytd-kpi">
-            <span class="ytd-kpi-label">Marge Brute YTD</span>
-            <span class="ytd-kpi-value" [ngClass]="getMarginClass()">
-              {{ formatCurrency(comparison.grossMarginYtd ?? 0) }} TND
-            </span>
-            <span class="ytd-kpi-sub" [ngClass]="getMarginClass()">{{ getMarginPercent() | number:'1.1-1' }}%</span>
+        <!-- KPI tiles -->
+        <div class="kpi-row">
+          <div class="kpi-tile">
+            <div class="kpi-tile__icon kpi-tile__icon--margin">
+              <i class="fas fa-percentage"></i>
+            </div>
+            <div class="kpi-tile__body">
+              <span class="kpi-tile__label">Marge Brute YTD</span>
+              <span class="kpi-tile__value" [ngClass]="getMarginClass()">
+                {{ formatCurrency(comparison.grossMarginYtd ?? 0) }} <small>TND</small>
+              </span>
+              <span class="kpi-tile__sub" [ngClass]="getMarginClass()">
+                {{ getMarginPercent() | number:'1.1-1' }}% du CA
+              </span>
+            </div>
           </div>
-          <div class="ytd-kpi" *ngIf="comparison.orderCountYtdVsLastYear">
-            <span class="ytd-kpi-label">Cmdes YTD</span>
-            <span class="ytd-kpi-value text-primary">{{ comparison.orderCountYtdVsLastYear.current | number:'1.0-0' }}</span>
-            <span class="metric-trend-badge" [ngClass]="badgeClass(comparison.orderCountYtdVsLastYear)"
-                  [class.badge-new]="isNew(comparison.orderCountYtdVsLastYear)">
-              {{ changeLabel(comparison.orderCountYtdVsLastYear) }}
-            </span>
+          <div class="kpi-tile" *ngIf="comparison.orderCountYtdVsLastYear">
+            <div class="kpi-tile__icon kpi-tile__icon--orders">
+              <i class="fas fa-receipt"></i>
+            </div>
+            <div class="kpi-tile__body">
+              <span class="kpi-tile__label">Commandes YTD</span>
+              <span class="kpi-tile__value text-primary">
+                {{ comparison.orderCountYtdVsLastYear.current | number:'1.0-0' }}
+              </span>
+              <span class="metric-trend-badge metric-trend-badge--sm"
+                    [ngClass]="badgeClass(comparison.orderCountYtdVsLastYear)"
+                    [class.badge-new]="isNew(comparison.orderCountYtdVsLastYear)">
+                {{ changeLabel(comparison.orderCountYtdVsLastYear) }}
+              </span>
+            </div>
           </div>
-          <div class="ytd-kpi" *ngIf="!comparison.orderCountYtdVsLastYear">
-            <span class="ytd-kpi-label">Cmdes Vente YTD</span>
-            <span class="ytd-kpi-value text-primary">{{ comparison.salesOrderCountYtd ?? 0 | number }}</span>
-            <span class="ytd-kpi-sub text-muted">commandes</span>
+          <div class="kpi-tile" *ngIf="!comparison.orderCountYtdVsLastYear">
+            <div class="kpi-tile__icon kpi-tile__icon--sales">
+              <i class="fas fa-cart-shopping"></i>
+            </div>
+            <div class="kpi-tile__body">
+              <span class="kpi-tile__label">Cmdes Vente YTD</span>
+              <span class="kpi-tile__value text-primary">{{ comparison.salesOrderCountYtd ?? 0 | number }}</span>
+              <span class="kpi-tile__sub text-muted">commandes</span>
+            </div>
           </div>
-          <div class="ytd-kpi">
-            <span class="ytd-kpi-label">Cmdes Achat YTD</span>
-            <span class="ytd-kpi-value text-info">{{ comparison.purchaseOrderCountYtd ?? 0 | number }}</span>
-            <span class="ytd-kpi-sub text-muted">commandes</span>
+          <div class="kpi-tile">
+            <div class="kpi-tile__icon kpi-tile__icon--purchase">
+              <i class="fas fa-truck-fast"></i>
+            </div>
+            <div class="kpi-tile__body">
+              <span class="kpi-tile__label">Cmdes Achat YTD</span>
+              <span class="kpi-tile__value text-info">{{ comparison.purchaseOrderCountYtd ?? 0 | number }}</span>
+              <span class="kpi-tile__sub text-muted">commandes</span>
+            </div>
           </div>
         </div>
-
-      </div>
-      <!-- YTD card footer: net sales change vs prior year same period -->
-      <div class="comparison-footer">
-        <div class="change-indicator"
-             [ngClass]="isNew(comparison.ytdVsLastYear) ? 'change-new'
-                        : comparison.ytdVsLastYear.trend === 'up' ? 'change-up'
-                        : comparison.ytdVsLastYear.trend === 'down' ? 'change-down' : 'change-stable'">
-          <i class="fas"
-             [ngClass]="isNew(comparison.ytdVsLastYear) ? 'fa-wand-magic-sparkles'
-                        : comparison.ytdVsLastYear.trend === 'up' ? 'fa-arrow-trend-up'
-                        : comparison.ytdVsLastYear.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus'">
-          </i>
-          <span>Ventes {{ changeLabel(comparison.ytdVsLastYear) }}</span>
-        </div>
-        <span class="change-amount"
-              [ngClass]="comparison.ytdVsLastYear.change >= 0 ? 'text-success' : 'text-danger'">
-          {{ comparison.ytdVsLastYear.change >= 0 ? '+' : '' }}{{ formatCurrency(comparison.ytdVsLastYear.change) }} TND
-        </span>
       </div>
     </div>
 
