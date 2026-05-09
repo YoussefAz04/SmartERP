@@ -49,8 +49,8 @@ import java.time.LocalDateTime;
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AuthController {
 
-    /** Access-token cookie TTL in seconds (matches JWT expiration: 15 minutes). */
-    private static final int ACCESS_COOKIE_MAX_AGE = 15 * 60;
+    /** Access-token cookie TTL in seconds (matches JWT expiration: 8 hours). */
+    private static final int ACCESS_COOKIE_MAX_AGE = 8 * 60 * 60;
 
     /** Refresh-token cookie TTL in seconds (7 days). */
     private static final int REFRESH_COOKIE_MAX_AGE = 7 * 24 * 60 * 60;
