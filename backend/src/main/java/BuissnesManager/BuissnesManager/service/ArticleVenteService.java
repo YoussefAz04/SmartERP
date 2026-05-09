@@ -52,10 +52,6 @@ public class ArticleVenteService {
         return articleVenteRepo.findByClientId(clientId);
     }
 
-    public List<ArticleVente> getArticleVenteByArticleAchat(Long articleAchatId) {
-        return articleVenteRepo.findByArticleAchatId(articleAchatId);
-    }
-
     @Transactional
     public ArticleVente addArticleVente(ArticleVente articleVente, Long articleAchatId, Long clientId) {
         if (articleAchatId == null) {

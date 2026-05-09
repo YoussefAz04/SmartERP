@@ -36,12 +36,6 @@ public class DocumentController {
     private FileCheminService fileCheminService ;
 
 
-//    @PostMapping("add/{categorieId}")
-//    public ResponseEntity<?> ajouterDocument(@RequestBody Document document,
-//                                                    @PathVariable Long categorieId) {
-//        Document saved = documentService.ajouterDocument(document, categorieId);
-//        return ResponseEntity.ok(saved);
-//    }
     @PostMapping("ajouterCategorieDocument")
     public ResponseEntity<?> ajouterCategorieDocument(@RequestBody CategorieDocument categorieDocument
                                                    ) {
@@ -142,9 +136,6 @@ public class DocumentController {
     @GetMapping("/downloadPdfAndScanner/{id}")
     public ResponseEntity<InputStreamResource> downloadPdfAndScanner(@PathVariable Long id) throws Exception {
         File pdfFile = documentService.downloadPdfFromUrl(id);
-
-//        String text = ocrService.extractTextFromScannedPdf(pdfFile); // si PDF texte
-
 
         List<ZoneSelectionneeDeDocument> zones = documentService.getZonesDeDocument(id);
         for (ZoneSelectionneeDeDocument zone : zones) {

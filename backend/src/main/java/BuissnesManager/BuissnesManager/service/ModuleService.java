@@ -135,14 +135,6 @@ public class ModuleService {
                             module.getModuleTittle() != null ? module.getModuleTittle().getId() : null,
                             moduleTittle.getId()))
                     .collect(Collectors.toList());
-
-
-//            for (Module m : modules){
-//                if (m.getModuleTittle().getId().equals(moduleTittle.getId())){
-//                    modules.remove(m);
-//                }
-//            }
-//            return modules ;
         }
 
 

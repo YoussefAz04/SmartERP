@@ -95,15 +95,6 @@ public class JWTUtil {
     }
 
     /**
-     * Get user ID from token — no longer stored in token; kept for API compatibility, always returns null.
-     * @deprecated Retrieve user ID from the database using the authenticated username instead.
-     */
-    @Deprecated
-    public Long getUserIdFromToken(String token) {
-        return null;
-    }
-
-    /**
      * Get enterprise ID from token
      */
     public Long getEnterpriseIdFromToken(String token) {

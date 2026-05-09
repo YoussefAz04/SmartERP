@@ -125,24 +125,6 @@ public class UserService {
         return toUserDTO(savedUser);
     }
 
-    public User createEmployee(String username, String email, String password, String phone, Long enterpriseId) {
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("Un utilisateur avec ce nom existe déjà.");
-        }
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPhone(phone);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setEnabled(true);
-        user.setEntreprise(entrepriseRepo.findById(enterpriseId)
-                .orElseThrow(() -> new RuntimeException("Enterprise not found")));
-        Role employeeRole = roleRepo.findByName("EMPLOYEE")
-                .orElseThrow(() -> new RuntimeException("EMPLOYEE role not found"));
-        user.setRoles(new ArrayList<>(List.of(employeeRole)));
-        return userRepository.save(user);
-    }
-
     public User createUser(UserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Un utilisateur avec ce nom existe déjà.");
@@ -217,14 +199,6 @@ public class UserService {
         Optional<User> user = userRepository.findById(userId);
         return user.isPresent() && user.get().getEntreprise() != null
                 && user.get().getEntreprise().getId().equals(enterpriseId);
-    }
-
-    // Validate enterprise access - throws if user does not belong to the enterprise
-    public void validateEnterpriseAccess(Long userId, Long requiredEnterpriseId) {
-        if (!isUserInEnterprise(userId, requiredEnterpriseId)) {
-            throw new org.springframework.security.access.AccessDeniedException(
-                    "User does not belong to enterprise " + requiredEnterpriseId);
-        }
     }
 
     public List<UserDTO> getAllUsersDTO() {
@@ -311,12 +285,7 @@ public class UserService {
 
         userRepository.save(user);
     }
-//    public List<User> getAllUsersNotAffectedToMember() {
-//        return userRepository.findAll()
-//                .stream()
-//                .filter(user -> user.getMembre() == null)
-//                .collect(Collectors.toList());
-//    }
+
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }

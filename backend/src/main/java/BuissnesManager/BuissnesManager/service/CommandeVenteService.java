@@ -621,11 +621,4 @@ public class CommandeVenteService {
                 id, savedBon.getId(), stockAlerts.size());
         return new LivraisonResponseDto(savedBon, stockAlerts);
     }
-
-    public BigDecimal calculateTotal(Long commandeId) {
-        List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeId);
-        return lignes.stream()
-                .map(l -> l.getMontantTTC() != null ? l.getMontantTTC() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
 }

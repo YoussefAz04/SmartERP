@@ -39,20 +39,6 @@ public class OcrPdfService {
     }
 
 
-    public String extractTextFromScannedPdf(File pdfFile) throws Exception {
-        StringBuilder result = new StringBuilder();
-        try (PDDocument document = PDDocument.load(pdfFile)) {
-            PDFRenderer renderer = new PDFRenderer(document);
-            for (int page = 0; page < document.getNumberOfPages(); page++) {
-                BufferedImage image = renderer.renderImageWithDPI(page, 300); // haute résolution
-                String text = tesseract.doOCR(image);
-                result.append(text).append("\n");
-            }
-        }
-        return result.toString();
-    }
-
-
     public String extractZoneFromPdf(File pdfFile, float x, float y, float width, float height,
                                      float canvasWidth, float canvasHeight,
                                      int pageNumber) throws Exception {

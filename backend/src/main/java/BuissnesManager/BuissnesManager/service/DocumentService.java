@@ -11,7 +11,6 @@ import BuissnesManager.BuissnesManager.repository.ZoneSelectionneeDeDocumentRepo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
 import java.io.*;
@@ -47,21 +46,6 @@ public class DocumentService {
 
     public List<Document> getAllDocument() {
         return documentRepo.findAll();
-    }
-
-    public Document ajouterDocumentCloud(MultipartFile fichier, String nom, String type, Long categorieId) {
-        CategorieDocument categorie = categorieDocumentRepo.findById(categorieId)
-                .orElseThrow(() -> new RuntimeException("Catégorie introuvable"));
-
-        String urlCloud = cloudinaryService.uploadFile(fichier);
-
-        Document document = new Document();
-        document.setNom(nom);
-        document.setType(type);
-        document.setCategorieDocument(categorie);
-        document.setDateAjout(LocalDateTime.now());
-
-        return documentRepo.save(document);
     }
 
 

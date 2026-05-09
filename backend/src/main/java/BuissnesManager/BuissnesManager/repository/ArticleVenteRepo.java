@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 public interface ArticleVenteRepo extends JpaRepository<ArticleVente, Long> {
     List<ArticleVente> findByClientId(Long clientId);
-    List<ArticleVente> findByArticleAchatId(Long articleAchatId);
     long countByArticleAchatId(Long articleAchatId);
 
     @Query("SELECT av FROM ArticleVente av WHERE av.articleAchat IS NOT NULL AND av.articleAchat.entreprise IS NOT NULL AND av.articleAchat.entreprise.id = :entrepriseId")
