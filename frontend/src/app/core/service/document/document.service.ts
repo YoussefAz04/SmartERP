@@ -3,7 +3,7 @@ import { environment } from '../../../../environments/environment';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CategorieDocument} from "../../../model/CategorieDocument.model";
-import {Document, FileChemin} from "../../../model/Document.model";
+import {Document} from "../../../model/Document.model";
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +23,6 @@ export class DocumentService {
 
   supprimerDocument(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/supprimerDocument/${id}`);
-  }
-
-  uploadFile(file: File): Observable<FileChemin> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<FileChemin>(`${this.apiUrl}/upload-file`, formData);
   }
 
   ajouterDocument(document: Document, categorieId: number): Observable<Document> {

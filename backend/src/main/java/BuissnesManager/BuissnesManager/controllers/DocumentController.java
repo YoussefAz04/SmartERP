@@ -2,8 +2,6 @@ package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.entity.CategorieDocument;
 import BuissnesManager.BuissnesManager.entity.Document;
-import BuissnesManager.BuissnesManager.entity.FileChemin;
-import BuissnesManager.BuissnesManager.service.CloudinaryService;
 import BuissnesManager.BuissnesManager.service.DocumentService;
 import BuissnesManager.BuissnesManager.service.FileCheminService;
 
@@ -14,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,8 +23,6 @@ import java.io.IOException;
 public class DocumentController {
     @Autowired
     private DocumentService documentService;
-    @Autowired
-    private CloudinaryService cloudinaryService ;
     @Autowired
     private FileCheminService fileCheminService ;
 
@@ -53,20 +48,6 @@ public class DocumentController {
     public ResponseEntity<?> supprimerDocument(@PathVariable Long id) {
         documentService.supprimerDocument(id);
         return ResponseEntity.noContent().build();
-    }
-
-
-    @PostMapping(value = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadFile(@RequestPart("file") MultipartFile file) {
-        try {
-
-            String urlCloud = cloudinaryService.uploadFile(file);
-            FileChemin fileChemin = new FileChemin();
-            fileChemin.setUrLPdf(urlCloud);
-            return ResponseEntity.ok(fileCheminService.addFileChemin(fileChemin));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     @PostMapping("/ajouterDocument/{categorieId}")

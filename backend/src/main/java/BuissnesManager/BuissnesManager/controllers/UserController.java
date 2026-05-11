@@ -7,7 +7,6 @@ import BuissnesManager.BuissnesManager.dto.UserDTO;
 import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.AuditLogService;
-import BuissnesManager.BuissnesManager.service.ImageService;
 import BuissnesManager.BuissnesManager.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +27,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private ImageService imageService;
     @Autowired
     private JWTUtil jwtUtil;
     @Autowired
