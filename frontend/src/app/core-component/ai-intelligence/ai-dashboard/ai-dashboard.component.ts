@@ -17,8 +17,6 @@ import {
   AiDashboard,
   AiIntelligenceService,
   Recommendation,
-  WhatIfResult,
-  WhatIfScenario,
 } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
 import { routes } from 'src/app/core/helpers/routes';
 import { KpiModalType } from './kpi-detail-modal/kpi-detail-modal.component';
@@ -63,19 +61,6 @@ export class AiDashboardComponent implements OnInit {
   public today = new Date();
 
   public activeModal: KpiModalType = null;
-
-  // What-if scenario state
-  public showWhatIf = false;
-  public whatIfLoading = false;
-  public whatIfResult: WhatIfResult | null = null;
-  public whatIfError = '';
-  public whatIfScenarios: WhatIfScenario[] = [
-    { name: 'Promotion commerciale', deltas: { promo: true } },
-    { name: 'Ramadan', deltas: { ramadan: true } },
-    { name: 'Après Ramadan', deltas: { ramadan: false } },
-    { name: 'Jours ouvrés réduits (-3j)', deltas: { workingDays: -3 } },
-    { name: 'Budget marketing +30%', deltas: { marketingSpend: 1 } },
-  ];
 
   public salesChartOptions: Partial<ChartOptions> = {};
   public forecastChartOptions: Partial<ChartOptions> = {};
@@ -550,30 +535,6 @@ export class AiDashboardComponent implements OnInit {
 
   closeModal(): void {
     this.activeModal = null;
-  }
-
-  toggleWhatIf(): void {
-    this.showWhatIf = !this.showWhatIf;
-    if (this.showWhatIf && !this.whatIfResult) {
-      this.runWhatIf();
-    }
-  }
-
-  runWhatIf(): void {
-    this.whatIfLoading = true;
-    this.whatIfError = '';
-    this.whatIfResult = null;
-    this.aiService.whatIfForecast(this.whatIfScenarios).subscribe({
-      next: (result) => {
-        this.whatIfResult = result;
-        this.whatIfLoading = false;
-      },
-      error: (err) => {
-        console.error('What-if forecast error:', err);
-        this.whatIfError = 'Erreur lors du calcul des scénarios.';
-        this.whatIfLoading = false;
-      },
-    });
   }
 
   navigateFromRecommendation(rec: Recommendation): void {
