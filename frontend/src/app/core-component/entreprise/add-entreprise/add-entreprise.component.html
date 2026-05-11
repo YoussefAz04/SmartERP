@@ -1,219 +1,330 @@
-<!-- Page Header -->
-<div class="page-header">
-  <div class="add-item d-flex">
-    <div class="page-title">
-      <h4>Créer une entreprise</h4>
-      <h6>Département Entreprise</h6>
+<!-- ── Hero Header ──────────────────────────────────────────── -->
+<div class="add-hero fade-in">
+  <span class="hero-orb hero-orb--a" aria-hidden="true"></span>
+  <span class="hero-orb hero-orb--b" aria-hidden="true"></span>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <a routerLink="/entreprise/listEntreprise" class="back-btn" title="Retour à la liste">
+        <i class="feather icon-arrow-left"></i>
+      </a>
+      <div class="hero-icon-wrap">
+        <i class="feather icon-plus-circle"></i>
+      </div>
+      <div class="hero-text">
+        <p class="hero-eyebrow">
+          <i class="feather icon-briefcase"></i>
+          Gestion des Entreprises
+        </p>
+        <h1 class="hero-title">Nouvelle Entreprise</h1>
+        <p class="hero-sub">Remplissez les informations pour créer une entreprise</p>
+      </div>
     </div>
-  </div>
-  <div class="page-btn">
-    <a routerLink="/entreprise/listEntreprise" class="btn btn-secondary">
-      <i class="feather icon-arrow-left me-2"></i>Retour à la liste
-    </a>
+    <div class="hero-meta">
+      <span class="meta-badge">
+        <i class="feather icon-edit-3"></i> Création
+      </span>
+    </div>
   </div>
 </div>
-<!-- /Page Header -->
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <h5 class="card-title">Ajouter une entreprise</h5>
-      </div>
-      <div class="card-body add-entreprise">
-        <form [formGroup]="entrepriseFormGroup" (ngSubmit)="createEntreprise()">
-          <div class="row">
-            <div class="col-md-6">
-              <!-- Nom -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Nom <span class="text-danger">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  formControlName="nom" 
-                  class="form-control"
-                  [class.is-invalid]="isFieldInvalid('nom')"
-                  placeholder="Entrez le nom" />
-                <!-- ✅ ERROR MESSAGE VISIBLE -->
-                <div class="error-message" *ngIf="isFieldInvalid('nom')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="entrepriseFormGroup.get('nom')?.hasError('required')">Le nom est requis</span>
-                  <span *ngIf="entrepriseFormGroup.get('nom')?.hasError('minlength')">Le nom doit avoir au moins 2 caractères</span>
-                </div>
-              </div>
+<!-- ── Form Card ─────────────────────────────────────────────── -->
+<div class="form-card slide-up">
 
-              <!-- Raison sociale -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Raison Sociale <span class="text-danger">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  formControlName="raisonSociale" 
-                  class="form-control"
-                  [class.is-invalid]="isFieldInvalid('raisonSociale')"
-                  placeholder="Entrez la raison sociale" />
-                <!-- ✅ ERROR MESSAGE VISIBLE -->
-                <div class="error-message" *ngIf="isFieldInvalid('raisonSociale')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="entrepriseFormGroup.get('raisonSociale')?.hasError('required')">La raison sociale est requise</span>
-                  <span *ngIf="entrepriseFormGroup.get('raisonSociale')?.hasError('minlength')">La raison sociale doit avoir au moins 2 caractères</span>
-                </div>
-              </div>
-
-              <!-- Adresse -->
-              <div class="mb-3">
-                <label class="form-label">Adresse</label>
-                <input 
-                  type="text" 
-                  formControlName="adresse" 
-                  class="form-control"
-                  placeholder="Entrez l'adresse" />
-              </div>
-
-              <!-- Téléphone -->
-              <div class="mb-3">
-                <label class="form-label">Téléphone</label>
-                <input 
-                  type="tel" 
-                  formControlName="telephone" 
-                  class="form-control"
-                  [class.is-invalid]="isFieldInvalid('telephone')"
-                  placeholder="Ex: +216 XX XXX XXX" />
-                <!-- ✅ ERROR MESSAGE VISIBLE -->
-                <div class="error-message" *ngIf="isFieldInvalid('telephone')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="entrepriseFormGroup.get('telephone')?.hasError('pattern')">Le numéro de téléphone est invalide (format: +216 XX XXX XXX)</span>
-                </div>
-              </div>
-
-                           <!-- Email -->
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input 
-                  type="email" 
-                  formControlName="email" 
-                  class="form-control"
-                  [class.is-invalid]="isFieldInvalid('email')"
-                  placeholder="exemple@entreprise.com" />
-                <!-- ✅ ERROR MESSAGE VISIBLE -->
-                <div class="error-message" *ngIf="isFieldInvalid('email')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="entrepriseFormGroup.get('email')?.hasError('email')">Veuillez entrer une adresse email valide (ex: exemple&#64;entreprise.com)</span>
-                </div>
-              </div>
-
-              <!-- Description -->
-              <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea 
-                  formControlName="description" 
-                  class="form-control" 
-                  rows="3" 
-                  placeholder="Décrivez votre entreprise"></textarea>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <!-- Secteur d'activité -->
-              <div class="mb-3">
-                <label class="form-label">Secteur d'activité</label>
-                <input 
-                  type="text" 
-                  formControlName="secteurActivite" 
-                  class="form-control" 
-                  placeholder="Ex: Technologie, Commerce, etc." />
-              </div>
-
-              <!-- Statut juridique -->
-              <div class="mb-3">
-                <label class="form-label">Statut Juridique</label>
-                <input 
-                  type="text" 
-                  formControlName="statutJuridique" 
-                  class="form-control" 
-                  placeholder="Ex: SARL, EIRL, etc." />
-              </div>
-
-              <!-- N° Identification Fiscale -->
-              <div class="mb-3">
-                <label class="form-label">N° Identification Fiscale</label>
-                <input 
-                  type="text" 
-                  formControlName="numeroIdentificationFiscale" 
-                  class="form-control" 
-                  placeholder="NIF" />
-              </div>
-
-              <!-- Registre de commerce -->
-              <div class="mb-3">
-                <label class="form-label">Registre de Commerce</label>
-                <input 
-                  type="text" 
-                  formControlName="registreCommerce" 
-                  class="form-control" 
-                  placeholder="Numéro RC" />
-              </div>
-
-              <!-- Site web -->
-              <div class="mb-3">
-                <label class="form-label">Site Web</label>
-                <input 
-                  type="url" 
-                  formControlName="siteWeb" 
-                  class="form-control"
-                  [class.is-invalid]="isFieldInvalid('siteWeb')"
-                  placeholder="https://exemple.com" />
-                <!-- ✅ ERROR MESSAGE VISIBLE -->
-                <div class="error-message" *ngIf="isFieldInvalid('siteWeb')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="entrepriseFormGroup.get('siteWeb')?.hasError('invalidUrl')">Veuillez entrer une URL valide (ex: https://exemple.com)</span>
-                </div>
-              </div>
-
-              <!-- Date de création -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Date de Création <span class="text-danger">*</span>
-                </label>
-                <input 
-                  type="datetime-local" 
-                  formControlName="dateCreation" 
-                  class="form-control"
-                  [class.is-invalid]="isFieldInvalid('dateCreation')" />
-                <!-- ✅ ERROR MESSAGE VISIBLE -->
-                <div class="error-message" *ngIf="isFieldInvalid('dateCreation')">
-                  <i class="feather icon-alert-circle"></i>
-                  <span *ngIf="entrepriseFormGroup.get('dateCreation')?.hasError('required')">La date de création est requise</span>
-                </div>
-              </div>
-
-              <!-- Date dernière modification -->
-              <div class="mb-3">
-                <label class="form-label">Date Dernière Modification</label>
-                <input 
-                  type="datetime-local" 
-                  formControlName="dateDerniereModification" 
-                  class="form-control" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="form-actions text-end mt-4 border-top pt-3">
-            <a routerLink="/entreprise/listEntreprise" class="btn btn-secondary me-2">
-              <i class="feather icon-x me-2"></i>Annuler
-            </a>
-            <button 
-              type="submit" 
-              class="btn btn-primary" 
-              [disabled]="!entrepriseFormGroup.valid">
-              <i class="feather icon-check-circle me-2"></i>Créer l'entreprise
-            </button>
-          </div>
-        </form>
+  <!-- Card header -->
+  <div class="form-card__header">
+    <div class="form-card__title">
+      <span class="title-icon-wrap">
+        <i class="feather icon-edit-3"></i>
+      </span>
+      <div class="title-text-block">
+        <span class="title-main">Informations de l'entreprise</span>
+        <span class="title-sub">Les champs marqués d'un <strong>*</strong> sont obligatoires</span>
       </div>
     </div>
+    <a routerLink="/entreprise/listEntreprise" class="btn-ghost">
+      <i class="feather icon-arrow-left"></i> Retour
+    </a>
   </div>
+
+  <!-- Form -->
+  <form [formGroup]="entrepriseFormGroup" (ngSubmit)="createEntreprise()" class="ent-form">
+
+    <!-- ── Section 1 : Identité ─────────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="section-header__icon section-header__icon--indigo">
+          <i class="feather icon-briefcase"></i>
+        </div>
+        <div>
+          <div class="section-title">Identité</div>
+          <div class="section-desc">Informations principales de l'entreprise</div>
+        </div>
+      </div>
+      <div class="fields-grid two-col">
+
+        <!-- Nom -->
+        <div class="field-group">
+          <label class="field-label required">Nom commercial</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('nom')">
+            <i class="feather icon-briefcase input-icon"></i>
+            <input type="text" class="field-input"
+                   formControlName="nom"
+                   placeholder="Ex : Entreprise Bensalem">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('nom')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('nom') }}
+          </div>
+        </div>
+
+        <!-- Raison Sociale -->
+        <div class="field-group">
+          <label class="field-label required">Raison Sociale</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('raisonSociale')">
+            <i class="feather icon-file-text input-icon"></i>
+            <input type="text" class="field-input"
+                   formControlName="raisonSociale"
+                   placeholder="Ex : BENSALEM &amp; ASSOCIÉS SARL">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('raisonSociale')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('raisonSociale') }}
+          </div>
+        </div>
+
+        <!-- Secteur d'activité -->
+        <div class="field-group">
+          <label class="field-label">Secteur d'activité</label>
+          <div class="select-wrap">
+            <i class="feather icon-layers input-icon"></i>
+            <select class="field-select" formControlName="secteurActivite">
+              <option value="">— Sélectionner un secteur —</option>
+              <option value="Technologie & Informatique">Technologie &amp; Informatique</option>
+              <option value="Commerce & Distribution">Commerce &amp; Distribution</option>
+              <option value="Industrie & Fabrication">Industrie &amp; Fabrication</option>
+              <option value="Agriculture & Agroalimentaire">Agriculture &amp; Agroalimentaire</option>
+              <option value="Finance & Banque">Finance &amp; Banque</option>
+              <option value="Santé & Pharmacie">Santé &amp; Pharmacie</option>
+              <option value="Construction & BTP">Construction &amp; BTP</option>
+              <option value="Transport & Logistique">Transport &amp; Logistique</option>
+              <option value="Services & Conseil">Services &amp; Conseil</option>
+              <option value="Éducation & Formation">Éducation &amp; Formation</option>
+              <option value="Tourisme & Hôtellerie">Tourisme &amp; Hôtellerie</option>
+              <option value="Énergie & Mines">Énergie &amp; Mines</option>
+              <option value="Médias & Communication">Médias &amp; Communication</option>
+              <option value="Autre">Autre</option>
+            </select>
+            <i class="feather icon-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Statut Juridique -->
+        <div class="field-group">
+          <label class="field-label">Statut Juridique</label>
+          <div class="select-wrap">
+            <i class="feather icon-shield input-icon"></i>
+            <select class="field-select" formControlName="statutJuridique">
+              <option value="">— Sélectionner un statut —</option>
+              <option value="SARL">SARL — Société à Responsabilité Limitée</option>
+              <option value="EURL">EURL — Entreprise Unipersonnelle</option>
+              <option value="SPA">SPA — Société par Actions</option>
+              <option value="SA">SA — Société Anonyme</option>
+              <option value="SNC">SNC — Société en Nom Collectif</option>
+              <option value="GIE">GIE — Groupement d'Intérêt Économique</option>
+              <option value="Auto-entrepreneur">Auto-entrepreneur</option>
+              <option value="Autre">Autre</option>
+            </select>
+            <i class="feather icon-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-divider"></div>
+
+    <!-- ── Section 2 : Coordonnées ─────────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="section-header__icon section-header__icon--violet">
+          <i class="feather icon-phone"></i>
+        </div>
+        <div>
+          <div class="section-title">Coordonnées</div>
+          <div class="section-desc">Téléphone, email et présence en ligne</div>
+        </div>
+      </div>
+      <div class="fields-grid two-col">
+
+        <!-- Téléphone -->
+        <div class="field-group">
+          <label class="field-label">Téléphone</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('telephone')">
+            <i class="feather icon-phone input-icon"></i>
+            <input type="tel" class="field-input"
+                   formControlName="telephone"
+                   placeholder="Ex : +213 21 23 45 67">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('telephone')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('telephone') }}
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field-group">
+          <label class="field-label">Adresse Email</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('email')">
+            <i class="feather icon-mail input-icon"></i>
+            <input type="email" class="field-input"
+                   formControlName="email"
+                   placeholder="Ex : contact@bensalem.dz">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('email')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('email') }}
+          </div>
+        </div>
+
+        <!-- Site Web -->
+        <div class="field-group">
+          <label class="field-label">Site Web</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('siteWeb')">
+            <i class="feather icon-globe input-icon"></i>
+            <input type="url" class="field-input"
+                   formControlName="siteWeb"
+                   placeholder="Ex : https://www.bensalem.dz">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('siteWeb')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('siteWeb') }}
+          </div>
+        </div>
+
+        <!-- Date de Création -->
+        <div class="field-group">
+          <label class="field-label required">Date de Création</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('dateCreation')">
+            <i class="feather icon-calendar input-icon"></i>
+            <input type="date" class="field-input"
+                   formControlName="dateCreation">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('dateCreation')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('dateCreation') }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-divider"></div>
+
+    <!-- ── Section 3 : Légal & Fiscal ──────────────────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="section-header__icon section-header__icon--emerald">
+          <i class="feather icon-award"></i>
+        </div>
+        <div>
+          <div class="section-title">Légal &amp; Fiscal</div>
+          <div class="section-desc">Identifiants officiels et registres</div>
+        </div>
+      </div>
+      <div class="fields-grid two-col">
+
+        <!-- NIF -->
+        <div class="field-group">
+          <label class="field-label">N° Identification Fiscale (NIF)</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('numeroIdentificationFiscale')">
+            <i class="feather icon-hash input-icon"></i>
+            <input type="text" class="field-input"
+                   formControlName="numeroIdentificationFiscale"
+                   placeholder="Ex : 001234567890">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('numeroIdentificationFiscale')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('numeroIdentificationFiscale') }}
+          </div>
+        </div>
+
+        <!-- Registre Commerce -->
+        <div class="field-group">
+          <label class="field-label">Registre de Commerce</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('registreCommerce')">
+            <i class="feather icon-award input-icon"></i>
+            <input type="text" class="field-input"
+                   formControlName="registreCommerce"
+                   placeholder="Ex : 16B1234567">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('registreCommerce')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('registreCommerce') }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-divider"></div>
+
+    <!-- ── Section 4 : Informations complémentaires ─────────── -->
+    <div class="form-section">
+      <div class="section-header">
+        <div class="section-header__icon section-header__icon--amber">
+          <i class="feather icon-map-pin"></i>
+        </div>
+        <div>
+          <div class="section-title">Informations complémentaires</div>
+          <div class="section-desc">Adresse physique et présentation de l'activité</div>
+        </div>
+      </div>
+      <div class="fields-grid one-col">
+
+        <!-- Adresse -->
+        <div class="field-group">
+          <label class="field-label">Adresse du siège</label>
+          <div class="input-wrap" [class.has-error]="isFieldInvalid('adresse')">
+            <i class="feather icon-map-pin input-icon"></i>
+            <input type="text" class="field-input"
+                   formControlName="adresse"
+                   placeholder="Ex : 12 Rue des Oliviers, Alger 16000">
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('adresse')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('adresse') }}
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="field-group">
+          <label class="field-label">Description de l'activité</label>
+          <textarea class="field-textarea"
+                    formControlName="description"
+                    rows="4"
+                    placeholder="Décrivez brièvement l'activité principale, les produits ou services proposés…"></textarea>
+          <div class="field-hint">
+            <span>{{ getRemainingChars('description', 500) }} caractères restants</span>
+          </div>
+          <div class="error-msg" *ngIf="isFieldInvalid('description')">
+            <i class="feather icon-alert-circle"></i>
+            {{ getErrorMessage('description') }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Footer Actions ──────────────────────────────────── -->
+    <div class="form-footer">
+      <a routerLink="/entreprise/listEntreprise" class="btn-cancel">
+        <i class="feather icon-x"></i> Annuler
+      </a>
+      <button type="submit" class="btn-save" [disabled]="!entrepriseFormGroup.valid">
+        <i class="feather icon-check-circle"></i>
+        Créer l'entreprise
+      </button>
+    </div>
+
+  </form>
 </div>
