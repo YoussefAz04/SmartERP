@@ -1,5 +1,5 @@
 <!-- Hero Header with integrated stats -->
-<div class="cat-hero-header">
+<div class="cat-fournisseur-hero-header">
   <div class="hero-orb hero-orb-1"></div>
   <div class="hero-orb hero-orb-2"></div>
   <div class="hero-orb hero-orb-3"></div>
@@ -9,7 +9,7 @@
         <i class="feather icon-layers"></i> Gestion des Catégories
       </span>
       <h1 class="hero-title">Catégories Fournisseur</h1>
-      <p class="hero-subtitle">Organisez vos fournisseurs par catégories</p>
+      <p class="hero-subtitle">Organisez et structurez vos fournisseurs par catégories pour une meilleure gestion et navigation.</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadCategories()">
@@ -57,7 +57,7 @@
 
 <!-- Categories Table -->
 <div class="modern-panel">
-  <div class="panel-header panel-header-cat">
+  <div class="panel-header panel-header-cat-fournisseur">
     <h5 class="panel-title">
       <i class="feather icon-layers"></i>
       Liste des Catégories
@@ -65,6 +65,12 @@
     </h5>
   </div>
   <div class="panel-body">
+    <div class="panel-toolbar" *ngIf="!isLoading && categories.length > 0">
+      <div class="panel-toolbar-copy">
+        <span class="panel-toolbar-label">Aperçu</span>
+        <p>{{ categories.length }} catégories configurées pour structurer votre portefeuille fournisseur.</p>
+      </div>
+    </div>
 
     <!-- Skeleton Loading -->
     <div *ngIf="isLoading" class="skeleton-wrapper">
@@ -73,15 +79,13 @@
         <div class="skeleton skeleton-text"></div>
         <div class="skeleton skeleton-text-sm"></div>
         <div class="skeleton skeleton-badge"></div>
-        <div class="skeleton skeleton-date"></div>
-        <div class="skeleton skeleton-date"></div>
         <div class="skeleton skeleton-actions"></div>
       </div>
     </div>
 
     <!-- Table -->
     <div class="table-responsive" *ngIf="!isLoading">
-      <table class="cat-table">
+      <table class="cat-fournisseur-table">
         <thead>
           <tr>
             <th>Catégorie</th>
@@ -97,21 +101,36 @@
             <td>
               <div class="cat-name-cell">
                 <div class="cat-avatar">{{ (categorie.nom || '?').charAt(0).toUpperCase() }}</div>
-                <strong>{{ categorie.nom }}</strong>
+                <div class="cat-name-content">
+                  <strong>{{ categorie.nom }}</strong>
+                </div>
               </div>
             </td>
             <td>
-              <span class="description-text" *ngIf="categorie.description">{{ categorie.description }}</span>
-              <span class="text-muted" *ngIf="!categorie.description">—</span>
+              <div class="description-stack">
+                <span class="description-label">Description</span>
+                <span class="description-text" *ngIf="categorie.description">{{ categorie.description }}</span>
+                <span class="description-text description-text-muted" *ngIf="!categorie.description">Aucune description</span>
+              </div>
             </td>
             <td>
-              <span class="count-badge" *ngIf="categorie.fournisseurs && categorie.fournisseurs.length > 0">
-                <i class="feather icon-package"></i> {{ categorie.fournisseurs.length }}
+              <span class="count-badge" [class.count-badge-empty]="!categorie.fournisseurs || categorie.fournisseurs.length === 0">
+                <i class="feather" [ngClass]="(categorie.fournisseurs?.length ?? 0) > 0 ? 'icon-package' : 'icon-minus'"></i>
+                {{ categorie.fournisseurs?.length ?? 0 }}
               </span>
-              <span class="text-muted" *ngIf="!categorie.fournisseurs || categorie.fournisseurs.length === 0">0</span>
             </td>
-            <td class="date-cell">{{ categorie.createdAt | date:'dd/MM/yyyy' }}</td>
-            <td class="date-cell">{{ categorie.updatedAt | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="date-badge">
+                <i class="feather icon-calendar"></i>
+                {{ categorie.createdAt | date:'dd/MM/yyyy' }}
+              </span>
+            </td>
+            <td>
+              <span class="date-badge">
+                <i class="feather icon-edit-2"></i>
+                {{ categorie.updatedAt | date:'dd/MM/yyyy' }}
+              </span>
+            </td>
             <td>
               <div class="action-btns">
                 <button type="button" class="action-btn action-btn-edit"
