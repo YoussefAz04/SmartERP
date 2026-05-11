@@ -16,6 +16,7 @@ import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.AuditLogService;
+import BuissnesManager.BuissnesManager.service.MailService;
 import BuissnesManager.BuissnesManager.service.PermissionService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -78,6 +79,17 @@ public class AuthController {
 
     @Autowired
     private AuditLogService auditLogService;
+
+    @Autowired
+    private MailService mailService;
+
+    /**
+     * Base URL of the frontend application; used to build absolute links
+     * (e.g. the password-reset link sent by email). Configurable via
+     * {@code app.frontend-url} in {@code application.properties}.
+     */
+    @Value("${app.frontend-url:http://localhost:4200}")
+    private String frontendUrl;
 
     @Autowired
     private RefreshTokenRepo refreshTokenRepo;
@@ -465,12 +477,11 @@ public class AuthController {
      * Request a password reset.
      * POST /api/auth/forgot-password  body: { "email": "..." }
      *
-     * Generates a one-time token (valid 30 minutes) and stores it on the user.
-     * Because no SMTP server is configured in this project, the token and a
-     * ready-to-use reset link are returned directly in the response so the UI
-     * can display them. To avoid leaking which emails are registered, the
-     * endpoint always returns 200 OK with a generic message; the token/link
-     * fields are only populated when the email actually matches an account.
+     * Generates a one-time token (valid 30 minutes) and emails a clickable
+     * reset link to the user. To avoid leaking which emails are registered,
+     * the endpoint always returns 200 OK with a generic message regardless of
+     * whether the email matches an account; the token is never returned in
+     * the response body.
      */
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
@@ -478,7 +489,7 @@ public class AuthController {
         System.out.println("✅ Forgot-password endpoint hit for email: " + email);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "If an account exists for this email, a password reset link has been generated.");
+        body.put("message", "If an account exists for this email, a password reset link has been sent.");
 
         if (email == null || email.trim().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is required");
@@ -493,15 +504,26 @@ public class AuthController {
                 user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(30));
                 userRepo.save(user);
 
-                // No SMTP configured: return the token/link directly so the UI
-                // (or a developer/admin) can use it. In a production deployment
-                // with email enabled, these fields should be removed and the
-                // link emailed to the user instead.
-                String resetLink = "/auth/reset-password?token=" + token;
-                body.put("token", token);
-                body.put("resetLink", resetLink);
-                body.put("expiresAt", user.getResetPasswordTokenExpiry().toString());
-                System.out.println("✅ Password reset token generated for user: " + user.getUsername());
+                // Build an absolute link the user can click directly from their
+                // email client. The frontend route is /auth/reset-password and
+                // it reads the token from the query string.
+                String base = frontendUrl == null ? "" : frontendUrl.replaceAll("/+$", "");
+                String resetLink = base + "/auth/reset-password?token=" + token;
+
+                try {
+                    mailService.sendPasswordResetEmail(user.getEmail(), user.getUsername(), resetLink);
+                    System.out.println("✅ Password reset email sent to: " + user.getEmail());
+                } catch (Exception mailEx) {
+                    // Roll back the token so the user can retry without being
+                    // locked out by a stale token they never received.
+                    user.setResetPasswordToken(null);
+                    user.setResetPasswordTokenExpiry(null);
+                    userRepo.save(user);
+                    System.err.println("❌ Failed to send password reset email: " + mailEx.getMessage());
+                    mailEx.printStackTrace();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Could not send the password reset email. Please try again later.");
+                }
             } else {
                 System.out.println("ℹ️ Forgot-password requested for unknown email: " + email);
             }

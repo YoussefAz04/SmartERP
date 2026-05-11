@@ -16,8 +16,6 @@ export class ForgotPasswordComponent {
   loading = false;
   errorMessage = '';
   successMessage = '';
-  resetLink = '';
-  resetToken = '';
 
   constructor(
     private router: Router,
@@ -36,8 +34,6 @@ export class ForgotPasswordComponent {
   submit() {
     this.errorMessage = '';
     this.successMessage = '';
-    this.resetLink = '';
-    this.resetToken = '';
 
     this.forgotForm.markAllAsTouched();
     if (!this.forgotForm.valid) {
@@ -49,16 +45,10 @@ export class ForgotPasswordComponent {
     const email = this.forgotForm.get('email')?.value;
 
     this.authService.forgotPassword(email).subscribe({
-      next: (response: any) => {
+      next: () => {
         this.loading = false;
         this.successMessage =
-          'Si un compte existe pour cette adresse, un lien de réinitialisation a été généré.';
-        // Email sending is not configured server-side; the API returns the
-        // reset link directly so the user can complete the flow.
-        if (response?.resetLink) {
-          this.resetLink = response.resetLink;
-          this.resetToken = response.token || '';
-        }
+          'Si un compte existe pour cette adresse, un lien de réinitialisation vous a été envoyé par e-mail. Veuillez vérifier votre boîte de réception.';
       },
       error: (error: any) => {
         this.loading = false;
@@ -68,15 +58,6 @@ export class ForgotPasswordComponent {
             : error?.error?.message) ||
           'Une erreur est survenue. Veuillez réessayer.';
       },
-    });
-  }
-
-  goToReset() {
-    if (!this.resetToken) {
-      return;
-    }
-    this.router.navigate(['/auth/reset-password'], {
-      queryParams: { token: this.resetToken },
     });
   }
 
