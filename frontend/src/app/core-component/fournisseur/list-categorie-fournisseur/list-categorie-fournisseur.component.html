@@ -9,7 +9,7 @@
         <i class="feather icon-layers"></i> Gestion des Catégories
       </span>
       <h1 class="hero-title">Catégories Fournisseur</h1>
-      <p class="hero-subtitle">Organisez vos fournisseurs par catégories avec une vue claire, sobre et professionnelle.</p>
+      <p class="hero-subtitle">Organisez et structurez vos fournisseurs par catégories pour une meilleure gestion et navigation.</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadCategories()">
@@ -103,7 +103,6 @@
                 <div class="cat-avatar">{{ (categorie.nom || '?').charAt(0).toUpperCase() }}</div>
                 <div class="cat-name-content">
                   <strong>{{ categorie.nom }}</strong>
-                  <span>Catégorie fournisseur</span>
                 </div>
               </div>
             </td>
