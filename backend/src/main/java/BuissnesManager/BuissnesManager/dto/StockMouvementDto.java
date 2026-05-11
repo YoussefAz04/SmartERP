@@ -2,13 +2,14 @@ package BuissnesManager.BuissnesManager.dto;
 
 import BuissnesManager.BuissnesManager.entity.TypeMouvement;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class StockMouvementDto {
     private Long id;
     private Long stockId;
     private TypeMouvement typeMouvement;
-    private Integer quantite;
+    private BigDecimal quantite;
     private String referenceCommande;
     private String motif;
     private Long utilisateurId;
@@ -25,8 +26,8 @@ public class StockMouvementDto {
     public TypeMouvement getTypeMouvement() { return typeMouvement; }
     public void setTypeMouvement(TypeMouvement typeMouvement) { this.typeMouvement = typeMouvement; }
 
-    public Integer getQuantite() { return quantite; }
-    public void setQuantite(Integer quantite) { this.quantite = quantite; }
+    public BigDecimal getQuantite() { return quantite; }
+    public void setQuantite(BigDecimal quantite) { this.quantite = quantite; }
 
     public String getReferenceCommande() { return referenceCommande; }
     public void setReferenceCommande(String referenceCommande) { this.referenceCommande = referenceCommande; }
