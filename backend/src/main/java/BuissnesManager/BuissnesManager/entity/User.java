@@ -31,7 +31,7 @@ public class User {
     @Column(length = 20)
     private String phone;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = false, length = 255)
     private String username;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
