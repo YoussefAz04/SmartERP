@@ -77,38 +77,23 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Hero Header  (navy → blue gradient)
+// Hero Header  (clean light theme)
 // ══════════════════════════════════════════════════════════════════════════════
 .page-hero {
   position: relative;
-  background: linear-gradient(135deg, $blue-900 0%, $blue-800 45%, $blue-700 100%);
-  border-radius: $r-xl;
-  padding: 28px 32px;
+  background: #fff;
+  border-radius: $r-lg;
+  padding: 22px 28px;
   margin-bottom: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba($blue-800, .45), 0 2px 8px rgba($blue-900, .3);
+  border: 1px solid $slate-200;
+  box-shadow: $shadow-sm;
 }
 
-.hero-orb {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: .12;
-}
-.hero-orb-1 {
-  width: 240px; height: 240px;
-  background: radial-gradient(circle, $blue-400, transparent);
-  top: -90px; right: -60px;
-}
-.hero-orb-2 {
-  width: 160px; height: 160px;
-  background: radial-gradient(circle, $blue-300, transparent);
-  bottom: -70px; left: 22%;
-}
+.hero-orb { display: none; }
+.hero-orb-1 { display: none; }
+.hero-orb-2 { display: none; }
 
 .hero-content {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -121,28 +106,24 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 }
 
 .hero-icon-wrap {
-  width: 52px;
-  height: 52px;
-  background: rgba(255,255,255,.15);
-  border: 1.5px solid rgba(255,255,255,.3);
+  width: 44px;
+  height: 44px;
+  background: $indigo-50;
   border-radius: $r;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: $indigo-600;
   flex-shrink: 0;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0,0,0,.2);
-  i { font-size: 22px; }
+  i { font-size: 20px; }
 }
 
 .hero-title {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: $slate-900;
   margin: 0 0 6px;
-  letter-spacing: -.02em;
-  text-shadow: 0 1px 4px rgba(0,0,0,.2);
+  letter-spacing: -.01em;
 }
 
 .breadcrumb {
@@ -157,33 +138,24 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 }
 
 .bc-link {
-  color: rgba(255,255,255,.75);
+  color: $slate-500;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   transition: $t-fast;
   i { font-size: 12px; }
-  &:hover { color: #fff; }
+  &:hover { color: $indigo-600; }
 }
 
-.bc-sep     { color: rgba(255,255,255,.4); font-size: .85rem; }
-.bc-current { color: rgba(255,255,255,.6); }
+.bc-sep     { color: $slate-400; font-size: .85rem; }
+.bc-current { color: $slate-600; }
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Step Progress
+// Step Progress — hidden
 // ══════════════════════════════════════════════════════════════════════════════
-.step-progress {
-  display: flex;
-  align-items: center;
-  padding: 14px 28px;
-  background: #fff;
-  border-radius: $r-lg;
-  border: 1px solid $slate-100;
-  box-shadow: $shadow-sm;
-  margin-bottom: 20px;
-}
+.step-progress { display: none; }
 
 .step-item {
   display: flex;
@@ -277,66 +249,55 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 
 // ── Step badges ────────────────────────────────────────────────────────────
 .step-badge {
-  font-size: .68rem;
-  font-weight: 800;
-  letter-spacing: .06em;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
   text-transform: uppercase;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 99px;
   white-space: nowrap;
   flex-shrink: 0;
-  background: linear-gradient(135deg, $blue-50, $blue-100);
+  background: $blue-50;
   color: $blue-700;
-  border: 1.5px solid rgba($blue-400, .35);
+  border: 1px solid rgba($blue-400, .3);
 
   &.step-badge-indigo {
-    background: linear-gradient(135deg, $indigo-50, $indigo-100);
+    background: $indigo-50;
     color: $indigo-600;
-    border-color: rgba($indigo-500, .35);
+    border-color: rgba($indigo-500, .3);
   }
   &.step-badge-violet {
-    background: linear-gradient(135deg, $violet-50, $violet-100);
+    background: $violet-50;
     color: $violet-600;
-    border-color: rgba($violet-600, .3);
+    border-color: rgba($violet-600, .25);
   }
 }
 
 // ── Section icons ──────────────────────────────────────────────────────────
 .sec-icon-wrap {
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   border-radius: $r;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: $t;
   i { font-size: 18px; }
 
   &.sec-info {
-    background: linear-gradient(135deg, $blue-50, $blue-100);
+    background: $blue-50;
     color: $blue-600;
-    border: 1.5px solid rgba($blue-400, .3);
-    box-shadow: 0 4px 12px rgba($blue-500, .15);
+    border: 1px solid rgba($blue-400, .25);
   }
   &.sec-price {
-    background: linear-gradient(135deg, $indigo-50, $indigo-100);
+    background: $indigo-50;
     color: $indigo-600;
-    border: 1.5px solid rgba($indigo-500, .3);
-    box-shadow: 0 4px 12px rgba($indigo-500, .15);
+    border: 1px solid rgba($indigo-500, .25);
   }
   &.sec-stock {
-    background: linear-gradient(135deg, $violet-50, $violet-100);
+    background: $violet-50;
     color: $violet-600;
-    border: 1.5px solid rgba($violet-600, .3);
-    box-shadow: 0 4px 12px rgba($violet-600, .12);
-  }
-
-  .form-section:hover & {
-    transform: scale(1.06) rotate(-2deg);
-    &.sec-info  { box-shadow: 0 6px 18px rgba($blue-500, .25); }
-    &.sec-price { box-shadow: 0 6px 18px rgba($indigo-500, .25); }
-    &.sec-stock { box-shadow: 0 6px 18px rgba($violet-600, .22); }
+    border: 1px solid rgba($violet-600, .25);
   }
 }
 
