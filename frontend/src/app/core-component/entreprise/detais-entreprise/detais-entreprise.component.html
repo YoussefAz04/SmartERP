@@ -68,22 +68,16 @@
         <span class="title-icon-wrap" [class.title-icon-wrap--view]="isSuperAdmin">
           <i class="feather" [class.icon-eye]="isSuperAdmin" [class.icon-edit-3]="!isSuperAdmin"></i>
         </span>
-        <span *ngIf="!isSuperAdmin">Informations de l'entreprise
-          <span class="title-sub">Modifiez les champs ci-dessous puis enregistrez</span>
-        </span>
-        <span *ngIf="isSuperAdmin">Consulter l'entreprise
-          <span class="title-sub title-sub--readonly">Mode lecture seule — aucune modification possible</span>
-        </span>
+        <div class="title-text-block">
+          <span class="title-main" *ngIf="!isSuperAdmin">Informations de l'entreprise</span>
+          <span class="title-main" *ngIf="isSuperAdmin">Consulter l'entreprise</span>
+          <span class="title-sub" *ngIf="!isSuperAdmin">Modifiez les champs ci-dessous puis enregistrez</span>
+          <span class="title-sub title-sub--readonly" *ngIf="isSuperAdmin">Mode lecture seule — aucune modification possible</span>
+        </div>
       </div>
-      <div class="form-card__actions">
-        <a routerLink="/entreprise/listEntreprise" class="btn-ghost">
-          <i class="feather icon-arrow-left"></i> Retour
-        </a>
-        <button type="submit" form="entrepriseForm" class="btn-save" *ngIf="!isSuperAdmin">
-          <i class="feather icon-check-circle"></i>
-          Enregistrer
-        </button>
-      </div>
+      <a routerLink="/entreprise/listEntreprise" class="btn-ghost">
+        <i class="feather icon-arrow-left"></i> Retour
+      </a>
     </div>
 
     <!-- Read-only banner for Super Admin -->
@@ -100,18 +94,21 @@
 
       <!-- ── Section 1: Identité ──────────────────────────── -->
       <div class="form-section">
-        <div class="section-label">
-          <span class="section-dot section-dot--indigo"></span>
-          Identité
+        <div class="section-header">
+          <div class="section-header__icon section-header__icon--indigo">
+            <i class="feather icon-briefcase"></i>
+          </div>
+          <div>
+            <div class="section-title">Identité</div>
+            <div class="section-desc">Informations principales de l'entreprise</div>
+          </div>
         </div>
         <div class="fields-grid two-col">
 
           <div class="field-group">
-            <label class="field-label required">
-              <i class="feather icon-briefcase field-label-icon"></i>
-              Nom
-            </label>
+            <label class="field-label required">Nom</label>
             <div class="input-wrap">
+              <i class="feather icon-briefcase input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="nom" [(ngModel)]="entreprise.nom" required
                      [attr.readonly]="isSuperAdmin || null"
@@ -120,11 +117,9 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-file-text field-label-icon"></i>
-              Raison Sociale
-            </label>
+            <label class="field-label">Raison Sociale</label>
             <div class="input-wrap">
+              <i class="feather icon-file-text input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="raisonSociale" [(ngModel)]="entreprise.raisonSociale"
                      [attr.readonly]="isSuperAdmin || null"
@@ -133,11 +128,9 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-layers field-label-icon"></i>
-              Secteur d'activité
-            </label>
+            <label class="field-label">Secteur d'activité</label>
             <div class="input-wrap">
+              <i class="feather icon-layers input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="secteurActivite" [(ngModel)]="entreprise.secteurActivite"
                      [attr.readonly]="isSuperAdmin || null"
@@ -146,11 +139,9 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-shield field-label-icon"></i>
-              Statut Juridique
-            </label>
+            <label class="field-label">Statut Juridique</label>
             <div class="input-wrap">
+              <i class="feather icon-shield input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="statutJuridique" [(ngModel)]="entreprise.statutJuridique"
                      [attr.readonly]="isSuperAdmin || null"
@@ -165,20 +156,22 @@
 
       <!-- ── Section 2: Contact ────────────────────────────── -->
       <div class="form-section">
-        <div class="section-label">
-          <span class="section-dot section-dot--violet"></span>
-          Contact
+        <div class="section-header">
+          <div class="section-header__icon section-header__icon--violet">
+            <i class="feather icon-phone"></i>
+          </div>
+          <div>
+            <div class="section-title">Contact</div>
+            <div class="section-desc">Coordonnées et présence en ligne</div>
+          </div>
         </div>
         <div class="fields-grid two-col">
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-phone field-label-icon"></i>
-              Téléphone
-            </label>
-            <div class="input-wrap input-wrap--icon">
+            <label class="field-label">Téléphone</label>
+            <div class="input-wrap">
               <i class="feather icon-phone input-icon"></i>
-              <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
+              <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="telephone" [(ngModel)]="entreprise.telephone"
                      [attr.readonly]="isSuperAdmin || null"
                      placeholder="+216 XX XXX XXX">
@@ -186,13 +179,10 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-mail field-label-icon"></i>
-              Email
-            </label>
-            <div class="input-wrap input-wrap--icon">
+            <label class="field-label">Email</label>
+            <div class="input-wrap">
               <i class="feather icon-mail input-icon"></i>
-              <input type="email" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
+              <input type="email" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="email" [(ngModel)]="entreprise.email"
                      [attr.readonly]="isSuperAdmin || null"
                      placeholder="contact@entreprise.com">
@@ -200,13 +190,10 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-globe field-label-icon"></i>
-              Site Web
-            </label>
-            <div class="input-wrap input-wrap--icon">
+            <label class="field-label">Site Web</label>
+            <div class="input-wrap">
               <i class="feather icon-globe input-icon"></i>
-              <input type="url" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
+              <input type="url" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="siteWeb" [(ngModel)]="entreprise.siteWeb"
                      [attr.readonly]="isSuperAdmin || null"
                      placeholder="https://www.entreprise.com">
@@ -214,13 +201,10 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-calendar field-label-icon"></i>
-              Date de Création
-            </label>
-            <div class="input-wrap input-wrap--icon">
+            <label class="field-label">Date de Création</label>
+            <div class="input-wrap">
               <i class="feather icon-calendar input-icon"></i>
-              <input type="date" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
+              <input type="date" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="dateCreation" [(ngModel)]="entreprise.dateCreation"
                      [attr.readonly]="isSuperAdmin || null">
             </div>
@@ -233,20 +217,22 @@
 
       <!-- ── Section 3: Légal & Fiscal ───────────────────────── -->
       <div class="form-section">
-        <div class="section-label">
-          <span class="section-dot section-dot--emerald"></span>
-          Légal &amp; Fiscal
+        <div class="section-header">
+          <div class="section-header__icon section-header__icon--emerald">
+            <i class="feather icon-award"></i>
+          </div>
+          <div>
+            <div class="section-title">Légal &amp; Fiscal</div>
+            <div class="section-desc">Identifiants officiels et registres</div>
+          </div>
         </div>
         <div class="fields-grid two-col">
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-hash field-label-icon"></i>
-              N° Identification Fiscale (NIF)
-            </label>
-            <div class="input-wrap input-wrap--icon">
+            <label class="field-label">N° Identification Fiscale (NIF)</label>
+            <div class="input-wrap">
               <i class="feather icon-hash input-icon"></i>
-              <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
+              <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="numeroIdentificationFiscale"
                      [(ngModel)]="entreprise.numeroIdentificationFiscale"
                      [attr.readonly]="isSuperAdmin || null"
@@ -255,13 +241,10 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-award field-label-icon"></i>
-              Registre Commerce
-            </label>
-            <div class="input-wrap input-wrap--icon">
+            <label class="field-label">Registre Commerce</label>
+            <div class="input-wrap">
               <i class="feather icon-award input-icon"></i>
-              <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
+              <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="registreCommerce" [(ngModel)]="entreprise.registreCommerce"
                      [attr.readonly]="isSuperAdmin || null"
                      placeholder="Numéro registre commerce">
@@ -275,20 +258,22 @@
 
       <!-- ── Section 4: Informations complémentaires ─────────── -->
       <div class="form-section">
-        <div class="section-label">
-          <span class="section-dot section-dot--amber"></span>
-          Informations complémentaires
+        <div class="section-header">
+          <div class="section-header__icon section-header__icon--amber">
+            <i class="feather icon-map-pin"></i>
+          </div>
+          <div>
+            <div class="section-title">Informations complémentaires</div>
+            <div class="section-desc">Adresse et description de l'activité</div>
+          </div>
         </div>
         <div class="fields-grid one-col">
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-map-pin field-label-icon"></i>
-              Adresse
-            </label>
-            <div class="input-wrap input-wrap--icon">
+            <label class="field-label">Adresse</label>
+            <div class="input-wrap">
               <i class="feather icon-map-pin input-icon"></i>
-              <input type="text" class="field-input field-input--padded" [class.field-input--readonly]="isSuperAdmin"
+              <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="adresse" [(ngModel)]="entreprise.adresse"
                      [attr.readonly]="isSuperAdmin || null"
                      placeholder="Adresse complète de l'entreprise">
@@ -296,10 +281,7 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">
-              <i class="feather icon-align-left field-label-icon"></i>
-              Description
-            </label>
+            <label class="field-label">Description</label>
             <textarea class="field-textarea" [class.field-textarea--readonly]="isSuperAdmin"
                       name="description" [(ngModel)]="entreprise.description"
                       [attr.readonly]="isSuperAdmin || null"
@@ -311,12 +293,9 @@
       </div>
 
       <!-- ── Footer Actions ──────────────────────────────────── -->
-      <div class="form-footer">
-        <a routerLink="/entreprise/listEntreprise" class="btn-ghost">
-          <i class="feather icon-arrow-left"></i> Retour à la liste
-        </a>
-        <button type="submit" class="btn-save btn-save--lg" *ngIf="!isSuperAdmin">
-          <i class="feather icon-check-circle"></i>
+      <div class="form-footer" *ngIf="!isSuperAdmin">
+        <button type="submit" class="btn-save">
+          <i class="feather icon-save"></i>
           Enregistrer les modifications
         </button>
       </div>
