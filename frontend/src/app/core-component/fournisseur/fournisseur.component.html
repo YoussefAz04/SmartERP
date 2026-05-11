@@ -1,8 +1,7 @@
 <router-outlet></router-outlet>
 
 <!-- Hero Header with integrated stats -->
-<div class="cat-hero-header">
-  <div class="hero-scanline"></div>
+<div class="fournisseur-hero-header">
   <div class="hero-orb hero-orb-1"></div>
   <div class="hero-orb hero-orb-2"></div>
   <div class="hero-orb hero-orb-3"></div>
@@ -12,14 +11,14 @@
         <i class="feather icon-package"></i> Gestion des Fournisseurs
       </span>
       <h1 class="hero-title">Fournisseurs</h1>
-      <p class="hero-subtitle">Gérez et consultez l'ensemble de vos fournisseurs</p>
+      <p class="hero-subtitle">Gérez votre portefeuille fournisseur avec une vue claire, sobre et professionnelle.</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadFournisseurs()">
         <i class="feather icon-rotate-ccw"></i> Actualiser
       </button>
       <button *ngIf="canCreateFournisseur" type="button" class="btn-hero btn-hero-primary" (click)="addFournisseur()">
-        <i class="feather icon-plus-circle"></i> Ajouter Fournisseur
+        <i class="feather icon-plus-circle"></i> Nouveau Fournisseur
       </button>
     </div>
   </div>
@@ -56,35 +55,90 @@
   </div>
 </div>
 
-<!-- Fournisseurs Table -->
-<div class="modern-panel">
-  <div class="panel-header panel-header-cat">
-    <h5 class="panel-title">
-      <i class="feather icon-package"></i>
-      Liste des Fournisseurs
-      <span class="panel-badge">{{ filteredFournisseurs.length }}</span>
-    </h5>
-    <div class="panel-search">
-      <div class="panel-search-group">
-        <i class="feather icon-search"></i>
-        <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm">
+<!-- Filter card -->
+<div class="filter-card mb-4">
+  <div class="filter-header">
+    <div class="filter-title">
+      <span class="filter-title-main">
+        <i class="feather icon-filter"></i>
+        Filtres &amp; Recherche
+      </span>
+      <span class="filter-title-sub">
+        Recherchez instantanément un fournisseur par nom, email, téléphone ou adresse.
+      </span>
+    </div>
+    <span class="filter-live-badge">{{ filteredFournisseurs.length }} résultat(s)</span>
+  </div>
+
+  <div class="filter-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-6">
+        <label class="filter-label">Recherche</label>
+        <div class="filter-input-group">
+          <i class="feather icon-search filter-input-icon"></i>
+          <input
+            type="text"
+            class="filter-input"
+            placeholder="Nom, email, téléphone, adresse..."
+            [(ngModel)]="searchTerm">
+        </div>
       </div>
-      <div class="panel-select-group">
-        <i class="feather icon-layers"></i>
-        <select [(ngModel)]="filterCategorie">
-          <option value="">Toutes catégories</option>
-          @for (cat of categories; track cat.id) {
-            <option [value]="cat.nom">{{ cat.nom }}</option>
-          }
-        </select>
+
+      <div class="col-md-4">
+        <label class="filter-label">Catégorie</label>
+        <div class="filter-input-group">
+          <i class="feather icon-layers filter-input-icon"></i>
+          <select class="filter-input filter-select" [(ngModel)]="filterCategorie">
+            <option value="">Toutes catégories</option>
+            @for (cat of categories; track cat.id) {
+              <option [value]="cat.nom">{{ cat.nom }}</option>
+            }
+          </select>
+        </div>
       </div>
+
+      <div class="col-md-2">
+        <button type="button" class="btn-reset w-100" (click)="resetFilters()">
+          <i class="feather icon-refresh-cw"></i>
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-helper-row">
+      <div class="filter-chip-list">
+        <span class="mini-chip">
+          <i class="feather icon-layers"></i>
+          Catégories {{ uniqueCategories }}
+        </span>
+        <span class="mini-chip">
+          <i class="feather icon-mail"></i>
+          Emails {{ withEmail }}
+        </span>
+      </div>
+
       @if (searchTerm || filterCategorie) {
-        <button type="button" class="btn-clear-filter" (click)="resetFilters()" title="Effacer filtres">
+        <button type="button" class="btn-inline-clear" (click)="resetFilters()">
           <i class="feather icon-x"></i>
+          Effacer les filtres
         </button>
       }
     </div>
   </div>
+</div>
+
+<div class="modern-panel">
+  <div class="panel-header panel-header-fournisseur">
+    <h5 class="panel-title">
+      <i class="feather icon-package"></i>
+      <span class="panel-title-copy">
+        Liste des Fournisseurs
+        <small>Présentation claire, actions visibles, navigation plus agréable</small>
+      </span>
+    </h5>
+    <span class="panel-badge">{{ filteredFournisseurs.length }}</span>
+  </div>
+
   <div class="panel-body">
 
     <!-- Skeleton Loading -->
@@ -102,7 +156,7 @@
 
     <!-- Table -->
     <div class="table-responsive" *ngIf="!isLoading">
-      <table class="cat-table">
+      <table class="fournisseur-table">
         <thead>
           <tr>
             <th>Fournisseur</th>
@@ -121,11 +175,11 @@
           @for (f of filteredFournisseurs; track f.id; let i = $index) {
             <tr>
               <td>
-                <div class="cat-name-cell">
-                  <div class="cat-avatar" [attr.data-letter]="(f.nom || '?').charAt(0).toUpperCase()">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
-                  <div class="cat-name-info">
+                <div class="fournisseur-name-cell">
+                  <div class="fournisseur-avatar">{{ (f.nom || '?').charAt(0).toUpperCase() }}</div>
+                  <div class="fournisseur-name-copy">
                     <strong>{{ f.nom }}</strong>
-                    <span class="cat-meta">{{ f.ville || f.pays || ('Fournisseur #' + f.id) }}</span>
+                    <span class="fournisseur-meta">{{ f.ville || f.pays || ('Fournisseur #' + f.id) }}</span>
                   </div>
                 </div>
               </td>
@@ -141,19 +195,19 @@
                 </div>
               </td>
               <td>
-                <span class="description-text" *ngIf="f.adresse">
+                <span class="addr-text" *ngIf="f.adresse">
                   <i class="feather icon-map-pin"></i> {{ f.adresse }}
                 </span>
                 <span class="text-muted" *ngIf="!f.adresse">—</span>
               </td>
               <td>
-                <span class="count-badge category-badge" *ngIf="f.categorieFournisseur?.nom">
+                <span class="sector-pill" *ngIf="f.categorieFournisseur?.nom">
                   {{ f.categorieFournisseur?.nom }}
                 </span>
                 <span class="text-muted" *ngIf="!f.categorieFournisseur?.nom">—</span>
               </td>
               <td>
-                <span class="description-text" *ngIf="f.secteurActivite">
+                <span class="addr-text" *ngIf="f.secteurActivite">
                   <i class="feather icon-briefcase"></i> {{ f.secteurActivite }}
                 </span>
                 <span class="text-muted" *ngIf="!f.secteurActivite">—</span>
@@ -172,13 +226,13 @@
                 </span>
                 <span class="text-muted" *ngIf="f.tauxLivraison == null">—</span>
               </td>
-              <td class="date-cell">
+              <td>
                 <span class="date-badge">
                   <i class="feather icon-calendar"></i>
                   {{ f.createdAt | date:'dd/MM/yyyy' }}
                 </span>
               </td>
-              <td class="date-cell">
+              <td>
                 <span class="date-badge">
                   <i class="feather icon-edit-2"></i>
                   {{ f.updatedAt | date:'dd/MM/yyyy' }}
@@ -219,17 +273,21 @@
             <tr>
               <td colspan="10">
                 <div class="empty-state">
-                  <i class="feather icon-package empty-icon"></i>
+                  <span class="empty-icon">
+                    <i class="feather icon-package"></i>
+                  </span>
+                  <h6>Aucun fournisseur à afficher</h6>
                   <p>
                     @if (searchTerm || filterCategorie) {
-                      Aucun fournisseur ne correspond à votre recherche.
+                      Aucun fournisseur ne correspond à votre recherche actuelle.
                     } @else {
-                      Aucun fournisseur trouvé.
+                      La liste est vide pour le moment. Ajoutez un premier fournisseur pour démarrer.
                     }
                   </p>
                   @if (searchTerm || filterCategorie) {
                     <button type="button" class="btn-retry" (click)="resetFilters()">
-                      <i class="feather icon-x"></i> Effacer les filtres
+                      <i class="feather icon-x"></i>
+                      Effacer les filtres
                     </button>
                   } @else if (canCreateFournisseur) {
                     <button type="button" class="btn-retry" (click)="addFournisseur()">
