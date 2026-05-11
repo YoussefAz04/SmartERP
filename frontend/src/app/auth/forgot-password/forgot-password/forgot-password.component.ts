@@ -41,7 +41,7 @@ export class ForgotPasswordComponent {
 
     this.forgotForm.markAllAsTouched();
     if (!this.forgotForm.valid) {
-      this.errorMessage = 'Please enter a valid email address.';
+      this.errorMessage = 'Veuillez saisir une adresse e-mail valide.';
       return;
     }
 
@@ -52,8 +52,7 @@ export class ForgotPasswordComponent {
       next: (response: any) => {
         this.loading = false;
         this.successMessage =
-          response?.message ||
-          'If an account exists for this email, a reset link has been generated.';
+          'Si un compte existe pour cette adresse, un lien de réinitialisation a été généré.';
         // Email sending is not configured server-side; the API returns the
         // reset link directly so the user can complete the flow.
         if (response?.resetLink) {
@@ -67,7 +66,7 @@ export class ForgotPasswordComponent {
           (error?.error && typeof error.error === 'string'
             ? error.error
             : error?.error?.message) ||
-          'An error occurred. Please try again.';
+          'Une erreur est survenue. Veuillez réessayer.';
       },
     });
   }

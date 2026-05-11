@@ -32,7 +32,19 @@ export class SigninComponent implements OnInit {
     });
   }
 
+  private static readonly REMEMBER_KEY = 'rememberedUsername';
+
   ngOnInit(): void {
+    // Restore the previously remembered username, if any.
+    try {
+      const remembered = localStorage.getItem(SigninComponent.REMEMBER_KEY);
+      if (remembered) {
+        this.loginForm.patchValue({ username: remembered });
+        this.rememberMe = true;
+      }
+    } catch {
+      // localStorage may be unavailable (private mode); ignore.
+    }
   }
 
   responseLogin!: PermissionDto;
@@ -57,6 +69,17 @@ export class SigninComponent implements OnInit {
     this.authService.login(credentials).subscribe({
       next: (response: any) => {
         try {
+          // ✅ Persist / clear remembered username based on the checkbox state
+          try {
+            if (this.rememberMe) {
+              localStorage.setItem(SigninComponent.REMEMBER_KEY, credentials.username);
+            } else {
+              localStorage.removeItem(SigninComponent.REMEMBER_KEY);
+            }
+          } catch {
+            // ignore storage errors
+          }
+
           // ✅ SAVE TOKEN TO AUTH SERVICE FIRST (so interceptor can use it)
           const token = response.token;
           if (token) {
