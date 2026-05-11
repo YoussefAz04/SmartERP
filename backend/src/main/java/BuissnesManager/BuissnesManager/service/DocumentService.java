@@ -24,8 +24,6 @@ public class DocumentService {
     @Autowired
     private CategorieDocumentRepo categorieDocumentRepo;
     @Autowired
-    private CloudinaryService cloudinaryService;
-    @Autowired
     private FileCheminRepo fileCheminRepo;
 
 
