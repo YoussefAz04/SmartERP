@@ -80,34 +80,19 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 // ══════════════════════════════════════════════════════════════════════════════
 .page-hero {
   position: relative;
-  background: linear-gradient(135deg, $teal-700 0%, $teal-600 50%, $teal-500 100%);
-  border-radius: $r-xl;
-  padding: 28px 32px;
+  background: #fff;
+  border-radius: $r-lg;
+  padding: 22px 28px;
   margin-bottom: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba($teal-600, .35), 0 2px 8px rgba($teal-700, .2);
+  border: 1px solid $slate-200;
+  box-shadow: $shadow-sm;
 }
 
-.hero-bg-orb {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: .15;
-}
-.hero-orb-1 {
-  width: 220px; height: 220px;
-  background: radial-gradient(circle, #fff, transparent);
-  top: -80px; right: -60px;
-}
-.hero-orb-2 {
-  width: 140px; height: 140px;
-  background: radial-gradient(circle, #fff, transparent);
-  bottom: -60px; left: 20%;
-}
+.hero-bg-orb { display: none; }
+.hero-orb-1  { display: none; }
+.hero-orb-2  { display: none; }
 
 .hero-content {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -122,27 +107,23 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 }
 
 .hero-icon-wrap {
-  width: 52px;
-  height: 52px;
-  background: rgba(255,255,255,.2);
-  border: 1.5px solid rgba(255,255,255,.35);
+  width: 44px;
+  height: 44px;
+  background: #eef2ff;
   border-radius: $r;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: #4f46e5;
   flex-shrink: 0;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0,0,0,.15);
 }
 
 .hero-title {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: $slate-900;
   margin: 0 0 6px;
-  letter-spacing: -.02em;
-  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+  letter-spacing: -.01em;
 }
 
 // ── Breadcrumb ─────────────────────────────────────────────────────────────
@@ -158,34 +139,23 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 }
 
 .breadcrumb-link {
-  color: rgba(255,255,255,.8);
+  color: $slate-500;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   transition: $t-fast;
-  &:hover { color: #fff; }
+  &:hover { color: #4f46e5; }
 }
 
-.breadcrumb-sep   { color: rgba(255,255,255,.45); font-size: .85rem; }
-.breadcrumb-current { color: rgba(255,255,255,.65); }
+.breadcrumb-sep   { color: $slate-400; font-size: .85rem; }
+.breadcrumb-current { color: $slate-600; }
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// Step Progress Bar
+// Step Progress Bar — hidden (removed from design)
 // ══════════════════════════════════════════════════════════════════════════════
-.step-progress {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 14px 28px;
-  background: #fff;
-  border-radius: $r-lg;
-  border: 1px solid $slate-100;
-  box-shadow: $shadow-sm;
-  margin-bottom: 20px;
-  overflow: hidden;
-}
+.step-progress { display: none; }
 
 .step-item {
   display: flex;
@@ -291,68 +261,57 @@ $t-bounce: all .35s cubic-bezier(.34,1.56,.64,1);
 
 // ── Step badge ─────────────────────────────────────────────────────────────
 .step-badge {
-  font-size: .68rem;
-  font-weight: 800;
-  letter-spacing: .06em;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
   text-transform: uppercase;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 99px;
   white-space: nowrap;
   flex-shrink: 0;
-  background: linear-gradient(135deg, $teal-50, $teal-100);
-  color: $teal-700;
-  border: 1.5px solid rgba($teal-400, .35);
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
 
   &.step-badge-green {
-    background: linear-gradient(135deg, $green-50, $green-100);
+    background: $green-50;
     color: $green-700;
-    border-color: rgba($green-500, .35);
+    border-color: rgba($green-500, .3);
   }
 
   &.step-badge-amber {
-    background: linear-gradient(135deg, $amber-50, $amber-100);
+    background: $amber-50;
     color: $amber-700;
-    border-color: rgba($amber-500, .35);
+    border-color: rgba($amber-500, .3);
   }
 }
 
 // ── Section Icon ───────────────────────────────────────────────────────────
 .section-icon-wrap {
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   border-radius: $r;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: $t;
 
   &.product {
-    background: linear-gradient(135deg, $teal-50, $teal-100);
+    background: $teal-50;
     color: $teal-600;
-    border: 1.5px solid rgba($teal-400, .3);
-    box-shadow: 0 4px 12px rgba($teal-500, .15);
+    border: 1px solid rgba($teal-400, .25);
   }
 
   &.pricing {
-    background: linear-gradient(135deg, $green-50, $green-100);
+    background: $green-50;
     color: $green-600;
-    border: 1.5px solid rgba($green-500, .3);
-    box-shadow: 0 4px 12px rgba($green-500, .15);
+    border: 1px solid rgba($green-500, .25);
   }
 
   &.supplier {
-    background: linear-gradient(135deg, $amber-50, $amber-100);
+    background: $amber-50;
     color: $amber-600;
-    border: 1.5px solid rgba($amber-500, .3);
-    box-shadow: 0 4px 12px rgba($amber-500, .15);
-  }
-
-  .form-section:hover & {
-    transform: scale(1.06) rotate(-2deg);
-    &.product  { box-shadow: 0 6px 18px rgba($teal-500, .25); }
-    &.pricing  { box-shadow: 0 6px 18px rgba($green-500, .25); }
-    &.supplier { box-shadow: 0 6px 18px rgba($amber-500, .25); }
+    border: 1px solid rgba($amber-500, .25);
   }
 }
 

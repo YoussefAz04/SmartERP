@@ -1,12 +1,4 @@
 <div class="register-page-wrapper">
-  <!-- Background shapes -->
-  <div class="bg-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-  </div>
-  <div class="grid-overlay"></div>
-
   <div class="register-card">
     <!-- Header -->
     <div class="card-header">
@@ -34,10 +26,10 @@
 
       <!-- Name -->
       <div class="field-group">
+        <label class="field-label" for="reg-name">Nom complet</label>
         <div class="input-wrapper" [class.input-error]="f['name'].invalid && f['name'].touched">
           <i class="fas fa-user field-icon"></i>
-          <input type="text" id="reg-name" formControlName="name" class="modern-input" placeholder=" " autocomplete="name">
-          <label for="reg-name" class="floating-label">Nom complet</label>
+          <input type="text" id="reg-name" formControlName="name" class="modern-input" placeholder="Entrez votre nom complet" autocomplete="name">
         </div>
         <span class="field-error" *ngIf="f['name'].invalid && f['name'].touched">
           <i class="fas fa-info-circle"></i> Nom requis (3 caractères minimum)
@@ -46,10 +38,10 @@
 
       <!-- Email -->
       <div class="field-group">
+        <label class="field-label" for="reg-email">Adresse e-mail</label>
         <div class="input-wrapper" [class.input-error]="f['email'].invalid && f['email'].touched">
           <i class="fas fa-envelope field-icon"></i>
-          <input type="email" id="reg-email" formControlName="email" class="modern-input" placeholder=" " autocomplete="email">
-          <label for="reg-email" class="floating-label">Adresse e-mail</label>
+          <input type="email" id="reg-email" formControlName="email" class="modern-input" placeholder="Entrez votre adresse e-mail" autocomplete="email">
         </div>
         <span class="field-error" *ngIf="f['email'].invalid && f['email'].touched">
           <i class="fas fa-info-circle"></i> Adresse e-mail valide requise
@@ -58,11 +50,11 @@
 
       <!-- Password -->
       <div class="field-group">
+        <label class="field-label" for="reg-password">Mot de passe</label>
         <div class="input-wrapper" [class.input-error]="f['password'].invalid && f['password'].touched">
           <i class="fas fa-lock field-icon"></i>
           <input [type]="password[1] ? 'text' : 'password'" id="reg-password" formControlName="password"
-                 class="modern-input" placeholder=" " autocomplete="new-password">
-          <label for="reg-password" class="floating-label">Mot de passe</label>
+                 class="modern-input" placeholder="Entrez votre mot de passe" autocomplete="new-password">
           <span class="toggle-password fas"
                 [class.fa-eye]="!password[1]"
                 [class.fa-eye-slash]="password[1]"
@@ -79,11 +71,11 @@
 
       <!-- Confirm Password -->
       <div class="field-group">
+        <label class="field-label" for="reg-confirm">Confirmer le mot de passe</label>
         <div class="input-wrapper" [class.input-error]="registerForm.errors?.['passwordMismatch'] && f['confirmPassword'].touched">
           <i class="fas fa-lock field-icon"></i>
           <input [type]="password[2] ? 'text' : 'password'" id="reg-confirm" formControlName="confirmPassword"
-                 class="modern-input" placeholder=" " autocomplete="new-password">
-          <label for="reg-confirm" class="floating-label">Confirmer le mot de passe</label>
+                 class="modern-input" placeholder="Confirmez votre mot de passe" autocomplete="new-password">
           <span class="toggle-password fas"
                 [class.fa-eye]="!password[2]"
                 [class.fa-eye-slash]="password[2]"

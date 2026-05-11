@@ -32,11 +32,12 @@
 
 /* ===== Page Hero ===== */
 .page-hero {
-  background: linear-gradient(135deg, #5469d4 0%, #7c3aed 100%);
+  background: #fff;
   border-radius: var(--card-radius);
   padding: 22px 28px;
   margin-bottom: 24px;
-  color: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 
 .page-hero__content {
@@ -46,23 +47,23 @@
 }
 
 .page-hero__icon {
-  width: 52px;
-  height: 52px;
-  background: rgba(255, 255, 255, 0.18);
+  width: 44px;
+  height: 44px;
+  background: #eef2ff;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  color: #fff;
+  font-size: 20px;
+  color: #4f46e5;
   flex-shrink: 0;
 }
 
 .page-hero__title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   margin: 0 0 4px;
-  color: #fff;
+  color: #111827;
   line-height: 1.2;
 }
 
@@ -71,25 +72,25 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.75);
+  color: #6b7280;
 }
 
 .breadcrumb-link {
-  color: rgba(255, 255, 255, 0.75);
+  color: #6b7280;
   text-decoration: none;
 }
 
 .breadcrumb-link:hover {
-  color: #fff;
+  color: #4f46e5;
   text-decoration: underline;
 }
 
 .breadcrumb-sep {
-  color: rgba(255, 255, 255, 0.4);
+  color: #9ca3af;
 }
 
 .breadcrumb-current {
-  color: #fff;
+  color: #374151;
   font-weight: 500;
 }
 
@@ -595,18 +596,16 @@
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, #5469d4 0%, #7c3aed 100%);
+  background: #4f46e5;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
-  box-shadow: 0 4px 12px rgba(84, 105, 212, 0.3);
+  transition: opacity var(--transition), transform var(--transition);
 }
 
 .btn-submit:hover:not(:disabled) {
-  opacity: 0.92;
+  opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(84, 105, 212, 0.4);
 }
 
 .btn-submit:disabled {
@@ -656,8 +655,9 @@
   align-items: center;
   gap: 8px;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #5469d4, #7c3aed);
-  color: #fff;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
   font-size: 13px;
   font-weight: 700;
 }

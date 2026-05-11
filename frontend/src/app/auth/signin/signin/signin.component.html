@@ -1,232 +1,96 @@
-<div class="login-modern-wrapper">
-  <!-- Panneau gauche : Stats & Avantages -->
-  <div class="login-stats-panel">
-    <div class="stats-bg-shapes">
-      <div class="shape shape-1"></div>
-      <div class="shape shape-2"></div>
-      <div class="shape shape-3"></div>
+<div class="auth-page-wrapper">
+  <div class="auth-card">
+    <div class="card-header">
+      <div class="brand-logo">
+        <svg width="40" height="40" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="loginLogoGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+          <rect width="36" height="36" rx="10" fill="url(#loginLogoGrad)"/>
+          <rect x="7" y="22" width="5" height="8" rx="2" fill="rgba(255,255,255,0.42)"/>
+          <rect x="15.5" y="16" width="5" height="14" rx="2" fill="rgba(255,255,255,0.70)"/>
+          <rect x="24" y="8" width="5" height="22" rx="2" fill="white"/>
+        </svg>
+        <span class="brand-text"><span class="brand-smart">Smart</span><span class="brand-erp">ERP</span></span>
+      </div>
+      <h2>Bon retour !</h2>
+      <p>Connectez-vous pour accéder à votre espace de gestion</p>
     </div>
-    <!-- Animated grid pattern overlay -->
-    <div class="grid-overlay"></div>
 
-    <div class="stats-content">
-      <div class="stats-header">
-        <div class="brand-logo">
-          <svg class="brand-icon-svg" width="40" height="40" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.18)"/>
-            <rect x="6" y="18" width="4" height="8" rx="1.5" fill="rgba(255,255,255,0.42)"/>
-            <rect x="14" y="13" width="4" height="13" rx="1.5" fill="rgba(255,255,255,0.70)"/>
-            <rect x="22" y="7" width="4" height="19" rx="1.5" fill="rgba(255,255,255,0.95)"/>
-          </svg>
-          <span class="brand-text"><span class="brand-smart">Smart</span><span class="brand-erp">ERP</span></span>
+    <form [formGroup]="loginForm" (ngSubmit)="navigation()" class="modern-form">
+
+      <!-- Nom d'utilisateur -->
+      <div class="field-group">
+        <label class="field-label" for="username">Nom d'utilisateur</label>
+        <div class="input-wrapper" [class.input-error]="f['username'].invalid && f['username'].touched">
+          <i class="fas fa-user field-icon"></i>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            class="modern-input"
+            placeholder="Entrez votre nom d'utilisateur"
+            autocomplete="username">
         </div>
-        <h1>Gérez Votre Entreprise<br><span class="highlight">Plus Intelligemment</span></h1>
-        <p>Une solution ERP compacte qui aide les petites équipes à mieux piloter ventes, stock et trésorerie avec des prévisions IA.</p>
+        <span class="field-error" *ngIf="f['username'].invalid && f['username'].touched">
+          <i class="fas fa-info-circle"></i> Nom d'utilisateur requis
+        </span>
       </div>
 
-      <div class="stats-cards">
-        <!-- Stat 1 : Ventes enregistrées -->
-        <div class="stat-card">
-          <div class="stat-icon-wrap analytics">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value-row">
-              <span class="stat-value">1 250</span>
-              <span class="stat-suffix">+</span>
-            </div>
-            <span class="stat-label">Ventes Enregistrées</span>
-            <div class="stat-trend"><i class="fas fa-arrow-trend-up"></i> +12% ce mois</div>
-            <div class="stat-progress">
-              <div class="stat-progress-bar" style="width: 75%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stat 2 : Précision des prévisions IA -->
-        <div class="stat-card">
-          <div class="stat-icon-wrap growth">
-            <i class="fas fa-brain"></i>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value-row">
-              <span class="stat-value">94</span>
-              <span class="stat-suffix">%</span>
-            </div>
-            <span class="stat-label">Précision des Prévisions IA</span>
-            <div class="stat-trend"><i class="fas fa-robot"></i> Basé sur 6 mois</div>
-            <div class="stat-progress">
-              <div class="stat-progress-bar growth-bar" style="width: 94%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stat 3 : Articles référencés -->
-        <div class="stat-card">
-          <div class="stat-icon-wrap speed">
-            <i class="fas fa-boxes"></i>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value-row">
-              <span class="stat-value">850</span>
-              <span class="stat-suffix">+</span>
-            </div>
-            <span class="stat-label">Articles Référencés</span>
-            <div class="stat-trend"><i class="fas fa-warehouse"></i> Stock en temps réel</div>
-            <div class="stat-progress">
-              <div class="stat-progress-bar speed-bar" style="width: 68%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stat 4 : Factures générées -->
-        <div class="stat-card">
-          <div class="stat-icon-wrap security">
-            <i class="fas fa-file-invoice-dollar"></i>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value-row">
-              <span class="stat-value">3 200</span>
-              <span class="stat-suffix">+</span>
-            </div>
-            <span class="stat-label">Factures Générées</span>
-            <div class="stat-trend"><i class="fas fa-file-alt"></i> Achat &amp; Vente</div>
-            <div class="stat-progress">
-              <div class="stat-progress-bar security-bar" style="width: 88%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="trust-indicators">
-        <div class="trust-badge trust-badge--chart">
-          <div class="trust-icon">
-            <i class="fas fa-chart-pie"></i>
-          </div>
-          <div class="trust-text">
-            <span class="trust-value">Tableaux de Bord</span>
-            <span class="trust-desc">KPIs en temps réel</span>
-          </div>
-        </div>
-        <div class="trust-badge trust-badge--ai">
-          <div class="trust-icon">
-            <i class="fas fa-robot"></i>
-          </div>
-          <div class="trust-text">
-            <span class="trust-value">IA Prédictive</span>
-            <span class="trust-desc">Prévisions &amp; Analyses</span>
-          </div>
-        </div>
-        <div class="trust-badge trust-badge--roles">
-          <div class="trust-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="trust-text">
-            <span class="trust-value">Multi-Rôles</span>
-            <span class="trust-desc">Admin &amp; Employé</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Panneau droit : Formulaire de connexion -->
-  <div class="login-form-panel">
-    <div class="form-card">
-      <div class="form-card-header">
-        <div class="login-logo">
-          <svg class="login-logo-svg" width="44" height="44" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="loginLogoGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#6366f1"/>
-                <stop offset="100%" stop-color="#8b5cf6"/>
-              </linearGradient>
-            </defs>
-            <rect width="36" height="36" rx="10" fill="url(#loginLogoGrad)"/>
-            <rect x="7" y="22" width="5" height="8" rx="2" fill="rgba(255,255,255,0.42)"/>
-            <rect x="15.5" y="16" width="5" height="14" rx="2" fill="rgba(255,255,255,0.70)"/>
-            <rect x="24" y="8" width="5" height="22" rx="2" fill="white"/>
-          </svg>
-          <span class="login-logo-text"><span class="login-logo-smart">Smart</span><span class="login-logo-erp">ERP</span></span>
-        </div>
-        <h2>Bon retour !</h2>
-        <p>Connectez-vous pour accéder à votre espace de gestion</p>
-      </div>
-
-      <form [formGroup]="loginForm" (ngSubmit)="navigation()" class="modern-form">
-
-        <!-- Champ nom d'utilisateur -->
-        <div class="field-group">
-          <div class="input-wrapper" [class.input-error]="f['username'].invalid && f['username'].touched">
-            <i class="fas fa-user field-icon"></i>
-            <input
-              type="text"
-              id="username"
-              formControlName="username"
-              class="modern-input"
-              placeholder=" "
-              autocomplete="username">
-            <label for="username" class="floating-label">Nom d'utilisateur</label>
-          </div>
-          <span class="field-error" *ngIf="f['username'].invalid && f['username'].touched">
-            <i class="fas fa-info-circle"></i> Nom d'utilisateur requis
+      <!-- Mot de passe -->
+      <div class="field-group">
+        <label class="field-label" for="password">Mot de passe</label>
+        <div class="input-wrapper" [class.input-error]="f['password'].invalid && f['password'].touched">
+          <i class="fas fa-lock field-icon"></i>
+          <input
+            [type]="password[0] ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="modern-input"
+            placeholder="Entrez votre mot de passe"
+            autocomplete="current-password">
+          <span class="toggle-password fas"
+                [class.fa-eye]="!password[0]"
+                [class.fa-eye-slash]="password[0]"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="password[0] ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                (click)="togglePassword(0)"
+                (keydown.enter)="togglePassword(0)"
+                (keydown.space)="togglePassword(0)">
           </span>
         </div>
+        <span class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
+          <i class="fas fa-info-circle"></i> Mot de passe requis
+        </span>
+      </div>
 
-        <!-- Champ mot de passe -->
-        <div class="field-group">
-          <div class="input-wrapper" [class.input-error]="f['password'].invalid && f['password'].touched">
-            <i class="fas fa-lock field-icon"></i>
-            <input
-              [type]="password[0] ? 'text' : 'password'"
-              id="password"
-              formControlName="password"
-              class="modern-input"
-              placeholder=" "
-              autocomplete="current-password">
-            <label for="password" class="floating-label">Mot de passe</label>
-            <span class="toggle-password fas"
-                  [class.fa-eye]="!password[0]"
-                  [class.fa-eye-slash]="password[0]"
-                  role="button"
-                  tabindex="0"
-                  [attr.aria-label]="password[0] ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
-                  (click)="togglePassword(0)"
-                  (keydown.enter)="togglePassword(0)"
-                  (keydown.space)="togglePassword(0)">
-            </span>
-          </div>
-          <span class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
-            <i class="fas fa-info-circle"></i> Mot de passe requis
-          </span>
-        </div>
+      <!-- Message d'erreur -->
+      <div *ngIf="errorMessage" class="error-banner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
 
-        <!-- Message d'erreur -->
-        <div *ngIf="errorMessage" class="error-banner">
-          <i class="fas fa-exclamation-triangle"></i>
-          <span>{{ errorMessage }}</span>
-        </div>
+      <!-- Se souvenir / Mot de passe oublié -->
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" class="checkbox-input" [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
+          Se souvenir de moi
+        </label>
+        <a class="forgot-link" [routerLink]="routes.forgotPassword">Mot de passe oublié ?</a>
+      </div>
 
-        <!-- Se souvenir / Mot de passe oublié -->
-        <div class="form-options">
-          <label class="remember-me">
-            <input type="checkbox" class="checkbox-input" [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
-            <span class="checkbox-custom"></span>
-            Se souvenir de moi
-          </label>
-          <a class="forgot-link" [routerLink]="routes.forgotPassword">Mot de passe oublié ?</a>
-        </div>
+      <!-- Bouton de connexion -->
+      <button type="button" class="btn-signin" (click)="navigation()" [disabled]="loading"
+              [attr.aria-label]="loading ? 'Connexion en cours' : 'Se connecter'">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status"></span>
+        <span>{{ loading ? 'Connexion en cours...' : 'Connexion' }}</span>
+        <i *ngIf="!loading" class="fas fa-arrow-right btn-arrow"></i>
+      </button>
 
-        <!-- Bouton de connexion -->
-        <button type="button" class="btn-signin" (click)="navigation()" [disabled]="loading"
-                [attr.aria-label]="loading ? 'Connexion en cours' : 'Se connecter'">
-          <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status"></span>
-          <span>{{ loading ? 'Connexion en cours...' : 'Connexion' }}</span>
-          <i *ngIf="!loading" class="fas fa-arrow-right btn-arrow"></i>
-        </button>
-
-      </form>
-
-    </div>
+    </form>
   </div>
 </div>
