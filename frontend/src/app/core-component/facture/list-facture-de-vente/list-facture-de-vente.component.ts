@@ -487,8 +487,7 @@ export class ListFactureDeVenteComponent implements OnInit{
     }).then((result) => {
       const newStatus = result.value as string;
       if (result.isConfirmed && newStatus && newStatus !== facture.statut) {
-        const updatedFacture = { ...facture, statut: newStatus };
-        this.factureService.updateFacture(facture.id!, updatedFacture).subscribe({
+        this.factureService.updateStatut(facture.id!, newStatus).subscribe({
           next: () => {
             facture.statut = newStatus;
             this.applyFiltersAndSort();

@@ -42,6 +42,11 @@ export class FactureDeVenteServiceService {
     return this.http.put<FactureVente>(`${this.baseUrl}/updateFacture/${id}`, facture);
   }
 
+  // Mettre à jour uniquement le statut d'une facture
+  updateStatut(id: number, statut: string): Observable<FactureVente> {
+    return this.http.patch<FactureVente>(`${this.baseUrl}/${id}/statut`, { statut });
+  }
+
   deleteFacture(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/deleteFacture/${id}`);
   }
