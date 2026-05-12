@@ -1174,7 +1174,7 @@ $amber-500:  #f59e0b;
 }
 
 @media (max-width: 576px) {
-  .ai-header h1 { font-size: 1.5rem; }
+  .ai-header h1 { font-size: 1.5rem; background: none; -webkit-text-fill-color: initial; color: #ffffff; }
 
   .date-chip,
   .btn-refresh { width: 100%; justify-content: center; }
