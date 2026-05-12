@@ -31,80 +31,10 @@ $amber-500:  #f59e0b;
   position: relative;
   min-height: 100vh;
   padding: 28px;
-  background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 50%, #f0fdf4 100%);
+  background: $slate-100;
   font-family: 'Inter', 'Poppins', 'Segoe UI', sans-serif;
   color: $slate-800;
   overflow-x: hidden;
-}
-
-// ── Ambient decorative background ────────────────────────────────────────────
-.ai-ambient-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.ambient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.22;
-  animation: orbFloat 12s ease-in-out infinite;
-}
-
-.orb-primary {
-  width: 520px;
-  height: 520px;
-  top: -120px;
-  right: -80px;
-  background: radial-gradient(circle, #3b82f6 0%, #8b5cf6 60%, transparent 80%);
-  animation-duration: 14s;
-}
-
-.orb-secondary {
-  width: 400px;
-  height: 400px;
-  bottom: 10%;
-  left: -100px;
-  background: radial-gradient(circle, #06b6d4 0%, #22c55e 60%, transparent 80%);
-  animation-duration: 18s;
-  animation-delay: -6s;
-}
-
-.ambient-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(37, 99, 235, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-
-.ai-header-glow {
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  width: 70%;
-  height: 160px;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(37,99,235,.18) 0%, transparent 70%);
-  pointer-events: none;
-  border-radius: 50%;
-  filter: blur(24px);
-}
-
-// ── Entrance animation ────────────────────────────────────────────────────────
-.ai-header,
-.ai-quick-insights,
-.kpi-card,
-.chart-card,
-.intel-card,
-.recommendations-section {
-  position: relative;
-  z-index: 1;
-  animation: revealUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
@@ -114,63 +44,22 @@ $amber-500:  #f59e0b;
   align-items: flex-start;
   gap: 24px;
   margin-bottom: 24px;
-  padding: 30px 34px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow:
-    0 2px 8px rgba(37, 99, 235, 0.06),
-    0 8px 32px rgba(37, 99, 235, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    background: linear-gradient(135deg, rgba(37,99,235,.04) 0%, rgba(6,182,212,.04) 100%);
-    pointer-events: none;
-  }
+  padding: 24px 28px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid $slate-200;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .ai-header-left { flex: 1 1 0; min-width: 0; }
 
-.ai-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-  padding: 7px 16px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, $blue-700, $blue-600 50%, $cyan-500);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  box-shadow: 0 4px 18px rgba(37,99,235,.35), 0 1px 0 rgba(255,255,255,.2) inset;
-  animation: badgePulse 3s ease-in-out infinite;
-
-  i {
-    font-size: 0.85rem;
-    animation: iconSpin 6s linear infinite;
-  }
-}
-
 .ai-header h1 {
   margin: 0;
-  font-size: clamp(1.6rem, 2.8vw, 2.3rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: $slate-900;
-  line-height: 1.1;
-  background: linear-gradient(135deg, $slate-900 0%, $blue-700 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
 }
 
 .ai-subtitle {
@@ -1224,21 +1113,6 @@ $amber-500:  #f59e0b;
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes orbFloat {
-  0%,100% { transform: translateY(0) scale(1); }
-  40%     { transform: translateY(-30px) scale(1.04); }
-  70%     { transform: translateY(20px) scale(0.97); }
-}
-
-@keyframes badgePulse {
-  0%,100% { box-shadow: 0 4px 18px rgba(37,99,235,.35); }
-  50%     { box-shadow: 0 4px 28px rgba(37,99,235,.55), 0 0 0 6px rgba(37,99,235,.08); }
-}
-
-@keyframes iconSpin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
 @keyframes fadeInOut {
   0%,100% { opacity: 0.6; }
