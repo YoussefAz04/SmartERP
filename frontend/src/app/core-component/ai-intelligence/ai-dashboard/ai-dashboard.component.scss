@@ -39,34 +39,53 @@ $amber-500:  #f59e0b;
 
 // ── Header ────────────────────────────────────────────────────────────────────
 .ai-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
   margin-bottom: 24px;
-  padding: 24px 28px;
-  border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid $slate-200;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 32px 36px;
+  border-radius: 20px;
+  // Deep navy → rich blue gradient
+  background: linear-gradient(135deg, #0d1f3c 0%, #1a3a6e 55%, #1e4a8a 100%);
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow:
+    0 4px 24px rgba(13, 31, 60, .35),
+    0 1px 0 rgba(255,255,255,.04) inset;
+  overflow: hidden;
+
+  // Subtle radial glow in the top-right
+  &::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(96,165,250,.18) 0%, transparent 65%);
+    pointer-events: none;
+  }
 }
 
-.ai-header-left { flex: 1 1 0; min-width: 0; }
+.ai-header-left { flex: 1 1 0; min-width: 0; position: relative; z-index: 1; }
 
 .ai-header h1 {
   margin: 0;
-  font-size: clamp(1.4rem, 2.4vw, 2rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: $slate-900;
+  font-size: clamp(1.45rem, 2.4vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #ffffff;
   line-height: 1.2;
 }
 
 .ai-subtitle {
   margin: 8px 0 0;
-  color: $slate-500;
-  font-size: 0.93rem;
+  color: rgba(147, 197, 253, 0.85);
+  font-size: 0.92rem;
+  font-weight: 500;
   line-height: 1.6;
+  letter-spacing: 0.01em;
 }
 
 // ── Hero highlights (stats in header) ────────────────────────────────────────
@@ -74,31 +93,34 @@ $amber-500:  #f59e0b;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
 .hero-highlight {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 18px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255,255,255,.8) 0%, rgba(239,246,255,.8) 100%);
-  border: 1px solid rgba(37, 99, 235, 0.12);
-  box-shadow: 0 2px 8px rgba(37,99,235,.07);
-  transition: transform .2s ease, box-shadow .2s ease;
+  gap: 14px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
 
   &::before { display: none; }
 
   &:hover {
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(37,99,235,.12);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
   }
 
   strong {
     display: block;
     margin-top: 2px;
-    color: $slate-900;
+    color: #ffffff;
     font-size: 1rem;
     font-weight: 700;
   }
@@ -106,11 +128,11 @@ $amber-500:  #f59e0b;
 
 .hero-highlight-label {
   display: block;
-  color: $slate-500;
-  font-size: 0.68rem;
-  font-weight: 600;
+  color: rgba(147, 197, 253, 0.75);
+  font-size: 0.67rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
 }
 
 // ── Header right ─────────────────────────────────────────────────────────────
@@ -121,6 +143,8 @@ $amber-500:  #f59e0b;
   gap: 10px;
   flex-shrink: 0;
   min-width: 190px;
+  position: relative;
+  z-index: 1;
 }
 
 .date-chip {
@@ -129,15 +153,16 @@ $amber-500:  #f59e0b;
   justify-content: center;
   gap: 8px;
   padding: 10px 18px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(239,246,255,.9) 0%, rgba(219,234,254,.9) 100%);
-  border: 1px solid rgba(37,99,235,.18);
-  color: $blue-700;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(219, 234, 254, 0.95);
   font-size: 0.83rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(37,99,235,.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 
-  i { color: $blue-600; }
+  i { color: rgba(147, 197, 253, 0.9); }
 }
 
 .btn-refresh {
@@ -147,17 +172,21 @@ $amber-500:  #f59e0b;
   gap: 8px;
   min-height: 42px;
   padding: 0 20px;
-  border: 1px solid $blue-600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  background: transparent;
-  color: $blue-600;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(219, 234, 254, 0.95);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background .2s ease, color .2s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
 
   &:hover:not(:disabled) {
-    background: $blue-600;
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.45);
+    transform: translateY(-1px);
     color: #fff;
   }
 
@@ -1145,7 +1174,7 @@ $amber-500:  #f59e0b;
 }
 
 @media (max-width: 576px) {
-  .ai-header h1 { font-size: 1.5rem; background: none; -webkit-text-fill-color: initial; color: $slate-900; }
+  .ai-header h1 { font-size: 1.5rem; background: none; -webkit-text-fill-color: initial; color: #ffffff; }
 
   .date-chip,
   .btn-refresh { width: 100%; justify-content: center; }
@@ -1161,26 +1190,27 @@ body.dark-mode {
   }
 
   .ai-header {
-    background: #1e293b;
-    border-color: rgba(59, 130, 246, 0.12);
-    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    // Slightly deeper on dark mode, keeping the gradient feel
+    background: linear-gradient(135deg, #080f20 0%, #0d1f3c 55%, #122950 100%);
+    border-color: rgba(59, 130, 246, 0.14);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .5);
   }
 
   .ai-header h1 { color: #f1f5f9; }
 
-  .ai-subtitle   { color: #64748b; }
+  .ai-subtitle   { color: rgba(147, 197, 253, 0.75); }
 
   .hero-highlight {
-    background: #1e293b;
-    border-color: rgba(59, 130, 246, 0.12);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
     strong { color: #f1f5f9; }
   }
 
   .date-chip {
-    background: #1e293b;
-    border-color: rgba(59, 130, 246, 0.2);
-    color: #7dd3fc;
-    i { color: #38bdf8; }
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: rgba(186, 230, 253, 0.9);
+    i { color: rgba(147, 197, 253, 0.85); }
   }
 
   .insight-pill {
@@ -1202,9 +1232,11 @@ body.dark-mode {
   .spinner-ring { border-color: rgba(37,99,235,.14); border-top-color: #3b82f6; border-right-color: #22d3ee; }
 
   .btn-refresh {
-    border-color: #60a5fa;
-    color: #60a5fa;
-    &:hover:not(:disabled) { background: #60a5fa; color: #0f172a; }
+    // header already has gradient bg — keep the white glass look
+    border-color: rgba(255, 255, 255, 0.22);
+    color: rgba(219, 234, 254, 0.9);
+    background: rgba(255, 255, 255, 0.08);
+    &:hover:not(:disabled) { background: rgba(255, 255, 255, 0.18); border-color: rgba(255,255,255,.4); }
   }
 
   .btn-action {
