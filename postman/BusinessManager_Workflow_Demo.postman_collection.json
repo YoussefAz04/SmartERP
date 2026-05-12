@@ -1,0 +1,790 @@
+{
+  "info": {
+    "name": "BusinessManager – Workflow Demo (PFE)",
+    "_postman_id": "bm-workflow-demo-pfe-2026",
+    "description": "Collection complète pour tester l'intégralité du workflow de l'application BusinessManager.\n\n**Prérequis :**\n- Backend Spring Boot démarré sur http://localhost:8020\n- Base de données SQL Server accessible\n- Un compte SUPER_ADMIN existant (ex: username=superadmin, password=Admin1234!)\n\n**Ordre d'exécution :**\nExécuter les requêtes dans l'ordre affiché. Les scripts de test extraient automatiquement les IDs et les stockent dans des variables d'environnement pour les requêtes suivantes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8020", "type": "string" },
+    { "key": "superadmin_token", "value": "", "type": "string" },
+    { "key": "admin_token", "value": "", "type": "string" },
+    { "key": "entreprise_id", "value": "", "type": "string" },
+    { "key": "categorie_fournisseur_id", "value": "", "type": "string" },
+    { "key": "fournisseur_id", "value": "", "type": "string" },
+    { "key": "categorie_client_id", "value": "", "type": "string" },
+    { "key": "client_id", "value": "", "type": "string" },
+    { "key": "article_achat_id", "value": "", "type": "string" },
+    { "key": "commande_achat_id", "value": "", "type": "string" },
+    { "key": "facture_achat_id", "value": "", "type": "string" },
+    { "key": "bon_reception_id", "value": "", "type": "string" },
+    { "key": "article_vente_id", "value": "", "type": "string" },
+    { "key": "commande_vente_id", "value": "", "type": "string" },
+    { "key": "facture_vente_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Authentification",
+      "item": [
+        {
+          "name": "1.1 Login SUPER_ADMIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('superadmin_token', json.token || json.accessToken || '');",
+                  "console.log('✅ SUPER_ADMIN token saved:', pm.collectionVariables.get('superadmin_token').substring(0,30) + '...');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"superadmin\",\n  \"password\": \"Admin1234!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "1.2 Créer Entreprise Demo (SUPER_ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('entreprise_id', String(json.id));",
+                  "console.log('✅ Entreprise créée, id =', json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{superadmin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Entreprise Demo PFE\",\n  \"raisonSociale\": \"Demo PFE SARL\",\n  \"description\": \"Entreprise de démonstration pour la soutenance PFE\",\n  \"secteurActivite\": \"Commerce général\",\n  \"statutJuridique\": \"SARL\",\n  \"numeroIdentificationFiscale\": \"1234567/A\",\n  \"registreCommerce\": \"RC2026/001\",\n  \"email\": \"demo-pfe@example.com\",\n  \"adresse\": \"12 Avenue Habib Bourguiba, Tunis\",\n  \"Telephone\": \"+216 71 000 000\",\n  \"active\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/entreprise/create", "host": ["{{base_url}}"], "path": ["entreprise","create"] }
+          }
+        },
+        {
+          "name": "1.3 Register ADMIN pour l'Entreprise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "console.log('✅ Admin enregistré. Réponse:', pm.response.text().substring(0,200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{superadmin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin_demo\",\n  \"email\": \"admin.demo@example.com\",\n  \"password\": \"Admin1234!\",\n  \"name\": \"Admin Demo PFE\",\n  \"enterpriseId\": {{entreprise_id}}\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api","auth","register"] }
+          }
+        },
+        {
+          "name": "1.4 Login ADMIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('admin_token', json.token || json.accessToken || '');",
+                  "console.log('✅ ADMIN token saved:', pm.collectionVariables.get('admin_token').substring(0,30) + '...');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin_demo\",\n  \"password\": \"Admin1234!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api","auth","login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Fournisseur",
+      "item": [
+        {
+          "name": "2.1 Créer Catégorie Fournisseur",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('categorie_fournisseur_id', String(json.id));",
+                  "console.log('✅ Catégorie fournisseur id =', json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCategorie\": \"Fournisseurs Matières Premières\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/fournisseurs/addCategorieFournisseur", "host": ["{{base_url}}"], "path": ["fournisseurs","addCategorieFournisseur"] }
+          }
+        },
+        {
+          "name": "2.2 Créer Fournisseur",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('fournisseur_id', String(json.id));",
+                  "console.log('✅ Fournisseur créé, id =', json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Fournisseur Alpha\",\n  \"email\": \"alpha@fournisseur.tn\",\n  \"telephone\": \"+216 20 111 222\",\n  \"adresse\": \"Zone Industrielle, Sfax\",\n  \"entrepriseId\": {{entreprise_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fournisseurs/addFournisseur/{{categorie_fournisseur_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["fournisseurs","addFournisseur","{{categorie_fournisseur_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Client",
+      "item": [
+        {
+          "name": "3.1 Créer Catégorie Client",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('categorie_client_id', String(json.id));",
+                  "console.log('✅ Catégorie client id =', json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomCategorie\": \"Clients Grossistes\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/clients/addCategorieClient", "host": ["{{base_url}}"], "path": ["clients","addCategorieClient"] }
+          }
+        },
+        {
+          "name": "3.2 Créer Client",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('client_id', String(json.id));",
+                  "console.log('✅ Client créé, id =', json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Client Beta SARL\",\n  \"email\": \"beta@client.tn\",\n  \"telephone\": \"+216 71 333 444\",\n  \"adresse\": \"Avenue de la Liberté, Tunis\",\n  \"entrepriseId\": {{entreprise_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/clients/addClient/{{categorie_client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["clients","addClient","{{categorie_client_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Articles",
+      "item": [
+        {
+          "name": "4.1 Créer Article Achat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const json = pm.response.json();",
+                  "// L'endpoint /articles-achat/add retourne un Article; on stocke son id comme article_achat_id",
+                  "// L'id réel de l'ArticleAchat peut différer — à adapter selon les données retournées",
+                  "const id = json.articleAchatId || json.id;",
+                  "pm.collectionVariables.set('article_achat_id', String(id));",
+                  "console.log('✅ ArticleAchat créé, id =', id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"ART-DEMO-001\",\n  \"nom\": \"Ordinateur Portable Demo\",\n  \"description\": \"Laptop pour tests PFE\",\n  \"prixUnitaire\": 1200.00,\n  \"prixVente\": 1500.00,\n  \"sku\": \"LAPTOP-DEMO-001\",\n  \"unite\": \"pièce\",\n  \"entrepriseId\": {{entreprise_id}},\n  \"fournisseurId\": {{fournisseur_id}}\n}"
+            },
+            "url": { "raw": "{{base_url}}/articles-achat/add", "host": ["{{base_url}}"], "path": ["articles-achat","add"] }
+          }
+        },
+        {
+          "name": "4.2 Lister Articles Achat (vérification)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Au moins 1 article', () => pm.expect(json.length).to.be.greaterThan(0));",
+                  "// Récupère l'ID du premier article pour les commandes",
+                  "if (json.length > 0) {",
+                  "  const found = json.find(a => a.reference === 'ART-DEMO-001') || json[json.length - 1];",
+                  "  const id = found.articleAchatId || found.id;",
+                  "  pm.collectionVariables.set('article_achat_id', String(id));",
+                  "  console.log('✅ article_achat_id =', id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/articles-achat", "host": ["{{base_url}}"], "path": ["articles-achat"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Workflow Commande Achat",
+      "item": [
+        {
+          "name": "5.1 Créer Commande Achat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('commande_achat_id', String(json.id));",
+                  "console.log('✅ Commande Achat créée, id =', json.id, '| statut =', json.statut);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"CA-DEMO-2026-001\",\n  \"dateCommande\": \"2026-05-12\",\n  \"dateLivraisonPrevue\": \"2026-05-20\",\n  \"statut\": \"EN_ATTENTE\",\n  \"note\": \"Commande de démonstration PFE\",\n  \"fournisseurId\": {{fournisseur_id}},\n  \"entrepriseId\": {{entreprise_id}},\n  \"lignes\": [\n    {\n      \"articleAchatId\": {{article_achat_id}},\n      \"quantite\": 5,\n      \"prixUnitaireHT\": 1200.00,\n      \"tva\": 19,\n      \"montantHT\": 6000.00,\n      \"montantTTC\": 7140.00\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/commandes-achat/add", "host": ["{{base_url}}"], "path": ["api","commandes-achat","add"] }
+          }
+        },
+        {
+          "name": "5.2 Valider Commande Achat (génère Facture Achat)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('facture_achat_id', String(json.id));",
+                  "console.log('✅ Facture Achat générée, id =', json.id, '| montantTTC =', json.montantTTC);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/commandes-achat/{{commande_achat_id}}/valider",
+              "host": ["{{base_url}}"],
+              "path": ["api","commandes-achat","{{commande_achat_id}}","valider"]
+            }
+          }
+        },
+        {
+          "name": "5.3 Recevoir Commande Achat (crée Bon Réception + MAJ Stock)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('bon_reception_id', String(json.id));",
+                  "console.log('✅ Bon Réception créé, id =', json.id, '– Stock mis à jour !');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/commandes-achat/{{commande_achat_id}}/recevoir",
+              "host": ["{{base_url}}"],
+              "path": ["api","commandes-achat","{{commande_achat_id}}","recevoir"]
+            }
+          }
+        },
+        {
+          "name": "5.4 Vérifier Stock après réception",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "console.log('📦 Stocks actuels:', JSON.stringify(json).substring(0,300));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/stocks", "host": ["{{base_url}}"], "path": ["api","stocks"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Workflow Commande Vente",
+      "item": [
+        {
+          "name": "6.1 Créer Article Vente (lié à l'Article Achat)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 ou 201', () => pm.expect(pm.response.code).to.be.oneOf([200,201]));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('article_vente_id', String(json.id));",
+                  "console.log('✅ ArticleVente créé, id =', json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"AV-DEMO-001\",\n  \"nom\": \"Ordinateur Portable Demo\",\n  \"description\": \"Laptop vendu à la clientèle\",\n  \"prixVente\": 1500.00,\n  \"tva\": 19,\n  \"unite\": \"pièce\",\n  \"entrepriseId\": {{entreprise_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/articles-vente/add?articleAchatId={{article_achat_id}}&clientId={{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["articles-vente","add"],
+              "query": [
+                { "key": "articleAchatId", "value": "{{article_achat_id}}" },
+                { "key": "clientId", "value": "{{client_id}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.2 Lister Articles Vente (vérification)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Au moins 1 article vente', () => pm.expect(json.length).to.be.greaterThan(0));",
+                  "if (json.length > 0) {",
+                  "  const found = json.find(a => a.reference === 'AV-DEMO-001') || json[json.length - 1];",
+                  "  pm.collectionVariables.set('article_vente_id', String(found.id));",
+                  "  console.log('✅ article_vente_id =', found.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/articles-vente", "host": ["{{base_url}}"], "path": ["articles-vente"] }
+          }
+        },
+        {
+          "name": "6.3 Créer Commande Vente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('commande_vente_id', String(json.id));",
+                  "console.log('✅ Commande Vente créée, id =', json.id, '| statut =', json.statut);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"CV-DEMO-2026-001\",\n  \"dateCommande\": \"2026-05-12\",\n  \"dateLivraisonPrevue\": \"2026-05-18\",\n  \"statut\": \"EN_ATTENTE\",\n  \"note\": \"Commande vente démo PFE\",\n  \"clientId\": {{client_id}},\n  \"entrepriseId\": {{entreprise_id}},\n  \"lignes\": [\n    {\n      \"articleVenteId\": {{article_vente_id}},\n      \"quantite\": 2,\n      \"prixUnitaireHT\": 1500.00,\n      \"tva\": 19,\n      \"montantHT\": 3000.00,\n      \"montantTTC\": 3570.00\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/commandes-vente/add", "host": ["{{base_url}}"], "path": ["api","commandes-vente","add"] }
+          }
+        },
+        {
+          "name": "6.4 Valider Commande Vente (génère Facture Vente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "const factureId = json.facture ? json.facture.id : json.id;",
+                  "pm.collectionVariables.set('facture_vente_id', String(factureId));",
+                  "console.log('✅ Facture Vente générée, id =', factureId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/commandes-vente/{{commande_vente_id}}/valider",
+              "host": ["{{base_url}}"],
+              "path": ["api","commandes-vente","{{commande_vente_id}}","valider"]
+            }
+          }
+        },
+        {
+          "name": "6.5 Livrer Commande Vente (stock décrémenté)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "console.log('✅ Commande Vente livrée ! Statut =', json.statut);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/commandes-vente/{{commande_vente_id}}/livrer",
+              "host": ["{{base_url}}"],
+              "path": ["api","commandes-vente","{{commande_vente_id}}","livrer"]
+            }
+          }
+        },
+        {
+          "name": "6.6 Vérifier Stock après livraison",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "console.log('📦 Stock mis à jour:', JSON.stringify(json).substring(0,300));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/stocks", "host": ["{{base_url}}"], "path": ["api","stocks"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Dashboard & Audit",
+      "item": [
+        {
+          "name": "7.1 Dashboard KPIs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "console.log('📊 Dashboard:', JSON.stringify(pm.response.json()).substring(0,300));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard?entrepriseId={{entreprise_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api","dashboard"],
+              "query": [{ "key": "entrepriseId", "value": "{{entreprise_id}}" }]
+            }
+          }
+        },
+        {
+          "name": "7.2 Audit Logs – toutes les actions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Des logs existent', () => pm.expect(json.length || (json.content && json.content.length) || 0).to.be.greaterThan(0));",
+                  "console.log('📋 Audit logs count:', json.length || (json.content && json.content.length));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/audit-logs", "host": ["{{base_url}}"], "path": ["api","audit-logs"] }
+          }
+        },
+        {
+          "name": "7.3 Audit Logs – par Entreprise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "console.log('📋 Audit logs entreprise', pm.collectionVariables.get('entreprise_id'), ':', JSON.stringify(json).substring(0,400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/audit-logs/entreprise/{{entreprise_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api","audit-logs","entreprise","{{entreprise_id}}"]
+            }
+          }
+        },
+        {
+          "name": "7.4 Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "console.log('🔔 Notifications:', JSON.stringify(json).substring(0,300));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/notifications?entrepriseId={{entreprise_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api","notifications"],
+              "query": [{ "key": "entrepriseId", "value": "{{entreprise_id}}" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Mouvements de Stock",
+      "item": [
+        {
+          "name": "8.1 Historique Mouvements de Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "console.log('📦 Mouvements:', JSON.stringify(json).substring(0,400));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/stock-mouvement", "host": ["{{base_url}}"], "path": ["api","stock-mouvement"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Factures",
+      "item": [
+        {
+          "name": "9.1 Lister Factures Achat",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "console.log('🧾 Factures Achat:', JSON.stringify(pm.response.json()).substring(0,300));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/factures", "host": ["{{base_url}}"], "path": ["api","factures"] }
+          }
+        },
+        {
+          "name": "9.2 Lister Factures Vente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "console.log('🧾 Factures Vente:', JSON.stringify(pm.response.json()).substring(0,300));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/factures-vente", "host": ["{{base_url}}"], "path": ["factures-vente"] }
+          }
+        }
+      ]
+    }
+  ]
+}
