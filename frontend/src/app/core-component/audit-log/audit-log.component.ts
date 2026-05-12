@@ -29,9 +29,42 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     USER_DELETED: 'Suppression utilisateur',
     USER_STATUS_CHANGED: 'Statut utilisateur',
     PERMISSION_MODIFIED: 'Modification permissions',
+    COMMANDE_VENTE_CREEE: 'Création commande vente',
     COMMANDE_VENTE_VALIDEE: 'Validation commande vente',
+    COMMANDE_VENTE_MODIFIEE: 'Modification commande vente',
+    COMMANDE_VENTE_SUPPRIMEE: 'Suppression commande vente',
+    COMMANDE_VENTE_ANNULEE: 'Annulation commande vente',
+    COMMANDE_VENTE_LIVREE: 'Livraison commande vente',
+    COMMANDE_ACHAT_CREEE: 'Création commande achat',
     COMMANDE_ACHAT_VALIDEE: 'Validation commande achat',
+    COMMANDE_ACHAT_MODIFIEE: 'Modification commande achat',
+    COMMANDE_ACHAT_SUPPRIMEE: 'Suppression commande achat',
+    COMMANDE_ACHAT_ANNULEE: 'Annulation commande achat',
+    COMMANDE_ACHAT_RECUE: 'Réception commande achat',
     STOCK_MOUVEMENT: 'Mouvement de stock',
+    STOCK_CREE: 'Création stock',
+    STOCK_MODIFIE: 'Modification stock',
+    STOCK_SUPPRIME: 'Suppression stock',
+    ARTICLE_CREATED: 'Création article',
+    ARTICLE_UPDATED: 'Modification article',
+    ARTICLE_DELETED: 'Suppression article',
+    CLIENT_CREATED: 'Création client',
+    CLIENT_UPDATED: 'Modification client',
+    CLIENT_DELETED: 'Suppression client',
+    FOURNISSEUR_CREATED: 'Création fournisseur',
+    FOURNISSEUR_UPDATED: 'Modification fournisseur',
+    FOURNISSEUR_DELETED: 'Suppression fournisseur',
+    FACTURE_VENTE_CREATED: 'Création facture vente',
+    FACTURE_VENTE_UPDATED: 'Modification facture vente',
+    FACTURE_VENTE_VALIDATED: 'Validation facture vente',
+    FACTURE_VENTE_CANCELLED: 'Annulation facture vente',
+    FACTURE_VENTE_DELETED: 'Suppression facture vente',
+    FACTURE_ACHAT_UPDATED: 'Modification facture achat',
+    FACTURE_ACHAT_DELETED: 'Suppression facture achat',
+    ENTREPRISE_CREEE: 'Création entreprise',
+    ENTREPRISE_MODIFIEE: 'Modification entreprise',
+    ENTREPRISE_DESACTIVEE: 'Désactivation entreprise',
+    ENTREPRISE_ACTIVEE: 'Activation entreprise',
   };
 
   constructor(private auditLogService: AuditLogService) {}
@@ -114,31 +147,97 @@ export class AuditLogComponent implements OnInit, OnDestroy {
 
   getActionBadgeClass(action: string): string {
     switch (action) {
-      case 'LOGIN':                  return 'al-badge-login';
-      case 'USER_CREATED':           return 'al-badge-created';
-      case 'USER_UPDATED':           return 'al-badge-updated';
-      case 'USER_DELETED':           return 'al-badge-deleted';
-      case 'USER_STATUS_CHANGED':    return 'al-badge-status';
-      case 'PERMISSION_MODIFIED':    return 'al-badge-permission';
-      case 'COMMANDE_VENTE_VALIDEE': return 'al-badge-commande';
-      case 'COMMANDE_ACHAT_VALIDEE': return 'al-badge-commande';
-      case 'STOCK_MOUVEMENT':        return 'al-badge-stock';
-      default:                       return 'al-badge-default';
+      case 'LOGIN':                    return 'al-badge-login';
+      case 'USER_CREATED':             return 'al-badge-created';
+      case 'USER_UPDATED':             return 'al-badge-updated';
+      case 'USER_DELETED':             return 'al-badge-deleted';
+      case 'USER_STATUS_CHANGED':      return 'al-badge-status';
+      case 'PERMISSION_MODIFIED':      return 'al-badge-permission';
+      case 'COMMANDE_VENTE_CREEE':     return 'al-badge-commande';
+      case 'COMMANDE_VENTE_VALIDEE':   return 'al-badge-commande';
+      case 'COMMANDE_VENTE_MODIFIEE':  return 'al-badge-updated';
+      case 'COMMANDE_VENTE_SUPPRIMEE': return 'al-badge-deleted';
+      case 'COMMANDE_VENTE_ANNULEE':   return 'al-badge-deleted';
+      case 'COMMANDE_VENTE_LIVREE':    return 'al-badge-commande';
+      case 'COMMANDE_ACHAT_CREEE':     return 'al-badge-commande';
+      case 'COMMANDE_ACHAT_VALIDEE':   return 'al-badge-commande';
+      case 'COMMANDE_ACHAT_MODIFIEE':  return 'al-badge-updated';
+      case 'COMMANDE_ACHAT_SUPPRIMEE': return 'al-badge-deleted';
+      case 'COMMANDE_ACHAT_ANNULEE':   return 'al-badge-deleted';
+      case 'COMMANDE_ACHAT_RECUE':     return 'al-badge-commande';
+      case 'STOCK_MOUVEMENT':          return 'al-badge-stock';
+      case 'STOCK_CREE':               return 'al-badge-stock';
+      case 'STOCK_MODIFIE':            return 'al-badge-stock';
+      case 'STOCK_SUPPRIME':           return 'al-badge-deleted';
+      case 'ARTICLE_CREATED':          return 'al-badge-created';
+      case 'ARTICLE_UPDATED':          return 'al-badge-updated';
+      case 'ARTICLE_DELETED':          return 'al-badge-deleted';
+      case 'CLIENT_CREATED':           return 'al-badge-created';
+      case 'CLIENT_UPDATED':           return 'al-badge-updated';
+      case 'CLIENT_DELETED':           return 'al-badge-deleted';
+      case 'FOURNISSEUR_CREATED':      return 'al-badge-created';
+      case 'FOURNISSEUR_UPDATED':      return 'al-badge-updated';
+      case 'FOURNISSEUR_DELETED':      return 'al-badge-deleted';
+      case 'FACTURE_VENTE_CREATED':    return 'al-badge-created';
+      case 'FACTURE_VENTE_UPDATED':    return 'al-badge-updated';
+      case 'FACTURE_VENTE_VALIDATED':  return 'al-badge-commande';
+      case 'FACTURE_VENTE_CANCELLED':  return 'al-badge-deleted';
+      case 'FACTURE_VENTE_DELETED':    return 'al-badge-deleted';
+      case 'FACTURE_ACHAT_UPDATED':    return 'al-badge-updated';
+      case 'FACTURE_ACHAT_DELETED':    return 'al-badge-deleted';
+      case 'ENTREPRISE_CREEE':         return 'al-badge-created';
+      case 'ENTREPRISE_MODIFIEE':      return 'al-badge-updated';
+      case 'ENTREPRISE_DESACTIVEE':    return 'al-badge-deleted';
+      case 'ENTREPRISE_ACTIVEE':       return 'al-badge-status';
+      default:                         return 'al-badge-default';
     }
   }
 
   getActionIcon(action: string): string {
     switch (action) {
-      case 'LOGIN':                  return 'icon-log-in';
-      case 'USER_CREATED':           return 'icon-user-plus';
-      case 'USER_UPDATED':           return 'icon-edit-2';
-      case 'USER_DELETED':           return 'icon-user-x';
-      case 'USER_STATUS_CHANGED':    return 'icon-toggle-right';
-      case 'PERMISSION_MODIFIED':    return 'icon-key';
-      case 'COMMANDE_VENTE_VALIDEE': return 'icon-shopping-bag';
-      case 'COMMANDE_ACHAT_VALIDEE': return 'icon-package';
-      case 'STOCK_MOUVEMENT':        return 'icon-layers';
-      default:                       return 'icon-activity';
+      case 'LOGIN':                    return 'icon-log-in';
+      case 'USER_CREATED':             return 'icon-user-plus';
+      case 'USER_UPDATED':             return 'icon-edit-2';
+      case 'USER_DELETED':             return 'icon-user-x';
+      case 'USER_STATUS_CHANGED':      return 'icon-toggle-right';
+      case 'PERMISSION_MODIFIED':      return 'icon-key';
+      case 'COMMANDE_VENTE_CREEE':     return 'icon-shopping-bag';
+      case 'COMMANDE_VENTE_VALIDEE':   return 'icon-shopping-bag';
+      case 'COMMANDE_VENTE_MODIFIEE':  return 'icon-edit-2';
+      case 'COMMANDE_VENTE_SUPPRIMEE': return 'icon-trash-2';
+      case 'COMMANDE_VENTE_ANNULEE':   return 'icon-x-circle';
+      case 'COMMANDE_VENTE_LIVREE':    return 'icon-truck';
+      case 'COMMANDE_ACHAT_CREEE':     return 'icon-package';
+      case 'COMMANDE_ACHAT_VALIDEE':   return 'icon-package';
+      case 'COMMANDE_ACHAT_MODIFIEE':  return 'icon-edit-2';
+      case 'COMMANDE_ACHAT_SUPPRIMEE': return 'icon-trash-2';
+      case 'COMMANDE_ACHAT_ANNULEE':   return 'icon-x-circle';
+      case 'COMMANDE_ACHAT_RECUE':     return 'icon-inbox';
+      case 'STOCK_MOUVEMENT':          return 'icon-layers';
+      case 'STOCK_CREE':               return 'icon-plus-square';
+      case 'STOCK_MODIFIE':            return 'icon-layers';
+      case 'STOCK_SUPPRIME':           return 'icon-trash-2';
+      case 'ARTICLE_CREATED':          return 'icon-plus-circle';
+      case 'ARTICLE_UPDATED':          return 'icon-edit-2';
+      case 'ARTICLE_DELETED':          return 'icon-trash-2';
+      case 'CLIENT_CREATED':           return 'icon-user-plus';
+      case 'CLIENT_UPDATED':           return 'icon-edit-2';
+      case 'CLIENT_DELETED':           return 'icon-user-x';
+      case 'FOURNISSEUR_CREATED':      return 'icon-user-plus';
+      case 'FOURNISSEUR_UPDATED':      return 'icon-edit-2';
+      case 'FOURNISSEUR_DELETED':      return 'icon-user-x';
+      case 'FACTURE_VENTE_CREATED':    return 'icon-file-plus';
+      case 'FACTURE_VENTE_UPDATED':    return 'icon-edit-2';
+      case 'FACTURE_VENTE_VALIDATED':  return 'icon-check-circle';
+      case 'FACTURE_VENTE_CANCELLED':  return 'icon-x-circle';
+      case 'FACTURE_VENTE_DELETED':    return 'icon-trash-2';
+      case 'FACTURE_ACHAT_UPDATED':    return 'icon-edit-2';
+      case 'FACTURE_ACHAT_DELETED':    return 'icon-trash-2';
+      case 'ENTREPRISE_CREEE':         return 'icon-briefcase';
+      case 'ENTREPRISE_MODIFIEE':      return 'icon-edit-2';
+      case 'ENTREPRISE_DESACTIVEE':    return 'icon-slash';
+      case 'ENTREPRISE_ACTIVEE':       return 'icon-check-circle';
+      default:                         return 'icon-activity';
     }
   }
 

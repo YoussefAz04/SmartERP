@@ -168,6 +168,9 @@ public class CommandeVenteService {
                     saved.getEntreprise());
         }
 
+        auditLogService.log("COMMANDE_VENTE_CREEE",
+                "Commande de vente créée: " + saved.getReference() + " (id=" + saved.getId() + ")");
+
         return saved;
     }
 
@@ -304,6 +307,9 @@ public class CommandeVenteService {
         if (dto.getNote() != null) commande.setNote(dto.getNote());
         CommandeVente saved = commandeVenteRepository.save(commande);
 
+        auditLogService.log("COMMANDE_VENTE_MODIFIEE",
+                "Commande de vente modifiée: " + saved.getReference() + " (id=" + id + ")");
+
         // Replace order lines when the DTO includes them
         if (dto.getLignes() != null) {
             ligneCommandeVenteRepository.deleteByCommandeVenteId(id);
@@ -390,6 +396,8 @@ public class CommandeVenteService {
         }
         ligneCommandeVenteRepository.deleteByCommandeVenteId(id);
         commandeVenteRepository.deleteById(id);
+        auditLogService.log("COMMANDE_VENTE_SUPPRIMEE",
+                "Commande de vente supprimée: " + commande.getReference() + " (id=" + id + ")");
     }
 
     @Caching(evict = {
@@ -572,6 +580,8 @@ public class CommandeVenteService {
                     saved.getReference(),
                     saved.getEntreprise());
         }
+        auditLogService.log("COMMANDE_VENTE_ANNULEE",
+                "Commande de vente annulée: " + saved.getReference() + " (id=" + id + ")");
         return saved;
     }
 
@@ -619,6 +629,8 @@ public class CommandeVenteService {
 
         logger.info("✅ Commande {} delivered, BonLivraison {} created and stock decremented ({} stock alert(s))",
                 id, savedBon.getId(), stockAlerts.size());
+        auditLogService.log("COMMANDE_VENTE_LIVREE",
+                "Commande de vente livrée: " + commande.getReference() + " (id=" + id + ", bon=" + savedBon.getReference() + ")");
         return new LivraisonResponseDto(savedBon, stockAlerts);
     }
 }
