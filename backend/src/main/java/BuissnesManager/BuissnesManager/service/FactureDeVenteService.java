@@ -71,6 +71,36 @@ public class FactureDeVenteService {
 
 
     @Transactional
+    public FactureDeVente updateStatutFactureVente(Long id, String newStatut) {
+        if (newStatut == null || newStatut.isEmpty() || !VALID_STATUTS.contains(newStatut)) {
+            throw new IllegalArgumentException("Statut invalide : " + newStatut);
+        }
+        return factureDeVenteRepo.findById(id)
+                .map(facture -> {
+                    String previousStatut = facture.getStatut();
+                    facture.setStatut(newStatut);
+                    FactureDeVente saved = factureDeVenteRepo.save(facture);
+                    auditLogService.log("FACTURE_VENTE_UPDATED",
+                            "Facture de vente mise à jour: ref=" + saved.getReferance()
+                                    + " (id=" + saved.getId() + "), statut: "
+                                    + previousStatut + " -> " + saved.getStatut());
+                    if (!java.util.Objects.equals(previousStatut, newStatut)) {
+                        if ("PAYEE".equals(newStatut)) {
+                            auditLogService.log("FACTURE_VENTE_VALIDATED",
+                                    "Facture de vente validée (PAYEE): ref=" + saved.getReferance()
+                                            + " (id=" + saved.getId() + ")");
+                        } else if ("ANNULEE".equals(newStatut)) {
+                            auditLogService.log("FACTURE_VENTE_CANCELLED",
+                                    "Facture de vente annulée: ref=" + saved.getReferance()
+                                            + " (id=" + saved.getId() + ")");
+                        }
+                    }
+                    return saved;
+                })
+                .orElseThrow(() -> new RuntimeException("FactureDeVente non trouvée avec id " + id));
+    }
+
+    @Transactional
     public FactureDeVente updateFactureVente(Long id, FactureDeVente updatedFacture) {
         return factureDeVenteRepo.findById(id)
                 .map(existingFacture -> {
