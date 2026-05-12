@@ -61,7 +61,7 @@ public class ArticleVente {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "articleVentes"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "articleVentes", "factureDeVentes"})
     private Client client;
 
     @OneToOne(fetch = FetchType.LAZY)
