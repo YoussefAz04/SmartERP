@@ -13,6 +13,7 @@ import BuissnesManager.BuissnesManager.repository.ModuleRepo;
 import BuissnesManager.BuissnesManager.repository.PermissionRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
+import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class UserService {
 
     @Autowired
     private ModuleRepo moduleRepo;
+
+    @Autowired
+    private AuthorizationUtil authorizationUtil;
 
     public UserDTO createEmployeeWithModules(CreateEmployeeRequest request) {
         if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
@@ -73,9 +77,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Entreprise non trouvée avec l'ID: " + request.getEnterpriseId()));
         user.setEntreprise(entreprise);
 
-        Role employeeRole = roleRepo.findByName("EMPLOYEE")
-                .orElseThrow(() -> new RuntimeException("Le rôle EMPLOYEE n'existe pas"));
-        user.setRoles(new ArrayList<>(List.of(employeeRole)));
+        String roleName = authorizationUtil.isSuperAdmin() ? "ADMIN" : "EMPLOYEE";
+        Role assignedRole = roleRepo.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Le rôle " + roleName + " n'existe pas"));
+        user.setRoles(new ArrayList<>(List.of(assignedRole)));
 
         User savedUser = userRepository.save(user);
 
