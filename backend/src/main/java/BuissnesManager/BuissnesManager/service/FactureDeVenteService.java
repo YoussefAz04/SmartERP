@@ -10,6 +10,7 @@ import BuissnesManager.BuissnesManager.repository.FactureDeVenteRepo;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +70,7 @@ public class FactureDeVenteService {
     }
 
 
+    @Transactional
     public FactureDeVente updateFactureVente(Long id, FactureDeVente updatedFacture) {
         return factureDeVenteRepo.findById(id)
                 .map(existingFacture -> {
@@ -112,6 +114,7 @@ public class FactureDeVenteService {
     }
 
 
+    @Transactional
     public void deleteFacture(Long id) {
         FactureDeVente existing = factureDeVenteRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facture non trouvée avec l'id : " + id));
@@ -120,6 +123,7 @@ public class FactureDeVenteService {
                 "Facture de vente supprimée: ref=" + existing.getReferance() + " (id=" + id + ")");
     }
 
+    @Transactional
     public void affecterFactureClient(Long idFacture, Long idClient){
         FactureDeVente factureDeVente = factureDeVenteRepo.findById(idFacture)
                 .orElseThrow(() -> new RuntimeException("Facture non trouvée avec l'id : " + idFacture));
