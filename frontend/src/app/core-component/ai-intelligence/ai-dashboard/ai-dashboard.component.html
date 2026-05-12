@@ -301,14 +301,27 @@
     <!-- Strategic Recommendations -->
     <div class="recommendations-section" *ngIf="dashboard.recommendations?.length">
       <div class="section-title-row">
-        <h2 class="section-title">
-          <i class="fas fa-lightbulb me-2"></i>Recommandations Stratégiques
-        </h2>
+        <div class="section-title-block">
+          <h2 class="section-title">
+            <i class="fas fa-lightbulb me-2"></i>Recommandations Stratégiques
+          </h2>
+          <p class="rec-section-desc">
+            {{ dashboard.recommendations.length }} point{{ dashboard.recommendations.length > 1 ? 's' : '' }} d'attention identifié{{ dashboard.recommendations.length > 1 ? 's' : '' }} pour améliorer vos performances
+          </p>
+        </div>
         <div class="rec-summary-chips">
-          <span class="rec-chip rec-chip-critical">Critique: {{ criticalRecs.length }}</span>
-          <span class="rec-chip rec-chip-high">Haute: {{ highRecs.length }}</span>
-          <span class="rec-chip rec-chip-medium">Moyenne: {{ mediumRecs.length }}</span>
-          <span class="rec-chip rec-chip-info">Info: {{ infoRecs.length }}</span>
+          <span class="rec-chip rec-chip-critical" *ngIf="criticalRecs.length">
+            <span class="rec-chip-dot"></span> Critique · {{ criticalRecs.length }}
+          </span>
+          <span class="rec-chip rec-chip-high" *ngIf="highRecs.length">
+            <span class="rec-chip-dot"></span> Haute · {{ highRecs.length }}
+          </span>
+          <span class="rec-chip rec-chip-medium" *ngIf="mediumRecs.length">
+            <span class="rec-chip-dot"></span> Moyenne · {{ mediumRecs.length }}
+          </span>
+          <span class="rec-chip rec-chip-info" *ngIf="infoRecs.length">
+            <span class="rec-chip-dot"></span> Info · {{ infoRecs.length }}
+          </span>
         </div>
       </div>
       <div class="recs-grid">
