@@ -22,6 +22,8 @@ public class StockService {
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private AuditLogService auditLogService;
 
     // ✅ Helper method to convert any number to BigDecimal
     private BigDecimal toBigDecimal(Object value) {
@@ -59,6 +61,9 @@ public class StockService {
                     saved.getQuantiteDisponible()
             );
         }
+        String articleName = saved.getArticleAchat() != null ? saved.getArticleAchat().getNom() : "inconnu";
+        auditLogService.log("STOCK_CREE",
+                "Stock créé pour l'article: " + articleName + " (stock_id=" + saved.getId() + ", qté=" + saved.getQuantiteDisponible() + ")");
         return saved;
     }
 
@@ -109,6 +114,9 @@ public class StockService {
                     addedQuantity
             );
         }
+        String articleName = saved.getArticleAchat() != null ? saved.getArticleAchat().getNom() : "inconnu";
+        auditLogService.log("STOCK_MODIFIE",
+                "Stock modifié pour l'article: " + articleName + " (stock_id=" + saved.getId() + ", qté disponible=" + saved.getQuantiteDisponible() + ")");
         return saved;
     }
 
@@ -117,5 +125,7 @@ public class StockService {
             throw new RuntimeException("Stock non trouvé avec id: " + id);
         }
         stockRepository.deleteById(id);
+        auditLogService.log("STOCK_SUPPRIME",
+                "Stock supprimé (stock_id=" + id + ")");
     }
 }

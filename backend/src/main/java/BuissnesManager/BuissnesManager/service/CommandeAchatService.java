@@ -321,6 +321,8 @@ public class CommandeAchatService {
         }
 
         logger.info("✅ Purchase order creation complete - ID: {}", saved.getId());
+        auditLogService.log("COMMANDE_ACHAT_CREEE",
+                "Commande d'achat créée: " + saved.getReference() + " (id=" + saved.getId() + ")");
         return saved;
     }
 
@@ -348,7 +350,10 @@ public class CommandeAchatService {
             commande.setFournisseur(fournisseur);
         }
 
-        return commandeAchatRepository.save(commande);
+        CommandeAchat updated = commandeAchatRepository.save(commande);
+        auditLogService.log("COMMANDE_ACHAT_MODIFIEE",
+                "Commande d'achat modifiée: " + updated.getReference() + " (id=" + id + ")");
+        return updated;
     }
 
     private static final java.util.Set<String> VALID_STATUTS = java.util.Set.of(
@@ -516,6 +521,8 @@ public class CommandeAchatService {
         }
 
         logger.info("✅ Order cancelled - ID: {}, previous status: {}", id, ancienStatut);
+        auditLogService.log("COMMANDE_ACHAT_ANNULEE",
+                "Commande d'achat annulée: " + saved.getReference() + " (id=" + id + ")");
         return saved;
     }
 
@@ -555,6 +562,8 @@ public class CommandeAchatService {
         }
 
         logger.info("✅ Order received and stock updated - Order ID: {}, Reception ID: {}", id, savedBon.getId());
+        auditLogService.log("COMMANDE_ACHAT_RECUE",
+                "Commande d'achat réceptionnée: " + commande.getReference() + " (id=" + id + ", bon=" + savedBon.getReference() + ")");
         return savedBon;
     }
 
@@ -589,5 +598,7 @@ public class CommandeAchatService {
         // ✅ DELETE ORDER
         commandeAchatRepository.deleteById(id);
         logger.info("✅ Order deleted - ID: {}", id);
+        auditLogService.log("COMMANDE_ACHAT_SUPPRIMEE",
+                "Commande d'achat supprimée: " + commande.getReference() + " (id=" + id + ")");
     }
 }

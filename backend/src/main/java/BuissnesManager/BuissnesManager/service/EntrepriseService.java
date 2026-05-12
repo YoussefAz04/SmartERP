@@ -70,6 +70,8 @@ public class EntrepriseService {
     private CategorieArticleRepository categorieArticleRepository;
     @Autowired
     private MesureRepository mesureRepository;
+    @Autowired
+    private AuditLogService auditLogService;
 
 
     public List<Entreprise> getAllEntreprise(){
@@ -77,7 +79,10 @@ public class EntrepriseService {
     }
 
     public Entreprise ajouterEntreprise(Entreprise entreprise) {
-        return entrepriseRepository.save(entreprise);
+        Entreprise saved = entrepriseRepository.save(entreprise);
+        auditLogService.log("ENTREPRISE_CREEE",
+                "Entreprise créée: " + saved.getNom() + " (id=" + saved.getId() + ")");
+        return saved;
     }
 
     public List<Entreprise> getAllEntreprises() {
@@ -104,7 +109,10 @@ public class EntrepriseService {
             entreprise.setEmail(entrepriseDetails.getEmail());
             entreprise.setTelephone(entrepriseDetails.getTelephone());
             entreprise.setAdresse(entrepriseDetails.getAdresse());
-            return entrepriseRepository.save(entreprise);
+            Entreprise saved = entrepriseRepository.save(entreprise);
+            auditLogService.log("ENTREPRISE_MODIFIEE",
+                    "Entreprise modifiée: " + saved.getNom() + " (id=" + id + ")");
+            return saved;
         } else {
             throw new RuntimeException("Entreprise non trouvée avec ID : " + id);
         }
@@ -121,6 +129,8 @@ public class EntrepriseService {
         List<User> users = userRepo.findByEntrepriseId(id);
         users.forEach(user -> user.setEnabled(false));
         userRepo.saveAll(users);
+        auditLogService.log("ENTREPRISE_DESACTIVEE",
+                "Entreprise désactivée: " + entreprise.getNom() + " (id=" + id + ")");
     }
 
     @Transactional
@@ -134,6 +144,8 @@ public class EntrepriseService {
         List<User> users = userRepo.findByEntrepriseId(id);
         users.forEach(user -> user.setEnabled(true));
         userRepo.saveAll(users);
+        auditLogService.log("ENTREPRISE_ACTIVEE",
+                "Entreprise activée: " + entreprise.getNom() + " (id=" + id + ")");
     }
 
     public void assignerUserToEntreprise(String username,String nom){
