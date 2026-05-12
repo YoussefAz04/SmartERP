@@ -161,13 +161,9 @@ export class DetaisUsersComponent implements OnInit {
     this.rolesLoadError = false;
     this.roleService.getAllRoles().subscribe({
       next: (roles) => {
-        if (!this.isSuperAdmin) {
-          this.availableRoles = roles.filter(r =>
-            r.roleType === 'EMPLOYEE' || r.roleType === 'ADMIN'
-          );
-        } else {
-          this.availableRoles = roles;
-        }
+        this.availableRoles = roles.filter(r =>
+          r.roleType === 'EMPLOYEE' || r.roleType === 'ADMIN'
+        );
         this.rolesLoading = false;
       },
       error: (err: any) => {
