@@ -46,15 +46,15 @@ public class FactureDeVenteController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
-    @PatchMapping("{id}/statut")
-    public ResponseEntity<FactureDeVente> updateStatut(@PathVariable Long id,
-                                                       @RequestBody java.util.Map<String, String> body) {
+    @PatchMapping("/{id}/statut")
+    public ResponseEntity<?> updateStatut(@PathVariable Long id,
+                                          @RequestBody java.util.Map<String, String> body) {
         String newStatut = body.get("statut");
         try {
             FactureDeVente facture = factureDeVenteService.updateStatutFactureVente(id, newStatut);
             return ResponseEntity.ok(facture);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
