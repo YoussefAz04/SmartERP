@@ -1,25 +1,20 @@
-<!-- Hero Header -->
-<div class="ent-hero-header">
-  <div class="hero-content">
-    <div>
-      <span class="hero-badge">
-        <i class="feather icon-briefcase"></i> Gestion des Entreprises
-      </span>
-      <h1 class="hero-title">
-        <ng-container *ngIf="isSuperAdmin">Liste des Entreprises</ng-container>
-        <ng-container *ngIf="!isSuperAdmin">Mon Entreprise</ng-container>
-      </h1>
-      <p class="hero-subtitle" *ngIf="isSuperAdmin">{{ totalCount }} entreprise(s) enregistrée(s)</p>
-      <p class="hero-subtitle" *ngIf="!isSuperAdmin && currentEntreprise">{{ currentEntreprise.nom }}</p>
-    </div>
-    <div class="hero-actions">
-      <button type="button" class="btn-hero btn-hero-outline" (click)="refreshData()">
-        <i class="feather icon-rotate-ccw"></i> Actualiser
-      </button>
-      <button type="button" class="btn-hero btn-hero-primary" (click)="addEntreprise()" *ngIf="isSuperAdmin">
-        <i class="feather icon-plus-circle"></i> Ajouter Entreprise
-      </button>
-    </div>
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-left">
+    <h4 class="page-title">
+      <ng-container *ngIf="isSuperAdmin">Liste des Entreprises</ng-container>
+      <ng-container *ngIf="!isSuperAdmin">Mon Entreprise</ng-container>
+    </h4>
+    <p class="page-subtitle" *ngIf="isSuperAdmin">{{ totalCount }} entreprise(s) enregistrée(s)</p>
+    <p class="page-subtitle" *ngIf="!isSuperAdmin && currentEntreprise">{{ currentEntreprise.nom }}</p>
+  </div>
+  <div class="page-header-right">
+    <button type="button" class="btn-outline-secondary" (click)="refreshData()">
+      <i class="feather icon-rotate-ccw"></i> Actualiser
+    </button>
+    <button type="button" class="btn-primary-action" (click)="addEntreprise()" *ngIf="isSuperAdmin">
+      <i class="feather icon-plus"></i> Ajouter
+    </button>
   </div>
 </div>
 
@@ -28,77 +23,52 @@
 <!-- ============================================================ -->
 <ng-container *ngIf="isSuperAdmin">
 
-  <!-- KPI Cards -->
-  <div class="row mb-4">
-    <div class="col-xl-6 col-sm-6 mb-4">
-      <div class="kpi-card kpi-purple kpi-delay-1">
-        <div class="kpi-body">
-          <div>
-            <div class="kpi-number">{{ totalCount }}</div>
-            <div class="kpi-label">Total Entreprises</div>
-            <span class="kpi-trend"><i class="feather icon-trending-up"></i> Registre</span>
-          </div>
-          <div class="kpi-icon-wrap">
-            <i class="feather icon-briefcase"></i>
-          </div>
-        </div>
-        <div class="kpi-footer">
-          <i class="feather icon-list me-1"></i> Voir toutes les entreprises
-        </div>
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-icon"><i class="feather icon-briefcase"></i></div>
+      <div>
+        <div class="stat-number">{{ totalCount }}</div>
+        <div class="stat-label">Total Entreprises</div>
       </div>
     </div>
-    <div class="col-xl-6 col-sm-6 mb-4">
-      <div class="kpi-card kpi-teal kpi-delay-2">
-        <div class="kpi-body">
-          <div>
-            <div class="kpi-number">{{ uniqueSectors }}</div>
-            <div class="kpi-label">Secteurs</div>
-            <span class="kpi-trend"><i class="feather icon-layers"></i> Diversité</span>
-          </div>
-          <div class="kpi-icon-wrap">
-            <i class="feather icon-layers"></i>
-          </div>
-        </div>
-        <div class="kpi-footer">
-          <i class="feather icon-bar-chart-2 me-1"></i> Secteurs d'activité uniques
-        </div>
+    <div class="stat-box">
+      <div class="stat-icon"><i class="feather icon-layers"></i></div>
+      <div>
+        <div class="stat-number">{{ uniqueSectors }}</div>
+        <div class="stat-label">Secteurs</div>
       </div>
     </div>
   </div>
 
   <!-- Filter Card -->
-  <div class="filter-card mb-4">
+  <div class="filter-card">
     <div class="filter-header">
-      <i class="feather icon-filter"></i>
-      Filtres &amp; Recherche
+      <i class="feather icon-search"></i>
+      Recherche
     </div>
     <div class="filter-body">
-      <div class="row g-3 align-items-end">
-        <div class="col-md-9">
-          <label class="filter-label">Recherche</label>
-          <div class="filter-input-group">
-            <i class="feather icon-search filter-input-icon"></i>
-            <input type="text" class="filter-input" placeholder="Nom, raison sociale, email, secteur, adresse..."
-              [(ngModel)]="searchTerm">
-          </div>
+      <div class="filter-row">
+        <div class="filter-input-group" style="flex:1;">
+          <i class="feather icon-search filter-input-icon"></i>
+          <input type="text" class="filter-input" placeholder="Nom, raison sociale, email, secteur, adresse..."
+            [(ngModel)]="searchTerm">
         </div>
-        <div class="col-md-3">
-          <button type="button" class="btn-reset w-100" (click)="resetFilters()">
-            <i class="feather icon-refresh-cw"></i> Réinitialiser
-          </button>
-        </div>
+        <button type="button" class="btn-reset" (click)="resetFilters()">
+          <i class="feather icon-x"></i> Réinitialiser
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Entreprises Table -->
-  <div class="modern-panel">
-    <div class="panel-header panel-header-ent">
-      <h5 class="panel-title">
+  <div class="simple-panel">
+    <div class="simple-panel-header">
+      <span class="simple-panel-title">
         <i class="feather icon-briefcase"></i>
         Liste des Entreprises
-        <span class="panel-badge">{{ filteredEntreprises.length }}</span>
-      </h5>
+        <span class="count-badge">{{ filteredEntreprises.length }}</span>
+      </span>
     </div>
     <div class="panel-body">
 
@@ -242,12 +212,12 @@
   </div>
 
   <!-- Single Company Card -->
-  <div class="modern-panel" *ngIf="!isLoading && !errorMessage && currentEntreprise">
-    <div class="panel-header panel-header-ent">
-      <h5 class="panel-title">
+  <div class="simple-panel" *ngIf="!isLoading && !errorMessage && currentEntreprise">
+    <div class="simple-panel-header">
+      <span class="simple-panel-title">
         <i class="feather icon-briefcase"></i>
         {{ currentEntreprise.nom }}
-      </h5>
+      </span>
       <div class="panel-header-actions">
         <span class="role-badge role-badge-admin" *ngIf="isAdmin">
           <i class="feather icon-shield"></i> Administrateur
@@ -255,7 +225,7 @@
         <span class="role-badge role-badge-employee" *ngIf="isEmployee">
           <i class="feather icon-eye"></i> Lecture seule
         </span>
-        <button type="button" class="action-btn-edit" (click)="editEntreprise(currentEntreprise.id)"
+        <button type="button" class="btn-primary-action" (click)="editEntreprise(currentEntreprise.id)"
                 *ngIf="isAdmin" title="Modifier">
           <i class="feather icon-edit-2"></i> Modifier
         </button>
