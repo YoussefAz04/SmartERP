@@ -22,12 +22,14 @@
   --input-radius: 9px;
   --transition: 0.2s ease;
   display: block;
+  padding: 28px 24px;
 }
 
 /* ===== Page Layout ===== */
 .add-employee-page {
-  padding: 0 0 48px;
-  max-width: 900px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding-bottom: 48px;
 }
 
 /* ===== Page Hero ===== */
