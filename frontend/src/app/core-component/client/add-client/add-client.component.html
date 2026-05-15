@@ -140,7 +140,7 @@
                   <span class="error-message" *ngIf="isFieldInvalid('telephone')">
                     <i class="feather icon-alert-circle"></i>
                     <span *ngIf="clientForm.get('telephone')?.hasError('required')">Le téléphone est requis</span>
-                    <span *ngIf="clientForm.get('telephone')?.hasError('pattern')">Min 8 chiffres</span>
+                    <span *ngIf="clientForm.get('telephone')?.hasError('pattern')">Format invalide (ex: 20000000 ou +216 20 000 000)</span>
                   </span>
                 </div>
               </div>

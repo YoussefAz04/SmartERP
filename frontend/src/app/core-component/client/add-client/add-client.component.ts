@@ -44,7 +44,7 @@ export class AddClientComponent implements OnInit{
       nom: ['', [Validators.required, Validators.minLength(2)]],
       prenom: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
+      telephone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-]{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
       categorieId: ['', Validators.required],

@@ -44,7 +44,7 @@ export class EditClientComponent implements OnInit {
     this.clientForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
       prenom: ['', [Validators.required, Validators.minLength(2)]],
-      telephone: ['', [Validators.required, Validators.pattern(/^\d{8,}$/)]],
+      telephone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-]{8,}$/)]],
       email: ['', [Validators.required, Validators.email]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       secteurActivite: ['', [Validators.required, Validators.minLength(3)]],
