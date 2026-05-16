@@ -113,6 +113,7 @@ export class FactureDeVenteServiceService {
     const mg = 14;
     const rX = 110;
     const rW = 86;
+    const referance = factureData.referance || '—';
     const statut  = (factureData.statut || '').toUpperCase();
     const dateStr = factureData.dateAchat || new Date().toLocaleDateString('fr-FR');
 
@@ -182,8 +183,8 @@ export class FactureDeVenteServiceService {
     doc.text('FACTURE N°', W - 34.5, 14, { align: 'center' });
 
     const refDisplay = (factureData.referance || '—').length > 18
-      ? (factureData.referance || '—').substring(0, 18) + '…'
-      : (factureData.referance || '—');
+      ? referance.substring(0, 18) + '…'
+      : referance;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(hR, hG, hB);
@@ -236,10 +237,11 @@ export class FactureDeVenteServiceService {
     doc.setFont('helvetica', 'bold');
     doc.text(String(this.entreprise.nom || ''), lX + 5, pTop + 17);
 
+    const telEntreprise = this.entreprise.telephone;
     const emLines = [
       this.entreprise.adresse   || '',
       this.entreprise.email     || '',
-      this.entreprise.telephone || '',
+      telEntreprise ? `Tél : ${telEntreprise}` : '',
       this.entreprise.siteWeb   || ''
     ].filter(l => l.trim() !== '');
     doc.setFontSize(8);
@@ -263,7 +265,7 @@ export class FactureDeVenteServiceService {
     doc.text('INFORMATIONS FACTURE', rX + 5, pTop + 6.5);
 
     const invoiceFields: Array<{ label: string; value: string }> = [
-      { label: 'N° Facture', value: factureData.referance || '—' },
+      { label: 'N° Facture', value: referance },
       { label: 'Date',       value: dateStr },
       { label: 'Paiement',   value: factureData.modePaiement || '—' }
     ];

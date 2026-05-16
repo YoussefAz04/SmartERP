@@ -168,8 +168,8 @@ export class FactureService {
     doc.text('FACTURE N°', W - 34.5, 14, { align: 'center' });
 
     const refDisplay = (factureData.referance || '—').length > 18
-      ? (factureData.referance || '—').substring(0, 18) + '…'
-      : (factureData.referance || '—');
+      ? referance.substring(0, 18) + '…'
+      : referance;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(hR, hG, hB);
@@ -222,10 +222,11 @@ export class FactureService {
     doc.setFont('helvetica', 'bold');
     doc.text(this.entreprise.nom || '', lX + 5, pTop + 17);
 
+    const tel = this.entreprise.telephone;
     const emLines = [
       this.entreprise.adresse || '',
       this.entreprise.email    || '',
-      this.entreprise.telephone || '',
+      tel ? `Tél : ${tel}` : '',
       this.entreprise.siteWeb  || ''
     ].filter(l => l.trim() !== '');
     doc.setFontSize(8);
@@ -249,7 +250,7 @@ export class FactureService {
     doc.text('INFORMATIONS FACTURE', rX + 5, pTop + 6.5);
 
     const invoiceFields: Array<{ label: string; value: string }> = [
-      { label: 'N° Facture',  value: factureData.referance || '—' },
+      { label: 'N° Facture',  value: referance },
       { label: 'Date',        value: dateStr },
       { label: 'Paiement',    value: factureData.modePaiement || '—' }
     ];
