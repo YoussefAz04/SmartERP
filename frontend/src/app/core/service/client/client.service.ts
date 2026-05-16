@@ -120,4 +120,12 @@ deleteCategorie(id: number): Observable<any> {
   );
 }
 
+updateCategorieClient(id: number, categorie: CategorieClient): Observable<CategorieClient> {
+  return this.http.put<CategorieClient>(
+    `${this.baseUrl}/updateCategorieClient/${id}`,
+    categorie,
+    { headers: this.getHeaders() }
+  );
+}
+
 }

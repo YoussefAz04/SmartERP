@@ -6,6 +6,7 @@ import {ListCategorieClientComponent} from "./list-categorie-client/list-categor
 import {AddClientComponent} from "./add-client/add-client.component";
 import {AddCategorieClientComponent} from "./add-categorie-client/add-categorie-client.component";
 import {EditClientComponent} from "./edit-client/edit-client.component";
+import {EditCategorieClientComponent} from "./edit-categorie-client/edit-categorie-client.component";
 import {ViewClientComponent} from "./view-client/view-client.component";
 import { RoleGuard } from '../../core/guard/role/role.guard';
 
@@ -32,6 +33,11 @@ const routes: Routes = [
   },{
     path: 'editClient/:id',
     component: EditClientComponent,
+    canActivate: [RoleGuard],
+    data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
+  },{
+    path: 'editCategorieClient/:id',
+    component: EditCategorieClientComponent,
     canActivate: [RoleGuard],
     data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
   },{
