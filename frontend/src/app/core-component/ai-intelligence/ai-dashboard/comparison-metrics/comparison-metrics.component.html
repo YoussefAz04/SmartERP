@@ -8,7 +8,7 @@
       </div>
       <div>
         <h2>Comparaison des Périodes</h2>
-        <p>Suivi des performances MTD &amp; YTD</p>
+        <p>Suivi des performances MTD & YTD</p>
       </div>
     </div>
   </div>
@@ -141,7 +141,7 @@
       <!-- Stat tiles -->
       <div class="cmp-tiles">
         <div class="cmp-tile cmp-tile--margin" *ngIf="comparison.marginMtdVsLtd">
-          <i class="fas fa-percentage cmp-tile__icon"></i>
+          <div class="cmp-tile__icon"><i class="fas fa-percentage"></i></div>
           <div class="cmp-tile__body">
             <span class="cmp-tile__label">Marge Brute MTD</span>
             <span class="cmp-tile__value" [ngClass]="getMtdMarginClass()">
@@ -155,7 +155,7 @@
           </div>
         </div>
         <div class="cmp-tile cmp-tile--orders" *ngIf="comparison.orderCountMtdVsLtd">
-          <i class="fas fa-receipt cmp-tile__icon"></i>
+          <div class="cmp-tile__icon"><i class="fas fa-receipt"></i></div>
           <div class="cmp-tile__body">
             <span class="cmp-tile__label">Commandes MTD</span>
             <span class="cmp-tile__value text-primary">
@@ -339,7 +339,7 @@
       <!-- Stat tiles -->
       <div class="cmp-tiles">
         <div class="cmp-tile cmp-tile--margin">
-          <i class="fas fa-percentage cmp-tile__icon"></i>
+          <div class="cmp-tile__icon"><i class="fas fa-percentage"></i></div>
           <div class="cmp-tile__body">
             <span class="cmp-tile__label">Marge Brute YTD</span>
             <span class="cmp-tile__value" [ngClass]="getMarginClass()">
@@ -351,7 +351,7 @@
           </div>
         </div>
         <div class="cmp-tile cmp-tile--orders" *ngIf="comparison.orderCountYtdVsLastYear">
-          <i class="fas fa-receipt cmp-tile__icon"></i>
+          <div class="cmp-tile__icon"><i class="fas fa-receipt"></i></div>
           <div class="cmp-tile__body">
             <span class="cmp-tile__label">Commandes YTD</span>
             <span class="cmp-tile__value text-primary">
@@ -365,7 +365,7 @@
           </div>
         </div>
         <div class="cmp-tile cmp-tile--sales" *ngIf="!comparison.orderCountYtdVsLastYear">
-          <i class="fas fa-cart-shopping cmp-tile__icon"></i>
+          <div class="cmp-tile__icon"><i class="fas fa-cart-shopping"></i></div>
           <div class="cmp-tile__body">
             <span class="cmp-tile__label">Cmdes Vente YTD</span>
             <span class="cmp-tile__value text-primary">{{ comparison.salesOrderCountYtd ?? 0 | number }}</span>
@@ -373,7 +373,7 @@
           </div>
         </div>
         <div class="cmp-tile cmp-tile--purchase">
-          <i class="fas fa-truck-fast cmp-tile__icon"></i>
+          <div class="cmp-tile__icon"><i class="fas fa-truck-fast"></i></div>
           <div class="cmp-tile__body">
             <span class="cmp-tile__label">Cmdes Achat YTD</span>
             <span class="cmp-tile__value text-info">{{ comparison.purchaseOrderCountYtd ?? 0 | number }}</span>
