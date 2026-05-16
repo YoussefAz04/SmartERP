@@ -33,53 +33,113 @@
 <!-- Client Details -->
 <div class="row" *ngIf="!isLoading && client && !errorMessage">
   <div class="col-md-8">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">{{ client.nom }} {{ client.prenom }}</h5>
+    <div class="card client-detail-card">
+      <div class="card-header d-flex justify-content-between align-items-center client-card-header">
+        <div class="d-flex align-items-center gap-3">
+          <div class="client-avatar">
+            {{ (client.prenom?.[0] || '') | uppercase }}{{ (client.nom?.[0] || '') | uppercase }}
+          </div>
+          <div>
+            <h5 class="card-title mb-0">{{ client.nom }} {{ client.prenom }}</h5>
+            <small class="text-muted">{{ client.categorieClient?.nom || 'Client' }}</small>
+          </div>
+        </div>
         <div class="d-flex gap-2">
           <button type="button" class="btn btn-primary btn-sm" *ngIf="canEditClient" (click)="editClient()">
             <i class="feather icon-edit me-1"></i>Modifier
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="goBack()">
             <i class="feather icon-arrow-left me-1"></i>Retour
           </button>
         </div>
       </div>
       <div class="card-body">
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Nom</div>
-          <div class="col-sm-8">{{ client.nom }}</div>
+        <div class="detail-row">
+          <div class="detail-label">
+            <i class="feather icon-user detail-icon"></i>Nom
+          </div>
+          <div class="detail-value">{{ client.nom }}</div>
         </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Prénom</div>
-          <div class="col-sm-8">{{ client.prenom }}</div>
+        <div class="detail-row">
+          <div class="detail-label">
+            <i class="feather icon-user detail-icon"></i>Prénom
+          </div>
+          <div class="detail-value">{{ client.prenom }}</div>
         </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Email</div>
-          <div class="col-sm-8">{{ client.email }}</div>
+        <div class="detail-row">
+          <div class="detail-label">
+            <i class="feather icon-mail detail-icon"></i>Email
+          </div>
+          <div class="detail-value">
+            <a [href]="'mailto:' + client.email" class="text-decoration-none">{{ client.email }}</a>
+          </div>
         </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Téléphone</div>
-          <div class="col-sm-8">{{ client.telephone }}</div>
+        <div class="detail-row">
+          <div class="detail-label">
+            <i class="feather icon-phone detail-icon"></i>Téléphone
+          </div>
+          <div class="detail-value">{{ client.telephone }}</div>
         </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Adresse</div>
-          <div class="col-sm-8">{{ client.adresse }}</div>
+        <div class="detail-row">
+          <div class="detail-label">
+            <i class="feather icon-map-pin detail-icon"></i>Adresse
+          </div>
+          <div class="detail-value">{{ client.adresse }}</div>
         </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Secteur d'Activité</div>
-          <div class="col-sm-8">{{ client.secteurActivite }}</div>
+        <div class="detail-row">
+          <div class="detail-label">
+            <i class="feather icon-briefcase detail-icon"></i>Secteur d'Activité
+          </div>
+          <div class="detail-value">{{ client.secteurActivite || 'N/A' }}</div>
         </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Catégorie</div>
-          <div class="col-sm-8">{{ client.categorieClient?.nom || 'N/A' }}</div>
+        <div class="detail-row last">
+          <div class="detail-label">
+            <i class="feather icon-tag detail-icon"></i>Catégorie
+          </div>
+          <div class="detail-value">
+            <span class="badge bg-secondary badge-category">{{ client.categorieClient?.nom || 'N/A' }}</span>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row stats-row" *ngIf="!isLoading && client && !errorMessage && !isLoadingHistory && !historyError">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-primary"><i class="feather icon-file-text"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ facturesHistory.length }}</div>
+        <div class="stat-label">Factures</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-success"><i class="feather icon-check-circle"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ getPaidCount() }}</div>
+        <div class="stat-label">Payées</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-warning"><i class="feather icon-clock"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ getPendingCount() }}</div>
+        <div class="stat-label">En attente</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-info"><i class="feather icon-trending-up"></i></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalAchatsTTC() | number:'1.0-0' }}</div>
+        <div class="stat-label">Total TTC (DA)</div>
       </div>
     </div>
   </div>
@@ -113,8 +173,8 @@
         </div>
 
         <div class="table-responsive" *ngIf="!isLoadingHistory && !historyError && facturesHistory.length > 0">
-          <table class="table table-striped table-hover align-middle">
-            <thead>
+          <table class="table table-hover align-middle history-table">
+            <thead class="table-head-subtle">
               <tr>
                 <th>Référence</th>
                 <th>Date</th>
@@ -127,19 +187,19 @@
             </thead>
             <tbody>
               <tr *ngFor="let f of facturesHistory">
-                <td>{{ f.referance || '-' }}</td>
+                <td><span class="ref-badge">{{ f.referance || '-' }}</span></td>
                 <td>{{ f.dateAchat || '-' }}</td>
-                <td class="text-end">{{ (f.montantHT || 0) | number:'1.2-2' }}</td>
-                <td class="text-end">{{ (f.montantTVA || 0) | number:'1.2-2' }}</td>
-                <td class="text-end fw-bold">{{ (f.montantTTC || 0) | number:'1.2-2' }}</td>
+                <td class="text-end text-muted">{{ (f.montantHT || 0) | number:'1.2-2' }}</td>
+                <td class="text-end text-muted">{{ (f.montantTVA || 0) | number:'1.2-2' }}</td>
+                <td class="text-end fw-semibold">{{ (f.montantTTC || 0) | number:'1.2-2' }}</td>
                 <td>{{ f.modePaiement || '-' }}</td>
                 <td>
-                  <span class="badge"
+                  <span class="status-badge"
                     [ngClass]="{
-                      'bg-success': f.statut === 'PAYEE',
-                      'bg-warning text-dark': f.statut === 'EN_ATTENTE' || f.statut === 'PARTIELLEMENT_PAYEE',
-                      'bg-danger': f.statut === 'ANNULEE',
-                      'bg-secondary': !f.statut
+                      'status-paid':   f.statut === 'PAYEE',
+                      'status-pending': f.statut === 'EN_ATTENTE' || f.statut === 'PARTIELLEMENT_PAYEE',
+                      'status-cancelled': f.statut === 'ANNULEE',
+                      'status-unknown': !f.statut
                     }">
                     {{ f.statut || 'N/A' }}
                   </span>
@@ -147,9 +207,9 @@
               </tr>
             </tbody>
             <tfoot>
-              <tr>
-                <td colspan="4" class="text-end fw-bold">Total TTC</td>
-                <td class="text-end fw-bold">{{ totalAchatsTTC() | number:'1.2-2' }}</td>
+              <tr class="tfoot-total">
+                <td colspan="4" class="text-end">Total TTC</td>
+                <td class="text-end">{{ totalAchatsTTC() | number:'1.2-2' }}</td>
                 <td colspan="2"></td>
               </tr>
             </tfoot>

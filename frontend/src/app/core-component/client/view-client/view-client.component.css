@@ -1,1 +1,156 @@
+/* ── Client avatar ── */
+.client-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(78, 115, 223, 0.35);
+}
 
+/* ── Detail card header ── */
+.client-card-header {
+  background: linear-gradient(to right, #f8f9fc, #fff);
+  border-bottom: 2px solid #e3e6f0;
+  padding: 1rem 1.25rem;
+}
+
+/* ── Detail rows ── */
+.detail-row {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 0;
+}
+.detail-row.last {
+  border-bottom: none;
+}
+.detail-label {
+  width: 35%;
+  min-width: 160px;
+  color: #6c757d;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.detail-value {
+  flex: 1;
+  color: #212529;
+  font-size: 0.9rem;
+}
+.detail-icon {
+  font-size: 0.85rem;
+  color: #4e73df;
+  opacity: 0.8;
+}
+.badge-category {
+  font-size: 0.78rem;
+  padding: 0.35em 0.65em;
+  border-radius: 0.4rem;
+}
+
+/* ── Quick stats ── */
+.stats-row {
+  margin-bottom: 0.5rem;
+}
+.stat-card {
+  background: #fff;
+  border: 1px solid #e3e6f0;
+  border-radius: 0.5rem;
+  padding: 1rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+.stat-card:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.stat-icon-primary { background: rgba(78, 115, 223, 0.12); color: #4e73df; }
+.stat-icon-success { background: rgba(28, 200, 138, 0.12); color: #1cc88a; }
+.stat-icon-warning { background: rgba(246, 194, 62, 0.15); color: #f6c23e; }
+.stat-icon-info    { background: rgba(54, 185, 204, 0.12); color: #36b9cc; }
+.stat-body { flex: 1; }
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: #8a9ab5;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── History table ── */
+.table-head-subtle th {
+  background-color: #f8f9fc;
+  color: #5a5c69;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  border-bottom: 2px solid #e3e6f0;
+}
+.history-table tbody tr:hover {
+  background-color: #f8f9fd;
+}
+
+/* ── Reference badge ── */
+.ref-badge {
+  display: inline-block;
+  background: #eef2ff;
+  color: #4e73df;
+  border-radius: 0.3rem;
+  padding: 0.15em 0.55em;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── Status badges ── */
+.status-badge {
+  display: inline-block;
+  padding: 0.3em 0.7em;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.status-paid      { background: #d1f5ea; color: #0f7050; }
+.status-pending   { background: #fff3cd; color: #856404; }
+.status-cancelled { background: #fde8e8; color: #a52020; }
+.status-unknown   { background: #e9ecef; color: #6c757d; }
+
+/* ── tfoot total row ── */
+.tfoot-total td {
+  background-color: #f8f9fc;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-top: 2px solid #dee2e6;
+  color: #2d3748;
+}
