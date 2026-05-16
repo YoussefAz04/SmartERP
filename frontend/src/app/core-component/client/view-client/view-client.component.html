@@ -1,161 +1,296 @@
-<!-- Page Header -->
-<div class="page-header">
-  <div class="row">
-    <div class="col">
-      <h3 class="page-title">Détails Client</h3>
-      <ul class="breadcrumb">
-        <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
-        <li class="breadcrumb-item"><a routerLink="/client/listClient">Clients</a></li>
-        <li class="breadcrumb-item active">Détails</li>
-      </ul>
-    </div>
-  </div>
-</div>
-<!-- /Page Header -->
-
 <!-- Loading State -->
-<div class="text-center py-5" *ngIf="isLoading">
-  <div class="spinner-border" role="status">
-    <span class="visually-hidden">Chargement...</span>
-  </div>
+<div class="vc-loading-state" *ngIf="isLoading">
+  <div class="vc-spinner-ring"></div>
+  <p class="vc-loading-text">Chargement du client…</p>
 </div>
 
 <!-- Error State -->
-<div class="alert alert-danger" *ngIf="!isLoading && errorMessage">
-  <i class="feather icon-alert-circle me-2"></i>{{ errorMessage }}
-  <div class="mt-2">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
-      <i class="feather icon-arrow-left me-1"></i>Retour
-    </button>
-  </div>
+<div class="vc-error-state" *ngIf="!isLoading && errorMessage">
+  <div class="vc-error-icon"><i class="feather icon-alert-circle"></i></div>
+  <h5>Une erreur est survenue</h5>
+  <p>{{ errorMessage }}</p>
+  <button type="button" class="vc-btn vc-btn-outline" (click)="goBack()">
+    <i class="feather icon-arrow-left"></i> Retour à la liste
+  </button>
 </div>
 
-<!-- Client Details -->
-<div class="row" *ngIf="!isLoading && client && !errorMessage">
-  <div class="col-md-8">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">{{ client.nom }} {{ client.prenom }}</h5>
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-primary btn-sm" *ngIf="canEditClient" (click)="editClient()">
-            <i class="feather icon-edit me-1"></i>Modifier
-          </button>
-          <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
-            <i class="feather icon-arrow-left me-1"></i>Retour
-          </button>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Nom</div>
-          <div class="col-sm-8">{{ client.nom }}</div>
-        </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Prénom</div>
-          <div class="col-sm-8">{{ client.prenom }}</div>
-        </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Email</div>
-          <div class="col-sm-8">{{ client.email }}</div>
-        </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Téléphone</div>
-          <div class="col-sm-8">{{ client.telephone }}</div>
-        </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Adresse</div>
-          <div class="col-sm-8">{{ client.adresse }}</div>
-        </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Secteur d'Activité</div>
-          <div class="col-sm-8">{{ client.secteurActivite }}</div>
-        </div>
-        <hr>
-        <div class="row mb-3">
-          <div class="col-sm-4 fw-bold text-muted">Catégorie</div>
-          <div class="col-sm-8">{{ client.categorieClient?.nom || 'N/A' }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Main Content -->
+<ng-container *ngIf="!isLoading && client && !errorMessage">
 
-<!-- Historique des achats du client -->
-<div class="row" *ngIf="!isLoading && client && !errorMessage">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">
-          <i class="feather icon-shopping-cart me-2"></i>Historique des achats
-        </h5>
-        <span class="badge bg-primary" *ngIf="!isLoadingHistory && !historyError">
-          {{ facturesHistory.length }} facture(s)
-        </span>
-      </div>
-      <div class="card-body">
-        <div class="text-center py-3" *ngIf="isLoadingHistory">
-          <div class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Chargement...</span>
+  <!-- Hero Header -->
+  <div class="vc-hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+
+    <div class="vc-hero-body">
+      <div class="vc-hero-left">
+        <nav class="vc-breadcrumb">
+          <a routerLink="/dashboard" class="bc-link"><i class="feather icon-home"></i> Dashboard</a>
+          <i class="feather icon-chevron-right bc-sep"></i>
+          <a routerLink="/client/listClient" class="bc-link">Clients</a>
+          <i class="feather icon-chevron-right bc-sep"></i>
+          <span class="bc-active">Détails</span>
+        </nav>
+        <div class="vc-identity">
+          <div class="vc-avatar">{{ (client.nom || '?').charAt(0).toUpperCase() }}</div>
+          <div class="vc-identity-info">
+            <span class="vc-badge"><i class="feather icon-user"></i> Fiche Client</span>
+            <h1 class="vc-name">{{ client.nom }} {{ client.prenom }}</h1>
+            <div class="vc-meta">
+              <span *ngIf="client.secteurActivite" class="vc-meta-pill">
+                <i class="feather icon-briefcase"></i> {{ client.secteurActivite }}
+              </span>
+              <span *ngIf="client.categorieClient" class="vc-meta-pill">
+                <i class="feather icon-tag"></i> {{ client.categorieClient.nom }}
+              </span>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="alert alert-danger" *ngIf="!isLoadingHistory && historyError">
-          <i class="feather icon-alert-circle me-2"></i>{{ historyError }}
+      <div class="vc-hero-actions">
+        <button type="button" class="btn-hero btn-hero-outline" (click)="goBack()">
+          <i class="feather icon-arrow-left"></i> Retour
+        </button>
+        <button type="button" class="btn-hero btn-hero-primary" *ngIf="canEditClient" (click)="editClient()">
+          <i class="feather icon-edit-2"></i> Modifier
+        </button>
+      </div>
+    </div>
+
+    <div class="vc-stats-bar">
+      <div class="vc-stat">
+        <div class="vc-stat-icon vc-stat-indigo"><i class="feather icon-file-text"></i></div>
+        <div class="vc-stat-info">
+          <span class="vc-stat-value">{{ facturesHistory.length }}</span>
+          <span class="vc-stat-label">Factures</span>
         </div>
-
-        <div class="alert alert-info mb-0" *ngIf="!isLoadingHistory && !historyError && facturesHistory.length === 0">
-          <i class="feather icon-info me-2"></i>Aucun achat enregistré pour ce client.
+      </div>
+      <div class="vc-stat-sep"></div>
+      <div class="vc-stat">
+        <div class="vc-stat-icon vc-stat-green"><i class="feather icon-trending-up"></i></div>
+        <div class="vc-stat-info">
+          <span class="vc-stat-value vc-stat-value-sm">{{ totalAchatsTTC() | number:'1.0-0' }} DH</span>
+          <span class="vc-stat-label">Total TTC</span>
         </div>
-
-        <div class="table-responsive" *ngIf="!isLoadingHistory && !historyError && facturesHistory.length > 0">
-          <table class="table table-striped table-hover align-middle">
-            <thead>
-              <tr>
-                <th>Référence</th>
-                <th>Date</th>
-                <th class="text-end">Montant HT</th>
-                <th class="text-end">TVA</th>
-                <th class="text-end">Montant TTC</th>
-                <th>Mode paiement</th>
-                <th>Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let f of facturesHistory">
-                <td>{{ f.referance || '-' }}</td>
-                <td>{{ f.dateAchat || '-' }}</td>
-                <td class="text-end">{{ (f.montantHT || 0) | number:'1.2-2' }}</td>
-                <td class="text-end">{{ (f.montantTVA || 0) | number:'1.2-2' }}</td>
-                <td class="text-end fw-bold">{{ (f.montantTTC || 0) | number:'1.2-2' }}</td>
-                <td>{{ f.modePaiement || '-' }}</td>
-                <td>
-                  <span class="badge"
-                    [ngClass]="{
-                      'bg-success': f.statut === 'PAYEE',
-                      'bg-warning text-dark': f.statut === 'EN_ATTENTE' || f.statut === 'PARTIELLEMENT_PAYEE',
-                      'bg-danger': f.statut === 'ANNULEE',
-                      'bg-secondary': !f.statut
-                    }">
-                    {{ f.statut || 'N/A' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="4" class="text-end fw-bold">Total TTC</td>
-                <td class="text-end fw-bold">{{ totalAchatsTTC() | number:'1.2-2' }}</td>
-                <td colspan="2"></td>
-              </tr>
-            </tfoot>
-          </table>
+      </div>
+      <div class="vc-stat-sep"></div>
+      <div class="vc-stat">
+        <div class="vc-stat-icon vc-stat-emerald"><i class="feather icon-check-circle"></i></div>
+        <div class="vc-stat-info">
+          <span class="vc-stat-value">{{ getPaidCount() }}</span>
+          <span class="vc-stat-label">Payées</span>
+        </div>
+      </div>
+      <div class="vc-stat-sep"></div>
+      <div class="vc-stat">
+        <div class="vc-stat-icon vc-stat-amber"><i class="feather icon-clock"></i></div>
+        <div class="vc-stat-info">
+          <span class="vc-stat-value">{{ getPendingCount() }}</span>
+          <span class="vc-stat-label">En attente</span>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- Info + Stat Cards Row -->
+  <div class="vc-content-grid">
+
+    <!-- Client Info Panel -->
+    <div class="modern-panel vc-info-panel">
+      <div class="panel-header panel-header-client">
+        <h5 class="panel-title">
+          <i class="feather icon-user"></i>
+          Informations Client
+        </h5>
+      </div>
+      <div class="panel-body">
+        <div class="vc-info-list">
+
+          <div class="vc-info-item">
+            <div class="vc-info-icon vc-info-indigo"><i class="feather icon-user"></i></div>
+            <div class="vc-info-content">
+              <span class="vc-info-label">Nom complet</span>
+              <span class="vc-info-value">{{ client.nom }} {{ client.prenom }}</span>
+            </div>
+          </div>
+
+          <div class="vc-info-item">
+            <div class="vc-info-icon vc-info-blue"><i class="feather icon-mail"></i></div>
+            <div class="vc-info-content">
+              <span class="vc-info-label">Email</span>
+              <a *ngIf="client.email" [href]="'mailto:' + client.email" class="vc-info-link">{{ client.email }}</a>
+              <span *ngIf="!client.email" class="vc-info-empty">—</span>
+            </div>
+          </div>
+
+          <div class="vc-info-item">
+            <div class="vc-info-icon vc-info-green"><i class="feather icon-phone"></i></div>
+            <div class="vc-info-content">
+              <span class="vc-info-label">Téléphone</span>
+              <a *ngIf="client.telephone" [href]="'tel:' + client.telephone" class="vc-info-link">{{ client.telephone }}</a>
+              <span *ngIf="!client.telephone" class="vc-info-empty">—</span>
+            </div>
+          </div>
+
+          <div class="vc-info-item">
+            <div class="vc-info-icon vc-info-amber"><i class="feather icon-map-pin"></i></div>
+            <div class="vc-info-content">
+              <span class="vc-info-label">Adresse</span>
+              <span class="vc-info-value" *ngIf="client.adresse">{{ client.adresse }}</span>
+              <span *ngIf="!client.adresse" class="vc-info-empty">—</span>
+            </div>
+          </div>
+
+          <div class="vc-info-item">
+            <div class="vc-info-icon vc-info-purple"><i class="feather icon-briefcase"></i></div>
+            <div class="vc-info-content">
+              <span class="vc-info-label">Secteur d'Activité</span>
+              <span class="vc-info-value" *ngIf="client.secteurActivite">{{ client.secteurActivite }}</span>
+              <span *ngIf="!client.secteurActivite" class="vc-info-empty">—</span>
+            </div>
+          </div>
+
+          <div class="vc-info-item vc-info-item-last">
+            <div class="vc-info-icon vc-info-cyan"><i class="feather icon-tag"></i></div>
+            <div class="vc-info-content">
+              <span class="vc-info-label">Catégorie</span>
+              <span class="vc-category-badge" *ngIf="client.categorieClient">{{ client.categorieClient.nom }}</span>
+              <span *ngIf="!client.categorieClient" class="vc-info-empty">Non catégorisé</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Side Stat Cards -->
+    <div class="vc-side-stats">
+      <div class="vc-stat-card vc-stat-card-indigo">
+        <div class="vc-stat-card-icon"><i class="feather icon-file-text"></i></div>
+        <div class="vc-stat-card-body">
+          <span class="vc-stat-card-value">{{ facturesHistory.length }}</span>
+          <span class="vc-stat-card-label">Total Factures</span>
+        </div>
+      </div>
+      <div class="vc-stat-card vc-stat-card-green">
+        <div class="vc-stat-card-icon"><i class="feather icon-check-circle"></i></div>
+        <div class="vc-stat-card-body">
+          <span class="vc-stat-card-value">{{ getPaidCount() }}</span>
+          <span class="vc-stat-card-label">Payées</span>
+        </div>
+      </div>
+      <div class="vc-stat-card vc-stat-card-amber">
+        <div class="vc-stat-card-icon"><i class="feather icon-clock"></i></div>
+        <div class="vc-stat-card-body">
+          <span class="vc-stat-card-value">{{ getPendingCount() }}</span>
+          <span class="vc-stat-card-label">En attente</span>
+        </div>
+      </div>
+      <div class="vc-stat-card vc-stat-card-purple">
+        <div class="vc-stat-card-icon"><i class="feather icon-dollar-sign"></i></div>
+        <div class="vc-stat-card-body">
+          <span class="vc-stat-card-value vc-stat-card-value-sm">{{ totalAchatsTTC() | number:'1.0-0' }}</span>
+          <span class="vc-stat-card-label">CA Total (DH)</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Purchase History Panel -->
+  <div class="modern-panel vc-history-panel">
+    <div class="panel-header panel-header-history">
+      <h5 class="panel-title">
+        <i class="feather icon-shopping-cart"></i>
+        Historique des Achats
+        <span class="panel-badge" *ngIf="!isLoadingHistory && !historyError">{{ facturesHistory.length }}</span>
+      </h5>
+    </div>
+    <div class="panel-body">
+
+      <!-- Loading history -->
+      <div class="vc-loading-state vc-loading-inline" *ngIf="isLoadingHistory">
+        <div class="vc-spinner-ring vc-spinner-sm"></div>
+      </div>
+
+      <!-- History error -->
+      <div class="vc-inline-error" *ngIf="!isLoadingHistory && historyError">
+        <i class="feather icon-alert-circle"></i> {{ historyError }}
+      </div>
+
+      <!-- Empty history -->
+      <div class="empty-state" *ngIf="!isLoadingHistory && !historyError && facturesHistory.length === 0">
+        <i class="feather icon-shopping-cart empty-icon"></i>
+        <p>Aucun achat enregistré pour ce client</p>
+      </div>
+
+      <!-- History Table -->
+      <div class="table-responsive" *ngIf="!isLoadingHistory && !historyError && facturesHistory.length > 0">
+        <table class="vc-table">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Date</th>
+              <th class="text-end">Montant HT</th>
+              <th class="text-end">TVA</th>
+              <th class="text-end">Montant TTC</th>
+              <th>Mode paiement</th>
+              <th class="text-center">Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let f of facturesHistory; let i = index" [style.animation-delay]="(i * 0.05) + 's'">
+              <td>
+                <div class="vc-ref-cell">
+                  <span class="vc-ref-icon"><i class="feather icon-file"></i></span>
+                  <span>{{ f.referance || '—' }}</span>
+                </div>
+              </td>
+              <td><span class="vc-date">{{ f.dateAchat || '—' }}</span></td>
+              <td class="text-end">{{ (f.montantHT || 0) | number:'1.2-2' }}</td>
+              <td class="text-end">{{ (f.montantTVA || 0) | number:'1.2-2' }}</td>
+              <td class="text-end"><span class="vc-amount">{{ (f.montantTTC || 0) | number:'1.2-2' }}</span></td>
+              <td>
+                <span class="vc-payment-mode" *ngIf="f.modePaiement">{{ f.modePaiement }}</span>
+                <span *ngIf="!f.modePaiement" class="vc-info-empty">—</span>
+              </td>
+              <td class="text-center">
+                <span class="vc-status-badge"
+                  [ngClass]="{
+                    'vc-status-paid':      f.statut === 'PAYEE',
+                    'vc-status-pending':   f.statut === 'EN_ATTENTE' || f.statut === 'PARTIELLEMENT_PAYEE',
+                    'vc-status-cancelled': f.statut === 'ANNULEE',
+                    'vc-status-unknown':   !f.statut
+                  }">
+                  <i class="feather"
+                    [ngClass]="{
+                      'icon-check':       f.statut === 'PAYEE',
+                      'icon-clock':       f.statut === 'EN_ATTENTE' || f.statut === 'PARTIELLEMENT_PAYEE',
+                      'icon-x':           f.statut === 'ANNULEE',
+                      'icon-help-circle': !f.statut
+                    }"></i>
+                  {{ f.statut || 'N/A' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="text-end">
+                <span class="vc-total-label">Total TTC</span>
+              </td>
+              <td class="text-end">
+                <span class="vc-total-value">{{ totalAchatsTTC() | number:'1.2-2' }} DH</span>
+              </td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</ng-container>

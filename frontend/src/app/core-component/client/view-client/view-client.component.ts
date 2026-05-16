@@ -88,6 +88,14 @@ export class ViewClientComponent implements OnInit {
     return (this.facturesHistory || []).reduce((sum, f) => sum + (Number(f.montantTTC) || 0), 0);
   }
 
+  getPaidCount(): number {
+    return (this.facturesHistory || []).filter(f => f.statut === 'PAYEE').length;
+  }
+
+  getPendingCount(): number {
+    return (this.facturesHistory || []).filter(f => f.statut === 'EN_ATTENTE' || f.statut === 'PARTIELLEMENT_PAYEE').length;
+  }
+
   editClient(): void {
     if (this.client?.id) {
       this.router.navigate(['/client/editClient', this.client.id]);
