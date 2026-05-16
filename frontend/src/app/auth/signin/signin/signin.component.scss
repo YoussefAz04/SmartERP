@@ -45,19 +45,12 @@
 // =============================================
 .login-modern-wrapper {
   display: grid;
-  grid-template-columns: 58fr 42fr;
-  min-height: 100vh;
-  min-height: 100dvh;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: radial-gradient(circle at 30% 20%, #1e1b4b 0%, #0f172a 45%, #020617 100%);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-
-  @media (max-width: 1280px) {
-    grid-template-columns: 55fr 45fr;
-  }
-
-  @media (max-width: 1100px) {
-    grid-template-columns: 1fr 1fr;
-  }
 
   @media (max-width: 992px) {
     grid-template-columns: 1fr;
@@ -73,10 +66,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 4.5vw, 3.5rem);
+  padding: clamp(1rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
   overflow-y: auto;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100%;
 
   @media (max-width: 992px) {
     display: none;
@@ -134,20 +126,20 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 580px;
-    padding: clamp(1rem, 2vw, 1.5rem);
+    max-width: 520px;
+    padding: clamp(0.5rem, 1vw, 1rem);
     animation: fadeSlideLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   // ----- Brand header -----
   .stats-header {
-    margin-bottom: 44px;
+    margin-bottom: 20px;
 
     .brand-logo {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 32px;
+      margin-bottom: 16px;
 
       .brand-icon-svg {
         animation: logoGlow 3s ease-in-out infinite;
@@ -176,13 +168,13 @@
     }
 
     h1 {
-      font-size: clamp(2.1rem, 3.3vw, 2.6rem);
+      font-size: clamp(1.5rem, 2.2vw, 2rem);
       font-weight: 800;
       color: #fff;
       line-height: 1.15;
-      margin-bottom: 18px;
+      margin-bottom: 10px;
       letter-spacing: -0.5px;
-      margin-top: 8px;
+      margin-top: 4px;
 
       .highlight {
         background: linear-gradient(90deg, #a78bfa, #c4b5fd, #818cf8);
@@ -204,8 +196,8 @@
   .stats-cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 36px;
+    gap: 10px;
+    margin-bottom: 18px;
   }
 
   .stat-card {
@@ -213,8 +205,8 @@
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-top: 2px solid rgba(129, 140, 248, 0.35);
-    border-radius: 16px;
-    padding: 20px 18px;
+    border-radius: 14px;
+    padding: 14px 12px;
     display: flex;
     align-items: flex-start;
     gap: 14px;
@@ -241,7 +233,7 @@
       background: linear-gradient(135deg, rgba(5, 150, 105, 0.18), rgba(16, 185, 129, 0.10));
       border-color: rgba(52, 211, 153, 0.25);
       align-items: center;
-      padding: 22px 24px;
+      padding: 14px 18px;
 
       &:hover {
         background: linear-gradient(135deg, rgba(5, 150, 105, 0.26), rgba(16, 185, 129, 0.16));
@@ -386,7 +378,7 @@
   // ----- Trust badges -----
   .trust-indicators {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
 
     .trust-badge {
@@ -396,10 +388,10 @@
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
-      padding: 10px 16px;
+      padding: 8px 12px;
       transition: all 0.3s ease;
       flex: 1;
-      min-width: 120px;
+      min-width: 100px;
       animation: trustPop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 
       &:nth-child(1) { animation-delay: 0.45s; }
@@ -493,11 +485,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(3rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.5rem, 3vw, 2rem);
   position: relative;
   overflow-y: auto;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100%;
 
   // Subtle dot pattern
   &::before {
@@ -542,7 +533,7 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: var(--form-card-radius);
-  padding: clamp(2.5rem, 5vw, 3.25rem) clamp(2rem, 4vw, 3rem) clamp(2.25rem, 3.5vw, 2.75rem);
+  padding: clamp(1.5rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
   position: relative;
   z-index: 1;
   box-shadow:
@@ -576,12 +567,12 @@
 
   .form-card-header {
     text-align: center;
-    padding-bottom: 28px;
-    margin-bottom: 28px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
     border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 
     .login-logo {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -648,7 +639,7 @@
 // =============================================
 .modern-form {
   .field-group {
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
 
   .input-wrapper {
@@ -784,7 +775,7 @@
     padding: 12px 16px;
     font-size: 13px;
     color: #b91c1c;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     font-weight: 500;
 
     i {
@@ -803,7 +794,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 
     .remember-me {
       display: flex;
