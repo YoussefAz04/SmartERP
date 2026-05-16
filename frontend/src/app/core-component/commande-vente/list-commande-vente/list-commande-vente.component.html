@@ -85,6 +85,53 @@
   </div>
 </div>
 
+<!-- Status Workflow Pipeline -->
+<div class="status-pipeline">
+  <div class="pipeline-stage" [class.stage-has-items]="commandesEnCours > 0">
+    <div class="stage-icon-wrap stage-gray">
+      <i class="feather icon-file"></i>
+    </div>
+    <div class="stage-body">
+      <span class="stage-count">{{ commandesEnCours }}</span>
+      <span class="stage-label">En Cours</span>
+    </div>
+  </div>
+  <div class="pipeline-connector"><i class="feather icon-chevrons-right pipeline-arrow-icon"></i></div>
+  <div class="pipeline-stage" [class.stage-has-items]="commandesConfirmees > 0">
+    <div class="stage-icon-wrap stage-success">
+      <i class="feather icon-check-circle"></i>
+    </div>
+    <div class="stage-body">
+      <span class="stage-count">{{ commandesConfirmees }}</span>
+      <span class="stage-label">Confirmées</span>
+    </div>
+  </div>
+  <div class="pipeline-connector"><i class="feather icon-chevrons-right pipeline-arrow-icon"></i></div>
+  <div class="pipeline-stage" [class.stage-has-items]="commandesLivrees > 0">
+    <div class="stage-icon-wrap stage-teal">
+      <i class="feather icon-truck"></i>
+    </div>
+    <div class="stage-body">
+      <span class="stage-count">{{ commandesLivrees }}</span>
+      <span class="stage-label">Livrées</span>
+    </div>
+  </div>
+  <div class="pipeline-spacer"></div>
+  <div class="pipeline-metric">
+    <div class="pipeline-metric-header">
+      <span class="pipeline-metric-label">Taux de livraison</span>
+      <span class="pipeline-metric-value">
+        {{ commandes.length > 0 ? (commandesLivrees / commandes.length * 100 | number:'1.0-0') : 0 }}%
+      </span>
+    </div>
+    <div class="pipeline-bar-track">
+      <div class="pipeline-bar-fill"
+           [style.width]="commandes.length > 0 ? (commandesLivrees / commandes.length * 100) + '%' : '0%'">
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Search & Filter Section -->
 <div class="search-filter-section">
   <div class="search-box">
@@ -178,7 +225,10 @@
           <td class="date-cell">{{ commande.dateCommande | date:'dd/MM/yyyy' }}</td>
           <td class="date-cell">{{ commande.dateLivraisonPrevue | date:'dd/MM/yyyy' }}</td>
           <td class="client-cell">
-            <span class="client-name">{{ commande.client?.nom || '-' }} {{ commande.client?.prenom || '' }}</span>
+            <div class="entity-cell">
+              <div class="entity-avatar">{{ (commande.client?.nom || '?')[0] | uppercase }}</div>
+              <span class="entity-name">{{ commande.client?.nom || '-' }} {{ commande.client?.prenom || '' }}</span>
+            </div>
           </td>
           <td class="amount-cell">{{ (commande.montantHT || 0) | number:'1.2-2' }} DT</td>
           <td class="amount-cell">{{ (commande.montantTVA || 0) | number:'1.2-2' }} DT</td>
@@ -254,6 +304,30 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Table Summary Strip -->
+  <div *ngIf="!isLoading && !errorMessage && filteredCommandes.length > 0" class="table-summary-strip">
+    <div class="summary-left">
+      <i class="feather icon-bar-chart-2"></i>
+      <span><strong>{{ filteredCommandes.length }}</strong> résultat(s) affiché(s)</span>
+    </div>
+    <div class="summary-right">
+      <div class="summary-fin-item">
+        <span class="fin-label">Sous-total HT</span>
+        <span class="fin-value">{{ filteredMontantHT | number:'1.2-2' }} DT</span>
+      </div>
+      <div class="summary-fin-sep"></div>
+      <div class="summary-fin-item">
+        <span class="fin-label">TVA</span>
+        <span class="fin-value">{{ filteredMontantTVA | number:'1.2-2' }} DT</span>
+      </div>
+      <div class="summary-fin-sep"></div>
+      <div class="summary-fin-item summary-fin-ttc">
+        <span class="fin-label">Total TTC</span>
+        <span class="fin-value">{{ filteredMontantTTC | number:'1.2-2' }} DT</span>
+      </div>
+    </div>
   </div>
 </div>
 

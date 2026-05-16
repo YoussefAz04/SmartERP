@@ -34,6 +34,22 @@ $modal-header-bg:     linear-gradient(135deg, #065f46 0%, #0d9488 100%);
 
 @import '../../../../assets/scss/utils/list-commande-base';
 
+// ── Entity avatar (vente-specific – teal theme) ───────────────────────────────
+.entity-avatar {
+  background: #f0fdfa;
+  color: #0d9488;
+  border-color: rgba(13,148,136,0.2);
+  box-shadow: 0 2px 6px rgba(13,148,136,0.12);
+}
+
+// ── Pipeline metric bar fill (vente-specific) ────────────────────────────────
+.pipeline-bar-fill {
+  background: linear-gradient(90deg, #065f46, #14b8a6);
+}
+
+// ── Pipeline metric value (vente-specific) ────────────────────────────────────
+.pipeline-metric-value { color: #0d9488; }
+
 // ── KPI card colour variants (vente-specific) ─────────────────────────────────
 .kpi-row .kpi-card {
   &.kpi-teal {

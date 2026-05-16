@@ -226,6 +226,30 @@
       </div>
     </div>
 
+    <!-- ── Order Summary Panel ──────────────────────────────────────────────── -->
+    <div class="order-summary-panel sec-animate" style="animation-delay:.16s" *ngIf="lignesArray.length > 0">
+      <div class="osp-header">
+        <i class="feather icon-clipboard"></i>
+        <span>Récapitulatif de la commande</span>
+        <span class="osp-article-count">{{ lignesArray.length }} article(s)</span>
+      </div>
+      <div class="osp-body">
+        <div class="osp-row">
+          <span class="osp-label">Montant Hors Taxes</span>
+          <span class="osp-value">{{ totalHT | number:'1.2-2' }} DT</span>
+        </div>
+        <div class="osp-row">
+          <span class="osp-label">TVA</span>
+          <span class="osp-value">+ {{ totalTVA | number:'1.2-2' }} DT</span>
+        </div>
+        <div class="osp-divider"></div>
+        <div class="osp-row osp-total-row">
+          <span class="osp-label-total">Total TTC</span>
+          <span class="osp-value-total">{{ totalTTC | number:'1.2-2' }} DT</span>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Form Actions ────────────────────────────────────────────────────── -->
     <div class="form-actions sec-animate" style="animation-delay:.20s">
       <button type="button" class="btn-cancel" (click)="onCancel()">

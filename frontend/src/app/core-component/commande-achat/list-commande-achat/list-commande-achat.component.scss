@@ -7,6 +7,19 @@
 
 @import '../../../../assets/scss/utils/list-commande-base';
 
+// ── Entity avatar (achat-specific – indigo theme) ────────────────────────────
+.entity-avatar {
+  background: #eff6ff;
+  color: #3b5bdb;
+  border-color: rgba(59,91,219,0.2);
+  box-shadow: 0 2px 6px rgba(59,91,219,0.12);
+}
+
+// ── Pipeline metric bar fill (achat-specific) ────────────────────────────────
+.pipeline-bar-fill {
+  background: linear-gradient(90deg, #1e3a8a, #4c6ef5);
+}
+
 // ── KPI card colour variants (achat-specific) ─────────────────────────────────
 .kpi-row .kpi-card {
   &.kpi-blue {
