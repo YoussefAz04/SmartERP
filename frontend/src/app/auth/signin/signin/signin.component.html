@@ -89,7 +89,7 @@
       </div>
 
       <!-- Submit -->
-      <button type="button" class="btn-submit" (click)="navigation()" [disabled]="loading"
+      <button type="submit" class="btn-submit" [disabled]="loading"
               [attr.aria-label]="loading ? 'Connexion en cours' : 'Se connecter'">
         <span *ngIf="loading" class="btn-spinner" role="status" aria-hidden="true"></span>
         <span class="btn-label">{{ loading ? 'Connexion en cours...' : 'Se connecter' }}</span>
