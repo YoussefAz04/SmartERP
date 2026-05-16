@@ -230,6 +230,41 @@
       transform: translateY(-2px);
     }
 
+    // Featured wide card (green — Anticipez Vos Ventes)
+    &.stat-card--featured {
+      grid-column: span 2;
+      border-top-color: rgba(52, 211, 153, 0.5);
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.18), rgba(16, 185, 129, 0.10));
+      border-color: rgba(52, 211, 153, 0.25);
+      align-items: center;
+      padding: 22px 24px;
+
+      &:hover {
+        background: linear-gradient(135deg, rgba(5, 150, 105, 0.26), rgba(16, 185, 129, 0.16));
+        border-color: rgba(52, 211, 153, 0.45);
+        border-top-color: rgba(52, 211, 153, 0.7);
+        box-shadow: 0 12px 32px rgba(16, 185, 129, 0.18);
+      }
+
+      .stat-wave {
+        font-size: 2.4rem;
+        font-weight: 900;
+        color: #34d399;
+        line-height: 1;
+        letter-spacing: -1px;
+        text-shadow: 0 0 16px rgba(52, 211, 153, 0.5);
+      }
+
+      .stat-label--hero {
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        color: rgba(255, 255, 255, 0.92) !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+        margin-bottom: 6px !important;
+      }
+    }
+
     .stat-icon-wrap {
       width: 44px;
       height: 44px;
