@@ -263,6 +263,18 @@ export class ListCommandeVenteComponent implements OnInit {
     return this.commandes.filter(c => c.statut === 'LIVREE').length;
   }
 
+  get filteredMontantHT(): number {
+    return this.filteredCommandes.reduce((sum, c) => sum + (c.montantHT || 0), 0);
+  }
+
+  get filteredMontantTVA(): number {
+    return this.filteredCommandes.reduce((sum, c) => sum + (c.montantTVA || 0), 0);
+  }
+
+  get filteredMontantTTC(): number {
+    return this.filteredCommandes.reduce((sum, c) => sum + (c.montantTTC || 0), 0);
+  }
+
   exportCSV(): void {
     const headers = ['Référence', 'Date Commande', 'Date Livraison Prévue', 'Client', 'Statut', 'Montant HT', 'Montant TVA', 'Montant TTC'];
     const rows = this.filteredCommandes.map(c => [

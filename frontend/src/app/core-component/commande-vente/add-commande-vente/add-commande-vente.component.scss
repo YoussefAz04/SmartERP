@@ -916,6 +916,91 @@ $t-b:    all .35s cubic-bezier(.34,1.56,.64,1);
 
 
 // ══════════════════════════════════════════════════════════════════════════════
+// Order Summary Panel  (teal / emerald theme for vente)
+// ══════════════════════════════════════════════════════════════════════════════
+.order-summary-panel {
+  background: #fff;
+  border-radius: $r-xl;
+  border: 1.5px solid rgba($em-500, .2);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: $sh;
+}
+
+.osp-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, rgba($em-50, .9), rgba($tl-50, .6));
+  border-bottom: 1.5px solid rgba($em-400, .15);
+  font-size: .8rem;
+  font-weight: 700;
+  color: $em-800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  i { font-size: 16px; }
+}
+
+.osp-article-count {
+  margin-left: auto;
+  background: rgba($em-500, .12);
+  color: $em-800;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.osp-body {
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.osp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.osp-label {
+  font-size: .875rem;
+  color: $sl-500;
+  font-weight: 500;
+}
+
+.osp-value {
+  font-size: .875rem;
+  font-weight: 700;
+  color: $sl-700;
+  font-variant-numeric: tabular-nums;
+}
+
+.osp-divider {
+  height: 1.5px;
+  background: $sl-100;
+  margin: 4px 0;
+}
+
+.osp-total-row {
+  .osp-label-total {
+    font-size: .95rem;
+    font-weight: 700;
+    color: $sl-800;
+  }
+  .osp-value-total {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: $tl-600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
 // Reduced Motion
 // ══════════════════════════════════════════════════════════════════════════════
 @media (prefers-reduced-motion: reduce) {
