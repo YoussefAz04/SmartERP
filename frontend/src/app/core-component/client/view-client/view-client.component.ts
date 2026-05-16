@@ -22,6 +22,7 @@ export class ViewClientComponent implements OnInit {
   facturesHistory: FactureVente[] = [];
   isLoadingHistory = false;
   historyError = '';
+  cachedTotalTTC = 0;
 
   constructor(
     private clientService: ClientService,
@@ -74,6 +75,7 @@ export class ViewClientComponent implements OnInit {
     this.factureVenteService.getFacturesByClient(id).subscribe({
       next: (data) => {
         this.facturesHistory = Array.isArray(data) ? data : [];
+        this.cachedTotalTTC = this.totalAchatsTTC();
         this.isLoadingHistory = false;
       },
       error: (err) => {

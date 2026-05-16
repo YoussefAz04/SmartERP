@@ -129,7 +129,7 @@
   padding: 0.15em 0.55em;
   font-size: 0.82rem;
   font-weight: 600;
-  font-family: 'Courier New', monospace;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 /* ── Status badges ── */
