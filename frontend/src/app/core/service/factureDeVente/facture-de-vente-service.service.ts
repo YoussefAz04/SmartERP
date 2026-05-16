@@ -71,183 +71,307 @@ export class FactureDeVenteServiceService {
     }
   }
 
+  generateMultipleFactureVentePDF(factures: FactureVente[]) {
+    if (factures.length === 0) { return; }
+    const doc = new jsPDF();
+    const item = localStorage.getItem('myLSkey');
+    if (!item) { return; }
+    const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
+    if (currentUser?.entreprise.id) {
+      this.entrepriseService.getEntrepriseById(currentUser.entreprise.id).subscribe(data => {
+        this.entreprise = data;
+        factures.forEach((facture, index) => {
+          if (index > 0) { doc.addPage(); }
+          this.buildFactureContent(doc, facture);
+        });
+        doc.save('Factures_Vente.pdf');
+      });
+    }
+  }
+
   private buildFactureContent(doc: jsPDF, factureData: FactureVente) {
     const caract = this.entreprise.caracteristiqueFactureEntreprise;
-    const hR = caract?.colorHeaderR ?? 46;
-    const hG = caract?.colorHeaderG ?? 125;
-    const hB = caract?.colorHeaderB ?? 50;
-    // Darker shade for header accent strip
-    const dR = Math.max(0, hR - 30);
-    const dG = Math.max(0, hG - 30);
-    const dB = Math.max(0, hB - 30);
+
+    // ── COLOR PALETTE ────────────────────────────────────────────────────────
+    const hR = caract?.colorHeaderR ?? 20;
+    const hG = caract?.colorHeaderG ?? 89;
+    const hB = caract?.colorHeaderB ?? 55;
+    const dR = Math.max(0, Math.round(hR * 0.62));
+    const dG = Math.max(0, Math.round(hG * 0.62));
+    const dB = Math.max(0, Math.round(hB * 0.62));
+    const fillR = caract?.fillColorR ?? hR;
+    const fillG = caract?.fillColorG ?? hG;
+    const fillB = caract?.fillColorB ?? hB;
+    const txtR = caract?.textColorR ?? 255;
+    const txtG = caract?.textColorG ?? 255;
+    const txtB = caract?.textColorB ?? 255;
+    const footerR = caract?.colorFooterR ?? dR;
+    const footerG = caract?.colorFooterG ?? dG;
+    const footerB = caract?.colorFooterB ?? dB;
 
     const W  = 210;
-    const mg = 12;
+    const mg = 14;
+    const rX = 110;
+    const rW = 86;
+    const statut  = (factureData.statut || '').toUpperCase();
+    const dateStr = factureData.dateAchat || new Date().toLocaleDateString('fr-FR');
 
-    // ── HEADER (0 – 40 mm) ───────────────────────────────────────────────────
+    // ── STATUS WATERMARK ─────────────────────────────────────────────────────
+    const watermarkLabel =
+      statut.includes('PAYEE')   ? 'PAYÉE'    :
+      statut.includes('ANNUL')   ? 'ANNULÉE'  :
+      statut.includes('PARTIEL') ? 'PARTIELLE': null;
+    if (watermarkLabel) {
+      doc.setFontSize(64);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(
+        Math.min(255, hR + 188),
+        Math.min(255, hG + 162),
+        Math.min(255, hB + 175)
+      );
+      doc.text(watermarkLabel, W / 2, 178, { align: 'center', angle: 45 });
+      doc.setTextColor(0, 0, 0);
+    }
+
+    // ── HEADER BAND (0 – 52 mm) ───────────────────────────────────────────────
     doc.setFillColor(hR, hG, hB);
-    doc.rect(0, 0, W, 38, 'F');
-    // darker accent strip at bottom of header
+    doc.rect(0, 0, W, 52, 'F');
+
+    // Diagonal accent — mid-tone parallelogram
+    doc.setFillColor(
+      Math.min(255, Math.round(hR * 0.80 + 8)),
+      Math.min(255, Math.round(hG * 0.80 + 8)),
+      Math.min(255, Math.round(hB * 0.80 + 8))
+    );
+    doc.lines([[28, 0], [50, 52], [-28, 0]], 122, 0, [1, 1], 'F', true);
+
+    // Diagonal accent — darker triangle (right edge)
     doc.setFillColor(dR, dG, dB);
-    doc.rect(0, 35.5, W, 2.5, 'F');
+    doc.lines([[58, 0], [0, 52]], 152, 0, [1, 1], 'F', true);
 
+    // Bottom accent strip
+    doc.setFillColor(dR, dG, dB);
+    doc.rect(0, 49.5, W, 2.5, 'F');
+
+    // Title
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(26);
+    doc.setFontSize(28);
     doc.setFont('helvetica', 'bold');
-    doc.text('FACTURE DE VENTE', W / 2, 21, { align: 'center' });
+    doc.text('FACTURE DE VENTE', mg, 25);
 
-    doc.setFontSize(8.5);
+    // Company name subtitle
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(215, 240, 215);
-    doc.text(String(this.entreprise.nom || ''), W / 2, 30, { align: 'center' });
+    doc.setTextColor(195, 230, 210);
+    doc.text(String(this.entreprise.nom || ''), mg, 35);
+
+    // Sector subtitle
+    if (this.entreprise.secteurActivite) {
+      doc.setFontSize(7.5);
+      doc.setTextColor(165, 210, 185);
+      doc.text(this.entreprise.secteurActivite, mg, 43);
+    }
+
+    // Invoice reference white box
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(W - 62, 6, 55, 38, 3, 3, 'F');
+
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(140, 150, 165);
+    doc.text('FACTURE N°', W - 34.5, 14, { align: 'center' });
+
+    const refDisplay = (factureData.referance || '—').length > 18
+      ? (factureData.referance || '—').substring(0, 18) + '…'
+      : (factureData.referance || '—');
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(hR, hG, hB);
+    doc.text(refDisplay, W - 34.5, 23, { align: 'center' });
+
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 110, 125);
+    doc.text(dateStr, W - 34.5, 30, { align: 'center' });
+
+    // Status badge
+    let sR = 39, sG = 174, sB = 96;
+    if (statut.includes('ATTENTE'))  { sR = 194; sG = 146; sB = 0; }
+    else if (statut.includes('ANNUL'))   { sR = 185; sG = 52; sB = 43; }
+    else if (statut.includes('PARTIEL')) { sR = 205; sG = 102; sB = 20; }
+    doc.setFillColor(sR, sG, sB);
+    doc.roundedRect(W - 58, 33, 47, 8, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'bold');
+    const statutLabelsV: Record<string, string> = {
+      'PAYEE': 'PAYÉE', 'EN_ATTENTE': 'EN ATTENTE',
+      'ANNULEE': 'ANNULÉE', 'PARTIELLEMENT_PAYEE': 'PART. PAYÉE'
+    };
+    const statutDisplay = statutLabelsV[factureData.statut || ''] || statut;
+    doc.text(statutDisplay, W - 34.5, 38.2, { align: 'center' });
     doc.setTextColor(0, 0, 0);
 
-    // ── INFO PANELS (43 – 95 mm) ─────────────────────────────────────────────
-    const pTop = 43;
-    const pH   = 52;
+    // ── INFO PANELS (57 – 108 mm) ─────────────────────────────────────────────
+    const pTop = 57;
+    const pH   = 48;
     const lX   = mg;
-    const lW   = 86;
-    const rX   = 112;
-    const rW   = 86;
+    const lW   = 88;
 
-    // Left panel — company info
-    doc.setFillColor(248, 250, 252);
+    // LEFT PANEL — ÉMETTEUR
+    doc.setFillColor(247, 250, 248);
     doc.setDrawColor(hR, hG, hB);
-    doc.setLineWidth(0.35);
-    doc.rect(lX, pTop, lW, pH, 'FD');
+    doc.setLineWidth(0.3);
+    doc.roundedRect(lX, pTop, lW, pH, 2, 2, 'FD');
     doc.setFillColor(hR, hG, hB);
-    doc.rect(lX, pTop, lW, 8, 'F');
+    doc.roundedRect(lX, pTop, lW, 9, 2, 2, 'F');
+    doc.rect(lX, pTop + 5, lW, 4, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text('ÉMETTEUR', lX + 4, pTop + 5.5);
+    doc.text('ÉMETTEUR', lX + 5, pTop + 6.5);
 
-    doc.setTextColor(25, 25, 25);
-    doc.setFontSize(11.5);
+    doc.setTextColor(22, 40, 28);
+    doc.setFontSize(10.5);
     doc.setFont('helvetica', 'bold');
-    doc.text(String(this.entreprise.nom || ''), lX + 4, pTop + 17);
+    doc.text(String(this.entreprise.nom || ''), lX + 5, pTop + 17);
 
-    doc.setFontSize(8.5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(70, 70, 70);
-    const companyLines = [
-      this.entreprise.email || '',
+    const emLines = [
+      this.entreprise.adresse   || '',
+      this.entreprise.email     || '',
       this.entreprise.telephone || '',
-      this.entreprise.adresse || '',
-      this.entreprise.siteWeb || ''
+      this.entreprise.siteWeb   || ''
     ].filter(l => l.trim() !== '');
-    companyLines.slice(0, 4).forEach((line, i) => {
-      doc.text(line, lX + 4, pTop + 25 + i * 7);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(62, 85, 70);
+    emLines.slice(0, 4).forEach((line, i) => {
+      doc.text(line, lX + 5, pTop + 25 + i * 6.5);
     });
 
-    // Right panel — invoice details
-    doc.setFillColor(248, 250, 252);
+    // RIGHT PANEL — INFORMATIONS FACTURE
+    doc.setFillColor(247, 250, 248);
     doc.setDrawColor(hR, hG, hB);
-    doc.setLineWidth(0.35);
-    doc.rect(rX, pTop, rW, pH, 'FD');
+    doc.setLineWidth(0.3);
+    doc.roundedRect(rX, pTop, rW, pH, 2, 2, 'FD');
     doc.setFillColor(hR, hG, hB);
-    doc.rect(rX, pTop, rW, 8, 'F');
+    doc.roundedRect(rX, pTop, rW, 9, 2, 2, 'F');
+    doc.rect(rX, pTop + 5, rW, 4, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text('DÉTAILS FACTURE', rX + 4, pTop + 5.5);
+    doc.text('INFORMATIONS FACTURE', rX + 5, pTop + 6.5);
 
     const invoiceFields: Array<{ label: string; value: string }> = [
       { label: 'N° Facture', value: factureData.referance || '—' },
-      { label: 'Date',       value: factureData.dateAchat || new Date().toLocaleDateString('fr-FR') },
-      { label: 'Statut',     value: factureData.statut || 'En attente' },
+      { label: 'Date',       value: dateStr },
       { label: 'Paiement',   value: factureData.modePaiement || '—' }
     ];
     if (factureData.commandeVente?.reference) {
       invoiceFields.push({ label: 'Bon de commande', value: factureData.commandeVente.reference });
     }
     invoiceFields.forEach(({ label, value }, i) => {
-      const y = pTop + 17 + i * 7.5;
-      doc.setFontSize(7.5);
+      const y = pTop + 17 + i * 8;
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(130, 130, 130);
-      doc.text(label, rX + 4, y);
+      doc.setTextColor(110, 130, 118);
+      doc.text(label, rX + 5, y);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(25, 25, 25);
-      doc.text(String(value), rX + rW - 4, y, { align: 'right' });
+      doc.setTextColor(22, 40, 28);
+      const valStr = String(value);
+      const valDisplay = valStr.length > 22 ? valStr.substring(0, 22) + '…' : valStr;
+      doc.text(valDisplay, rX + rW - 5, y, { align: 'right' });
+      if (i < invoiceFields.length - 1) {
+        doc.setDrawColor(210, 228, 218);
+        doc.setLineWidth(0.15);
+        doc.line(rX + 5, y + 3, rX + rW - 5, y + 3);
+      }
     });
 
     doc.setTextColor(0, 0, 0);
     doc.setLineWidth(0.2);
 
-    // ── FACTURÉ À SECTION ────────────────────────────────────────────────────
-    const secTop = pTop + pH + 10;
+    // ── FACTURÉ À SECTION ─────────────────────────────────────────────────────
+    const secTop = pTop + pH + 7;
+
     doc.setFillColor(hR, hG, hB);
-    doc.rect(mg, secTop, W - 2 * mg, 9, 'F');
+    doc.roundedRect(mg, secTop, W - 2 * mg, 9, 2, 2, 'F');
+    doc.rect(mg, secTop + 4, W - 2 * mg, 5, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9.5);
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('FACTURÉ À', mg + 5, secTop + 6.5);
+    doc.text('FACTURÉ À', mg + 6, secTop + 6.5);
     doc.setTextColor(0, 0, 0);
 
     const clientLines: string[] = [];
     const fullName = [factureData.client?.nom, factureData.client?.prenom].filter(Boolean).join(' ');
-    if (fullName) { clientLines.push(fullName); }
-    if (factureData.client?.adresse) { clientLines.push(factureData.client.adresse); }
-    if (factureData.client?.email) { clientLines.push(factureData.client.email); }
-    if (factureData.client?.telephone) { clientLines.push(factureData.client.telephone); }
+    if (fullName)                          { clientLines.push(fullName); }
+    if (factureData.client?.adresse)       { clientLines.push(factureData.client.adresse); }
+    if (factureData.client?.email)         { clientLines.push(factureData.client.email); }
+    if (factureData.client?.telephone)     { clientLines.push(`Tél : ${factureData.client.telephone}`); }
     if (factureData.client?.secteurActivite) {
-      clientLines.push(`Secteur: ${factureData.client.secteurActivite}`);
+      clientLines.push(`Secteur : ${factureData.client.secteurActivite}`);
     }
-    if (clientLines.length === 0) { clientLines.push('Client non renseigné'); }
+    if (clientLines.length === 0)          { clientLines.push('Client non renseigné'); }
 
-    const boxH = Math.max(28, clientLines.length * 7 + 10);
-
-    doc.setFillColor(250, 251, 253);
-    doc.setDrawColor(215, 225, 215);
-    doc.setLineWidth(0.3);
-    doc.rect(mg, secTop + 9, W - 2 * mg, boxH, 'FD');
-    // accent left bar
+    const boxH = Math.max(28, clientLines.length * 6.5 + 12);
+    doc.setFillColor(250, 252, 251);
+    doc.setDrawColor(205, 228, 215);
+    doc.setLineWidth(0.25);
+    doc.roundedRect(mg, secTop + 9, W - 2 * mg, boxH, 2, 2, 'FD');
     doc.setFillColor(hR, hG, hB);
-    doc.rect(mg, secTop + 9, 3, boxH, 'F');
+    doc.roundedRect(mg, secTop + 9, 4, boxH, 2, 2, 'F');
+    doc.rect(mg + 2, secTop + 9, 2, boxH, 'F');
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9.5);
-    doc.setTextColor(25, 25, 25);
-    doc.text(clientLines[0] || '', mg + 8, secTop + 17);
+    doc.setFontSize(10);
+    doc.setTextColor(22, 40, 28);
+    doc.text(clientLines[0], mg + 10, secTop + 18);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(70, 70, 70);
+    doc.setFontSize(8.5);
+    doc.setTextColor(58, 82, 68);
     clientLines.slice(1).forEach((info, i) => {
-      doc.text(info, mg + 8, secTop + 24 + i * 7);
+      doc.text(info, mg + 10, secTop + 25.5 + i * 6.5);
     });
 
-    // ── SEPARATOR ────────────────────────────────────────────────────────────
-    const separatorY = secTop + 9 + boxH + 8;
-    doc.setDrawColor(200, 215, 200);
-    doc.setLineWidth(0.5);
-    doc.line(mg, separatorY, W - mg, separatorY);
-    doc.setLineWidth(0.2);
-
     // ── DESCRIPTION ──────────────────────────────────────────────────────────
-    let tableStartY = separatorY + 8;
+    const tableStartY0 = secTop + 9 + boxH + 10;
+    let tableStartY = tableStartY0;
+
     if (factureData.description) {
-      doc.setFontSize(8.5);
-      doc.setTextColor(80, 80, 80);
+      doc.setFillColor(247, 251, 248);
+      doc.setDrawColor(205, 228, 215);
+      doc.setLineWidth(0.25);
+      doc.roundedRect(mg, tableStartY0 - 4, W - 2 * mg, 20, 2, 2, 'FD');
+      doc.setFontSize(7.5);
       doc.setFont('helvetica', 'bold');
-      doc.text('Description :', mg, tableStartY + 4);
+      doc.setTextColor(hR, hG, hB);
+      doc.text('DESCRIPTION :', mg + 5, tableStartY0 + 3);
       doc.setFont('helvetica', 'normal');
-      const splitDesc = doc.splitTextToSize(factureData.description, W - 2 * mg);
-      doc.text(splitDesc, mg, tableStartY + 11);
-      tableStartY += 11 + splitDesc.length * 5 + 6;
+      doc.setTextColor(58, 82, 68);
+      const splitDesc = doc.splitTextToSize(factureData.description, W - 2 * mg - 10);
+      doc.text(splitDesc, mg + 5, tableStartY0 + 10);
+      tableStartY = tableStartY0 + 11 + splitDesc.length * 5 + 8;
       doc.setTextColor(0, 0, 0);
     }
 
-    // ── LINE ITEMS TABLE ─────────────────────────────────────────────────────
+    // ── LINE ITEMS TABLE ──────────────────────────────────────────────────────
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(hR, hG, hB);
+    doc.text('DÉTAIL DES ARTICLES', mg, tableStartY - 3);
+    doc.setTextColor(0, 0, 0);
+
     const rawDetails = factureData.detaisFactureDeVente;
     const details = Array.isArray(rawDetails) ? rawDetails : (rawDetails ? [rawDetails] : []);
     let rows: string[][] = details.map((d, i) => {
-      const qte = d.quantite || 1;
+      const qte  = d.quantite || 1;
       const prix = d.prixUnitaireHT || 0;
-      const tva = d.tva || 0;
-      const totalHT = qte * prix;
+      const tva  = d.tva || 0;
+      const totalHT  = qte * prix;
       const totalTTC = totalHT + totalHT * (tva / 100);
       return [
+        String(i + 1),
         d.article || `Article ${i + 1}`,
         qte.toString(),
         prix.toFixed(2) + ' DT',
@@ -257,16 +381,16 @@ export class FactureDeVenteServiceService {
       ];
     });
 
-    // Fallback to commandeVente.lignes when no DetaisFactureDeVente is available
     const commandeLignes = factureData.commandeVente?.lignes;
     if (rows.length === 0 && Array.isArray(commandeLignes) && commandeLignes.length > 0) {
       rows = commandeLignes.map((l, i) => {
-        const qte = Number(l.quantite) || 1;
+        const qte  = Number(l.quantite) || 1;
         const prix = Number(l.prixUnitaireHT) || 0;
-        const tva = Number(l.tva) || 0;
-        const totalHT = l.montantHT != null ? Number(l.montantHT) : qte * prix;
+        const tva  = Number(l.tva) || 0;
+        const totalHT  = l.montantHT  != null ? Number(l.montantHT)  : qte * prix;
         const totalTTC = l.montantTTC != null ? Number(l.montantTTC) : totalHT + totalHT * (tva / 100);
         return [
+          String(i + 1),
           l.articleVente?.nom || `Article ${i + 1}`,
           qte.toString(),
           prix.toFixed(2) + ' DT',
@@ -277,114 +401,155 @@ export class FactureDeVenteServiceService {
       });
     }
 
-    const fillR = caract?.fillColorR ?? hR;
-    const fillG = caract?.fillColorG ?? hG;
-    const fillB = caract?.fillColorB ?? hB;
-    const txtR = caract?.textColorR ?? 255;
-    const txtG = caract?.textColorG ?? 255;
-    const txtB = caract?.textColorB ?? 255;
-
     autoTable(doc, {
       startY: tableStartY,
-      head: [['Article', 'Qté', 'Prix HT', 'TVA %', 'Montant HT', 'Total TTC']],
-      body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—']],
+      head: [['#', 'Désignation', 'Qté', 'Prix HT', 'TVA', 'Montant HT', 'Total TTC']],
+      body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—', '—']],
       margin: { left: mg, right: mg },
       theme: 'grid',
       headStyles: {
         fillColor: [fillR, fillG, fillB],
         textColor: [txtR, txtG, txtB],
         fontStyle: 'bold',
-        fontSize: 9,
-        cellPadding: 4
+        fontSize: 8.5,
+        cellPadding: 4,
+        halign: 'center'
       },
       bodyStyles: {
         cellPadding: 3.5,
-        textColor: [40, 40, 40],
-        fontSize: 9
+        textColor: [32, 48, 38],
+        fontSize: 8.5
       },
-      alternateRowStyles: { fillColor: [246, 250, 246] },
+      alternateRowStyles: { fillColor: [242, 250, 245] },
       columnStyles: {
-        1: { halign: 'center' },
-        2: { halign: 'right' },
-        3: { halign: 'center' },
-        4: { halign: 'right' },
-        5: { halign: 'right' }
+        0: { halign: 'center', cellWidth: 10 },
+        2: { halign: 'center', cellWidth: 14 },
+        3: { halign: 'right',  cellWidth: 24 },
+        4: { halign: 'center', cellWidth: 14 },
+        5: { halign: 'right',  cellWidth: 26 },
+        6: { halign: 'right',  cellWidth: 26 }
       }
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
-    const montantHT = factureData.montantHT || 0;
-    const montantTVA = factureData.montantTVA || 0;
-    const remise = factureData.remise || 0;
-    const montantTotal = factureData.montantTotal || factureData.montantTTC || 0;
-    const hasRemise = remise > 0;
+    const finalY = (doc as any).lastAutoTable.finalY;
+    const montantHT    = factureData.montantHT    || 0;
+    const montantTVA   = factureData.montantTVA   || 0;
+    const remise       = factureData.remise        || 0;
+    const montantTotal = factureData.montantTotal  || factureData.montantTTC || 0;
+    const hasRemise    = remise > 0;
 
-    // ── TOTALS BOX ───────────────────────────────────────────────────────────
+    // ── TOTALS BOX ────────────────────────────────────────────────────────────
     const tX   = rX;
     const tW   = rW;
-    const rowH = 8;
+    const rowH = 9;
     const numSummaryRows = hasRemise ? 3 : 2;
-    let rowY = finalY;
+    let rowY = finalY + 10;
 
-    doc.setFillColor(248, 251, 248);
-    doc.setDrawColor(215, 235, 215);
+    doc.setFillColor(242, 250, 245);
+    doc.setDrawColor(195, 228, 210);
     doc.setLineWidth(0.3);
-    doc.rect(tX, rowY - 3, tW, numSummaryRows * rowH + 6, 'FD');
+    doc.roundedRect(tX, rowY - 4, tW, numSummaryRows * rowH + 8, 2, 2, 'FD');
 
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text('Sous-total HT :', tX + 5, rowY + 2.5);
+    doc.setTextColor(90, 118, 102);
+    doc.text('Sous-total HT :', tX + 6, rowY + 2.5);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text(montantHT.toFixed(2) + ' DT', tX + tW - 5, rowY + 2.5, { align: 'right' });
+    doc.setTextColor(22, 40, 28);
+    doc.text(montantHT.toFixed(2) + ' DT', tX + tW - 6, rowY + 2.5, { align: 'right' });
 
     rowY += rowH;
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(100, 100, 100);
-    doc.text('TVA :', tX + 5, rowY + 2.5);
+    doc.setTextColor(90, 118, 102);
+    doc.text('TVA :', tX + 6, rowY + 2.5);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text(montantTVA.toFixed(2) + ' DT', tX + tW - 5, rowY + 2.5, { align: 'right' });
+    doc.setTextColor(22, 40, 28);
+    doc.text(montantTVA.toFixed(2) + ' DT', tX + tW - 6, rowY + 2.5, { align: 'right' });
 
     if (hasRemise) {
       rowY += rowH;
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(100, 100, 100);
-      doc.text('Remise :', tX + 5, rowY + 2.5);
+      doc.setTextColor(90, 118, 102);
+      doc.text('Remise :', tX + 6, rowY + 2.5);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(180, 40, 40);
-      doc.text('-' + remise.toFixed(2) + ' DT', tX + tW - 5, rowY + 2.5, { align: 'right' });
+      doc.setTextColor(175, 38, 38);
+      doc.text('-' + remise.toFixed(2) + ' DT', tX + tW - 6, rowY + 2.5, { align: 'right' });
     }
 
-    // TOTAL TTC accent row
     rowY += rowH + 4;
     doc.setFillColor(hR, hG, hB);
-    doc.rect(tX, rowY - 2, tW, 12, 'F');
+    doc.roundedRect(tX, rowY - 3, tW, 14, 2, 2, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(10.5);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL TTC', tX + 5, rowY + 6.5);
-    doc.text(montantTotal.toFixed(2) + ' DT', tX + tW - 5, rowY + 6.5, { align: 'right' });
+    doc.text('TOTAL TTC', tX + 6, rowY + 6.5);
+    doc.text(montantTotal.toFixed(2) + ' DT', tX + tW - 6, rowY + 6.5, { align: 'right' });
     doc.setTextColor(0, 0, 0);
     doc.setFont('helvetica', 'normal');
 
-    // ── FOOTER BAR ───────────────────────────────────────────────────────────
-    const footerR = caract?.colorFooterR ?? hR;
-    const footerG = caract?.colorFooterG ?? hG;
-    const footerB = caract?.colorFooterB ?? hB;
+    // ── NOTES ─────────────────────────────────────────────────────────────────
+    if (factureData.description) {
+      const notesY = finalY + 10;
+      doc.setFillColor(246, 251, 248);
+      doc.setDrawColor(200, 228, 212);
+      doc.setLineWidth(0.25);
+      doc.roundedRect(mg, notesY - 4, tX - mg - 6, numSummaryRows * rowH + 8, 2, 2, 'FD');
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(hR, hG, hB);
+      doc.text('NOTES :', mg + 5, notesY + 3);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(58, 82, 68);
+      const splitDesc = doc.splitTextToSize(factureData.description, tX - mg - 16);
+      doc.text(splitDesc, mg + 5, notesY + 10);
+      doc.setTextColor(0, 0, 0);
+    }
+
+    // ── FOOTER BAR (268 – 297 mm) ─────────────────────────────────────────────
     doc.setFillColor(footerR, footerG, footerB);
-    doc.rect(0, 272, W, 25, 'F');
+    doc.rect(0, 268, W, 29, 'F');
+    doc.setFillColor(
+      Math.min(255, footerR + 32),
+      Math.min(255, footerG + 28),
+      Math.min(255, footerB + 22)
+    );
+    doc.rect(0, 268, W, 1.5, 'F');
+
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(8);
     const nif = this.entreprise.numeroIdentificationFiscale || '';
     const rc  = this.entreprise.registreCommerce || '';
+    const footerMsg = caract?.messageFooter || 'Merci pour votre confiance !';
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
     if (nif || rc) {
-      doc.text(`NIF: ${nif}  |  RC: ${rc}`, mg, 283);
+      doc.text(`NIF : ${nif}   •   RC : ${rc}`, mg, 277);
     } else {
-      doc.text(String(this.entreprise.nom || ''), mg, 283);
+      doc.text(String(this.entreprise.nom || ''), mg, 277);
     }
-    doc.text(caract?.messageFooter || 'Merci pour votre confiance !', W - mg, 283, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    if (this.entreprise.adresse) {
+      doc.setFontSize(7.5);
+      doc.text(this.entreprise.adresse, mg, 284);
+    }
+
+    if (this.entreprise.siteWeb) {
+      doc.setFontSize(7.5);
+      doc.setTextColor(185, 228, 205);
+      doc.text(this.entreprise.siteWeb, W / 2, 277, { align: 'center' });
+      doc.setTextColor(255, 255, 255);
+    }
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text(footerMsg, W - mg, 277, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(188, 225, 205);
+    doc.text(
+      `Document généré le ${new Date().toLocaleString('fr-FR')}`,
+      W - mg, 284, { align: 'right' }
+    );
     doc.setTextColor(0, 0, 0);
   }
 
