@@ -8,6 +8,8 @@
   --panel-surface: #f4f7ff;
   --text-primary: #111827;
   --text-muted: #6b7280;
+  --form-card-radius: 24px;
+  --accent-gradient: linear-gradient(90deg, var(--brand-primary), #818cf8, var(--brand-secondary));
 }
 
 // =============================================
@@ -43,14 +45,14 @@
 // =============================================
 .login-modern-wrapper {
   display: grid;
-  grid-template-columns: 55fr 45fr;
-  height: 100vh;
-  height: 100dvh;
+  grid-template-columns: 58fr 42fr;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: radial-gradient(circle at 30% 20%, #1e1b4b 0%, #0f172a 45%, #020617 100%);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
   @media (max-width: 1280px) {
-    grid-template-columns: 52fr 48fr;
+    grid-template-columns: 55fr 45fr;
   }
 
   @media (max-width: 1100px) {
@@ -73,6 +75,8 @@
   justify-content: center;
   padding: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 4.5vw, 3.5rem);
   overflow-y: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
 
   @media (max-width: 992px) {
     display: none;
@@ -486,11 +490,14 @@
 .login-form-panel {
   background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 40%, #ede9ff 70%, #f4f0ff 100%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+  padding: clamp(3rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
   position: relative;
   overflow-y: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
 
   // Subtle dot pattern
   &::before {
@@ -501,6 +508,7 @@
     background-size: 28px 28px;
     opacity: 0.6;
     pointer-events: none;
+    z-index: 0;
   }
 
   &::after {
@@ -514,6 +522,7 @@
     background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.12) 40%, rgba(99, 102, 241, 0) 70%);
     filter: blur(4px);
     pointer-events: none;
+    z-index: 0;
   }
 
   @media (max-width: 992px) {
@@ -528,21 +537,34 @@
 }
 
 .form-card {
-  width: min(100%, 480px);
+  width: min(100%, 460px);
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 28px;
-  padding: clamp(2.25rem, 5vw, 3.25rem) clamp(1.75rem, 4vw, 3rem) clamp(2rem, 3.5vw, 2.75rem);
+  border-radius: var(--form-card-radius);
+  padding: clamp(2.5rem, 5vw, 3.25rem) clamp(2rem, 4vw, 3rem) clamp(2.25rem, 3.5vw, 2.75rem);
   position: relative;
   z-index: 1;
   box-shadow:
     0 2px 4px rgba(79, 70, 229, 0.04),
     0 8px 24px rgba(79, 70, 229, 0.08),
     0 24px 64px rgba(79, 70, 229, 0.12),
-    0 0 0 1px rgba(99, 102, 241, 0.12);
+    0 0 0 1px rgba(99, 102, 241, 0.10);
   transition: box-shadow 0.25s ease, transform 0.25s ease;
   animation: fadeSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+
+  // Top gradient accent bar
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gradient);
+    border-radius: var(--form-card-radius) var(--form-card-radius) 0 0;
+    pointer-events: none;
+  }
 
   &:hover {
     box-shadow:
@@ -554,7 +576,9 @@
 
   .form-card-header {
     text-align: center;
-    margin-bottom: 32px;
+    padding-bottom: 28px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 
     .login-logo {
       margin-bottom: 20px;
@@ -613,6 +637,9 @@
   // Fallback when glass blur is unsupported.
   .form-card {
     background: #ffffff;
+    &::before {
+      background: var(--accent-gradient);
+    }
   }
 }
 
@@ -621,7 +648,7 @@
 // =============================================
 .modern-form {
   .field-group {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .input-wrapper {
@@ -919,8 +946,8 @@
 
 @media (max-width: 480px) {
   .form-card {
+    --form-card-radius: 20px;
     padding: 28px 20px;
-    border-radius: 20px;
   }
 
   .login-form-panel {
