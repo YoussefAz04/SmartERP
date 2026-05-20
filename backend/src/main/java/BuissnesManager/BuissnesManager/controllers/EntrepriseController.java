@@ -34,22 +34,22 @@ public class EntrepriseController {
     public ResponseEntity<?> ajouterEntreprise(@RequestBody Entreprise entreprise) {
         try {
             logger.info("═══════════════════════════════════════");
-            logger.info("✅ POST /entreprise/create RECEIVED");
-            logger.info("📦 Nom: " + entreprise.getNom());
-            logger.info("📦 Email: " + entreprise.getEmail());
+            logger.info("POST /entreprise/create RECEIVED");
+            logger.info("Nom: " + entreprise.getNom());
+            logger.info(" Email: " + entreprise.getEmail());
             logger.info("═══════════════════════════════════════");
 
             if (entreprise.getNom() == null || entreprise.getNom().isEmpty()) {
-                logger.warn("⚠️ Nom is required!");
+                logger.warn("Nom is required!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nom is required");
             }
 
             Entreprise saved = entrepriseService.ajouterEntreprise(entreprise);
-            logger.info("✅ Entreprise saved with ID: " + saved.getId());
+            logger.info("Entreprise saved with ID: " + saved.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 
         } catch (Exception e) {
-            logger.error("❌ Error creating entreprise: " + e.getMessage());
+            logger.error("Error creating entreprise: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }

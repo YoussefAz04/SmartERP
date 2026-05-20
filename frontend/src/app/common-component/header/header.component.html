@@ -221,10 +221,7 @@
               <i class="feather icon-user"></i>
               <span>My Profile</span>
             </a>
-            <a [routerLink]="['/entreprise/listEntreprise']" class="profile-menu-item" *ngIf="isSuperAdmin">
-              <i class="feather icon-refresh-cw"></i>
-              <span>Changer d'entreprise</span>
-            </a>
+           
             <div class="menu-divider"></div>
             <button class="profile-menu-item logout" (click)="logout()" type="button">
               <i class="feather icon-log-out"></i>
