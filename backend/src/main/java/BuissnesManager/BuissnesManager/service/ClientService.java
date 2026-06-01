@@ -49,7 +49,7 @@ public class ClientService {
     @Autowired
     private AuditLogService auditLogService;
 
-    // ✅ ADD CLIENT
+    
     @Transactional
     public Client addClient(Client client, Long idCategorie) {
         CategorieClient categorie = categorieClientRepo.findById(idCategorie)
@@ -70,7 +70,7 @@ public class ClientService {
         return saved;
     }
 
-    // ✅ GET ALL CLIENTS (enterprise-scoped)
+    
     public List<Client> getAllClient() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
@@ -79,29 +79,29 @@ public class ClientService {
         return clientRepo.findByEntrepriseId(entrepriseId);
     }
 
-    // ✅ GET CLIENTS BY ENTERPRISE
+    
     public List<Client> getClientsByEntreprise(Long entrepriseId) {
         return clientRepo.findByEntrepriseId(entrepriseId);
     }
 
-    // ✅ GET CLIENT BY ID
+    
     public Client getClientById(Long idClient) {
         return clientRepo.findById(idClient)
             .orElseThrow(() -> new RuntimeException("Client not found with id: " + idClient));
     }
 
-    // ✅ DELETE CLIENT
+    
     @Transactional
     public void deleteClient(Long id) {
         Client client = clientRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
-        // Detach any article_vente rows that reference this client before deletion
+        
         List<ArticleVente> relatedArticles = articleVenteRepo.findByClientId(id);
         for (ArticleVente av : relatedArticles) {
             av.setClient(null);
         }
         articleVenteRepo.saveAll(relatedArticles);
-        // Nullify client FK in facture_de_vente and commande_vente in a single query each
+        
         factureDeVenteRepo.detachClient(id);
         commandeVenteRepository.detachClient(id);
         clientRepo.deleteById(id);
@@ -109,7 +109,7 @@ public class ClientService {
                 "Client supprimé: " + client.getNom() + " " + client.getPrenom() + " (id=" + id + ")");
     }
 
-    // ✅ UPDATE CLIENT
+    
     @Transactional
     public Client updateClient(Client client, Long idCategorie) {
         Long id = client.getId();
@@ -135,13 +135,13 @@ public class ClientService {
         return updated;
     }
 
-    // ✅ ADD CATEGORY CLIENT
+    
     @Transactional
     public CategorieClient addCategorieClient(CategorieClient categorieClient) {
         return categorieClientRepo.save(categorieClient);
     }
 
-    // ✅ GET ALL CATEGORIES
+    
     public List<CategorieClientDto> getAllCategorieClient() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         List<Object[]> rows = (entrepriseId != null)
@@ -157,13 +157,13 @@ public class ClientService {
         ).toList();
     }
 
-    // ✅ GET CATEGORY BY ID
+    
     public CategorieClient getCategorieClientById(Long id) {
         return categorieClientRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Categorie not found with id: " + id));
     }
 
-    // ✅ UPDATE CATEGORY CLIENT
+    
     @Transactional
     public CategorieClient updateCategorieClient(CategorieClient categorieClient) {
         Long id = categorieClient.getId();

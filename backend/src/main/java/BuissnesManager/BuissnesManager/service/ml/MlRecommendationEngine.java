@@ -14,43 +14,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * ML-driven recommendation engine. Complements (does not replace) the
- * rule-based {@code RecommendationService} by adding data-learned signals:
- *
- * <ul>
- *   <li><b>Stock-risk classifier</b> — logistic regression trained on
- *       per-article features (stock level, velocity, days-of-cover, relative
- *       stock ratio, velocity trend). Label: will the article stock out in
- *       the next N days at its current velocity? When training data is
- *       insufficient (&lt; {@value #MIN_CLASSIFIER_SAMPLES} rows) the engine
- *       returns an empty list so the rule-based fallback stays authoritative.
- *   </li>
- *
- *   <li><b>Opportunity regression</b> — OLS of next-period revenue delta
- *       on (revenue velocity, quantity velocity, margin proxy, category
- *       share). Articles whose predicted delta is in the top decile are
- *       surfaced as <code>OPPORTUNITÉ</code>; the single best-predicted
- *       article is tagged <code>PRODUIT_STAR</code>.</li>
- * </ul>
- *
- * <p>All outputs use the existing {@link RecommendationDto} (type / title
- * / description / priority / icon / action) contract so the Angular frontend
- * keeps rendering the current shape — only the source of truth becomes
- * model-driven rather than threshold-driven.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Component
 public class MlRecommendationEngine {
 
     private static final Logger log = LoggerFactory.getLogger(MlRecommendationEngine.class);
 
-    /** Minimum training rows required to fit the stock-risk classifier. */
+    
     public static final int MIN_CLASSIFIER_SAMPLES = 8;
 
-    /** Minimum rows required to fit the opportunity regression. */
+    
     public static final int MIN_REGRESSION_SAMPLES = 8;
 
-    /** Article stock evidence row. */
+    
     public static final class StockRow {
         public final String articleName;
         public final double stockLevel;
@@ -58,7 +58,7 @@ public class MlRecommendationEngine {
         public final double demandVariance;
         public final double leadTimeDays;
         public final double daysOfCover;
-        public final double seasonalityPhase; // [0, 1]
+        public final double seasonalityPhase; 
         public StockRow(String articleName, double stockLevel, double avgMonthlyDemand,
                         double demandVariance, double leadTimeDays, double daysOfCover,
                         double seasonalityPhase) {
@@ -72,14 +72,14 @@ public class MlRecommendationEngine {
         }
     }
 
-    /** Product opportunity evidence row. */
+    
     public static final class ProductRow {
         public final String productName;
         public final double revenue;
         public final double quantitySold;
-        public final double marginProxy;    // revenue / max(qty, 1)
-        public final double categoryShare;  // in [0, 1]
-        public final double velocityTrend;  // slope of recent-month velocity
+        public final double marginProxy;    
+        public final double categoryShare;  
+        public final double velocityTrend;  
         public ProductRow(String productName, double revenue, double quantitySold,
                           double marginProxy, double categoryShare, double velocityTrend) {
             this.productName = productName;
@@ -91,11 +91,11 @@ public class MlRecommendationEngine {
         }
     }
 
-    /**
-     * Runs the stock-risk classifier over the article rows and emits one
-     * {@link RecommendationDto} per high-risk article (probability &gt; 0.6).
-     * Returns an empty list when training data is insufficient.
-     */
+    
+
+
+
+
     public List<RecommendationDto> stockRiskRecommendations(List<StockRow> rows, int horizonDays) {
         List<RecommendationDto> out = new ArrayList<>();
         if (rows == null || rows.size() < MIN_CLASSIFIER_SAMPLES) return out;
@@ -106,7 +106,7 @@ public class MlRecommendationEngine {
         int positives = 0;
         for (int i = 0; i < n; i++) {
             StockRow r = rows.get(i);
-            // Derived features
+            
             double coverRatio = r.avgMonthlyDemand > 0
                     ? r.stockLevel / r.avgMonthlyDemand : (r.stockLevel > 0 ? 10.0 : 0.0);
             double cv = r.avgMonthlyDemand > 0
@@ -116,15 +116,15 @@ public class MlRecommendationEngine {
             x[i][2] = coverRatio;
             x[i][3] = cv;
             x[i][4] = r.seasonalityPhase;
-            // Label: will stock out in next horizonDays?
-            // stock-out happens if daysOfCover < horizonDays + leadTime
+            
+            
             y[i] = (r.daysOfCover < horizonDays + r.leadTimeDays && r.avgMonthlyDemand > 0) ? 1 : 0;
             if (y[i] == 1) positives++;
         }
-        // Can't fit a classifier if one class is absent — fall back to silence.
+        
         if (positives == 0 || positives == n) return out;
 
-        // Standardise features so the logistic optimiser converges.
+        
         double[][] xs = FeatureScaler.scale(x, FeatureScaler.Mode.Z_SCORE);
         LogisticRegression.Binomial clf;
         try {
@@ -135,8 +135,8 @@ public class MlRecommendationEngine {
             return out;
         }
 
-        // Compute and rank probabilities so we can surface the most at-risk
-        // articles first instead of relying on an arbitrary 0.6 cutoff alone.
+        
+        
         double[] probs = new double[n];
         for (int i = 0; i < n; i++) {
             double[] proba = new double[2];
@@ -150,12 +150,12 @@ public class MlRecommendationEngine {
         for (int rank = 0; rank < n; rank++) {
             int i = order[rank];
             double pStockout = probs[i];
-            if (pStockout <= 0.6) break; // ranked DESC → all remaining are below threshold
+            if (pStockout <= 0.6) break; 
             StockRow r = rows.get(i);
             String prio = pStockout > 0.85 ? "CRITIQUE" : "HAUTE";
             String icon = pStockout > 0.85 ? "fa-triangle-exclamation" : "fa-box-open";
-            // Suggested order qty: cover (horizon + lead-time + 30j safety) of demand
-            // minus current stock; floor at 1 unit so the message is always actionable.
+            
+            
             double dailyDemand = r.avgMonthlyDemand / 30.0;
             double targetCoverDays = horizonDays + r.leadTimeDays + 30.0;
             double suggestedQty = Math.max(1.0,
@@ -179,11 +179,11 @@ public class MlRecommendationEngine {
         return out;
     }
 
-    /**
-     * Fits an OLS regression of log-revenue-growth proxy on product features
-     * and emits PRODUIT_STAR / OPPORTUNITÉ recommendations for the top-scored
-     * articles. Returns an empty list on insufficient data.
-     */
+    
+
+
+
+
     public List<RecommendationDto> opportunityRecommendations(List<ProductRow> rows) {
         List<RecommendationDto> out = new ArrayList<>();
         if (rows == null || rows.size() < MIN_REGRESSION_SAMPLES) return out;
@@ -195,9 +195,9 @@ public class MlRecommendationEngine {
         double avgRev = sumRev / n;
         for (int i = 0; i < n; i++) {
             ProductRow r = rows.get(i);
-            // Target: log-ratio of revenue to the category average. This acts
-            // as a relative-performance proxy when the dataset doesn't expose
-            // forward-looking truth labels.
+            
+            
+            
             double target = Math.log1p(Math.max(0.0, r.revenue))
                     - Math.log1p(Math.max(0.0, avgRev));
             frame[i][0] = target;
@@ -217,29 +217,29 @@ public class MlRecommendationEngine {
         }
         double[] fitted = model.fittedValues();
         double[] residuals = model.residuals();
-        // Rank by residual (actual − predicted) so we surface articles that
-        // genuinely *outperform* the regression's expectation given their
-        // features — that is the real "opportunity" signal. Ranking by the
-        // raw fitted value (the previous behaviour) collapses to "sort by
-        // revenue" because revenue dominates the target. If residuals are
-        // numerically tiny (model overfits the small sample and residuals ~0)
-        // we fall back to the fitted ranking to avoid surfacing pure noise.
+        
+        
+        
+        
+        
+        
+        
         double[] scores;
         double resAbsMax = 0.0;
         for (double v : residuals) resAbsMax = Math.max(resAbsMax, Math.abs(v));
         double fitAbsMax = 0.0;
         for (double v : fitted) fitAbsMax = Math.max(fitAbsMax, Math.abs(v));
-        // "Collapsed" residuals: residual scale is < 1% of the fitted scale.
+        
         boolean collapsed = resAbsMax < 1e-9
                 || (fitAbsMax > 0 && resAbsMax / fitAbsMax < 0.01);
         scores = collapsed ? fitted : residuals;
 
-        // Rank by predicted score.
+        
         Integer[] idx = new Integer[n];
         for (int i = 0; i < n; i++) idx[i] = i;
         java.util.Arrays.sort(idx, (a, b) -> Double.compare(scores[b], scores[a]));
 
-        // Top article → PRODUIT_STAR (ML-sourced).
+        
         int top = idx[0];
         ProductRow topRow = rows.get(top);
         out.add(new RecommendationDto(
@@ -251,7 +251,7 @@ public class MlRecommendationEngine {
             "BASSE", "fa-star", "Voir Produits"
         ));
 
-        // Top 10% of remaining articles → OPPORTUNITÉ, capped at 3 to stay readable.
+        
         int opportunityCap = Math.min(3, Math.max(0, n / 10));
         for (int rank = 1; rank <= opportunityCap && rank < n; rank++) {
             int i = idx[rank];
@@ -277,14 +277,14 @@ public class MlRecommendationEngine {
         return out;
     }
 
-    /**
-     * Slow-mover classifier — given K-Means-tagged slow-mover candidates and
-     * their derived features (days since last sale, velocity trend slope,
-     * stock-days cover, category mean velocity), predicts which ones are
-     * "truly dormant" vs "seasonally quiet". Returns one boolean per input row
-     * (true = dormant, false = seasonally quiet). Returns an empty array when
-     * training data is insufficient (caller should default to "dormant").
-     */
+    
+
+
+
+
+
+
+
     public boolean[] classifyDormant(double[][] features, int[] provisionalLabels) {
         if (features == null || features.length < MIN_CLASSIFIER_SAMPLES) return new boolean[0];
         if (provisionalLabels == null || provisionalLabels.length != features.length)

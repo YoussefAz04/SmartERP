@@ -55,20 +55,20 @@ public class DashboardService {
     @Autowired
     private FactureAchatRepo factureAchatRepo;
 
-    /**
-     * Optional fallback for top-product aggregation. See AnalyticService for
-     * details — used when no LigneCommandeVente rows exist for the enterprise.
-     */
+    
+
+
+
     @Autowired(required = false)
     private DetaisFactureDeVenteRepo detaisFactureDeVenteRepo;
 
-    /**
-     * Dashboard stats are aggregated from many tables and the dashboard is opened
-     * on every login / tab switch. Cache results in 5-minute buckets per
-     * enterprise so repeated visits don't re-run ~25 aggregation queries each time.
-     * The bucketed key auto-expires (no eviction needed) and stays fresh enough
-     * for an at-a-glance overview.
-     */
+    
+
+
+
+
+
+
     @Cacheable(cacheNames = "dashboardStats",
                key = "#entrepriseId + '-' + (T(java.lang.System).currentTimeMillis() / 300000)")
     public DashboardStatsDto getDashboardStats(Long entrepriseId) {
@@ -81,7 +81,7 @@ public class DashboardService {
         LocalDate endOfYear = now.withDayOfYear(now.lengthOfYear());
         int currentYear = now.getYear();
 
-        // --- Sales Metrics ---
+        
         Double totalSales = commandeVenteRepository.getTotalSalesRevenue(entrepriseId);
         stats.setTotalSalesRevenue(orZero(totalSales));
 
@@ -100,7 +100,7 @@ public class DashboardService {
             stats.setAverageOrderValue(0.0);
         }
 
-        // --- Purchase Metrics ---
+        
         Double totalPurchases = commandeAchatRepository.getTotalPurchases(entrepriseId);
         stats.setTotalPurchases(orZero(totalPurchases));
 
@@ -110,7 +110,7 @@ public class DashboardService {
         Long totalPurchaseOrders = commandeAchatRepository.getTotalPurchaseOrders(entrepriseId);
         stats.setTotalPurchaseOrders(orZeroLong(totalPurchaseOrders));
 
-        // --- Inventory Metrics ---
+        
         Double totalStockValue = stockRepository.getTotalStockValue(entrepriseId);
         stats.setTotalStockValue(orZero(totalStockValue));
 
@@ -123,7 +123,7 @@ public class DashboardService {
         Long totalSKUs = stockRepository.getTotalSKUs(entrepriseId);
         stats.setTotalSKUs(orZeroLong(totalSKUs));
 
-        // --- Financial Metrics ---
+        
         Double totalRevenue = factureVenteRepository.getTotalRevenuePaid(entrepriseId);
         stats.setTotalRevenue(orZero(totalRevenue));
 
@@ -138,13 +138,13 @@ public class DashboardService {
         Double accountsPayable = factureAchatRepo.getAccountsPayable(entrepriseId);
         stats.setAccountsPayable(orZero(accountsPayable));
 
-        // --- Customer Metrics ---
+        
         Long totalCustomers = clientRepo.getTotalClients(entrepriseId);
         stats.setTotalCustomers(orZeroLong(totalCustomers));
-        // TODO: Track client creation dates to support new-customers-this-month metric
+        
         stats.setNewCustomersThisMonth(0L);
 
-        // Top customers
+        
         List<Object[]> topCustomersRaw = commandeVenteRepository.getTopCustomers(entrepriseId);
         List<TopCustomerDto> topCustomers = new ArrayList<>();
         int limit = Math.min(5, topCustomersRaw.size());
@@ -157,7 +157,7 @@ public class DashboardService {
         }
         stats.setTopCustomers(topCustomers);
 
-        // --- Order Status Breakdown ---
+        
         List<Object[]> salesStatusRaw = commandeVenteRepository.getOrderStatusBreakdown(entrepriseId);
         Map<String, Long> salesStatusMap = new HashMap<>();
         for (Object[] row : salesStatusRaw) {
@@ -176,21 +176,21 @@ public class DashboardService {
         }
         stats.setPurchaseOrderStatusBreakdown(purchaseStatusMap);
 
-        // --- Monthly Sales Chart ---
+        
         List<Object[]> monthlySalesRaw = commandeVenteRepository.getMonthlySales(entrepriseId, currentYear);
         List<MonthlySalesDto> monthlySalesChart = buildMonthlyChart(monthlySalesRaw);
         stats.setMonthlySalesChart(monthlySalesChart);
 
-        // --- Monthly Purchases Chart ---
+        
         List<Object[]> monthlyPurchasesRaw = commandeAchatRepository.getMonthlyPurchases(entrepriseId, currentYear);
         List<MonthlySalesDto> monthlyPurchasesChart = buildMonthlyChart(monthlyPurchasesRaw);
         stats.setMonthlyPurchasesChart(monthlyPurchasesChart);
 
-        // --- Top Products ---
+        
         List<Object[]> topProductsRaw = commandeVenteRepository.getTopProducts(entrepriseId);
-        // Fallback to free-text invoice details if no commande lines exist —
-        // keeps the home dashboard's Top Products tile populated when sales
-        // were entered as standalone factures.
+        
+        
+        
         if (topProductsRaw.isEmpty() && detaisFactureDeVenteRepo != null) {
             try {
                 List<Object[]> fallback = detaisFactureDeVenteRepo.getTopProductsFromFactures(entrepriseId);
@@ -198,7 +198,7 @@ public class DashboardService {
                     topProductsRaw = fallback;
                 }
             } catch (Exception ignored) {
-                // Best-effort fallback — never break the dashboard.
+                
             }
         }
         List<TopProductDto> topProducts = new ArrayList<>();
@@ -238,27 +238,27 @@ public class DashboardService {
         return value != null ? value : 0L;
     }
 
-    /**
-     * Lightweight payload for the /dashboard/admin-dashboard landing page.
-     * Replaces the previous client-side approach of fetching every client,
-     * fournisseur, article, stock and commande just to compute four counts and
-     * five recent rows. Server-side aggregation + slim DTOs keep the response
-     * tiny, and a 60-second per-enterprise cache absorbs repeated visits and
-     * dashboard re-mounts.
-     */
+    
+
+
+
+
+
+
+
     @Cacheable(cacheNames = "dashboardHomeSummary",
                key = "#entrepriseId + '-' + (T(java.lang.System).currentTimeMillis() / 60000)")
     public DashboardHomeSummaryDto getHomeSummary(Long entrepriseId) {
         DashboardHomeSummaryDto dto = new DashboardHomeSummaryDto();
 
-        // --- Counts (all single-row aggregate queries) ---
+        
         Long totalClients = clientRepo.getTotalClients(entrepriseId);
         dto.setTotalClients(totalClients != null ? totalClients : 0L);
         dto.setTotalFournisseurs(fournisseurRepo.countByEntrepriseId(entrepriseId));
         dto.setTotalArticles(articleRepository.countByEntrepriseId(entrepriseId));
         dto.setTotalCommandes(commandeVenteRepository.countByEntrepriseId(entrepriseId));
 
-        // --- Recent rows (LIMIT 5 via Pageable, slim projections) ---
+        
         PageRequest top5 = PageRequest.of(0, 5);
         dto.setRecentClients(clientRepo.findRecentByEntreprise(entrepriseId, top5));
         dto.setRecentFournisseurs(fournisseurRepo.findRecentByEntreprise(entrepriseId, top5));

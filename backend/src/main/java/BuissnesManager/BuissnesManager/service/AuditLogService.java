@@ -27,12 +27,12 @@ public class AuditLogService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
-    /**
-     * Records an audit log entry for the currently authenticated user.
-     * The username, userId and entrepriseId are resolved automatically from the
-     * Spring Security context.  Use the explicit overload when logging actions
-     * that happen before authentication (e.g. login attempts).
-     */
+    
+
+
+
+
+
     @Transactional
     public void log(String action, String details) {
         String username = null;
@@ -44,7 +44,7 @@ public class AuditLogService {
             username = auth.getName();
         }
 
-        // Resolve userId from current user
+        
         Long resolvedUserId = userId;
         String resolvedUsername = username;
         if (username != null) {
@@ -57,10 +57,10 @@ public class AuditLogService {
         doLog(action, details, resolvedUsername, resolvedUserId, entrepriseId, extractClientIp());
     }
 
-    /**
-     * Records an audit log entry with explicit actor information.
-     * Used when no Spring Security context is available (e.g. login endpoint).
-     */
+    
+
+
+
     @Transactional
     public void log(String action, String details, String username, Long userId, Long entrepriseId) {
         doLog(action, details, username, userId, entrepriseId, extractClientIp());
@@ -78,7 +78,7 @@ public class AuditLogService {
             auditLogRepository.save(entry);
             logger.debug("AuditLog recorded: action={}, user={}, entreprise={}", action, username, entrepriseId);
         } catch (Exception e) {
-            // Audit log failures must never break the main business flow
+            
             logger.error("Failed to persist audit log entry: action={}, error={}", action, e.getMessage());
         }
     }

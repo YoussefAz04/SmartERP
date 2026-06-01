@@ -19,10 +19,10 @@ public class MailService {
 
     private final JavaMailSender mailSender;
 
-    /**
-     * From-address used for outgoing mail. Falls back to the configured SMTP
-     * username when {@code spring.mail.from} is not set.
-     */
+    
+
+
+
     @Value("${spring.mail.from:${spring.mail.username:no-reply@localhost}}")
     private String fromAddress;
 
@@ -34,19 +34,19 @@ public class MailService {
         helper.setSubject(subject);
         helper.setText(text);
 
-        // Ajouter pièce jointe
+        
         helper.addAttachment(file.getOriginalFilename(), new ByteArrayResource(file.getBytes()));
 
         mailSender.send(message);
     }
 
-    /**
-     * Send a password-reset email containing a clickable link.
-     *
-     * @param to        recipient email address
-     * @param username  recipient's display name (used in the greeting)
-     * @param resetLink absolute URL the user should follow to choose a new password
-     */
+    
+
+
+
+
+
+
     public void sendPasswordResetEmail(String to, String username, String resetLink) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");

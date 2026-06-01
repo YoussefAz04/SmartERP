@@ -345,7 +345,8 @@
 // ═══════════════════════════════════════════════════════
 //  DARK MODE
 // ═══════════════════════════════════════════════════════
-body.dark-mode {
+:host-context(body.dark-mode),
+:host-context(body.dark-select) {
   .modal-container {
     background: #1e293b;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);

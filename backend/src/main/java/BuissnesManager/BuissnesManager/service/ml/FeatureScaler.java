@@ -5,10 +5,10 @@ public final class FeatureScaler {
 
     private FeatureScaler() {}
 
-    /** Mode selector for {*/
+    
     public enum Mode { Z_SCORE, ROBUST }
 
-    /** Statistics captured per column during */
+    
     public static final class Stats {
         public final double[] center;
         public final double[] scale;
@@ -20,13 +20,13 @@ public final class FeatureScaler {
         }
     }
 
-    /** Standardises {@code x} in place and returns the matrix. */
+    
     public static double[][] scale(double[][] x, Mode mode) {
         Stats s = fit(x, mode);
         return apply(x, s);
     }
 
-    /** Computes per-column centring/scaling statistics without mutating {@code x}. */
+    
     public static Stats fit(double[][] x, Mode mode) {
         int n = x.length;
         if (n == 0) return new Stats(new double[0], new double[0], mode);
@@ -52,7 +52,7 @@ public final class FeatureScaler {
         return new Stats(center, scale, mode);
     }
 
-    /** Applies previously-fitted statistics to a new matrix (returns new array). */
+    
     public static double[][] apply(double[][] x, Stats s) {
         int n = x.length;
         if (n == 0) return x;
@@ -67,7 +67,7 @@ public final class FeatureScaler {
         return out;
     }
 
-    /** Returns [mean, sample stdDev] for a non-empty array; safe on length &lt; 2. */
+    
     public static double[] meanStd(double[] v) {
         if (v == null || v.length == 0) return new double[]{0.0, 0.0};
         double sum = 0.0;
@@ -79,7 +79,7 @@ public final class FeatureScaler {
         return new double[]{mean, Math.sqrt(sq / (v.length - 1))};
     }
 
-    /** Median of {@code v}; mutates the input array (sorts it in place). */
+    
     public static double median(double[] v) {
         if (v == null || v.length == 0) return 0.0;
         double[] copy = v.clone();

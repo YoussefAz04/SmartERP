@@ -125,8 +125,8 @@ public class FactureDeVenteService {
                             "Facture de vente mise à jour: ref=" + saved.getReferance()
                                     + " (id=" + saved.getId() + "), statut: "
                                     + previousStatut + " -> " + saved.getStatut());
-                    // Emit dedicated audit events for the validate / cancel transitions so that
-                    // compliance reporting can pick them up without parsing details strings.
+                    
+                    
                     if (!java.util.Objects.equals(previousStatut, saved.getStatut())) {
                         if ("PAYEE".equals(saved.getStatut())) {
                             auditLogService.log("FACTURE_VENTE_VALIDATED",

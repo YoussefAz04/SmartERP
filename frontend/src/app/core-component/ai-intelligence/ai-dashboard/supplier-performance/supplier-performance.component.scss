@@ -221,7 +221,8 @@
 // ═══════════════════════════════════════════════════════
 //  DARK MODE
 // ═══════════════════════════════════════════════════════
-body.dark-mode {
+:host-context(body.dark-mode),
+:host-context(body.dark-select) {
   .supplier-row {
     background: #1a2744;
 

@@ -27,29 +27,29 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-/**
- * Stores every AI forecast issued for an enterprise and reconciles each
- * prediction against the real CA once the target month is over.
- *
- * <p>The goal is "scientific honesty": we cannot judge an AI model's value by
- * its in-sample fit alone. Logging predictions before reality is observed and
- * comparing them later produces a true backtest record (MAE, MAPE, sMAPE,
- * bias, interval coverage) that can be surfaced in the dashboard.
- *
- * <p>Idempotency: {@link #recordForecast(Long, ForecastDto)} can be safely
- * called many times per day — there is one row per
- * (entreprise, predictionMonth, targetMonth, horizon) thanks to a unique
- * constraint at the entity level. The first call within a calendar month
- * inserts; subsequent calls update the predicted/lower/upper bounds in case
- * the model is retrained.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Service
 public class PredictionLogService {
 
     private static final Logger log = LoggerFactory.getLogger(PredictionLogService.class);
 
-    /** Tiny epsilon used when computing percentage errors against tiny actuals,
-     * so a near-zero CA doesn't blow up the MAPE summary. */
+    
+
     private static final double EPS = 1.0;
 
     @Autowired
@@ -61,11 +61,11 @@ public class PredictionLogService {
     @Autowired
     private CommandeVenteRepository commandeVenteRepository;
 
-    /**
-     * Persists the future-horizon points from a {@link ForecastDto}. Existing
-     * rows for the same (entreprise, predictionMonth, targetMonth, horizon)
-     * are updated in place rather than duplicated.
-     */
+    
+
+
+
+
     @Transactional
     public void recordForecast(Long entrepriseId, ForecastDto dto) {
         if (entrepriseId == null || dto == null || dto.getForecastPoints() == null) {
@@ -82,7 +82,7 @@ public class PredictionLogService {
 
         int horizon = 0;
         for (ForecastDto.ForecastPointDto p : dto.getForecastPoints()) {
-            // Only future points are predictions; historical points have a non-null actual.
+            
             if (p.getActual() != null || p.getForecast() == null) {
                 continue;
             }
@@ -109,8 +109,8 @@ public class PredictionLogService {
                 row.setMethodology(truncate(dto.getMethodology(), 512));
                 row.setModelName(truncate(dto.getSelectedModel(), 128));
 
-                // Snapshot model diagnostics so we can later compute drift
-                // and A/B reports without retraining historical models.
+                
+                
                 if (dto.getModelMetrics() != null) {
                     var mm = dto.getModelMetrics();
                     row.setChallengerModel(truncate(mm.getChallengerModel(), 128));
@@ -126,30 +126,30 @@ public class PredictionLogService {
                     row.setOutliersDetected(dto.getAnomalies().size());
                 }
 
-                // Don't overwrite a settled actual if reality already arrived
-                // and reconciliation ran in between. (Should be rare since we
-                // only store future horizons, but defensive.)
+                
+                
+                
                 predictionLogRepository.save(row);
             } catch (RuntimeException ex) {
-                // Logging the prediction must never break the forecast endpoint.
+                
                 log.warn("Failed to log prediction (entreprise={}, target={}, horizon={}): {}",
                         entrepriseId, targetMonth, horizon, ex.toString());
             }
         }
     }
 
-    /**
-     * Fills in {@code actualValue} (and derived error metrics) for every
-     * unsettled prediction whose target month is fully in the past for the
-     * given enterprise.
-     *
-     * @return number of predictions newly settled.
-     */
+    
+
+
+
+
+
+
     @Transactional
     public int reconcile(Long entrepriseId) {
         LocalDate today = LocalDate.now();
-        // A target month is reconcilable once the month after it has started:
-        // i.e. its last day is strictly before "today".
+        
+        
         LocalDate cutoff = today.withDayOfMonth(1).minusMonths(1);
         List<PredictionLog> pending = predictionLogRepository
                 .findPendingReconciliation(entrepriseId, cutoff);
@@ -171,7 +171,7 @@ public class PredictionLogService {
     }
 
     private int reconcileRows(List<PredictionLog> pending) {
-        // Cache real-CA monthly arrays per (entreprise, year) to avoid hammering DB.
+        
         Map<String, double[]> cache = new HashMap<>();
         int settled = 0;
 
@@ -225,16 +225,16 @@ public class PredictionLogService {
         row.setSettledAt(LocalDateTime.now());
     }
 
-    /**
-     * Returns the prediction history + accuracy summary for an enterprise.
-     * Auto-runs reconciliation first so the summary always reflects whatever
-     * months have closed. If no prediction_log rows exist yet for the
-     * enterprise (e.g. fresh deployment, missed seed, ftadmin bound to a
-     * different entreprise than the one the seed targeted), we synthesize a
-     * rolling-origin backtest from the enterprise's actual {@code commande_vente}
-     * history so the dashboard always shows real, comparable numbers instead
-     * of an empty placeholder.
-     */
+    
+
+
+
+
+
+
+
+
+
     @Transactional
     public PredictionAccuracyDto getHistory(Long entrepriseId) {
         reconcile(entrepriseId);
@@ -250,8 +250,8 @@ public class PredictionLogService {
                             .findByEntrepriseIdOrderByTargetMonthDescHorizonMonthsAsc(entrepriseId);
                 }
             } catch (RuntimeException ex) {
-                // The endpoint must never fail because of a synthetic-history
-                // issue; just log and fall through to an empty summary.
+                
+                
                 log.warn("Prediction backfill failed for entreprise {}: {}",
                         entrepriseId, ex.toString());
             }
@@ -303,11 +303,11 @@ public class PredictionLogService {
         return out;
     }
 
-    /**
-     * Reconciles every enterprise's pending predictions on the 2nd day of each
-     * month at 02:00. We wait one day past the month boundary so that any
-     * commandes posted late on the last day still land before reconciliation.
-     */
+    
+
+
+
+
     @Scheduled(cron = "0 0 2 2 * *")
     @Transactional
     public void scheduledReconcileAll() {
@@ -321,15 +321,15 @@ public class PredictionLogService {
         }
     }
 
-    /* --------------------- synthetic backtest backfill --------------------- */
+    
 
-    /** Minimum prior months required before the simple backfill model is usable. */
+    
     private static final int BACKFILL_MIN_PRIOR_MONTHS = 3;
-    /** How many calendar months back we scan when sourcing sales history. */
+    
     private static final int BACKFILL_LOOKBACK_MONTHS = 24;
-    /** Confidence levels by horizon (1, 2, 3 months ahead). Mirrors the live model. */
+    
     private static final double[] BACKFILL_CONFIDENCE = { 0.85, 0.78, 0.70 };
-    /** Z-score for a ~80 % prediction interval (kept narrow so coverage stays meaningful). */
+    
     private static final double BACKFILL_INTERVAL_Z = 1.28;
     private static final String BACKFILL_METHODOLOGY =
             "Backtest rétrospectif (moyenne mobile 3 mois + tendance, ajustement saisonnier annuel " +
@@ -337,17 +337,17 @@ public class PredictionLogService {
             "des prédictions est vide.";
     private static final String BACKFILL_MODEL_NAME = "Auto-backfill v1";
 
-    /**
-     * Synthesizes a rolling-origin backtest history for an enterprise that has
-     * no recorded predictions yet. For every issuance month with at least
-     * {@link #BACKFILL_MIN_PRIOR_MONTHS} months of prior sales data, we build
-     * a 3-month moving-average + linear-trend forecast for horizons 1, 2 and 3
-     * and reconcile it against the real CA. Rows are saved through the regular
-     * repository so they merge naturally with future live predictions logged
-     * by {@link #recordForecast(Long, ForecastDto)}.
-     *
-     * @return number of new rows inserted (never updates existing rows).
-     */
+    
+
+
+
+
+
+
+
+
+
+
     @Transactional
     public int backfillFromCommandeVente(Long entrepriseId) {
         if (entrepriseId == null) return 0;
@@ -355,8 +355,8 @@ public class PredictionLogService {
         if (entrepriseOpt.isEmpty()) return 0;
         Entreprise entreprise = entrepriseOpt.get();
 
-        // Build a contiguous monthly-CA series ending last month (we can only
-        // backtest months that are already closed).
+        
+        
         LocalDate today = LocalDate.now();
         YearMonth firstMonth = YearMonth.from(today).minusMonths(BACKFILL_LOOKBACK_MONTHS);
         YearMonth lastMonth = YearMonth.from(today).minusMonths(1);
@@ -369,8 +369,8 @@ public class PredictionLogService {
             series.put(ym, year[ym.getMonthValue() - 1]);
         }
 
-        // We need at least MIN_PRIOR + 1 months: enough prior history to fit a
-        // model AND at least one closed target month to score against.
+        
+        
         long nonZero = series.values().stream().filter(v -> v > 0).count();
         if (nonZero < BACKFILL_MIN_PRIOR_MONTHS + 1) {
             return 0;
@@ -379,18 +379,18 @@ public class PredictionLogService {
         List<YearMonth> orderedMonths = new ArrayList<>(series.keySet());
         int created = 0;
 
-        // Walk forward. For each issuance month i (1-based count of prior data
-        // available), generate predictions for horizons 1..3 whose target
-        // month is also in the closed-out window.
+        
+        
+        
         for (int i = BACKFILL_MIN_PRIOR_MONTHS; i < orderedMonths.size(); i++) {
             YearMonth predictionYm = orderedMonths.get(i);
-            // Last 3 actuals before the issuance month form the moving-average baseline.
+            
             double a3 = series.get(orderedMonths.get(i - 3));
             double a2 = series.get(orderedMonths.get(i - 2));
             double a1 = series.get(orderedMonths.get(i - 1));
-            // Skip issuance months where the entire prior window is empty:
-            // a model with no signal would just emit 0-vs-actual rows that add
-            // noise to the dashboard without any analytical value.
+            
+            
+            
             if (a1 + a2 + a3 <= 0.0) {
                 continue;
             }
@@ -403,7 +403,7 @@ public class PredictionLogService {
                 if (targetIdx >= orderedMonths.size()) break;
                 YearMonth targetYm = orderedMonths.get(targetIdx);
 
-                // Optional seasonal adjustment from last year's same month.
+                
                 double seasonal = 1.0;
                 YearMonth prevYearYm = targetYm.minusYears(1);
                 Double prevYearValue = series.get(prevYearYm);
@@ -416,7 +416,7 @@ public class PredictionLogService {
 
                 double rawPredicted = (baseline + h * trend) * seasonal;
                 double predicted = Math.max(0.0, rawPredicted);
-                // Intervals widen with sqrt(h), like the live forecast service.
+                
                 double width = BACKFILL_INTERVAL_Z * residualStd * Math.sqrt(h);
                 double lower = Math.max(0.0, predicted - width);
                 double upper = Math.max(predicted, predicted + width);
@@ -433,8 +433,8 @@ public class PredictionLogService {
 
                 PredictionLog row = new PredictionLog();
                 row.setEntreprise(entreprise);
-                // Use the 2nd of the issuance month as a stable "issued on" date
-                // (matches the convention used in the SQL seed scripts).
+                
+                
                 row.setPredictionDate(predictionMonth.plusDays(1));
                 row.setPredictionMonth(predictionMonth);
                 row.setTargetMonth(targetMonth);
@@ -466,7 +466,7 @@ public class PredictionLogService {
         return created;
     }
 
-    /** Average of the three months centred on {@code ym} (or the available subset). */
+    
     private static double avgPriorYearWindow(TreeMap<YearMonth, Double> series, YearMonth ym) {
         double sum = 0.0;
         int n = 0;
@@ -493,7 +493,7 @@ public class PredictionLogService {
         return v;
     }
 
-    /* ----------------------------- helpers ----------------------------- */
+    
 
     private PredictionLogDto toDto(PredictionLog row) {
         PredictionLogDto dto = new PredictionLogDto();

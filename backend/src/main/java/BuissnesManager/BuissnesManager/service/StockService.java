@@ -25,7 +25,7 @@ public class StockService {
     @Autowired
     private AuditLogService auditLogService;
 
-    // ✅ Helper method to convert any number to BigDecimal
+    
     private BigDecimal toBigDecimal(Object value) {
         if (value == null) return BigDecimal.ZERO;
         if (value instanceof BigDecimal) return (BigDecimal) value;

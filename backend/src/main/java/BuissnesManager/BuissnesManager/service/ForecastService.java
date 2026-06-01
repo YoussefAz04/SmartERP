@@ -23,36 +23,36 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Sales forecasting service.
- *
- * <p>The original implementation used Single Exponential Smoothing (SES) with
- * ad-hoc seasonal scaling of the last smoothed level. That under-reacted to
- * genuine growth, over-smoothed short noisy series, and produced flat forecasts
- * whenever a business had only partial current-year data.
- *
- * <p>This revision keeps the same DTO contract but upgrades the algorithm:
- *
- * <ul>
- *   <li><b>Holt's linear method</b> (double exponential smoothing) when there is
- *       no reliable prior-year history: tracks both a level and a trend so that
- *       steady growth is projected forward instead of repeated as a flat line.
- *   <li><b>Holt–Winters-lite</b> with multiplicative seasonal indices derived
- *       from the previous year when available: the level+trend model is scaled
- *       month-by-month by the seasonal factor instead of naively multiplying
- *       the last level by <code>(1 + seasonality)</code>.
- *   <li><b>Residual-based prediction intervals</b>: historical bounds are the
- *       smoothed value ± one in-sample residual standard deviation (clamped to
- *       non-negative), and future bounds widen with the square-root of the
- *       forecast horizon — a standard, statistically-sound approach.
- *   <li><b>SMAPE-based confidence</b>: symmetric MAPE avoids the asymmetric
- *       penalty of classic MAPE against near-zero actuals, and is blended with
- *       a data-density term normalised to a full expected year(s).
- * </ul>
- *
- * <p>Every downstream consumer (AiDashboardService, the Angular dashboard)
- * continues to receive the same {@link ForecastDto} shape.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Service
 public class ForecastService {
 
@@ -61,25 +61,25 @@ public class ForecastService {
     @Autowired
     private CommandeVenteRepository commandeVenteRepository;
 
-    /**
-     * Supervised-learning forecast engine (Smile OLS regression on lag/seasonal
-     * features). When the history is long enough we prefer it over Holt's
-     * smoothing; otherwise we fall back to the hand-coded path below which is
-     * more robust on very short series. Injected as a Spring bean so it can be
-     * mocked or swapped in tests and future implementations.
-     */
+    
+
+
+
+
+
+
     @Autowired(required = false)
     private MlForecastEngine mlForecastEngine;
 
-    /** Optional injection — only attached on the ML path. */
+    
     @Autowired(required = false)
     private CalendarFeatureService calendarFeatureService;
 
-    /** Outlier policy from {@code application.yml}: {@code winsorize|reject|raw}. */
+    
     @Value("${forecast.outlier.policy:winsorize}")
     private String outlierPolicy;
 
-    /** When false, the engine is told to skip the Box-Cox transform. */
+    
     @Value("${forecast.boxcox.enabled:true}")
     private boolean boxCoxEnabled;
 
@@ -88,19 +88,19 @@ public class ForecastService {
         "Juil", "Août", "Sept", "Oct", "Nov", "Déc"
     };
 
-    // Holt's linear smoothing parameters. Level smoothing reacts moderately,
-    // trend smoothing is lower so the trend doesn't chase single-month spikes.
-    static final double ALPHA = 0.35; // level smoothing
-    static final double BETA  = 0.15; // trend smoothing
+    
+    
+    static final double ALPHA = 0.35; 
+    static final double BETA  = 0.15; 
 
-    // Hard clamps on multiplicative seasonal indices so a single outlier month
-    // in the previous year can't create wildly implausible forecasts.
-    private static final double MIN_SEASONAL_INDEX = 0.60; // -40%
-    private static final double MAX_SEASONAL_INDEX = 1.50; // +50%
+    
+    
+    private static final double MIN_SEASONAL_INDEX = 0.60; 
+    private static final double MAX_SEASONAL_INDEX = 1.50; 
 
-    // Hard clamp on per-horizon growth when projecting trend without prior year
-    // history, to avoid absurd extrapolations on very short series.
-    private static final double MAX_TREND_GROWTH_PER_MONTH = 0.50; // 50%/month
+    
+    
+    private static final double MAX_TREND_GROWTH_PER_MONTH = 0.50; 
 
     @Cacheable(cacheNames = "salesForecast",
                key = "#entrepriseId + '-' + T(java.time.LocalDate).now().getDayOfYear()")
@@ -120,9 +120,9 @@ public class ForecastService {
             if (v > 0) { hasPrevYear = true; break; }
         }
 
-        // Build the historical series: previous full year (if any) + current year
-        // up to the current month. Skipping all-zero prior-year months avoids
-        // biasing Holt's level toward zero.
+        
+        
+        
         List<Double> historicalSeries = new ArrayList<>();
         if (hasPrevYear) {
             for (double v : prevValues) historicalSeries.add(v);
@@ -131,34 +131,34 @@ public class ForecastService {
             historicalSeries.add(currentValues[i]);
         }
 
-        // === Real ML path ===
-        // When the history is long enough, train a Smile OLS regression on
-        // engineered lag/seasonal features. The fallback Holt-Winters path below
-        // still handles very short series where OLS would be under-determined
-        // or produce wildly overfitted coefficients.
+        
+        
+        
+        
+        
         if (mlForecastEngine != null && mlForecastEngine.canFit(historicalSeries.size())) {
             ForecastDto mlDto = generateMlForecast(
                 historicalSeries, currentValues, prevValues, hasPrevYear,
                 observedCurrentMonths, currentMonth);
             if (mlDto != null) return mlDto;
-            // If something goes wrong (singular matrix, numerical error, ...) we
-            // silently fall through to the statistical path so the endpoint
-            // keeps responding — forecasts are advisory, never a hard failure.
+            
+            
+            
         }
 
-        // Multiplicative seasonal indices (12 values) computed from prior-year
-        // months. When there is no prior year, every index is 1.0 (neutral).
+        
+        
         double[] seasonalIndices = computeSeasonalIndices(prevValues, hasPrevYear);
 
-        // Fit Holt's linear model on the series with the seasonal component
-        // stripped out. This is a pragmatic Holt–Winters variant that doesn't
-        // require two full seasonal cycles before producing usable forecasts.
+        
+        
+        
         HoltResult holt = fitHolt(historicalSeries, seasonalIndices, hasPrevYear);
 
         List<ForecastDto.ForecastPointDto> forecastPoints = new ArrayList<>();
 
-        // Historical points (current year only, up to current month). The fitted
-        // value for month m aligns with historicalSeries index (offset + m - 1).
+        
+        
         int historyOffset = hasPrevYear ? 12 : 0;
         double residualStd = computeResidualStd(historicalSeries, holt.fitted);
         for (int m = 1; m <= observedCurrentMonths; m++) {
@@ -174,12 +174,12 @@ public class ForecastService {
             ));
         }
 
-        // Future 6 months: level + h*trend, scaled by the seasonal index of
-        // the future month. Intervals widen with sqrt(h) in classic fashion.
+        
+        
         double level = holt.finalLevel;
         double trend = holt.finalTrend;
-        // When projecting without prior year, clamp the implied monthly growth
-        // so very short series don't produce absurd extrapolations.
+        
+        
         if (!hasPrevYear && level > 0) {
             double maxStep = level * MAX_TREND_GROWTH_PER_MONTH;
             if (trend >  maxStep) trend =  maxStep;
@@ -187,8 +187,8 @@ public class ForecastService {
         }
 
         for (int h = 1; h <= 6; h++) {
-            // currentMonth is 1..12; horizon h=1 is the month AFTER currentMonth.
-            int futureMonthIdx = ((currentMonth - 1) + h) % 12; // 0-based
+            
+            int futureMonthIdx = ((currentMonth - 1) + h) % 12; 
             double seasonal = seasonalIndices[futureMonthIdx];
             double baseline = level + h * trend;
             double forecastValue = Math.max(0.0, baseline * seasonal);
@@ -203,8 +203,8 @@ public class ForecastService {
             ));
         }
 
-        // Summary predictions derived from the freshly-computed future points,
-        // so they always stay in sync with what the chart displays.
+        
+        
         List<Double> futureForecasts = new ArrayList<>();
         for (ForecastDto.ForecastPointDto p : forecastPoints) {
             if (p.getActual() == null && p.getForecast() != null) {
@@ -215,15 +215,15 @@ public class ForecastService {
         double predictedNext3Months = futureForecasts.stream().limit(3).mapToDouble(Double::doubleValue).sum();
         double predictedNext6Months = futureForecasts.stream().limit(6).mapToDouble(Double::doubleValue).sum();
 
-        // Confidence: density of non-zero observations + SMAPE fit, capped at 95.
+        
         long nonZeroMonths = historicalSeries.stream().filter(v -> v > 0).count();
         double expectedMonths = hasPrevYear ? 24.0 : 12.0;
         double density = Math.min(1.0, nonZeroMonths / expectedMonths);
         double fit = computeSmapeFit(historicalSeries, holt.fitted);
         double confidence = Math.min(95.0, Math.max(0.0, (0.5 * density + 0.5 * fit) * 100.0));
 
-        // Seasonality indices normalised around 1.0 for display (using prev year
-        // when available, otherwise the current year's own profile).
+        
+        
         List<ForecastDto.SeasonalityDto> seasonality =
             computeSeasonalityView(hasPrevYear ? prevValues : currentValues);
 
@@ -246,19 +246,19 @@ public class ForecastService {
         return dto;
     }
 
-    /* ----------------------------- ML path ----------------------------- */
+    
 
-    /**
-     * Builds a {@link ForecastDto} using the supervised-learning engine.
-     *
-     * <p>The series layout here is {@code [prevYear Jan..Dec][currentYear Jan..current]},
-     * which always starts in January (index 0 = month index 0). We feed the
-     * whole series to {@link MlForecastEngine} and shape its outputs into the
-     * same DTO the Angular dashboard already consumes.
-     *
-     * @return a filled DTO, or {@code null} if the engine threw an exception
-     *         (so the caller can fall back to the statistical path).
-     */
+    
+
+
+
+
+
+
+
+
+
+
     private ForecastDto generateMlForecast(
             List<Double> historicalSeries, double[] currentValues, double[] prevValues,
             boolean hasPrevYear, int observedCurrentMonths, int currentMonth) {
@@ -266,30 +266,30 @@ public class ForecastService {
         double[] rawSeries = new double[historicalSeries.size()];
         for (int i = 0; i < rawSeries.length; i++) rawSeries[i] = historicalSeries.get(i);
 
-        // Status mask aligned with rawSeries: OBSERVED / ZERO_BUSINESS / MISSING.
-        // We treat trailing/leading all-zero blocks as MISSING (entreprise
-        // wasn't active yet / data not yet ingested) and interior zeros as
-        // genuine ZERO_BUSINESS months.
+        
+        
+        
+        
         String[] status = computeHistoryStatus(rawSeries);
 
-        // First calendar month covered by the series. Used to compute the
-        // calendar exogenous regressors deterministically.
+        
+        
         int currentYear = LocalDate.now().getYear();
         YearMonth firstMonth = hasPrevYear
                 ? YearMonth.of(currentYear - 1, 1)
                 : YearMonth.of(currentYear, 1);
 
-        // Hampel-filter outlier detection. The cleaned series is what we feed
-        // to the regression; the anomalies are surfaced in the DTO so the UI
-        // can warn the user.
+        
+        
+        
         SeriesCleaner.Policy policy = SeriesCleaner.Policy.parse(outlierPolicy);
         SeriesCleaner.Result cleaned = SeriesCleaner.clean(rawSeries, policy,
                 SeriesCleaner.DEFAULT_WINDOW, SeriesCleaner.DEFAULT_K);
         double[] series = cleaned.cleaned;
         if (policy == SeriesCleaner.Policy.REJECT) {
-            // Linear interpolation across NaN slots so the matrix builder is
-            // not poisoned with NaN. Edge NaNs are filled with the nearest
-            // observed value.
+            
+            
+            
             interpolateNaN(series);
         }
 
@@ -303,7 +303,7 @@ public class ForecastService {
 
         int historyOffset = hasPrevYear ? 12 : 0;
         List<ForecastDto.ForecastPointDto> forecastPoints = new ArrayList<>();
-        // Historical points: only current-year months are shown to the user.
+        
         for (int m = 1; m <= observedCurrentMonths; m++) {
             double actual = currentValues[m - 1];
             int fittedIdx = historyOffset + m - 1;
@@ -317,7 +317,7 @@ public class ForecastService {
             ));
         }
 
-        // Future points.
+        
         for (int h = 1; h <= result.futurePoint.size(); h++) {
             int futureMonthIdx = ((currentMonth - 1) + h) % 12;
             double forecastValue = result.futurePoint.get(h - 1);
@@ -340,7 +340,7 @@ public class ForecastService {
             ));
         }
 
-        // Summary stats derived from the freshly-produced future points.
+        
         List<Double> futureForecasts = new ArrayList<>();
         for (ForecastDto.ForecastPointDto p : forecastPoints) {
             if (p.getActual() == null && p.getForecast() != null) {
@@ -409,15 +409,15 @@ public class ForecastService {
             dto.setCrossValidatedMase(Math.round(result.walkForwardMase * 1000.0) / 1000.0);
         }
 
-        // Slice off the prev-year history; only current-year months map to the chart.
+        
         List<String> visibleStatus = new ArrayList<>(observedCurrentMonths);
         for (int i = 0; i < observedCurrentMonths && historyOffset + i < status.length; i++) {
             visibleStatus.add(status[historyOffset + i]);
         }
         dto.setHistoryStatus(visibleStatus);
 
-        // Anomalies: shift indices into "current-year" perspective when
-        // possible, but keep the global index when in prev-year (rare).
+        
+        
         List<ForecastAnomalyDto> anomalies = new ArrayList<>();
         for (SeriesCleaner.Anomaly a : cleaned.anomalies) {
             YearMonth ym = firstMonth.plusMonths(a.index);
@@ -429,7 +429,7 @@ public class ForecastService {
         }
         dto.setAnomalies(anomalies);
 
-        // Rich diagnostics bundle for the methodology panel.
+        
         ModelMetricsDto metrics = new ModelMetricsDto();
         metrics.setModelName(result.modelName);
         metrics.setChallengerModel(result.challengerName);
@@ -467,18 +467,18 @@ public class ForecastService {
         return dto;
     }
 
-    /* --------------------------- Helpers (ML path) --------------------------- */
+    
 
-    /**
-     * Per-month observation status:
-     * <ul>
-     *   <li>{@code MISSING} — leading run of all-zero months (entreprise not yet
-     *       active / data not ingested);</li>
-     *   <li>{@code OBSERVED} — strictly positive value;</li>
-     *   <li>{@code ZERO_BUSINESS} — explicit zero between observed months
-     *       (genuine no-business month).</li>
-     * </ul>
-     */
+    
+
+
+
+
+
+
+
+
+
     static String[] computeHistoryStatus(double[] series) {
         String[] out = new String[series.length];
         int firstNonZero = -1;
@@ -491,15 +491,15 @@ public class ForecastService {
         return out;
     }
 
-    /** Linear interpolation over NaN entries; edge NaNs use the nearest finite value. */
+    
     private static void interpolateNaN(double[] series) {
         int n = series.length;
-        // Forward fill leading NaNs.
+        
         int firstFinite = -1;
         for (int i = 0; i < n; i++) if (!Double.isNaN(series[i])) { firstFinite = i; break; }
         if (firstFinite < 0) { for (int i = 0; i < n; i++) series[i] = 0.0; return; }
         for (int i = 0; i < firstFinite; i++) series[i] = series[firstFinite];
-        // Interpolate interior NaNs.
+        
         int i = firstFinite + 1;
         while (i < n) {
             if (Double.isNaN(series[i])) {
@@ -520,8 +520,8 @@ public class ForecastService {
         List<FeatureImportanceDto> out = new ArrayList<>();
         if (r == null || r.featureNames == null || r.featureImportances == null) return out;
         int p = Math.min(r.featureImportances.length, r.featureNames.length - 1);
-        // Sort by absolute magnitude descending so the chart leads with the
-        // dominant driver.
+        
+        
         Integer[] order = new Integer[p];
         for (int i = 0; i < p; i++) order[i] = i;
         java.util.Arrays.sort(order, (a, b) ->
@@ -575,13 +575,13 @@ public class ForecastService {
         return g;
     }
 
-    /* --------------------------- core algorithms --------------------------- */
+    
 
-    /** Holds the Holt-model state after fitting. */
+    
     private static final class HoltResult {
-        final List<Double> fitted;   // one-step-ahead fits aligned with input
-        final double finalLevel;     // level after last observation
-        final double finalTrend;     // trend after last observation
+        final List<Double> fitted;   
+        final double finalLevel;     
+        final double finalTrend;     
         HoltResult(List<Double> fitted, double finalLevel, double finalTrend) {
             this.fitted = fitted;
             this.finalLevel = finalLevel;
@@ -589,20 +589,20 @@ public class ForecastService {
         }
     }
 
-    /**
-     * Fits Holt's linear method on the seasonally-adjusted series. When prior-year
-     * seasonal indices are available, the input is divided by the seasonal factor
-     * before smoothing and re-multiplied when producing fitted values, so the
-     * fitted series matches the original scale.
-     */
+    
+
+
+
+
+
     HoltResult fitHolt(List<Double> data, double[] seasonalIndices, boolean hasSeasonal) {
         List<Double> fitted = new ArrayList<>(data.size());
         if (data.isEmpty()) {
             return new HoltResult(fitted, 0.0, 0.0);
         }
 
-        // Initialise level and trend. Level = first deseasonalised value;
-        // trend = (second - first) if we have two observations, else 0.
+        
+        
         double firstSeasonal = hasSeasonal ? seasonalForIndex(0, seasonalIndices) : 1.0;
         double level = data.get(0) / safe(firstSeasonal);
         double trend = 0.0;
@@ -611,12 +611,12 @@ public class ForecastService {
             double second = data.get(1) / safe(secondSeasonal);
             trend = second - level;
         }
-        // First fitted value = first actual (we have no forecast before seeing anything).
+        
         fitted.add(data.get(0));
 
         for (int t = 1; t < data.size(); t++) {
             double seasonal = hasSeasonal ? seasonalForIndex(t, seasonalIndices) : 1.0;
-            // One-step-ahead forecast before observing data[t]:
+            
             double oneStep = Math.max(0.0, (level + trend) * seasonal);
             fitted.add(oneStep);
             double deseasonalised = data.get(t) / safe(seasonal);
@@ -627,18 +627,18 @@ public class ForecastService {
         return new HoltResult(fitted, level, trend);
     }
 
-    /**
-     * Returns the seasonal index to apply to historical position {@code t} in the
-     * fitted series. The series is built as
-     * <code>[prevYear Jan..Dec][currentYear Jan..current]</code>, so the calendar
-     * month is simply {@code t % 12} — both blocks start in January.
-     */
+    
+
+
+
+
+
     private double seasonalForIndex(int t, double[] seasonalIndices) {
         int monthIdx = t % 12;
         return safe(seasonalIndices[monthIdx]);
     }
 
-    /** Multiplicative seasonal indices (12 values) from previous-year actuals. */
+    
     double[] computeSeasonalIndices(double[] prevValues, boolean hasPrevYear) {
         double[] indices = new double[12];
         if (!hasPrevYear) {
@@ -657,13 +657,13 @@ public class ForecastService {
         return indices;
     }
 
-    /** Standard deviation of one-step-ahead residuals on observed (non-zero) months. */
+    
     double computeResidualStd(List<Double> actuals, List<Double> fitted) {
         if (actuals.isEmpty() || fitted.isEmpty()) return 0.0;
         int size = Math.min(actuals.size(), fitted.size());
         double sumSq = 0.0;
         int n = 0;
-        // Skip index 0 since fitted[0] = actuals[0] by construction.
+        
         for (int i = 1; i < size; i++) {
             double a = actuals.get(i);
             if (a <= 0) continue;
@@ -675,11 +675,11 @@ public class ForecastService {
         return Math.sqrt(sumSq / n);
     }
 
-    /**
-     * Symmetric MAPE-based fit score in [0,1]: 1 − mean(|a-f| / ((|a|+|f|)/2)).
-     * Symmetric variant is preferred so over- and under-forecasts are treated
-     * evenly, and because classic MAPE explodes near a=0.
-     */
+    
+
+
+
+
     double computeSmapeFit(List<Double> actuals, List<Double> fitted) {
         if (actuals.isEmpty() || fitted.isEmpty()) return 0.0;
         int size = Math.min(actuals.size(), fitted.size());
@@ -698,7 +698,7 @@ public class ForecastService {
         return Math.max(0.0, 1.0 - (totalErr / n));
     }
 
-    /** 12-month display seasonality (index + HAUTE/NORMALE/BASSE label). */
+    
     private List<ForecastDto.SeasonalityDto> computeSeasonalityView(double[] referenceValues) {
         List<ForecastDto.SeasonalityDto> result = new ArrayList<>();
         double avg = computeAverageNonZero(referenceValues);
@@ -727,7 +727,7 @@ public class ForecastService {
             ALPHA, BETA, seriesSize);
     }
 
-    /* ------------------------------ utilities ------------------------------ */
+    
 
     double[] buildMonthArray(List<Object[]> rawData) {
         double[] values = new double[12];
@@ -756,7 +756,7 @@ public class ForecastService {
         return Math.max(min, Math.min(max, value));
     }
 
-    /** Avoid divide-by-zero when a seasonal index is (pathologically) zero. */
+    
     private static double safe(double factor) {
         return factor <= 0 ? 1.0 : factor;
     }

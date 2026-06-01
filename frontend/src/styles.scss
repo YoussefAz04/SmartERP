@@ -2645,6 +2645,199 @@ mat-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
   color: #e2e8f0;
 }
 
+// ===========================================================
+// APP-WIDE DARK MODE SAFETY NET
+// Covers routed pages, component-scoped pages, Angular Material overlays,
+// Bootstrap widgets and custom ERP list/detail surfaces.
+// ===========================================================
+body.dark-mode,
+body.dark-select {
+  background: #141432 !important;
+  color: #d0d5e8;
+  color-scheme: dark;
+}
+
+body.dark-mode .main-wrapper,
+body.dark-select .main-wrapper,
+body.dark-mode .page-wrapper,
+body.dark-select .page-wrapper,
+body.dark-mode .content,
+body.dark-select .content,
+body.dark-mode .page-wrapper-new,
+body.dark-select .page-wrapper-new {
+  background: #141432 !important;
+  color: #d0d5e8;
+}
+
+body.dark-mode :where(
+  .card,
+  .table-list-card,
+  .settings-wrapper,
+  .settings-page-wrap,
+  .settings-content,
+  .page-header,
+  .modal-content,
+  .dropdown-menu,
+  .dropdown-panel,
+  .offcanvas,
+  .tab-content,
+  .accordion-item,
+  .list-group-item,
+  .profile-cover,
+  .profile-card,
+  .company-info,
+  .white-box,
+  .custom-card,
+  .invoice-box,
+  .product-details,
+  .stock-card,
+  .movement-card
+),
+body.dark-select :where(
+  .card,
+  .table-list-card,
+  .settings-wrapper,
+  .settings-page-wrap,
+  .settings-content,
+  .page-header,
+  .modal-content,
+  .dropdown-menu,
+  .dropdown-panel,
+  .offcanvas,
+  .tab-content,
+  .accordion-item,
+  .list-group-item,
+  .profile-cover,
+  .profile-card,
+  .company-info,
+  .white-box,
+  .custom-card,
+  .invoice-box,
+  .product-details,
+  .stock-card,
+  .movement-card
+) {
+  background: #1e2235 !important;
+  border-color: #2a2f45 !important;
+  color: #d0d5e8 !important;
+}
+
+body.dark-mode :where(h1, h2, h3, h4, h5, h6, label, .form-label, .card-title, .page-title),
+body.dark-select :where(h1, h2, h3, h4, h5, h6, label, .form-label, .card-title, .page-title) {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode :where(p, span, small, td, th, li, .text-dark, .text-body),
+body.dark-select :where(p, span, small, td, th, li, .text-dark, .text-body) {
+  border-color: #2a2f45;
+}
+
+body.dark-mode :where(.text-muted, .breadcrumb-item, .breadcrumb-item a, .sub-title, .form-text),
+body.dark-select :where(.text-muted, .breadcrumb-item, .breadcrumb-item a, .sub-title, .form-text) {
+  color: #8d97b5 !important;
+}
+
+body.dark-mode :where(
+  input,
+  textarea,
+  select,
+  .form-control,
+  .form-select,
+  .mat-mdc-select-trigger,
+  .mat-mdc-text-field-wrapper,
+  .mdc-text-field,
+  .search-input,
+  .filter-select
+),
+body.dark-select :where(
+  input,
+  textarea,
+  select,
+  .form-control,
+  .form-select,
+  .mat-mdc-select-trigger,
+  .mat-mdc-text-field-wrapper,
+  .mdc-text-field,
+  .search-input,
+  .filter-select
+) {
+  background: #1e2235 !important;
+  border-color: #384069 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode :where(input, textarea, .form-control, .search-input)::placeholder,
+body.dark-select :where(input, textarea, .form-control, .search-input)::placeholder {
+  color: #6e7a9a !important;
+}
+
+body.dark-mode :where(.table, table),
+body.dark-select :where(.table, table) {
+  --bs-table-bg: #1e2235;
+  --bs-table-color: #d0d5e8;
+  --bs-table-border-color: #2a2f45;
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+  --bs-table-hover-bg: rgba(79, 110, 247, 0.12);
+  color: #d0d5e8 !important;
+  border-color: #2a2f45 !important;
+}
+
+body.dark-mode :where(.table thead th, table thead th),
+body.dark-select :where(.table thead th, table thead th) {
+  background: #252b40 !important;
+  border-color: #384069 !important;
+  color: #dce3f1 !important;
+}
+
+body.dark-mode :where(.table tbody td, table tbody td),
+body.dark-select :where(.table tbody td, table tbody td) {
+  background: transparent !important;
+  border-color: #2a2f45 !important;
+  color: #d0d5e8 !important;
+}
+
+body.dark-mode :where(.table tbody tr:hover, table tbody tr:hover),
+body.dark-select :where(.table tbody tr:hover, table tbody tr:hover) {
+  background: rgba(79, 110, 247, 0.12) !important;
+}
+
+body.dark-mode :where(.bg-white, .bg-light),
+body.dark-select :where(.bg-white, .bg-light) {
+  background-color: #1e2235 !important;
+  color: #d0d5e8 !important;
+}
+
+body.dark-mode :where(.border, .border-top, .border-bottom, .border-start, .border-end),
+body.dark-select :where(.border, .border-top, .border-bottom, .border-start, .border-end) {
+  border-color: #2a2f45 !important;
+}
+
+body.dark-mode .cdk-overlay-container :where(.mat-mdc-select-panel, .mat-mdc-autocomplete-panel, .mat-mdc-menu-panel, .mat-mdc-dialog-container .mdc-dialog__surface),
+body.dark-select .cdk-overlay-container :where(.mat-mdc-select-panel, .mat-mdc-autocomplete-panel, .mat-mdc-menu-panel, .mat-mdc-dialog-container .mdc-dialog__surface) {
+  background: #1e2235 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .cdk-overlay-container :where(.mat-mdc-option, .mat-mdc-menu-item, .mdc-list-item__primary-text),
+body.dark-select .cdk-overlay-container :where(.mat-mdc-option, .mat-mdc-menu-item, .mdc-list-item__primary-text) {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode :where(.apexcharts-tooltip, .apexcharts-xaxistooltip, .apexcharts-yaxistooltip),
+body.dark-select :where(.apexcharts-tooltip, .apexcharts-xaxistooltip, .apexcharts-yaxistooltip) {
+  background: #1e2235 !important;
+  border-color: #384069 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-mode :where(.apexcharts-tooltip-title),
+body.dark-select :where(.apexcharts-tooltip-title) {
+  background: #252b40 !important;
+  border-color: #384069 !important;
+  color: #e2e8f0 !important;
+}
+
 @media (max-width: 991.98px) {
   .page-wrapper .content {
     padding: 16px 14px 22px;

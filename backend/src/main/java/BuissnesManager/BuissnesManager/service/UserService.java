@@ -194,12 +194,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // Get users belonging to a specific enterprise
+    
     public List<User> getUsersByEnterprise(Long enterpriseId) {
         return userRepository.findByEntrepriseId(enterpriseId);
     }
 
-    // Check if user belongs to the given enterprise
+    
     public boolean isUserInEnterprise(Long userId, Long enterpriseId) {
         Optional<User> user = userRepository.findById(userId);
         return user.isPresent() && user.get().getEntreprise() != null
@@ -295,13 +295,13 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    /**
-     * Change the password of the authenticated user identified by their username.
-     * Verifies {@code currentPassword} against the stored hash before updating.
-     *
-     * @throws IllegalArgumentException if the current password is wrong or the
-     *                                  new password does not meet minimum length.
-     */
+    
+
+
+
+
+
+
     public void changePasswordForUsername(String username, String currentPassword, String newPassword) {
         if (newPassword == null || newPassword.length() < 6) {
             throw new IllegalArgumentException("Le nouveau mot de passe doit contenir au moins 6 caractères.");
@@ -315,11 +315,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    /**
-     * Activate or deactivate a user account by toggling the {@code enabled} flag.
-     * A deactivated user keeps their data but is denied at login by
-     * {@code CustomUserDetailsService}.
-     */
+    
+
+
+
+
     public UserDTO setUserEnabled(Long idUser, boolean enabled) {
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + idUser));

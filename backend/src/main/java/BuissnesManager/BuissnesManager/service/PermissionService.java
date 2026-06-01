@@ -81,8 +81,8 @@ public class PermissionService {
         if (!userPermissions.isEmpty()) {
             return userPermissions.stream().map(this::toDto).collect(Collectors.toList());
         }
-        // Fall back to role-based permissions, mirroring the login/refresh behaviour.
-        // Merge per module so that a user with multiple roles gets the union of their grants.
+        
+        
         User user = userRepo.findById(userId).orElse(null);
         if (user == null || user.getRoles() == null) {
             return new ArrayList<>();
@@ -116,7 +116,7 @@ public class PermissionService {
 
         if (permissions == null) return;
 
-        // Upsert each requested module permission
+        
         Set<Long> requestedIds = permissions.stream()
                 .map(ModulePermissionRequest::getModuleId)
                 .collect(Collectors.toSet());
@@ -144,7 +144,7 @@ public class PermissionService {
             }
         }
 
-        // Remove permissions for modules no longer in the list
+        
         List<Permission> existing = permissionRepo.findAllByUserId(userId);
         for (Permission p : existing) {
             if (p.getModule() != null && !requestedIds.contains(p.getModule().getId())) {

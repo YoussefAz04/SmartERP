@@ -15,58 +15,58 @@ import java.util.Properties;
 
 public interface Predictor {
 
-    /** Human-readable name of the underlying learner. */
+    
     String name();
 
-    /** One-step-ahead prediction for a single feature vector. */
+    
     double predict(double[] features);
 
-    /** In-sample fitted values, one per training row, aligned with training order. */
+    
     double[] fittedValues();
 
-    /** In-sample residuals (y − ŷ), one per training row. */
+    
     double[] residuals();
 
-    /** Coefficient of determination on the training set, in [−∞, 1]. */
+    
     double rSquared();
 
-    /**
-     * Raw feature contributions for the methodology panel, length p (matches
-     * the feature columns in the order they were passed at fit time):
-     *
-     * <ul>
-     *   <li>linear models — coefficients (β) excluding the intercept;</li>
-     *   <li>tree ensembles — Smile's mean-decrease-in-impurity importances.</li>
-     * </ul>
-     *
-     * <p>Returns {@code null} when the underlying model does not expose the
-     * information; callers should treat that as "not computed".
-     */
+    
+
+
+
+
+
+
+
+
+
+
+
     default double[] rawImportances() { return null; }
 
-    /** True when {@link #rawImportances()} returns signed coefficients. */
+    
     default boolean importancesSigned() { return false; }
 
-    /** Factory: fit an {@link OLS} regression. */
+    
     static Predictor fitOls(DataFrame df, StructType schema) {
         return new LinearAdapter("OLS", OLS.fit(Formula.lhs("y"), df), schema);
     }
 
-    /** Factory: fit a {@link RidgeRegression} with the given L2 strength. */
+    
     static Predictor fitRidge(DataFrame df, StructType schema, double lambda) {
         return new LinearAdapter("Ridge",
                 RidgeRegression.fit(Formula.lhs("y"), df, lambda), schema);
     }
 
  
-    /** Factory: fit an {@link ElasticNet} (L1+L2) regression. */
+    
     static Predictor fitElasticNet(DataFrame df, StructType schema,
                                    double lambda1, double lambda2) {
         return new LinearAdapter("ElasticNet",
                 ElasticNet.fit(Formula.lhs("y"), df, lambda1, lambda2), schema);
     }
 
-    /** Factory: fit a {@link RandomForest} regression with the given hyperparameters. */
+    
     static Predictor fitRandomForest(DataFrame df, StructType schema,
                                      int ntrees, int maxDepth, int mtry, long seed) {
         Properties props = new Properties();
@@ -77,13 +77,13 @@ public interface Predictor {
         if (mtry > 0) {
             props.setProperty("smile.random.forest.mtry", Integer.toString(mtry));
         }
-        // Seed Smile's shared RNG so bagging is reproducible.
+        
         smile.math.MathEx.setSeed(seed);
         RandomForest rf = RandomForest.fit(Formula.lhs("y"), df, props);
         return new RandomForestAdapter(rf, df, schema);
     }
 
-    /** Adapter for any Smile {@link LinearModel} (OLS / Ridge / LASSO / ElasticNet). */
+    
     final class LinearAdapter implements Predictor {
         private final String name;
         private final LinearModel model;
@@ -99,8 +99,8 @@ public interface Predictor {
         @Override public double[] residuals() { return model.residuals(); }
         @Override public double rSquared() { return model.RSquared(); }
         @Override public double[] rawImportances() {
-            // LinearModel.coefficients() returns intercept + p coefficients.
-            // Strip the intercept so the array aligns with the feature columns.
+            
+            
             try {
                 double[] all = model.coefficients();
                 if (all == null || all.length <= 1) return null;
@@ -115,7 +115,7 @@ public interface Predictor {
         @SuppressWarnings("unused") public StructType schema() { return schema; }
     }
 
-    /** Adapter for Smile's {@link RandomForest}. */
+    
     final class RandomForestAdapter implements Predictor {
         private final RandomForest rf;
         private final StructType schema;
@@ -129,9 +129,9 @@ public interface Predictor {
             int n = df.size();
             this.fitted = new double[n];
             this.residuals = new double[n];
-            // Random Forest doesn't expose fittedValues()/residuals() like LinearModel,
-            // so we compute them from the training frame. For our use case (small
-            // n ≤ ~30) this is cheap enough to run eagerly.
+            
+            
+            
             double[] y = new double[n];
             double ym = 0.0;
             for (int i = 0; i < n; i++) {
@@ -152,12 +152,10 @@ public interface Predictor {
 
         @Override public String name() { return "RandomForest"; }
         @Override public double predict(double[] features) {
-            // RandomForest.predict takes a Tuple — build one on the fly.
+            
             double[] row = new double[schema.length()];
-            // Column 0 of the training frame is always the target "y"; features
-            // live in columns 1..p. Pad index 0 with 0.0 — the forest was
-            // trained with "y" as the label via Formula.lhs("y") so it will
-            // never inspect that column at predict time.
+            
+            
             System.arraycopy(features, 0, row, 1, Math.min(features.length, row.length - 1));
             return rf.predict(Tuple.of(row, schema));
         }

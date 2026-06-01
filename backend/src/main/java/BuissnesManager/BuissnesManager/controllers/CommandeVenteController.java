@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.controllers;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
+import BuissnesManager.BuissnesManager.dto.CommandeVenteResponseDto;
 import BuissnesManager.BuissnesManager.dto.ValidationResponseDto;
 import BuissnesManager.BuissnesManager.entity.CommandeVente;
 import BuissnesManager.BuissnesManager.service.CommandeVenteService;
@@ -71,7 +72,7 @@ public class CommandeVenteController {
     public ResponseEntity<?> getAllCommandes() {
         try {
             logger.info("? Getting all purchase orders");
-            List<CommandeVente> commandes = commandeVenteService.getAllCommandes();
+            List<CommandeVenteResponseDto> commandes = commandeVenteService.getAllCommandesResponse();
             return ResponseEntity.ok(commandes);
         } catch (Exception e) {
             logger.error("Error getting commandes: {}", e.getMessage(), e);
@@ -83,7 +84,7 @@ public class CommandeVenteController {
     public ResponseEntity<?> getCommandeById(@PathVariable Long id) {
         try {
             logger.info("? Getting commande with ID: {}", id);
-            Optional<CommandeVente> commande = commandeVenteService.getCommandeById(id);
+            Optional<CommandeVenteResponseDto> commande = commandeVenteService.getCommandeResponseById(id);
             return commande.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import { ArticleAchatService } from '../../core/service/article-achat/article-ac
 import { ArticleAchat } from '../../model/article-achat.model';
 import { ResponseDto } from '../../model/reponseDto.model';
 import { NotificationService } from '../../shared/notification/notification.service';
+import { getArticleCategoryLabel } from '../../shared/article-category-label';
 
 @Component({
   selector: 'app-article-achat',
@@ -128,9 +129,13 @@ export class ArticleAchatComponent implements OnInit {
 
   get uniqueCategories(): string[] {
     const names = this.articleAchatList
-      .map(a => a.categorieArticle?.nom)
+      .map(a => getArticleCategoryLabel(a.categorieArticle))
       .filter((n): n is string => !!n);
     return [...new Set(names)];
+  }
+
+  getCategoryLabel(category: any): string {
+    return getArticleCategoryLabel(category);
   }
 
   // --- Filtering ---
@@ -306,7 +311,7 @@ export class ArticleAchatComponent implements OnInit {
       a.quantite ?? '',
       a.unite ?? '',
       a.fournisseur?.nom ?? '',
-      a.categorieArticle?.nom ?? '',
+      getArticleCategoryLabel(a.categorieArticle),
       a.createdAt ? new Date(a.createdAt).toLocaleDateString('fr-FR') : ''
     ]);
 

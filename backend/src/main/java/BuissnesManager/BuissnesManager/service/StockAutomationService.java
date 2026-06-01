@@ -38,10 +38,10 @@ public class StockAutomationService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
-    /**
-     * Increments stock for all articles in a purchase order (CommandeAchat).
-     * Called when the order is marked as received (RECUE).
-     */
+    
+
+
+
     @Transactional
     public void incrementStockFromReception(Long commandeAchatId, String referenceCommande) {
         List<LigneCommandeAchat> lignes = ligneCommandeAchatRepository.findByCommandeAchatId(commandeAchatId);
@@ -84,14 +84,14 @@ public class StockAutomationService {
         }
     }
 
-    /**
-     * Decrements stock for all articles in a sales order (CommandeVente).
-     * Called when the order is marked as delivered (LIVREE).
-     *
-     * @return the list of stock alerts (rupture / faible stock) raised while
-     *         decrementing — used by the controller to inform the frontend
-     *         immediately after the sale.
-     */
+    
+
+
+
+
+
+
+
     @Transactional
     public List<StockAlertDto> decrementStockFromDelivery(Long commandeVenteId, String referenceCommande) {
         List<StockAlertDto> alerts = new ArrayList<>();
@@ -110,7 +110,7 @@ public class StockAutomationService {
 
             List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
             if (stocks.isEmpty()) {
-                logger.warn("⚠️ No stock record found for article {}, skipping decrement", article.getId());
+                logger.warn(" No stock record found for article {}, skipping decrement", article.getId());
                 continue;
             }
 
@@ -122,10 +122,10 @@ public class StockAutomationService {
             BigDecimal vendue = stock.getQuantiteVendue() != null
                     ? stock.getQuantiteVendue() : BigDecimal.ZERO;
 
-            // Prefer releasing from reservation first. If reservation doesn't fully
-            // cover the delivery, consume all of it and take the remainder from the
-            // available stock — otherwise reserved quantities can stay orphaned in
-            // `quantiteReserve` after the sale is delivered.
+            
+            
+            
+            
             BigDecimal totalAccessible = reserve.add(disponible);
             if (totalAccessible.compareTo(quantite) < 0) {
                 throw new RuntimeException(
@@ -161,9 +161,9 @@ public class StockAutomationService {
                 notificationService.createLowStockNotification(stock, article, article.getEntreprise(), stock.getQuantiteDisponible());
             }
 
-            // Collect a transient alert for the controller response so the
-            // frontend can show an immediate red toast when stock falls to
-            // 0 (rupture) or below the configured seuilMinimum.
+            
+            
+            
             BigDecimal remaining = stock.getQuantiteDisponible() != null
                     ? stock.getQuantiteDisponible() : BigDecimal.ZERO;
             String articleName = article.getNom() != null ? article.getNom() : ("Article #" + article.getId());
@@ -189,15 +189,15 @@ public class StockAutomationService {
                                 stock.getSeuilMinimum().stripTrailingZeros().toPlainString())));
             }
 
-            logger.info("✅ Stock decremented for article {} by {}", article.getId(), quantite);
+            logger.info("Stock decremented for article {} by {}", article.getId(), quantite);
         }
         return alerts;
     }
 
-    /**
-     * Reserves stock for all articles in a sales order (CommandeVente).
-     * Called when a new order is created to prevent overselling.
-     */
+    
+
+
+
     @Transactional
     public void reserverStockPourCommande(Long commandeVenteId, String referenceCommande) {
         List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
@@ -239,14 +239,14 @@ public class StockAutomationService {
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
-            logger.info("✅ Stock reserved for article {} by {}", article.getId(), quantite);
+            logger.info("Stock reserved for article {} by {}", article.getId(), quantite);
         }
     }
 
-    /**
-     * Reverses stock increments for all articles in a cancelled purchase order.
-     * Called when a CommandeAchat in RECUE status is cancelled.
-     */
+    
+
+
+
     @Transactional
     public void annulerStockDepuisReception(Long commandeAchatId, String referenceCommande) {
         List<LigneCommandeAchat> lignes = ligneCommandeAchatRepository.findByCommandeAchatId(commandeAchatId);
@@ -261,7 +261,7 @@ public class StockAutomationService {
 
             List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
             if (stocks.isEmpty()) {
-                logger.warn("⚠️ No stock record found for article {}, skipping reversal", article.getId());
+                logger.warn(" No stock record found for article {}, skipping reversal", article.getId());
                 continue;
             }
 
@@ -286,14 +286,14 @@ public class StockAutomationService {
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
-            logger.info("✅ Stock reversed for article {} by {} (cancellation of reception)", article.getId(), toReverse);
+            logger.info("Stock reversed for article {} by {} (cancellation of reception)", article.getId(), toReverse);
         }
     }
 
-    /**
-     * Releases stock reservation for all articles in a cancelled sales order.
-     * Called when a CommandeVente is cancelled.
-     */
+    
+
+
+
     @Transactional
     public void annulerReservationStock(Long commandeVenteId, String referenceCommande) {
         List<LigneCommandeVente> lignes = ligneCommandeVenteRepository.findByCommandeVenteId(commandeVenteId);
@@ -333,7 +333,7 @@ public class StockAutomationService {
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
-            logger.info("✅ Stock reservation released for article {} by {}", article.getId(), toRelease);
+            logger.info(" Stock reservation released for article {} by {}", article.getId(), toRelease);
         }
     }
 

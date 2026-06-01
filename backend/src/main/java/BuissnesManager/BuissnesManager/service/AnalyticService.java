@@ -53,13 +53,13 @@ public class AnalyticService {
  
     private static final int MIN_KMEANS_PRODUCTS = 15;
 
-    /** Number of clusters used for product performance tiers: TOP, BON, LENT. */
+    
     static final int KMEANS_K = 3;
 
-    /** Candidate cluster counts explored when auto-selecting via silhouette. */
+    
     private static final int[] KMEANS_K_CANDIDATES = {2, 3, 4, 5};
 
-    /** Fixed seed so clustering is deterministic between requests. */
+    
     private static final long KMEANS_SEED = 42L;
 
   
@@ -88,13 +88,13 @@ public class AnalyticService {
         }
 
         double totalRevenue = values.stream().mapToDouble(Double::doubleValue).sum();
-        // Average monthly revenue over months that have at least some activity, so
-        // businesses that only started selling in, say, September don't get their
-        // average diluted by eight empty months.
+        
+        
+        
         long activeMonths = values.stream().filter(v -> v > 0).count();
         double avgRevenue = activeMonths > 0 ? totalRevenue / activeMonths : 0.0;
 
-        // Find best month
+        
         double bestRevenue = 0.0;
         String bestMonth = MONTH_NAMES_FR[0];
         for (int i = 0; i < 12; i++) {
@@ -108,8 +108,8 @@ public class AnalyticService {
         GrowthEstimate growth = estimateAnnualGrowth(values);
         double growthRate = growth.pointEstimatePercent;
         if (firstHalfFallbackNeeded(values)) {
-            // Fallback: simple half-year ratio when log-OLS is under-determined
-            // (< 2 non-zero months) so brand-new businesses still get a number.
+            
+            
             double firstHalf = values.subList(0, 6).stream().mapToDouble(Double::doubleValue).sum();
             double secondHalf = values.subList(6, 12).stream().mapToDouble(Double::doubleValue).sum();
             if (firstHalf > 0) {
@@ -123,8 +123,8 @@ public class AnalyticService {
 
         List<Double> trendLine = computeLoessTrend(values);
 
-        // Anomaly flags — z-score on the residuals of the LOESS fit. Any
-        // month more than ±2 residual-σ from the smoothed trend is tagged.
+        
+        
         List<Boolean> anomalies = detectAnomalies(values, trendLine);
 
         SalesAnalysisDto dto = new SalesAnalysisDto();
@@ -144,7 +144,7 @@ public class AnalyticService {
         }
         dto.setMethodology(buildSalesMethodology(growth, values));
 
-        // Diagnostics bundle for the sales-analysis block.
+        
         if (growth.samples >= 2) {
             ModelMetricsDto metrics = new ModelMetricsDto();
             metrics.setModelName("OLS log-linéaire + bootstrap");
@@ -162,11 +162,11 @@ public class AnalyticService {
     public ProductIntelligenceDto analyzeProducts(Long entrepriseId) {
         List<Object[]> topRaw = commandeVenteRepository.getTopProducts(entrepriseId);
 
-        // Fallback: when no structured commande-line data exists for this
-        // enterprise (e.g. sales were entered as standalone factures with a
-        // free-text article label), aggregate from DetailsFactureDeVente so
-        // the dashboards still surface the user's most-sold products instead
-        // of rendering an empty "Top Produits" panel.
+        
+        
+        
+        
+        
         if (topRaw.isEmpty() && detaisFactureDeVenteRepo != null) {
             try {
                 List<Object[]> fallback = detaisFactureDeVenteRepo.getTopProductsFromFactures(entrepriseId);
@@ -174,7 +174,7 @@ public class AnalyticService {
                     topRaw = fallback;
                 }
             } catch (Exception e) {
-                // Fallback is best-effort — never let it break the dashboard.
+                
                 log.warn("Top-products fallback (DetailsFactureDeVente) failed for entreprise {}: {}",
                         entrepriseId, e.getMessage());
             }
@@ -214,13 +214,13 @@ public class AnalyticService {
                     catalogueFallback = true;
                 }
             } catch (Exception e) {
-                // Catalogue fallback is best-effort — never let it break the dashboard.
+                
                 log.warn("Catalogue fallback (ArticleVente) failed for entreprise {}: {}",
                         entrepriseId, e.getMessage());
             }
         }
 
-        // Calculate revenue share and rank
+        
         for (int i = 0; i < products.size(); i++) {
             ProductIntelligenceDto.ProductPerformanceDto p = products.get(i);
             p.setRank(i + 1);
@@ -234,9 +234,9 @@ public class AnalyticService {
         }
 
         if (catalogueFallback) {
-            // No sales history: every product is "new" with respect to sales.
-            // Skip clustering / arbitrary TOP-BON-NORMAL splits which would be
-            // meaningless on a uniform zero-revenue list.
+            
+            
+            
             for (ProductIntelligenceDto.ProductPerformanceDto p : products) {
                 p.setPerformanceLabel("NOUVEAU");
             }
@@ -265,7 +265,7 @@ public class AnalyticService {
         List<ProductIntelligenceDto.ProductPerformanceDto> topProducts =
             new ArrayList<>(products.subList(0, Math.min(10, products.size())));
 
-        // Slow moving: products with lowest sales (bottom 5 from total, if enough data)
+        
         List<ProductIntelligenceDto.ProductPerformanceDto> slowMoving = new ArrayList<>();
         if (catalogueFallback) {
  
@@ -305,7 +305,7 @@ public class AnalyticService {
             }
         }
 
-        // Category analysis: group by category (using product name prefix as proxy if no category data)
+        
         List<ProductIntelligenceDto.CategoryPerformanceDto> categoryPerformance = computeCategoryPerformance(entrepriseId);
 
         long totalSKUs = stockRepository.getTotalSKUs(entrepriseId);
@@ -321,8 +321,8 @@ public class AnalyticService {
     }
 
     private List<ProductIntelligenceDto.CategoryPerformanceDto> computeCategoryPerformance(Long entrepriseId) {
-        // Use a dedicated query that joins through articleVente -> articleAchat -> categorieArticle
-        // so we report real category revenue instead of grouping on the first letter of the product name.
+        
+        
         List<Object[]> rawData = commandeVenteRepository.getCategoryPerformance(entrepriseId);
 
         double totalRev = 0.0;
@@ -338,7 +338,7 @@ public class AnalyticService {
         for (ProductIntelligenceDto.CategoryPerformanceDto cat : result) {
             cat.setRevenueShare(totalRev > 0 ? Math.round((cat.getRevenue() / totalRev) * 1000.0) / 10.0 : 0.0);
         }
-        // Defensive copy again to avoid returning a subList view.
+        
         return new ArrayList<>(result.subList(0, Math.min(5, result.size())));
     }
 
@@ -371,8 +371,8 @@ public class AnalyticService {
             avgOrderValues[i] = Math.log1p(Math.max(0.0, revenues[i]) / qty);
         }
 
-        // Standardise via our shared scaler so the Euclidean distance used
-        // by K-Means doesn't let revenue completely dominate quantity.
+        
+        
         double[][] raw = new double[n][3];
         for (int i = 0; i < n; i++) {
             raw[i][0] = revenues[i];
@@ -381,8 +381,8 @@ public class AnalyticService {
         }
         double[][] features = FeatureScaler.scale(raw, FeatureScaler.Mode.Z_SCORE);
 
-        // Grid-search over k and pick the partition with the highest mean
-        // silhouette score. Each k runs best-of-N K-Means to fight local optima.
+        
+        
         KMeans bestKm = null;
         int bestK = KMEANS_K;
         double bestSilhouette = Double.NEGATIVE_INFINITY;
@@ -409,8 +409,8 @@ public class AnalyticService {
         int[] rawLabels = bestKm.y;
         if (rawLabels == null || rawLabels.length != n) return null;
 
-        // Mean revenue per raw cluster → used to rank clusters and remap them
-        // into the 3 display tiers (TOP / BON / LENT).
+        
+        
         double[] sumRev = new double[bestK];
         int[] countRev = new int[bestK];
         for (int i = 0; i < n; i++) {
@@ -425,7 +425,7 @@ public class AnalyticService {
         Arrays.sort(order, (a, b) -> {
             double ma = countRev[a] > 0 ? sumRev[a] / countRev[a] : Double.NEGATIVE_INFINITY;
             double mb = countRev[b] > 0 ? sumRev[b] / countRev[b] : Double.NEGATIVE_INFINITY;
-            return Double.compare(mb, ma); // descending
+            return Double.compare(mb, ma); 
         });
         int[] remap = new int[bestK];
        
@@ -433,9 +433,9 @@ public class AnalyticService {
         int lentStart = bestK - topSize;
         for (int rank = 0; rank < bestK; rank++) {
             int tier;
-            if (rank < topSize) tier = 0;           // TOP
-            else if (rank >= lentStart) tier = 2;   // LENT
-            else tier = 1;                          // BON
+            if (rank < topSize) tier = 0;           
+            else if (rank >= lentStart) tier = 2;   
+            else tier = 1;                          
             remap[order[rank]] = tier;
         }
 
@@ -506,9 +506,9 @@ public class AnalyticService {
         return best;
     }
 
-    /* =========================== log-OLS growth =========================== */
+    
 
-    /** Result of {@link #estimateAnnualGrowth(List)}. */
+    
     static final class GrowthEstimate {
         final double pointEstimatePercent;
         final double lowerPercent;
@@ -541,7 +541,7 @@ public class AnalyticService {
         double beta = fit[1];
         double r2 = fit[2];
 
-        // Bootstrap the β coefficient for a 95% CI.
+        
         int B = 300;
         double[] betas = new double[B];
         java.util.Random rng = new java.util.Random(7919L);
@@ -573,7 +573,7 @@ public class AnalyticService {
         return new GrowthEstimate(pointPct, loPct, hiPct, r2, n);
     }
 
-    /** Standard OLS closed-form: returns [intercept, slope, R²]. */
+    
     private static double[] olsSlope(double[] x, double[] y) {
         int n = x.length;
         double sx = 0, sy = 0, sxx = 0, sxy = 0;
@@ -608,7 +608,7 @@ public class AnalyticService {
 
     private static double clampPercent(double p) {
         if (p >  9999.0) return  9999.0;
-        if (p < -99.9)   return -99.9;   // losing >100% is arithmetically impossible on a log-scale
+        if (p < -99.9)   return -99.9;   
         return p;
     }
 
@@ -618,7 +618,7 @@ public class AnalyticService {
         return nonZero < 2;
     }
 
-    /* ============================= LOESS trend ============================= */
+    
 
    
     List<Double> computeLoessTrend(List<Double> values) {
@@ -632,7 +632,7 @@ public class AnalyticService {
         return result;
     }
 
-    /* ========================= Anomaly detection ========================= */
+    
 
     
     List<Boolean> detectAnomalies(List<Double> values, List<Double> trend) {

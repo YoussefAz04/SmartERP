@@ -109,12 +109,16 @@ export class AddUserComponent implements OnInit {
     'select zone',
     'departement', 'departemen',
     'module titre', 'module', 'sous module',
+    'entreprise', 'gestion entreprise', 'gestion des entreprises',
+    'gestion utilisateurs', 'gestion des utilisateurs', 'gestion users', 'users', 'utilisateurs',
   ];
 
   private readonly excludedKeywords = [
     'departement', 'departemen',
     'bon de reception', 'bon reception', 'bons de reception', 'bons reception',
     'bon de livraison', 'bon livraison', 'bons de livraison', 'bons livraison',
+    'entreprise',
+    'utilisateur', 'utilisateurs', 'user', 'users',
   ];
 
   private readonly moduleDisplayNames: { [key: string]: string } = {

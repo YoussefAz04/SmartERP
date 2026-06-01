@@ -19,7 +19,7 @@ import java.util.Map;
 @Service
 public class AiDashboardService {
 
-    /** Maximum absolute value for a computed change-percent — avoids misleading display when the base is near zero. */
+    
     private static final double MAX_CHANGE_PERCENT = 9999.0;
 
     @Autowired
@@ -69,7 +69,7 @@ public class AiDashboardService {
         totalRevenue = totalRevenue != null ? totalRevenue : 0.0;
         kpi.setTotalRevenue(totalRevenue);
 
-        // Revenue growth: compare this year vs last year
+        
         LocalDate startCurrentYear = LocalDate.of(currentYear, 1, 1);
         LocalDate endCurrentYear = LocalDate.of(currentYear, 12, 31);
         LocalDate startPrevYear = LocalDate.of(prevYear, 1, 1);
@@ -80,10 +80,10 @@ public class AiDashboardService {
         revenueCurrentYear = revenueCurrentYear != null ? revenueCurrentYear : 0.0;
         revenuePrevYear = revenuePrevYear != null ? revenuePrevYear : 0.0;
 
-        // Year-over-year revenue growth. When the prior year has no data we
-        // report null (nullable Double) rather than 0.0 so the UI can show a
-        // "NOUV." badge instead of misleading "0% growth". We also cap extreme
-        // ratios (tiny prev-year anchor → millions of % growth) to ±MAX_CHANGE_PERCENT.
+        
+        
+        
+        
         Double revenueGrowth = null;
         if (revenuePrevYear > 0) {
             double raw = ((revenueCurrentYear - revenuePrevYear) / revenuePrevYear) * 100.0;
@@ -96,13 +96,13 @@ public class AiDashboardService {
         Long totalOrders = commandeVenteRepository.getTotalSalesOrders(entrepriseId);
         kpi.setTotalOrders(totalOrders != null ? totalOrders : 0L);
 
-        // Order growth: # of orders this year vs last year
+        
         Long ordersCurrentYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startCurrentYear, endCurrentYear);
         Long ordersPrevYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startPrevYear, endPrevYear);
         long ocy = ordersCurrentYear != null ? ordersCurrentYear : 0L;
         long opy = ordersPrevYear != null ? ordersPrevYear : 0L;
-        // Same treatment as revenueGrowth: null for "no prior data" and ±MAX_CHANGE_PERCENT
-        // clamp so a single prior-year order doesn't produce absurd percentages.
+        
+        
         Double orderGrowth = null;
         if (opy > 0) {
             double raw = ((ocy - opy) / (double) opy) * 100.0;
@@ -124,13 +124,13 @@ public class AiDashboardService {
             kpi.setAvgOrderValue(0.0);
         }
 
-        // Profit margin: (revenue - COGS) / revenue. Uses the same "cost of goods sold"
-        // logic as the YTD gross-margin comparison so we don't treat inventory build-up
-        // as a loss. All-time window so it matches totalRevenue.
-        // NOTE: when the COGS query returns null (no purchase data tracked at all),
-        // treating it as 0 would falsely report a 100% profit margin. In that case we
-        // report 0.0 so the UI doesn't mislead the user. A legitimate COGS of 0 (digital
-        // goods, etc.) still resolves to a real 100% margin.
+        
+        
+        
+        
+        
+        
+        
         Double cogsAllTime = commandeVenteRepository.getCOGSInPeriod(
                 entrepriseId, LocalDate.of(1970, 1, 1), LocalDate.now());
         if (totalRevenue > 0 && cogsAllTime != null) {
@@ -150,16 +150,16 @@ public class AiDashboardService {
         int currentYear = today.getYear();
         int currentMonth = today.getMonthValue();
 
-        // MTD: first day of current month to today
+        
         LocalDate mtdStart = LocalDate.of(currentYear, currentMonth, 1);
         LocalDate mtdEnd = today;
 
-        // Previous month (full): April 1–April 30 when today is in May.
-        // Using the complete prior month gives a meaningful comparison against the
-        // partial current month (MTD), and avoids showing 0 when orders only existed
-        // after the equivalent day of the previous month.
+        
+        
+        
+        
         LocalDate lastMonthStart = mtdStart.minusMonths(1);
-        LocalDate lastMonthEnd = mtdStart.minusDays(1); // last day of previous month
+        LocalDate lastMonthEnd = mtdStart.minusDays(1); 
 
         Double mtd = commandeVenteRepository.getSalesInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double ltd = commandeVenteRepository.getSalesInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
@@ -168,11 +168,11 @@ public class AiDashboardService {
 
         comparison.setMtdVsLtd(buildPeriodComparison(mtd, ltd));
 
-        // YTD: Jan 1 of current year to today
+        
         LocalDate ytdStart = LocalDate.of(currentYear, 1, 1);
         LocalDate lastYearStart = LocalDate.of(currentYear - 1, 1, 1);
-        // Use minusYears(1) so that Feb 29 in a leap year is safely mapped to Feb 28
-        // in the previous non-leap year instead of throwing DateTimeException.
+        
+        
         LocalDate lastYearSameDay = today.minusYears(1);
 
         Double ytd = commandeVenteRepository.getSalesInPeriod(entrepriseId, ytdStart, today);
@@ -182,15 +182,15 @@ public class AiDashboardService {
 
         comparison.setYtdVsLastYear(buildPeriodComparison(ytd, lastYear));
 
-        // Purchase YTD vs last year same period (money spent buying inventory)
+        
         Double purchaseYtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, ytdStart, today);
         Double purchaseLastYear = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
         purchaseYtd = purchaseYtd != null ? purchaseYtd : 0.0;
         purchaseLastYear = purchaseLastYear != null ? purchaseLastYear : 0.0;
         comparison.setPurchaseYtd(buildPeriodComparison(purchaseYtd, purchaseLastYear));
 
-        // Gross margin YTD = sales YTD - COGS YTD (cost of items actually sold),
-        // NOT sales - total purchases (which would incorrectly count stock build-up as a loss).
+        
+        
         Double cogsYtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, ytdStart, today);
         Double cogsLastYear = commandeVenteRepository.getCOGSInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
         cogsYtd = cogsYtd != null ? cogsYtd : 0.0;
@@ -198,33 +198,33 @@ public class AiDashboardService {
         double grossMargin = ytd - cogsYtd;
         comparison.setGrossMarginYtd(Math.round(grossMargin * 100.0) / 100.0);
 
-        // Order counts YTD
+        
         Long salesOrderCount = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, ytdStart, today);
         comparison.setSalesOrderCountYtd(salesOrderCount != null ? salesOrderCount : 0L);
 
         Long purchaseOrderCount = commandeAchatRepository.getPurchaseOrderCountInPeriod(entrepriseId, ytdStart, today);
         comparison.setPurchaseOrderCountYtd(purchaseOrderCount != null ? purchaseOrderCount : 0L);
 
-        // === Enhanced MTD multi-dimensional metrics ===
+        
 
-        // Purchase MTD vs LTD
+        
         Double purchaseMtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double purchaseLtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
         purchaseMtd = purchaseMtd != null ? purchaseMtd : 0.0;
         purchaseLtd = purchaseLtd != null ? purchaseLtd : 0.0;
         comparison.setPurchaseMtdVsLtd(buildPeriodComparison(purchaseMtd, purchaseLtd));
 
-        // Gross margin MTD vs LTD = sales - COGS for each period
+        
         Double cogsMtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double cogsLtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
         cogsMtd = cogsMtd != null ? cogsMtd : 0.0;
         cogsLtd = cogsLtd != null ? cogsLtd : 0.0;
         comparison.setMarginMtdVsLtd(buildPeriodComparison(mtd - cogsMtd, ltd - cogsLtd));
 
-        // Gross margin YTD vs last year same period (sales - COGS)
+        
         comparison.setMarginYtdVsLastYear(buildPeriodComparison(ytd - cogsYtd, lastYear - cogsLastYear));
 
-        // Sales order count MTD vs LTD
+        
         Long orderCountMtd = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, mtdStart, mtdEnd);
         Long orderCountLtd = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
         comparison.setOrderCountMtdVsLtd(buildPeriodComparison(
@@ -232,7 +232,7 @@ public class AiDashboardService {
                 orderCountLtd != null ? orderCountLtd.doubleValue() : 0.0
         ));
 
-        // Sales order count YTD vs last year same period
+        
         Long orderCountLastYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
         comparison.setOrderCountYtdVsLastYear(buildPeriodComparison(
                 salesOrderCount != null ? salesOrderCount.doubleValue() : 0.0,
@@ -250,8 +250,8 @@ public class AiDashboardService {
         dto.setChange(Math.round(change * 100.0) / 100.0);
 
         if (previous == 0.0) {
-            // Starting from nothing: a %-change is mathematically undefined. Expose it as
-            // null so the UI can render a dedicated "NOUV." badge instead of a misleading 0%.
+            
+            
             dto.setChangePercent(null);
             if (current > 0) {
                 dto.setTrend("up");
@@ -262,7 +262,7 @@ public class AiDashboardService {
             }
         } else {
             double changePercent = Math.round((change / Math.abs(previous)) * 1000.0) / 10.0;
-            // Cap extreme ratios (tiny previous base → huge %) to avoid misleading display.
+            
             if (changePercent >  MAX_CHANGE_PERCENT) changePercent =  MAX_CHANGE_PERCENT;
             if (changePercent < -MAX_CHANGE_PERCENT) changePercent = -MAX_CHANGE_PERCENT;
             dto.setChangePercent(changePercent);
@@ -281,7 +281,7 @@ public class AiDashboardService {
             ProductIntelligenceDto productIntelligence, ForecastDto forecast) {
         AiDashboardDto.KpiDetailsDto details = new AiDashboardDto.KpiDetailsDto();
 
-        // Revenue details
+        
         AiDashboardDto.RevenueDetailsDto revenue = new AiDashboardDto.RevenueDetailsDto();
         List<AiDashboardDto.NameValueDto> topProducts = new ArrayList<>();
         if (productIntelligence != null && productIntelligence.getTopProducts() != null) {
@@ -303,7 +303,7 @@ public class AiDashboardService {
         revenue.setPaymentMethods(new ArrayList<>());
         details.setRevenue(revenue);
 
-        // Orders details
+        
         AiDashboardDto.OrdersDetailsDto orders = new AiDashboardDto.OrdersDetailsDto();
         List<AiDashboardDto.StatusCountDto> byStatus = new ArrayList<>();
         List<Object[]> rawStatus = commandeVenteRepository.getOrderStatusBreakdown(entrepriseId);
@@ -325,7 +325,7 @@ public class AiDashboardService {
         }
         details.setOrders(orders);
 
-        // Products details
+        
         AiDashboardDto.ProductsDetailsDto products = new AiDashboardDto.ProductsDetailsDto();
         Long totalSKUs = stockRepository.getTotalSKUs(entrepriseId);
         products.setTotalSKUs(totalSKUs != null ? totalSKUs : 0L);
@@ -353,7 +353,7 @@ public class AiDashboardService {
         }
         details.setProducts(products);
 
-        // Forecast details
+        
         AiDashboardDto.ForecastDetailsDto forecastDetails = new AiDashboardDto.ForecastDetailsDto();
         if (forecast != null) {
             forecastDetails.setAccuracy(forecast.getConfidenceScore());
@@ -377,9 +377,9 @@ public class AiDashboardService {
         List<Object[]> supplierRows = commandeAchatRepository.getSupplierMetrics(entrepriseId);
         List<Object[]> statusRows = commandeAchatRepository.getSupplierStatusBreakdown(entrepriseId);
 
-        // Build status breakdown map: supplierId -> list of StatusCountDto
+        
         Map<Long, List<AiDashboardDto.StatusCountDto>> statusMap = new HashMap<>();
-        // Also count cancelled/delivered orders per supplier for the fallback delivery-rate.
+        
         Map<Long, Long> cancelledMap = new HashMap<>();
         Map<Long, Long> deliveredMap = new HashMap<>();
         Map<Long, Long> totalMap = new HashMap<>();
@@ -394,17 +394,17 @@ public class AiDashboardService {
                 if ("ANNULEE".equalsIgnoreCase(status) || "CANCELLED".equalsIgnoreCase(status)) {
                     cancelledMap.merge(supplierId, count, Long::sum);
                 }
-                // CommandeAchat uses "RECUE" (received) as its terminal status;
-                // "LIVREE"/"DELIVERED" are kept for forward compatibility.
+                
+                
                 if ("RECUE".equalsIgnoreCase(status) || "LIVREE".equalsIgnoreCase(status) || "DELIVERED".equalsIgnoreCase(status)) {
                     deliveredMap.merge(supplierId, count, Long::sum);
                 }
             }
         }
 
-        // On-time delivery data (BonReception date vs dateLivraisonPrevue).
-        // This is the primary delivery-rate signal; it varies across suppliers and
-        // avoids the "always 100%" problem caused by counting RECUE/nonCancelled.
+        
+        
+        
         Map<Long, Long> onTimeTotalMap = new HashMap<>();
         for (Object[] row : commandeAchatRepository.countDeliveredWithPlannedDateByFournisseur(entrepriseId)) {
             if (row[0] != null) {
@@ -418,8 +418,8 @@ public class AiDashboardService {
             }
         }
 
-        // First pass: collect up to 10 suppliers' raw data so we can peer-group
-        // them with the ML rating engine before emitting the DTOs.
+        
+        
         List<Object[]> selectedRows = new ArrayList<>();
         List<SupplierRatingEngine.Input> inputs = new ArrayList<>();
         for (Object[] row : supplierRows) {
@@ -450,8 +450,8 @@ public class AiDashboardService {
             Double totalSpend = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
             double deliveryRate = computeDeliveryRate(supplierId, totalMap, deliveredMap,
                     cancelledMap, onTimeTotalMap, onTimeMap, orderCount);
-            // Replace the legacy persisted `notation` with the ML peer-group
-            // rating so the dashboard reflects real-time relative performance.
+            
+            
             Double rating = ratings.get(i).ratingStars;
 
             AiDashboardDto.SupplierPerformanceDto dto = new AiDashboardDto.SupplierPerformanceDto();
@@ -468,17 +468,17 @@ public class AiDashboardService {
         return result;
     }
 
-    /**
-     * Computes the delivery rate (0–100) for a supplier using on-time delivery
-     * (BonReception date ≤ dateLivraisonPrevue) as the primary signal.
-     *
-     * <p>On-time delivery varies meaningfully across suppliers and avoids the
-     * "always 100%" issue produced by the raw RECUE/nonCancelled formula (which
-     * is trivially 100% whenever all orders have been received and none cancelled).
-     *
-     * <p>Falls back to the order-status-based rate when on-time data is
-     * unavailable (e.g. orders have no planned delivery date or no BonReceptions).
-     */
+    
+
+
+
+
+
+
+
+
+
+
     private double computeDeliveryRate(Long supplierId,
                                        Map<Long, Long> totalMap,
                                        Map<Long, Long> deliveredMap,
@@ -491,7 +491,7 @@ public class AiDashboardService {
             long onTime = onTimeMap.getOrDefault(supplierId, 0L);
             return (onTime * 100.0) / onTimeTotal;
         }
-        // Fallback: share of received orders out of all orders placed.
+        
         double total = totalMap.getOrDefault(supplierId, orderCount);
         double delivered = deliveredMap.getOrDefault(supplierId, 0L);
         return total > 0 ? (delivered / total) * 100.0 : 0.0;

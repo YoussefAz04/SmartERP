@@ -51,11 +51,11 @@ public class RoleService {
     @Transactional
 
     public void delete(Long id) {
-        // 1. Supprimer les permissions liées au rôle
+        
         jdbcTemplate.update("DELETE FROM permission WHERE role_id = ?", id);
-        // 2. Supprimer les liaisons user_roles
+        
         jdbcTemplate.update("DELETE FROM user_roles WHERE role_id = ?", id);
-        // 3. Supprimer le rôle
+        
         roleRepository.deleteById(id);
     }
 }

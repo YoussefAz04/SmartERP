@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { finalize, timeout } from 'rxjs/operators';
 import { CommandeVenteService } from '../../../core/service/commande-vente/commande-vente.service';
 import { CommandeVente } from '../../../model/commande-vente.model';
 import { NotificationService } from '../../../shared/notification/notification.service';
@@ -79,16 +80,21 @@ export class ListCommandeVenteComponent implements OnInit {
   loadCommandes(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    this.commandeVenteService.getAllCommandes().subscribe({
+    this.commandeVenteService.getAllCommandes()
+      .pipe(
+        timeout(15000),
+        finalize(() => { this.isLoading = false; })
+      )
+      .subscribe({
       next: (data) => {
         this.commandes = data;
         this.applyFilters();
-        this.isLoading = false;
       },
       error: (err) => {
         console.error('❌ Erreur lors du chargement:', err);
-        this.errorMessage = 'Erreur lors du chargement des commandes';
-        this.isLoading = false;
+        this.errorMessage = err?.name === 'TimeoutError'
+          ? 'Le chargement des commandes prend trop de temps. Veuillez réessayer.'
+          : 'Erreur lors du chargement des commandes';
       }
     });
   }

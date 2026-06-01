@@ -126,7 +126,8 @@
 // ═══════════════════════════════════════════════════════
 //  DARK MODE
 // ═══════════════════════════════════════════════════════
-body.dark-mode {
+:host-context(body.dark-mode),
+:host-context(body.dark-select) {
   .summary-bar {
     background: #1c1810;
     border-left-color: #d97706;

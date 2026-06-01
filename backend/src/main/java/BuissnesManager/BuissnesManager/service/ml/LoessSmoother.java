@@ -4,16 +4,9 @@ public final class LoessSmoother {
 
     private LoessSmoother() {}
 
-    /**
-     * Smooths {@code y} with a LOESS fit at every input abscissa
-     * {@code x[i] = i}. The bandwidth is expressed as the <b>fraction</b> of
-     * the series considered local; {@code 0.5} is a reasonable default for
-     * monthly series.
-     *
-     * @param y    values to smooth (copied, not mutated)
-     * @param frac bandwidth as a fraction of the series length in (0, 1]
-     * @return a new array of the same length holding the smoothed values
-     */
+    
+
+
     public static double[] smooth(double[] y, double frac) {
         if (y == null || y.length == 0) return new double[0];
         int n = y.length;
@@ -24,21 +17,21 @@ public final class LoessSmoother {
         double[] dist = new double[n];
 
         for (int i = 0; i < n; i++) {
-            // Distances from i to every other point.
+            
             for (int j = 0; j < n; j++) dist[j] = Math.abs(j - i);
-            // Pick the k-th nearest distance as the bandwidth denominator.
+            
             double[] sortedDist = dist.clone();
             java.util.Arrays.sort(sortedDist);
             double dmax = Math.max(1e-9, sortedDist[band - 1]);
 
-            // Weighted normal equations on [1, x]:
-            //   S_w * [a, b]^T = [Σw*y, Σw*x*y]
+            
+            
             double sw = 0, swx = 0, swxx = 0, swy = 0, swxy = 0;
             for (int j = 0; j < n; j++) {
                 double d = dist[j] / dmax;
                 if (d >= 1.0) continue;
                 double u = 1.0 - d * d * d;
-                double w = u * u * u;          // tricube
+                double w = u * u * u;          
                 sw += w;
                 swx += w * j;
                 swxx += w * j * j;
@@ -49,8 +42,8 @@ public final class LoessSmoother {
             if (Math.abs(det) < 1e-12) {
                 out[i] = sw > 0 ? swy / sw : y[i];
             } else {
-                double a = (swxx * swy - swx * swxy) / det;     // intercept
-                double b = (sw * swxy - swx * swy) / det;       // slope
+                double a = (swxx * swy - swx * swxy) / det;     
+                double b = (sw * swxy - swx * swy) / det;       
                 out[i] = a + b * i;
             }
         }

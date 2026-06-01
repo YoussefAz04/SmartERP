@@ -203,8 +203,8 @@
                 <span class="cb-box"></span>
               </label>
             </th>
-            <th class="sortable" (click)="setSort('nom')">
-              Nom
+            <th class="sortable th-article" (click)="setSort('nom')">
+              Article
               <i class="feather sort-icon"
                  [class.icon-chevron-up]="sortField==='nom' && sortAsc"
                  [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
@@ -217,8 +217,6 @@
                  [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
                  [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
             </th>
-            <th>Unité</th>
-            <th>SKU</th>
             <th>Fournisseur</th>
             <th>Catégorie</th>
             <th>Créé le</th>
@@ -238,22 +236,20 @@
                 <td>
                   <div class="art-name-cell">
                     <div class="art-avatar">{{ a.nom.charAt(0).toUpperCase() }}</div>
-                    <div>
+                    <div class="art-copy">
                       <div class="art-name">{{ a.nom }}</div>
-                      <div class="art-desc" *ngIf="a.description" [title]="a.description">{{ a.description }}</div>
+                      <div class="art-meta">
+                        <span *ngIf="a.sku" class="sku-inline">{{ a.sku }}</span>
+                        <span *ngIf="a.description" [title]="a.description">{{ a.description }}</span>
+                      </div>
                     </div>
                   </div>
                 </td>
                 <td>
-                  <span class="price-badge">{{ (a.prixUnitaire ?? 0) | number:'1.2-2' }} DT</span>
-                </td>
-                <td>
-                  <span *ngIf="a.unite" class="unit-pill">{{ a.unite }}</span>
-                  <span *ngIf="!a.unite" class="cell-empty">—</span>
-                </td>
-                <td>
-                  <span *ngIf="a.sku" class="sku-chip">{{ a.sku }}</span>
-                  <span *ngIf="!a.sku" class="cell-empty">—</span>
+                  <div class="price-cell">
+                    <span class="price-badge">{{ (a.prixUnitaire ?? 0) | number:'1.2-2' }} DT</span>
+                    <span *ngIf="a.unite" class="price-unit">{{ a.unite }}</span>
+                  </div>
                 </td>
                 <td>
                   <span *ngIf="a.fournisseur?.nom" class="supplier-pill">
@@ -264,7 +260,7 @@
                 </td>
                 <td>
                   <span *ngIf="a.categorieArticle?.nom" class="category-pill">
-                    {{ a.categorieArticle?.nom }}
+                    {{ getCategoryLabel(a.categorieArticle) }}
                   </span>
                   <span *ngIf="!a.categorieArticle?.nom" class="cell-empty">—</span>
                 </td>
@@ -285,7 +281,7 @@
             }
           } @else {
             <tr>
-              <td colspan="9">
+              <td colspan="7">
                 <div class="empty-state">
                   <div class="empty-icon-wrap">
                     <i class="feather icon-shopping-bag"></i>

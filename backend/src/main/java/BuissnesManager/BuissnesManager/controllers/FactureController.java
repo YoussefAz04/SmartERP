@@ -3,6 +3,8 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.entity.FactureAchat;
 import BuissnesManager.BuissnesManager.repository.FactureAchatRepo;
 import BuissnesManager.BuissnesManager.service.FactureService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("facture")
 public class FactureController {
 
+    private static final Logger log = LoggerFactory.getLogger(FactureController.class);
+
     @Autowired
     private FactureService factureService ;
 
@@ -31,7 +35,9 @@ public class FactureController {
         try{
             return ResponseEntity.ok(factureService.getAllFactureAchat());
         }catch (Exception e){
-            return ResponseEntity.notFound().build();
+            log.error("Failed to load purchase invoices", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors du chargement des factures d'achat: " + e.getMessage());
         }
     }
 
@@ -40,7 +46,9 @@ public class FactureController {
         try{
             return ResponseEntity.ok(factureService.getById(id));
         }catch (Exception e){
-            return ResponseEntity.notFound().build();
+            log.error("Failed to load purchase invoice {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors du chargement de la facture d'achat: " + e.getMessage());
         }
     }
 

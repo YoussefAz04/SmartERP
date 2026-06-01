@@ -124,7 +124,7 @@ export class ArticleVenteComponent implements OnInit {
   }
 
   get totalValue(): number {
-    return this.articleVenteList.reduce((acc, a) => acc + (a.prixUnitaire || 0) * (a.quantite || 0), 0);
+    return this.articleVenteList.reduce((acc, a) => acc + (a.prixUnitaire || 0), 0);
   }
 
   // --- Filtering ---

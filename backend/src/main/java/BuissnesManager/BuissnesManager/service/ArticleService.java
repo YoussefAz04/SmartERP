@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,10 @@ public class ArticleService {
     private NotificationService notificationService;
     @Autowired
     private AuditLogService auditLogService;
+    @Autowired
+    private LigneCommandeAchatRepository ligneCommandeAchatRepository;
+    @Autowired
+    private ArticleVenteRepo articleVenteRepo;
 
     public Article createArticle(ArticleDto dto) {
         Article article = new Article();
@@ -59,7 +64,7 @@ public class ArticleService {
         }
         Article saved = articleRepository.save(article);
 
-        // Auto-create a Stock record for the new article if one doesn't exist yet
+        
         if (stockRepository.findFirstByArticleAchatId(saved.getId()).isEmpty()) {
             Stock stock = new Stock();
             stock.setArticleAchat(saved);
@@ -138,6 +143,31 @@ public class ArticleService {
     public void deleteArticle(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article non trouvé avec id: " + id));
+        List<String> blockers = new ArrayList<>();
+
+        long purchaseLineCount = ligneCommandeAchatRepository.countByArticleId(id);
+        if (purchaseLineCount > 0) {
+            blockers.add(purchaseLineCount + " ligne(s) de commande d'achat");
+        }
+
+        long salesArticleCount = articleVenteRepo.countByArticleAchatId(id);
+        if (salesArticleCount > 0) {
+            blockers.add(salesArticleCount + " article(s) de vente");
+        }
+
+        long stockCount = stockRepository.countByArticleAchatId(id);
+        if (stockCount > 0) {
+            blockers.add(stockCount + " entree(s) de stock");
+        }
+
+        if (!blockers.isEmpty()) {
+            throw new IllegalStateException(
+                    "Impossible de supprimer cet article car il est reference par : "
+                            + String.join(", ", blockers)
+                            + ". Desactivez l'article au lieu de le supprimer."
+            );
+        }
+
         articleRepository.deleteById(id);
         auditLogService.log("ARTICLE_DELETED",
                 "Article supprimé: " + article.getNom() + " (ref=" + article.getReference() + ", id=" + id + ")");

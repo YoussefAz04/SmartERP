@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.dto.CommandeVenteDto;
+import BuissnesManager.BuissnesManager.dto.CommandeVenteResponseDto;
 import BuissnesManager.BuissnesManager.dto.LigneCommandeVenteDto;
 import BuissnesManager.BuissnesManager.dto.LivraisonResponseDto;
 import BuissnesManager.BuissnesManager.dto.StockAlertDto;
@@ -72,19 +73,19 @@ public class CommandeVenteService {
         commande.setReference(dto.getReference());
         commande.setDateCommande(dto.getDateCommande());
         commande.setDateLivraisonPrevue(dto.getDateLivraisonPrevue());
-        // A new sales order always starts as a draft (EN_ATTENTE). Subsequent
-        // lifecycle transitions (CONFIRMEE, LIVREE, ANNULEE) are only allowed
-        // through the dedicated endpoints (/valider, /livrer, /annuler) which
-        // also handle the associated stock reservation / decrement side effects.
+        
+        
+        
+        
         commande.setStatut("EN_ATTENTE");
         commande.setMontantHT(dto.getMontantHT() != null ? dto.getMontantHT() : BigDecimal.ZERO);
         commande.setMontantTVA(dto.getMontantTVA() != null ? dto.getMontantTVA() : BigDecimal.ZERO);
         commande.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC() : BigDecimal.ZERO);
         commande.setNote(dto.getNote());
         
-        // ✅ Client is mandatory (parity with Fournisseur in CommandeAchat) — a
-        // sales order without a client is a data-integrity bug downstream
-        // (invoicing, reporting, etc.).
+        
+        
+        
         if (dto.getClientId() == null) {
             throw new RuntimeException("Le client est obligatoire.");
         }
@@ -92,7 +93,7 @@ public class CommandeVenteService {
                 .orElseThrow(() -> new RuntimeException("Client non trouvé: " + dto.getClientId()));
         commande.setClient(client);
         
-        // ✅ Set Entreprise - from JWT or DTO
+        
         final Long resolvedEntrepriseId = dto.getEntrepriseId() != null
                 ? dto.getEntrepriseId()
                 : enterpriseSecurityUtil.getContextEnterpriseId();
@@ -115,9 +116,9 @@ public class CommandeVenteService {
                 final int lineNumber = idx + 1;
                 LigneCommandeVenteDto ligneDto = dto.getLignes().get(idx);
 
-                // ✅ Validate quantity and price (parity with CommandeAchatService).
-                // Without this, zero/negative values silently corrupt downstream
-                // invoicing totals and stock reservations.
+                
+                
+                
                 if (ligneDto.getQuantite() == null || ligneDto.getQuantite().compareTo(BigDecimal.ZERO) <= 0) {
                     throw new RuntimeException(
                             String.format("Ligne %d: La quantité doit être supérieure à 0.", lineNumber));
@@ -181,7 +182,7 @@ public class CommandeVenteService {
             throw new RuntimeException("Enterprise context required");
         }
         List<CommandeVente> commandes = commandeVenteRepository.findByEntrepriseId(entrepriseId);
-        // Recalculate totals for commandes with missing amounts and batch save
+        
         List<CommandeVente> toSave = new java.util.ArrayList<>();
         for (CommandeVente commande : commandes) {
             if (recalculateTotalsIfMissing(commande)) {
@@ -192,6 +193,19 @@ public class CommandeVenteService {
             commandeVenteRepository.saveAll(toSave);
         }
         return commandes;
+    }
+
+    @Transactional
+    public List<CommandeVenteResponseDto> getAllCommandesResponse() {
+        return getAllCommandes().stream()
+                .map(commande -> toResponseDto(commande, false))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<CommandeVenteResponseDto> getCommandeResponseById(Long id) {
+        return commandeVenteRepository.findById(id)
+                .map(commande -> toResponseDto(commande, true));
     }
 
     
@@ -219,7 +233,7 @@ public class CommandeVenteService {
             BigDecimal ht = ligne.getMontantHT();
             BigDecimal ttc = ligne.getMontantTTC();
 
-            // If line amounts are missing, calculate from quantity * unit price
+            
             if (ht == null || ht.compareTo(BigDecimal.ZERO) == 0) {
                 BigDecimal quantite = ligne.getQuantite() != null ? ligne.getQuantite() : BigDecimal.ZERO;
                 BigDecimal prix = ligne.getPrixUnitaireHT() != null ? ligne.getPrixUnitaireHT() : BigDecimal.ZERO;
@@ -249,6 +263,58 @@ public class CommandeVenteService {
         return commandeVenteRepository.findById(id);
     }
 
+    private CommandeVenteResponseDto toResponseDto(CommandeVente commande, boolean includeLignes) {
+        CommandeVenteResponseDto dto = new CommandeVenteResponseDto();
+        dto.setId(commande.getId());
+        dto.setReference(commande.getReference());
+        dto.setDateCommande(commande.getDateCommande());
+        dto.setDateLivraisonPrevue(commande.getDateLivraisonPrevue());
+        dto.setStatut(commande.getStatut());
+        dto.setMontantHT(commande.getMontantHT());
+        dto.setMontantTVA(commande.getMontantTVA());
+        dto.setMontantTTC(commande.getMontantTTC());
+        dto.setNote(commande.getNote());
+        dto.setCreatedAt(commande.getCreatedAt());
+        dto.setUpdatedAt(commande.getUpdatedAt());
+
+        Client client = commande.getClient();
+        if (client != null) {
+            dto.setClient(new CommandeVenteResponseDto.ClientInfo(
+                    client.getId(),
+                    client.getNom(),
+                    client.getPrenom()
+            ));
+        }
+
+        if (includeLignes && commande.getLignes() != null) {
+            dto.setLignes(commande.getLignes().stream()
+                    .map(this::toLigneResponseDto)
+                    .toList());
+        }
+
+        return dto;
+    }
+
+    private CommandeVenteResponseDto.LigneInfo toLigneResponseDto(LigneCommandeVente ligne) {
+        CommandeVenteResponseDto.LigneInfo dto = new CommandeVenteResponseDto.LigneInfo();
+        dto.setId(ligne.getId());
+        dto.setQuantite(ligne.getQuantite());
+        dto.setPrixUnitaireHT(ligne.getPrixUnitaireHT());
+        dto.setTva(ligne.getTva());
+        dto.setMontantHT(ligne.getMontantHT());
+        dto.setMontantTTC(ligne.getMontantTTC());
+
+        ArticleVente articleVente = ligne.getArticleVente();
+        if (articleVente != null) {
+            dto.setArticleVente(new CommandeVenteResponseDto.ArticleVenteInfo(
+                    articleVente.getId(),
+                    articleVente.getNom()
+            ));
+        }
+
+        return dto;
+    }
+
     private static final java.util.Set<String> VALID_STATUTS = java.util.Set.of(
             "EN_ATTENTE", "CONFIRMEE", "LIVREE", "ANNULEE"
     );
@@ -265,7 +331,7 @@ public class CommandeVenteService {
         CommandeVente commande = commandeVenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CommandeVente non trouvée avec id: " + id));
 
-        // Enforce valid transitions
+        
         String currentStatut = commande.getStatut();
         if ("ANNULEE".equals(currentStatut)) {
             throw new RuntimeException("Une commande annulée ne peut pas être modifiée.");
@@ -300,7 +366,7 @@ public class CommandeVenteService {
         if (dto.getReference() != null) commande.setReference(dto.getReference());
         if (dto.getDateCommande() != null) commande.setDateCommande(dto.getDateCommande());
         if (dto.getDateLivraisonPrevue() != null) commande.setDateLivraisonPrevue(dto.getDateLivraisonPrevue());
-        // Status changes must go through updateStatut/validerCommande/annulerCommande/livrerCommande
+        
         if (dto.getMontantHT() != null) commande.setMontantHT(dto.getMontantHT());
         if (dto.getMontantTVA() != null) commande.setMontantTVA(dto.getMontantTVA());
         if (dto.getMontantTTC() != null) commande.setMontantTTC(dto.getMontantTTC());
@@ -310,7 +376,7 @@ public class CommandeVenteService {
         auditLogService.log("COMMANDE_VENTE_MODIFIEE",
                 "Commande de vente modifiée: " + saved.getReference() + " (id=" + id + ")");
 
-        // Replace order lines when the DTO includes them
+        
         if (dto.getLignes() != null) {
             ligneCommandeVenteRepository.deleteByCommandeVenteId(id);
             for (int idx = 0; idx < dto.getLignes().size(); idx++) {
@@ -341,7 +407,7 @@ public class CommandeVenteService {
                 ligneCommandeVenteRepository.save(ligne);
             }
 
-            // Keep the associated preliminary FactureDeVente in sync with the new totals
+            
             factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
                 if ("EN_ATTENTE".equals(facture.getStatut())) {
                     double totalTTC = saved.getMontantTTC() != null ? saved.getMontantTTC().doubleValue() : 0.0;
@@ -377,18 +443,18 @@ public class CommandeVenteService {
             }
         }
 
-        // Nullify commandeVente reference on associated FactureDeVente before deleting commande
+        
         factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
             facture.setCommandeVente(null);
             factureDeVenteRepository.save(facture);
         });
-        // Nullify commandeVente reference on associated FactureVente records before deleting commande
+        
         List<FactureVente> factures = factureVenteRepository.findAllByCommandeVenteId(id);
         for (FactureVente facture : factures) {
             facture.setCommandeVente(null);
             factureVenteRepository.save(facture);
         }
-        // Nullify commandeVente reference on associated BonLivraison before deleting commande
+        
         List<BonLivraison> bons = bonLivraisonRepository.findByCommandeVenteId(id);
         for (BonLivraison bon : bons) {
             bon.setCommandeVente(null);
@@ -417,10 +483,10 @@ public class CommandeVenteService {
             throw new RuntimeException("Impossible de confirmer une commande annulée.");
         }
 
-        // ✅ Reserve stock BEFORE changing the status. If the warehouse does
-        // not have enough available stock, reserverStockPourCommande will
-        // throw and the @Transactional boundary will roll back the whole
-        // confirmation — the order stays in EN_ATTENTE.
+        
+        
+        
+        
         try {
             stockAutomationService.reserverStockPourCommande(id, commande.getReference());
         } catch (RuntimeException e) {
@@ -428,11 +494,11 @@ public class CommandeVenteService {
             throw e;
         }
 
-        // ✅ Change status to CONFIRMEE
+        
         commande.setStatut("CONFIRMEE");
         commandeVenteRepository.save(commande);
 
-        // ✅ Calculate totals from order lines
+        
         List<LigneCommandeVente> lignesCommande = ligneCommandeVenteRepository.findByCommandeVenteId(id);
         
         Double totalHT = 0.0;
@@ -446,10 +512,10 @@ public class CommandeVenteService {
             totalTTC += ttc.doubleValue();
         }
 
-        // TVA is the difference between TTC and HT (not the sum of tax rates)
+        
         Double totalTVA = totalTTC - totalHT;
 
-        // ✅ Update existing FactureDeVente if created at commande creation, otherwise create new
+        
         FactureDeVente facture = factureDeVenteRepository.findByCommandeVenteId(id)
                 .orElse(new FactureDeVente());
         facture.setDateAchat(LocalDate.now().toString());
@@ -466,22 +532,22 @@ public class CommandeVenteService {
         
         FactureDeVente savedFacture = factureDeVenteRepository.save(facture);
         
-        // ✅ Generate reference if not already set
+        
         if (savedFacture.getReferance() == null || savedFacture.getReferance().isEmpty()) {
             String referance = "FV-" + String.format("%04d", savedFacture.getId());
             savedFacture.setReferance(referance);
             savedFacture = factureDeVenteRepository.save(savedFacture);
         }
 
-        // ✅ Stock handling:
-        //   - Reservation (quantiteDisponible → quantiteReserve) is done above
-        //     at confirmation time.
-        //   - Consumption (quantiteReserve → quantiteVendue) happens later at
-        //     physical delivery via livrerCommande().
+        
+        
+        
+        
+        
 
-        // ✅ Collect low-stock alerts after reservation so the frontend can
-        //    display immediate red notifications for articles whose available
-        //    stock has dropped below the threshold (seuilMinimum or 10).
+        
+        
+        
         List<StockAlertDto> stockAlerts = collectLowStockAlerts(lignesCommande);
 
         logger.info("✅ Commande {} confirmed, facture {} updated/created with amounts: HT={}, TVA={}, TTC={} ({} stock alert(s))",
@@ -494,11 +560,11 @@ public class CommandeVenteService {
         return new ValidationResponseDto(savedFacture, stockAlerts);
     }
 
-    /**
-     * Inspects the current stock level for each article in the given order lines and
-     * returns an alert for every article whose {@code quantiteDisponible} has dropped
-     * below its {@code seuilMinimum} (if configured) or below the default threshold of 10.
-     */
+    
+
+
+
+
     private List<StockAlertDto> collectLowStockAlerts(List<LigneCommandeVente> lignes) {
         List<StockAlertDto> alerts = new ArrayList<>();
         BigDecimal defaultThreshold = BigDecimal.TEN;
@@ -557,16 +623,16 @@ public class CommandeVenteService {
         commande.setStatut("ANNULEE");
         CommandeVente saved = commandeVenteRepository.save(commande);
 
-        // Cancel associated invoice
+        
         factureDeVenteRepository.findByCommandeVenteId(id).ifPresent(facture -> {
             facture.setStatut("ANNULEE");
             factureDeVenteRepository.save(facture);
             logger.info("✅ Associated FactureDeVente {} cancelled", facture.getId());
         });
 
-        // Release stock reservations only if the order was confirmed (i.e. stock
-        // was actually reserved). Drafts in EN_ATTENTE never touched stock, and
-        // LIVREE orders already consumed their reservation at delivery.
+        
+        
+        
         if ("CONFIRMEE".equals(ancienStatut)) {
             try {
                 stockAutomationService.annulerReservationStock(id, commande.getReference());
@@ -616,7 +682,7 @@ public class CommandeVenteService {
         bon.setEntreprise(commande.getEntreprise());
         BonLivraison savedBon = bonLivraisonRepository.save(bon);
 
-        // ✅ Move stock from reserved → sold at the actual physical delivery
+        
         List<StockAlertDto> stockAlerts =
                 stockAutomationService.decrementStockFromDelivery(id, commande.getReference());
 

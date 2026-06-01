@@ -62,12 +62,16 @@ export class DetaisUsersComponent implements OnInit {
     'select zone',
     'departement', 'departemen',
     'module titre', 'module', 'sous module',
+    'entreprise', 'gestion entreprise', 'gestion des entreprises',
+    'gestion utilisateurs', 'gestion des utilisateurs', 'gestion users', 'users', 'utilisateurs',
   ];
 
   private readonly excludedKeywords = [
     'departement', 'departemen',
     'bon de reception', 'bon reception', 'bons de reception', 'bons reception',
     'bon de livraison', 'bon livraison', 'bons de livraison', 'bons livraison',
+    'entreprise',
+    'utilisateur', 'utilisateurs', 'user', 'users',
   ];
 
   private readonly moduleDisplayNames: { [key: string]: string } = {
@@ -144,8 +148,9 @@ export class DetaisUsersComponent implements OnInit {
 
   private buildModulePermissions(permissions: PermissionDto[]): void {
     this.modulePermissions = new Map();
+    const allowedModuleIds = new Set(this.modules.map(module => module.id));
     for (const p of permissions) {
-      if (p.moduleId) {
+      if (p.moduleId && allowedModuleIds.has(p.moduleId)) {
         this.modulePermissions.set(p.moduleId, {
           create: p.create,
           update: p.update,

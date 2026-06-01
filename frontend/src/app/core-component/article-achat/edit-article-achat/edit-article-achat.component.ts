@@ -6,6 +6,7 @@ import { ArticleAchatService } from '../../../core/service/article-achat/article
 import { FournisseurService } from '../../../core/service/fournisseur/fournisseur.service';
 import { Fournisseur } from '../../../model/fournisseur.model';
 import { NotificationService } from '../../../shared/notification/notification.service';
+import { getArticleCategoryLabel } from '../../../shared/article-category-label';
 
 @Component({
   selector: 'app-edit-article-achat',
@@ -91,6 +92,10 @@ export class EditArticleAchatComponent implements OnInit {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.articleForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
+  }
+
+  getCategoryLabel(category: any): string {
+    return getArticleCategoryLabel(category);
   }
 
   onCancel(): void {

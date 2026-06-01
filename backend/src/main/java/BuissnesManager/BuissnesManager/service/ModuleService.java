@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class ModuleService {
 
-    /** Module-title keywords identifying sections accessible to ADMIN/SUPER_ADMIN only. */
+    
     private static final Set<String> ADMIN_ONLY_KEYWORDS = Set.of(
             "user", "utilisateur", "permission", "role", "parametre", "paramètre", "setting"
     );
@@ -76,9 +76,9 @@ public class ModuleService {
                 .map(Module::getId)
                 .collect(Collectors.toSet());
 
-        // For EMPLOYEE role type, activate all modules except admin-only ones
-        // so that article achat, article vente, stock, clients, fournisseurs, commandes
-        // and factures sections appear in the sidebar
+        
+        
+        
         roleRepo.findById(idRoleUser).ifPresent(role -> {
             if (RoleType.EMPLOYEE.equals(role.getRoleType())) {
                 for (Module module : allModules) {
@@ -87,14 +87,14 @@ public class ModuleService {
                         String title = mt.getModuleTittle() != null
                                 ? mt.getModuleTittle().toLowerCase()
                                 : "";
-                        // Exclude admin-only module sections (user management, roles, permissions)
+                        
                         boolean isAdminOnly = ADMIN_ONLY_KEYWORDS.stream()
                                 .anyMatch(title::contains);
                         if (!isAdminOnly) {
                             idsAffectes.add(module.getId());
                         }
                     } else {
-                        // No module title assigned — include it
+                        
                         idsAffectes.add(module.getId());
                     }
                 }

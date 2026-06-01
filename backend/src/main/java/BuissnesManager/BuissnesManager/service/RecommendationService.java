@@ -15,22 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Rule-based recommendation engine.
- *
- * <p>Each rule works on a single business signal (stock, sales velocity, margin,
- * delivery timeliness, customer concentration, product mix, data quality). They
- * were tuned to be:
- * <ul>
- *   <li><b>Day-of-month-aware</b> — MTD comparisons are prorated by the fraction
- *       of the current month elapsed, so a "low sales this month" alert won't
- *       fire on January 1st by definition.
- *   <li><b>Self-calibrating</b> — thresholds compare against the business's own
- *       12-month averages instead of arbitrary hard-coded caps.
- *   <li><b>Locale-safe</b> — all numeric formatting uses {@link Locale#FRANCE}
- *       so decimal separators match the UI language.
- * </ul>
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Service
 public class RecommendationService {
 
@@ -46,24 +46,24 @@ public class RecommendationService {
     @Autowired
     private MlRecommendationEngine mlRecommendationEngine;
 
-    /** Horizon (days) used by the stock-risk classifier. */
+    
     private static final int STOCK_RISK_HORIZON_DAYS = 30;
 
-    /** Max ML stock-risk recommendations surfaced per call (avoid spamming the UI). */
+    
     private static final int MAX_ML_STOCK_RECOMMENDATIONS = 5;
 
-    /**
-     * Generates a deterministic "phrasing variant" per call so that two
-     * subsequent dashboard refreshes within the same month show the same
-     * wording (no jitter), but messages rotate naturally month over month.
-     */
+    
+
+
+
+
     private static int phrasingVariant(Long entrepriseId) {
         long e = entrepriseId != null ? entrepriseId : 0L;
         int monthSeed = LocalDate.now().getYear() * 12 + LocalDate.now().getMonthValue();
         return (int) Math.floorMod(e * 31 + monthSeed, Integer.MAX_VALUE);
     }
 
-    /** Picks one phrasing among {@code variants} based on the rotating seed. */
+    
     private static String pick(int variant, String... variants) {
         if (variants == null || variants.length == 0) return "";
         return variants[Math.floorMod(variant, variants.length)];
@@ -73,14 +73,14 @@ public class RecommendationService {
         List<RecommendationDto> recommendations = new ArrayList<>();
         final int v = phrasingVariant(entrepriseId);
 
-        // === 0. ML stock-risk classifier (per-article). Appended first so
-        // critical risks surface at the top of the list. When the classifier
-        // can't fit (too few articles, single-class data …) it returns an
-        // empty list and the rule-based counts below take over. ===
+        
+        
+        
+        
         List<RecommendationDto> mlStockRisk = mlStockRiskRecommendations(entrepriseId);
         recommendations.addAll(mlStockRisk);
 
-        // === 1. Stock alerts ===
+        
         Long lowStockCount = stockRepository.getLowStockItemsCount(entrepriseId);
         Long outOfStockCount = stockRepository.getOutOfStockItemsCount(entrepriseId);
         String worstStockArticle = findWorstStockArticleName(entrepriseId);
@@ -125,7 +125,7 @@ public class RecommendationService {
             ));
         }
 
-        // === 2. Sales velocity (day-of-month-adjusted) ===
+        
         LocalDate now = LocalDate.now();
         LocalDate startOfMonth = now.withDayOfMonth(1);
         LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
@@ -134,17 +134,17 @@ public class RecommendationService {
         Double totalSales = commandeVenteRepository.getTotalSalesRevenue(entrepriseId);
         Long totalOrders = commandeVenteRepository.getTotalSalesOrders(entrepriseId);
 
-        // Compare MTD revenue against the 12-month historical average, prorated
-        // by the fraction of the current month elapsed. If we're on day 10 of a
-        // 30-day month, expected MTD = monthly-average * 10/30.
+        
+        
+        
         LocalDate twelveMonthsAgo = now.minusMonths(12).withDayOfMonth(1);
         Double last12MonthSales = commandeVenteRepository.getSalesInPeriod(entrepriseId, twelveMonthsAgo, now);
         if (salesThisMonth != null && last12MonthSales != null && last12MonthSales > 0) {
             double avgMonthly = last12MonthSales / 12.0;
             double fractionElapsed = (double) now.getDayOfMonth() / now.lengthOfMonth();
             double expectedMtd = avgMonthly * fractionElapsed;
-            // Only raise the alert after we have at least 7 days of the month to
-            // avoid noisy early-month signals.
+            
+            
             if (expectedMtd > 0 && now.getDayOfMonth() >= 7
                     && salesThisMonth < 0.5 * expectedMtd) {
                 double shortfallPct = ((expectedMtd - salesThisMonth) / expectedMtd) * 100.0;
@@ -182,7 +182,7 @@ public class RecommendationService {
             }
         }
 
-        // === 3. ML-driven product opportunities (replaces rule-based PRODUIT_STAR) ===
+        
         List<Object[]> topProducts = commandeVenteRepository.getTopProducts(entrepriseId);
         List<RecommendationDto> mlOpportunity = mlOpportunityRecommendations(topProducts);
         if (!mlOpportunity.isEmpty()) {
@@ -190,7 +190,7 @@ public class RecommendationService {
         } else if (topProducts != null && !topProducts.isEmpty()
                 && topProducts.get(0) != null && topProducts.get(0).length > 0
                 && topProducts.get(0)[0] != null) {
-            // Fallback to the rule-based rendering when ML has insufficient data.
+            
             String topProduct = topProducts.get(0)[0].toString();
             recommendations.add(new RecommendationDto(
                 "PRODUIT_STAR",
@@ -204,7 +204,7 @@ public class RecommendationService {
             ));
         }
 
-        // === 4. Gross margin ===
+        
         Double totalPurchases = commandeAchatRepository.getTotalPurchases(entrepriseId);
         Double cogsAllTime = commandeVenteRepository.getCOGSInPeriod(
                 entrepriseId, LocalDate.of(1970, 1, 1), now);
@@ -274,7 +274,7 @@ public class RecommendationService {
             ));
         }
 
-        // === 5. Delivery quality ===
+        
         Long overdueOrders = commandeAchatRepository.getOverdueOrdersCount(entrepriseId, now);
         Long activeOrders = commandeAchatRepository.getActiveOrdersCount(entrepriseId);
         if (overdueOrders != null && overdueOrders > 0) {
@@ -311,9 +311,9 @@ public class RecommendationService {
             ));
         }
 
-        // === 6. Customer concentration risk ===
-        // If the top 3 customers account for more than 60% of revenue the
-        // business is exposed to the churn of any single one of them.
+        
+        
+        
         List<Object[]> topCustomers = commandeVenteRepository.getTopCustomers(entrepriseId);
         if (topCustomers != null && !topCustomers.isEmpty()
                 && totalSales != null && totalSales > 0) {
@@ -353,10 +353,10 @@ public class RecommendationService {
             }
         }
 
-        // === 7. Slow-moving inventory ===
-        // Products in the bottom 5 that still hold stock are capital tied up.
-        // We flag them only once per analysis, keyed off the total count so the
-        // user gets a single summary rather than five noisy alerts.
+        
+        
+        
+        
         if (topProducts != null && topProducts.size() > 10) {
             int slowCount = 0;
             String firstSlowName = null;
@@ -392,10 +392,10 @@ public class RecommendationService {
             }
         }
 
-        // === 9. Cancellation rate (sales orders) ===
-        // High cancellation rate may signal stock-out at the time of order,
-        // pricing issues, or fulfilment problems. We surface it only when we
-        // have enough orders to be statistically meaningful.
+        
+        
+        
+        
         if (totalOrders != null && totalOrders >= 20) {
             List<Object[]> orderStatus = commandeVenteRepository.getOrderStatusBreakdown(entrepriseId);
             long cancelled = 0;
@@ -429,7 +429,7 @@ public class RecommendationService {
             }
         }
 
-        // === 10. Category concentration / opportunity ===
+        
         try {
             List<Object[]> categories = commandeVenteRepository.getCategoryPerformance(entrepriseId);
             if (categories != null && categories.size() >= 2 && totalSales != null && totalSales > 0) {
@@ -464,10 +464,10 @@ public class RecommendationService {
                 }
             }
         } catch (RuntimeException ignored) {
-            // Defensive: if the legacy schema returns unexpected types, skip the rule silently.
+            
         }
 
-        // === 11. Supplier diversification ===
+        
         try {
             List<Object[]> suppliers = commandeAchatRepository.getSupplierMetrics(entrepriseId);
             if (suppliers != null && !suppliers.isEmpty()) {
@@ -500,18 +500,18 @@ public class RecommendationService {
                             ));
                         }
                     }
-                    // Highlight best-rated supplier when ratings are filled in.
-                    // notation may be stored on a 0-5 scale or a 0-100 scale; normalise to 0-5 before use.
-                    // tauxLivraison is always stored as a 0-100 percentage.
+                    
+                    
+                    
                     Object[] best = null;
                     double bestScore = -1.0;
                     for (Object[] row : suppliers) {
                         if (row == null || row.length < 7) continue;
                         double rawNotation = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0;
-                        // Normalise: values > 5 are on the 0-100 scale — convert to 0-5.
+                        
                         double notation = normaliseNotation(rawNotation);
                         double tauxLiv = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
-                        // notation is 0-5, tauxLiv is a 0-100 percentage — combine into a weighted score.
+                        
                         double score = notation * 20.0 + tauxLiv;
                         if (notation > 0 && score > bestScore) {
                             bestScore = score;
@@ -520,7 +520,7 @@ public class RecommendationService {
                     }
                     if (best != null && best[1] != null && best[6] != null) {
                         double rawNotation = ((Number) best[6]).doubleValue();
-                        // Normalise to 0-5 scale.
+                        
                         double notation = normaliseNotation(rawNotation);
                         double tauxLiv = best[5] != null ? ((Number) best[5]).doubleValue() : 0.0;
                         if (notation >= 4.0) {
@@ -543,13 +543,13 @@ public class RecommendationService {
                 }
             }
         } catch (RuntimeException ignored) {
-            // Defensive: tolerate missing supplier metadata.
+            
         }
 
-        // === 12. Average order value (panier moyen) ===
+        
         if (totalSales != null && totalOrders != null && totalOrders > 0 && totalSales > 0) {
             double aov = totalSales / totalOrders;
-            // Compare against the AOV of the last 90 days to detect a shift.
+            
             LocalDate ninetyDaysAgo = now.minusDays(90);
             Double recentSales = commandeVenteRepository.getSalesInPeriod(
                     entrepriseId, ninetyDaysAgo, now);
@@ -592,9 +592,9 @@ public class RecommendationService {
             }
         }
 
-        // === 13. Cash-flow proxy: recent purchases vs recent sales ===
-        // When 30-day purchases dwarf 30-day sales, working capital is being
-        // committed faster than it's recovered.
+        
+        
+        
         LocalDate thirtyDaysAgo = now.minusDays(30);
         Double recentPurchases = commandeAchatRepository.getPurchasesInPeriod(
                 entrepriseId, thirtyDaysAgo, now);
@@ -621,12 +621,12 @@ public class RecommendationService {
             }
         }
 
-        // === 14. Stock value tied up ===
+        
         try {
             Double stockValue = stockRepository.getTotalStockValue(entrepriseId);
             if (stockValue != null && stockValue > 0
                     && totalSales != null && totalSales > 0) {
-                // Months of sales held as inventory, valued at purchase price.
+                
                 double monthlyAvgSales = last12MonthSales != null && last12MonthSales > 0
                         ? last12MonthSales / 12.0
                         : totalSales / 12.0;
@@ -651,10 +651,10 @@ public class RecommendationService {
                 }
             }
         } catch (RuntimeException ignored) {
-            // Defensive: tolerate missing prixAchat causing the SUM to fail.
+            
         }
 
-        // === 8. Data quality ===
+        
         if (totalOrders != null && totalOrders < 10) {
             recommendations.add(new RecommendationDto(
                 "DONNEES_INSUFFISANTES",
@@ -675,11 +675,11 @@ public class RecommendationService {
         return recommendations;
     }
 
-    /**
-     * Returns the name of the stock row with the lowest quantity (or {@code null}
-     * if no stock exists). Used to enrich stock alerts with the most exposed
-     * article. Defensive: lazy-loading or schema issues are swallowed.
-     */
+    
+
+
+
+
     private String findWorstStockArticleName(Long entrepriseId) {
         try {
             List<Stock> stocks = stockRepository.findByEntrepriseId(entrepriseId);
@@ -699,17 +699,17 @@ public class RecommendationService {
         }
     }
 
-    /* =========================== ML helpers =========================== */
+    
 
-    /**
-     * Build per-article evidence rows and delegate to
-     * {@link MlRecommendationEngine#stockRiskRecommendations}.
-     *
-     * <p>Demand velocity is estimated from the persisted {@code quantite_vendue}
-     * cumulative counter divided by a 12-month window — a rough but
-     * database-only proxy that avoids heavy SQL joins. Articles without any
-     * recorded sales are skipped.
-     */
+    
+
+
+
+
+
+
+
+
     List<RecommendationDto> mlStockRiskRecommendations(Long entrepriseId) {
         List<RecommendationDto> out = new ArrayList<>();
         List<Stock> stocks;
@@ -726,16 +726,16 @@ public class RecommendationService {
             double sold = toDouble(s.getQuantiteVendue());
             if (stockLevel <= 0 && sold <= 0) continue;
             double avgMonthly = sold > 0 ? sold / 12.0 : 0.0;
-            // Demand variance unknown at row level — use a fraction of the
-            // mean as a reasonable CV proxy so features are never exactly zero.
+            
+            
             double demandVariance = Math.max(1.0, avgMonthly * 0.5);
             double dailyDemand = avgMonthly / 30.0;
             double daysOfCover = dailyDemand > 0
                     ? stockLevel / dailyDemand
                     : (stockLevel > 0 ? 365.0 : 0.0);
-            // Lead-time proxy from current month — a constant default; the
-            // classifier still works because only the *relative* ordering
-            // matters for the logistic fit.
+            
+            
+            
             double leadTimeProxy = 7.0;
             double seasonalityPhase = (LocalDate.now().getMonthValue() - 1) / 11.0;
             String articleName = articleName(s);
@@ -745,17 +745,17 @@ public class RecommendationService {
         }
         List<RecommendationDto> all = mlRecommendationEngine.stockRiskRecommendations(
                 rows, STOCK_RISK_HORIZON_DAYS);
-        // Cap to MAX_ML_STOCK_RECOMMENDATIONS to avoid flooding the dashboard.
+        
         for (int i = 0; i < all.size() && i < MAX_ML_STOCK_RECOMMENDATIONS; i++) {
             out.add(all.get(i));
         }
         return out;
     }
 
-    /** Opportunity regression on the top-products dataset. */
+    
     List<RecommendationDto> mlOpportunityRecommendations(List<Object[]> topProducts) {
         if (topProducts == null || topProducts.isEmpty()) return new ArrayList<>();
-        // Compute category share on the fly from total revenue.
+        
         double totalRev = 0.0;
         for (Object[] row : topProducts) {
             if (row != null && row.length > 2 && row[2] != null) {
@@ -772,8 +772,8 @@ public class RecommendationService {
             double rev = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
             double marginProxy = qty > 0 ? rev / qty : rev;
             double catShare = totalRev > 0 ? rev / totalRev : 0.0;
-            // Velocity trend proxy: rank-based descending score. Higher-ranked
-            // products get a positive trend, lower-ranked get negative.
+            
+            
             double trend = n > 1 ? (double) (n - 1 - i) / (n - 1) - 0.5 : 0.0;
             rows.add(new MlRecommendationEngine.ProductRow(
                     name, rev, qty, marginProxy, catShare, trend));
@@ -785,12 +785,12 @@ public class RecommendationService {
         return b != null ? b.doubleValue() : 0.0;
     }
 
-    /**
-     * Normalises a supplier notation value to the 0-5 star scale.
-     * Older or manually-entered records may store notation on a 0-100 scale
-     * (mirroring tauxLivraison). Values greater than 5 are divided by 20 to
-     * bring them into the [0, 5] range; values already in [0, 5] are unchanged.
-     */
+    
+
+
+
+
+
     private static double normaliseNotation(double rawNotation) {
         return rawNotation > 5.0 ? rawNotation / 20.0 : rawNotation;
     }
@@ -801,7 +801,7 @@ public class RecommendationService {
                 return s.getArticleAchat().getNom();
             }
         } catch (RuntimeException ignored) {
-            // Lazy-loading issue on a detached article — fall through to fallback.
+            
         }
         return "Article #" + s.getId();
     }

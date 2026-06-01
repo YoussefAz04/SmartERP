@@ -47,7 +47,7 @@ public class FournisseurService {
     @Autowired
     private FactureAchatRepo factureAchatRepo;
 
-    // ✅ ADD FOURNISSEUR
+    
     @Transactional
     public Fournisseur addFournisseur(Fournisseur fournisseur, Long idCategorie) {
         CategorieFournisseur categorie = categorieFournisseurRepo.findById(idCategorie)
@@ -68,24 +68,24 @@ public class FournisseurService {
         return saved;
     }
 
-    // ── Delivery-stat helpers ─────────────────────────────────────────────────
+    
 
-    /**
-     * Returns the on-time delivery rate as a percentage (0–100, 1 decimal),
-     * or null when there are no delivered orders with a planned delivery date
-     * to compute the rate from.
-     *
-     * <p>This measures supplier reliability — the share of delivered orders
-     * (status RECUE with a recorded BonReception) that arrived on or before
-     * their {@code dateLivraisonPrevue}. Pending/confirmed orders are excluded
-     * because the supplier has not yet had the chance to deliver.</p>
-     */
+    
+
+
+
+
+
+
+
+
+
     private Double computeTauxLivraison(long deliveredWithPlanned, long onTime) {
         if (deliveredWithPlanned == 0) return null;
         return Math.round((onTime * 100.0 / deliveredWithPlanned) * 10.0) / 10.0;
     }
 
-    /** Maps a delivery rate to a 1–5 star notation. Returns null when taux is null. */
+    
     private Double computeNotationFromTaux(Double taux) {
         if (taux == null) return null;
         if (taux >= 90.0) return 5.0;
@@ -95,13 +95,13 @@ public class FournisseurService {
         return 1.0;
     }
 
-    /**
-     * Enriches a list of fournisseurs with computed tauxLivraison and notation
-     * derived from their CommandeAchat / BonReception history. Uses two bulk
-     * queries to avoid N+1. When a fournisseur has no delivered orders with a
-     * planned delivery date, tauxLivraison is set to null and the stored
-     * (manual) notation is left unchanged.
-     */
+    
+
+
+
+
+
+
     private void enrichFournisseurs(List<Fournisseur> fournisseurs, Long entrepriseId) {
         List<Object[]> totalRows = commandeAchatRepository.countDeliveredWithPlannedDateByFournisseur(entrepriseId);
         List<Object[]> onTimeRows = commandeAchatRepository.countOnTimeDeliveredByFournisseur(entrepriseId);
@@ -123,13 +123,13 @@ public class FournisseurService {
             if (taux != null) {
                 f.setNotation(computeNotationFromTaux(taux));
             }
-            // When taux is null (no delivered orders with planned dates), keep the stored manual notation as fallback
+            
         }
     }
 
-    /**
-     * Enriches a single fournisseur with computed tauxLivraison and notation.
-     */
+    
+
+
     private void enrichFournisseur(Fournisseur f) {
         long total = commandeAchatRepository.countDeliveredWithPlannedDateForFournisseur(f.getId());
         long onTime = commandeAchatRepository.countOnTimeDeliveredForFournisseur(f.getId());
@@ -140,7 +140,7 @@ public class FournisseurService {
         }
     }
 
-    // ✅ GET ALL FOURNISSEURS (enterprise-scoped)
+    
     public List<Fournisseur> getAllFournisseurs() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
@@ -151,14 +151,14 @@ public class FournisseurService {
         return fournisseurs;
     }
 
-    // ✅ GET FOURNISSEURS BY ENTERPRISE
+    
     public List<Fournisseur> getFournisseursByEntreprise(Long entrepriseId) {
         List<Fournisseur> fournisseurs = fournisseurRepo.findByEntrepriseId(entrepriseId);
         enrichFournisseurs(fournisseurs, entrepriseId);
         return fournisseurs;
     }
 
-    // ✅ GET FOURNISSEUR BY ID
+    
     public Fournisseur getFournisseurById(Long id) {
         Fournisseur f = fournisseurRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Fournisseur not found with id: " + id));
@@ -166,12 +166,12 @@ public class FournisseurService {
         return f;
     }
 
-    // ✅ DELETE FOURNISSEUR
+    
     @Transactional
     public void deleteFournisseur(Long id) {
         Fournisseur fournisseur = fournisseurRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Fournisseur not found with id: " + id));
-        // Nullify fournisseur FK in commande_achat, article, and facture_achat in a single query each
+        
         commandeAchatRepository.detachFournisseur(id);
         articleRepository.detachFournisseur(id);
         factureAchatRepo.detachFournisseur(id);
@@ -180,7 +180,7 @@ public class FournisseurService {
                 "Fournisseur supprimé: " + fournisseur.getNom() + " " + fournisseur.getPrenom() + " (id=" + id + ")");
     }
 
-    // ✅ UPDATE FOURNISSEUR
+    
     @Transactional
     public Fournisseur updateFournisseur(Long id, Fournisseur fournisseur) {
         Fournisseur existing = fournisseurRepo.findById(id)
@@ -191,7 +191,7 @@ public class FournisseurService {
         existing.setTelephone(fournisseur.getTelephone());
         existing.setAdresse(fournisseur.getAdresse());
         existing.setSecteurActivite(fournisseur.getSecteurActivite());
-        // tauxLivraison is computed from commande history — never persisted from form input
+        
         existing.setNotation(fournisseur.getNotation());
         existing.setVille(fournisseur.getVille());
         existing.setPays(fournisseur.getPays());
@@ -210,24 +210,24 @@ public class FournisseurService {
         return updated;
     }
 
-    // ✅ ADD CATEGORIE FOURNISSEUR
+    
     @Transactional
     public CategorieFournisseur addCategorieFournisseur(CategorieFournisseur categorie) {
         return categorieFournisseurRepo.save(categorie);
     }
 
-    // ✅ GET ALL CATEGORIES FOURNISSEUR
+    
     public List<CategorieFournisseur> getAllCategorieFournisseurs() {
         return categorieFournisseurRepo.findAll();
     }
 
-    // ✅ GET CATEGORIE FOURNISSEUR BY ID
+    
     public CategorieFournisseur getCategorieFournisseurById(Long id) {
         return categorieFournisseurRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Categorie not found with id: " + id));
     }
 
-    // ✅ DELETE CATEGORIE FOURNISSEUR
+    
     @Transactional
     public void deleteCategorieFournisseur(Long id) {
         if (!categorieFournisseurRepo.existsById(id)) {
@@ -236,7 +236,7 @@ public class FournisseurService {
         categorieFournisseurRepo.deleteById(id);
     }
 
-    // ✅ UPDATE CATEGORIE FOURNISSEUR
+    
     @Transactional
     public CategorieFournisseur updateCategorieFournisseur(Long id, CategorieFournisseur categorie) {
         if (!categorieFournisseurRepo.existsById(id)) {
