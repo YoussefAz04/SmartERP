@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.service;
 
 import BuissnesManager.BuissnesManager.entity.*;
+import BuissnesManager.BuissnesManager.dto.FactureAchatListDto;
 import BuissnesManager.BuissnesManager.repository.*;
 import BuissnesManager.BuissnesManager.security.EnterpriseSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,18 @@ public class FactureService {
 
 
 
-public List<FactureAchat> getAllFactureAchat(){
+public List<FactureAchatListDto> getAllFactureAchat(){
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
+        if (entrepriseId == null) {
+            entrepriseId = enterpriseSecurityUtil.getCurrentUser()
+                    .map(User::getEntreprise)
+                    .map(Entreprise::getId)
+                    .orElse(null);
+        }
         if (entrepriseId == null) {
             throw new RuntimeException("Enterprise context required");
         }
-        return factureAchatRepo.findByEntrepriseId(entrepriseId);
+        return factureAchatRepo.findListDtoByEntrepriseId(entrepriseId);
 }
 public FactureAchat getById(Long id){
    return  this.factureAchatRepo.findById(id)

@@ -17,20 +17,6 @@ import java.util.Locale;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @Service
 public class RecommendationService {
 
@@ -353,49 +339,6 @@ public class RecommendationService {
             }
         }
 
-        
-        
-        
-        
-        if (topProducts != null && topProducts.size() > 10) {
-            int slowCount = 0;
-            String firstSlowName = null;
-            int start = Math.max(0, topProducts.size() - 5);
-            for (int i = topProducts.size() - 1; i >= start; i--) {
-                Object[] row = topProducts.get(i);
-                if (row != null && row.length > 1 && row[1] != null
-                        && ((Number) row[1]).longValue() > 0) {
-                    slowCount++;
-                    if (firstSlowName == null && row[0] != null) {
-                        firstSlowName = row[0].toString();
-                    }
-                }
-            }
-            if (slowCount > 0) {
-                String detail = firstSlowName != null
-                        ? String.format(Locale.FRANCE, " Exemple : « %s ».", firstSlowName)
-                        : "";
-                recommendations.add(new RecommendationDto(
-                    "PRODUITS_LENTS",
-                    "Articles qui se vendent peu",
-                    String.format(Locale.FRANCE,
-                        "%d article(s) font partie des 5 qui se vendent le moins.%s %s",
-                        slowCount, detail,
-                        pick(v,
-                            "Faites une promotion ou retirez-les du catalogue pour récupérer la trésorerie immobilisée dans le stock.",
-                            "Vendez-les en lot avec d'autres articles pour les écouler plus vite.",
-                            "Réduisez les quantités commandées pour ces articles afin de libérer de la trésorerie.")),
-                    "MOYENNE",
-                    "fa-boxes-stacked",
-                    "Voir Produits"
-                ));
-            }
-        }
-
-        
-        
-        
-        
         if (totalOrders != null && totalOrders >= 20) {
             List<Object[]> orderStatus = commandeVenteRepository.getOrderStatusBreakdown(entrepriseId);
             long cancelled = 0;

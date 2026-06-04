@@ -5,7 +5,6 @@ import java.util.List;
 public class ProductIntelligenceDto {
 
     private List<ProductPerformanceDto> topProducts;
-    private List<ProductPerformanceDto> slowMovingProducts;
     private List<CategoryPerformanceDto> categoryPerformance;
     private Integer totalProducts;
     private Integer activeProducts;
@@ -14,9 +13,6 @@ public class ProductIntelligenceDto {
 
     public List<ProductPerformanceDto> getTopProducts() { return topProducts; }
     public void setTopProducts(List<ProductPerformanceDto> topProducts) { this.topProducts = topProducts; }
-
-    public List<ProductPerformanceDto> getSlowMovingProducts() { return slowMovingProducts; }
-    public void setSlowMovingProducts(List<ProductPerformanceDto> slowMovingProducts) { this.slowMovingProducts = slowMovingProducts; }
 
     public List<CategoryPerformanceDto> getCategoryPerformance() { return categoryPerformance; }
     public void setCategoryPerformance(List<CategoryPerformanceDto> categoryPerformance) { this.categoryPerformance = categoryPerformance; }

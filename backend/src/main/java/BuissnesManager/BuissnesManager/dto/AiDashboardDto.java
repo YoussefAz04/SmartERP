@@ -11,7 +11,6 @@ public class AiDashboardDto {
     private KpiSummaryDto kpiSummary;
     private ComparisonMetricsDto comparison;
     private KpiDetailsDto kpiDetails;
-    private List<SupplierPerformanceDto> supplierPerformance;
 
     public AiDashboardDto() {}
 
@@ -35,9 +34,6 @@ public class AiDashboardDto {
 
     public KpiDetailsDto getKpiDetails() { return kpiDetails; }
     public void setKpiDetails(KpiDetailsDto kpiDetails) { this.kpiDetails = kpiDetails; }
-
-    public List<SupplierPerformanceDto> getSupplierPerformance() { return supplierPerformance; }
-    public void setSupplierPerformance(List<SupplierPerformanceDto> supplierPerformance) { this.supplierPerformance = supplierPerformance; }
 
     public static class KpiSummaryDto {
         private Double totalRevenue;
@@ -199,7 +195,6 @@ public class AiDashboardDto {
         private Long outOfStockCount;
         private Double totalStockValue;
         private List<NameValueDto> topProducts;
-        private List<NameValueDto> slowMovers;
 
         public ProductsDetailsDto() {}
 
@@ -213,8 +208,6 @@ public class AiDashboardDto {
         public void setTotalStockValue(Double totalStockValue) { this.totalStockValue = totalStockValue; }
         public List<NameValueDto> getTopProducts() { return topProducts; }
         public void setTopProducts(List<NameValueDto> topProducts) { this.topProducts = topProducts; }
-        public List<NameValueDto> getSlowMovers() { return slowMovers; }
-        public void setSlowMovers(List<NameValueDto> slowMovers) { this.slowMovers = slowMovers; }
     }
 
     public static class ForecastDetailsDto {
@@ -281,31 +274,4 @@ public class AiDashboardDto {
         public void setAmount(Double amount) { this.amount = amount; }
     }
 
-    // ===== Supplier Performance =====
-    public static class SupplierPerformanceDto {
-        private Long supplierId;
-        private String supplierName;
-        private Long orderCount;
-        private Double totalSpend;
-        private Double deliveryRate;
-        private Double rating;
-        private List<StatusCountDto> statusBreakdown;
-
-        public SupplierPerformanceDto() {}
-
-        public Long getSupplierId() { return supplierId; }
-        public void setSupplierId(Long supplierId) { this.supplierId = supplierId; }
-        public String getSupplierName() { return supplierName; }
-        public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
-        public Long getOrderCount() { return orderCount; }
-        public void setOrderCount(Long orderCount) { this.orderCount = orderCount; }
-        public Double getTotalSpend() { return totalSpend; }
-        public void setTotalSpend(Double totalSpend) { this.totalSpend = totalSpend; }
-        public Double getDeliveryRate() { return deliveryRate; }
-        public void setDeliveryRate(Double deliveryRate) { this.deliveryRate = deliveryRate; }
-        public Double getRating() { return rating; }
-        public void setRating(Double rating) { this.rating = rating; }
-        public List<StatusCountDto> getStatusBreakdown() { return statusBreakdown; }
-        public void setStatusBreakdown(List<StatusCountDto> statusBreakdown) { this.statusBreakdown = statusBreakdown; }
-    }
 }

@@ -558,7 +558,6 @@ export class AiDashboardComponent implements OnInit {
         break;
       case 'PRODUIT_STAR':
       case 'OPPORTUNITE':
-      case 'PRODUITS_LENTS':
       case 'CATEGORIE_DOMINANTE':
         this.router.navigate([routes.articleVenteList]);
         break;

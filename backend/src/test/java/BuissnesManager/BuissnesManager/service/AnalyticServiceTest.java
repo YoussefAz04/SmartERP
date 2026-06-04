@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -97,7 +96,7 @@ class AnalyticServiceTest {
     }
 
     @Test
-    void analyzeProductsRanksAndLabelsTopAndSlowMovers() {
+    void analyzeProductsRanksAndLabelsTopProducts() {
         List<Object[]> top = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
             // name, qty, revenue — descending by construction
@@ -112,22 +111,14 @@ class AnalyticServiceTest {
 
         assertNotNull(dto);
         assertEquals(10, dto.getTopProducts().size());
-        // Top 3 must be labelled TOP — not overwritten by the slow-movers loop.
-        // This is the regression test for the subList() view bug: if the top
-        // list were a view of `products`, the slow-movers loop would mutate
-        // the same underlying objects, corrupting the ranking on display.
+        // Top 3 must be labelled TOP.
         for (int i = 0; i < 3; i++) {
             assertEquals("TOP", dto.getTopProducts().get(i).getPerformanceLabel(),
-                    "top-3 product should keep its TOP label after slow-mover pass");
+                    "top-3 product should keep its TOP label");
         }
         // Rank assigned correctly on the stored copy
         assertEquals(1, dto.getTopProducts().get(0).getRank());
 
-        assertNotNull(dto.getSlowMovingProducts());
-        assertFalse(dto.getSlowMovingProducts().isEmpty());
-        for (ProductIntelligenceDto.ProductPerformanceDto p : dto.getSlowMovingProducts()) {
-            assertEquals("LENT", p.getPerformanceLabel());
-        }
     }
 
     @Test
@@ -146,7 +137,6 @@ class AnalyticServiceTest {
 
         assertNotNull(dto);
         assertTrue(dto.getTopProducts().isEmpty());
-        assertTrue(dto.getSlowMovingProducts().isEmpty());
         assertEquals(0, dto.getTotalProducts());
     }
 
@@ -154,8 +144,7 @@ class AnalyticServiceTest {
     void analyzeProductsFallsBackToCatalogueWhenNoSales() {
         // Enterprise has built a catalogue (via purchases) but has not yet
         // recorded a single sale. The dashboard must still surface the
-        // catalogue so the "Intelligence Produits" and "Articles à Rotation
-        // Lente" panels are not left empty.
+        // catalogue so the "Intelligence Produits" panel is not left empty.
         when(commandeVenteRepository.getTopProducts(anyLong()))
                 .thenReturn(Collections.emptyList());
         when(commandeVenteRepository.getCategoryPerformance(anyLong()))
@@ -181,13 +170,6 @@ class AnalyticServiceTest {
         assertEquals(0.0, dto.getTopProducts().get(0).getRevenue(), 0.0001);
         assertEquals("NOUVEAU", dto.getTopProducts().get(0).getPerformanceLabel());
 
-        // Slow-movers panel must list the highest-stock items as biggest risk.
-        assertFalse(dto.getSlowMovingProducts().isEmpty());
-        assertEquals("Écran", dto.getSlowMovingProducts().get(0).getProductName());
-        assertEquals("LENT", dto.getSlowMovingProducts().get(0).getPerformanceLabel());
-        // The "LENT" label on slow-movers must NOT bleed back into the
-        // top-products list (defensive copy).
-        assertEquals("NOUVEAU", dto.getTopProducts().get(0).getPerformanceLabel());
     }
 
     private ArticleVente buildArticleVente(Long id, String nom, int stock) {

@@ -155,23 +155,6 @@
               </tbody>
             </table>
           </div>
-          <p class="modal-subtitle mt-3" *ngIf="kpiDetails.products.slowMovers?.length">
-            <i class="fas fa-snooze me-2 text-warning"></i>Produits à Rotation Lente
-          </p>
-          <div *ngIf="kpiDetails.products.slowMovers?.length">
-            <table class="modal-table">
-              <thead>
-                <tr><th>#</th><th>Produit</th><th>Qté Vendue</th></tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let p of kpiDetails.products.slowMovers; let i = index">
-                  <td><span class="rank-badge-sm rank-slow">{{ i + 1 }}</span></td>
-                  <td>{{ p.name }}</td>
-                  <td class="value-cell text-warning">{{ p.value | number }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
 
       </ng-container>

@@ -20,45 +20,6 @@ import java.util.Random;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @Component
 public class MlForecastEngine {
 

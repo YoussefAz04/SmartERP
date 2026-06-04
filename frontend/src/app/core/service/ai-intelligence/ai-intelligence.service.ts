@@ -60,7 +60,6 @@ export interface CategoryPerformance {
 
 export interface ProductIntelligence {
   topProducts: ProductPerformance[];
-  slowMovingProducts: ProductPerformance[];
   categoryPerformance: CategoryPerformance[];
   totalProducts: number;
   activeProducts: number;
@@ -110,21 +109,6 @@ export interface ComparisonMetrics {
   orderCountYtdVsLastYear?: PeriodComparison;
 }
 
-export interface SupplierStatusCount {
-  status: string;
-  count: number;
-}
-
-export interface SupplierPerformance {
-  supplierId: number;
-  supplierName: string;
-  orderCount: number;
-  totalSpend: number;
-  deliveryRate: number;
-  rating: number;
-  statusBreakdown: SupplierStatusCount[];
-}
-
 export interface NameValue {
   name: string;
   value: number;
@@ -155,7 +139,6 @@ export interface ProductsDetails {
   outOfStockCount: number;
   totalStockValue: number;
   topProducts: NameValue[];
-  slowMovers: NameValue[];
 }
 
 export interface ForecastDetails {
@@ -185,7 +168,6 @@ export interface AiDashboard {
   kpiSummary: KpiSummary;
   comparison?: ComparisonMetrics;
   kpiDetails?: KpiDetails;
-  supplierPerformance?: SupplierPerformance[];
 }
 
 export interface PredictionLog {

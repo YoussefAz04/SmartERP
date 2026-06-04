@@ -272,30 +272,6 @@
         </div>
       </div>
 
-      <!-- Supplier Performance Panel -->
-      <div class="intel-card">
-        <div class="intel-header">
-          <h3><i class="fas fa-truck me-2"></i>Performance Fournisseurs</h3>
-          <span class="intel-badge">Top {{ dashboard.supplierPerformance?.length ?? 0 }}</span>
-        </div>
-        <app-supplier-performance
-          [suppliers]="dashboard.supplierPerformance ?? []">
-        </app-supplier-performance>
-      </div>
-    </div>
-
-    <!-- Slow Movers Row -->
-    <div class="bottom-row" *ngIf="dashboard.kpiDetails?.products">
-      <div class="intel-card intel-card-full">
-        <div class="intel-header">
-          <h3><i class="fas fa-box-open me-2"></i>Articles à Rotation Lente — Stock à Risque</h3>
-          <span class="intel-badge intel-badge-warn"
-                *ngIf="dashboard.kpiDetails!.products.slowMovers?.length">
-            {{ dashboard.kpiDetails!.products.slowMovers.length }} articles
-          </span>
-        </div>
-        <app-slow-movers [productsDetails]="dashboard.kpiDetails!.products"></app-slow-movers>
-      </div>
     </div>
 
     <!-- Strategic Recommendations -->

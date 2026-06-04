@@ -21,19 +21,37 @@ public class FactureAchat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "date_achat")
     private String dateAchat;
+
+    @Column(name = "referance")
     private String referance;
 
+    @Column(name = "montant_total")
     private Double montantTotal;
+
+    @Column(name = "montantht")
     private Double montantHT;
+
+    @Column(name = "montanttva")
     private Double montantTVA;
+
+    @Column(name = "montantttc")
     private Double montantTTC;
 
+    @Column(name = "remise")
     private Double remise;
 
+    @Column(name = "mode_paiement")
     private String modePaiement;
+
+    @Column(name = "statut")
     private String statut;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "chemin_fichier")
     private String cheminFichier;
 
     @OneToOne(mappedBy = "factureAchat")

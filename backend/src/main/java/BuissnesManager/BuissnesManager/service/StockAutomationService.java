@@ -80,7 +80,7 @@ public class StockAutomationService {
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
             stockMouvementRepo.save(mouvement);
 
-            logger.info("✅ Stock incremented for article {} by {}", article.getId(), quantite);
+            logger.info(" Stock incremented for article {} by {}", article.getId(), quantite);
         }
     }
 
@@ -124,7 +124,7 @@ public class StockAutomationService {
 
             
             
-            
+          
             
             BigDecimal totalAccessible = reserve.add(disponible);
             if (totalAccessible.compareTo(quantite) < 0) {

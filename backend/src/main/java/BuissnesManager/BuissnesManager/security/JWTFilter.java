@@ -63,23 +63,24 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Extracts the JWT from the {@code access_token} httpOnly cookie first;
-     * falls back to the {@code Authorization: Bearer ...} header for
-     * backwards-compatibility during the migration window.
+     * Extracts the JWT from the Authorization header first, then falls back to
+     * the access_token cookie. The Angular app sends the current token in the
+     * header, so this prevents an older browser cookie from overriding it.
      */
     private String extractToken(HttpServletRequest request) {
-        // 1. Prefer httpOnly cookie
+        // 1. Prefer the current token sent by Angular.
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+
+        // 2. Fallback to httpOnly cookie.
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("access_token".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
-        }
-        // 2. Fallback: Authorization header
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);
         }
         return null;
     }

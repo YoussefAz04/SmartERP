@@ -265,54 +265,12 @@ public class AnalyticService {
         List<ProductIntelligenceDto.ProductPerformanceDto> topProducts =
             new ArrayList<>(products.subList(0, Math.min(10, products.size())));
 
-        
-        List<ProductIntelligenceDto.ProductPerformanceDto> slowMoving = new ArrayList<>();
-        if (catalogueFallback) {
- 
-            int slowCount = Math.min(5, products.size());
-            for (int i = 0; i < slowCount; i++) {
-                ProductIntelligenceDto.ProductPerformanceDto src = products.get(i);
-                ProductIntelligenceDto.ProductPerformanceDto copy =
-                    new ProductIntelligenceDto.ProductPerformanceDto(
-                        src.getProductName(), src.getQuantitySold(), src.getRevenue());
-                copy.setRank(src.getRank());
-                copy.setRevenueShare(src.getRevenueShare());
-                copy.setPerformanceLabel("LENT");
-                slowMoving.add(copy);
-            }
-        } else if (clusterLabels != null) {
-    
-            for (int i = 0; i < products.size(); i++) {
-                if (clusterLabels[i] == 2) {
-                    slowMoving.add(products.get(i));
-                }
-            }
-            slowMoving.sort(Comparator.comparingDouble(
-                ProductIntelligenceDto.ProductPerformanceDto::getRevenue));
-            if (slowMoving.size() > 5) {
-                slowMoving = new ArrayList<>(slowMoving.subList(0, 5));
-            }
-  
-            for (ProductIntelligenceDto.ProductPerformanceDto p : slowMoving) {
-                p.setPerformanceLabel("LENT");
-            }
-        } else if (products.size() > 5) {
-            List<ProductIntelligenceDto.ProductPerformanceDto> reversed = new ArrayList<>(products);
-            java.util.Collections.reverse(reversed);
-            slowMoving = new ArrayList<>(reversed.subList(0, Math.min(5, reversed.size())));
-            for (ProductIntelligenceDto.ProductPerformanceDto p : slowMoving) {
-                p.setPerformanceLabel("LENT");
-            }
-        }
-
-        
         List<ProductIntelligenceDto.CategoryPerformanceDto> categoryPerformance = computeCategoryPerformance(entrepriseId);
 
         long totalSKUs = stockRepository.getTotalSKUs(entrepriseId);
 
         ProductIntelligenceDto dto = new ProductIntelligenceDto();
         dto.setTopProducts(topProducts);
-        dto.setSlowMovingProducts(slowMoving);
         dto.setCategoryPerformance(categoryPerformance);
         dto.setTotalProducts((int) totalSKUs);
         dto.setActiveProducts((int) totalSKUs);

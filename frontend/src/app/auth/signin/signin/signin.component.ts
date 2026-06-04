@@ -69,7 +69,7 @@ export class SigninComponent implements OnInit {
     this.authService.login(credentials).subscribe({
       next: (response: any) => {
         try {
-          // ✅ Persist / clear remembered username based on the checkbox state
+          // Persist / clear remembered username based on the checkbox state
           try {
             if (this.rememberMe) {
               localStorage.setItem(SigninComponent.REMEMBER_KEY, credentials.username);
@@ -80,13 +80,13 @@ export class SigninComponent implements OnInit {
             // ignore storage errors
           }
 
-          // ✅ SAVE TOKEN TO AUTH SERVICE FIRST (so interceptor can use it)
+          // SAVE TOKEN TO AUTH SERVICE FIRST (so interceptor can use it)
           const token = response.token;
           if (token) {
             this.authService.setToken(token);
           }
 
-          // ✅ SAVE TO LOCALSTORAGE
+          // SAVE TO LOCALSTORAGE
           localStorage.removeItem("myLSkey");
           localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify({
             token: response.token,
@@ -98,14 +98,14 @@ export class SigninComponent implements OnInit {
             roleId: response.roleId,
             entrepriseId: response.entrepriseId,
             entrepriseName: response.entrepriseName,
-            // ✅ Provide entreprise object so components can access currentUser.entreprise.nom
+            // rovide entreprise object so components can access currentUser.entreprise.nom
             entreprise: {
               id: response.entrepriseId,
               nom: response.entrepriseName
             }
           })))));
 
-          // ✅ ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
+          // ALWAYS SAVE ENTERPRISE ID SEPARATELY (both key variants for compatibility)
           const entrepriseId = response.entrepriseId;
           if (entrepriseId !== null && entrepriseId !== undefined) {
             localStorage.setItem('entrepriseId', entrepriseId.toString());

@@ -24,13 +24,16 @@ public class CommandeAchat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(name = "reference", unique = true)
     private String reference;
 
+    @Column(name = "date_commande")
     private LocalDate dateCommande;
 
+    @Column(name = "date_livraison_prevue")
     private LocalDate dateLivraisonPrevue;
 
+    @Column(name = "statut")
     private String statut;
 
     @Column(name = "montant_ht", precision = 15, scale = 2)
@@ -42,13 +45,15 @@ public class CommandeAchat {
     @Column(name = "montant_ttc", precision = 15, scale = 2)
     private BigDecimal montantTTC;
 
+    @Column(name = "note")
     private String note;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToOne
