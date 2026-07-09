@@ -244,7 +244,7 @@ public class AuthController {
     @PostMapping("/login")
     @Transactional
     public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse httpResponse) {
-        System.out.println("✅ Login endpoint hit for username: " + request.getUsername());
+        System.out.println(" Login endpoint hit for username: " + request.getUsername());
         
         List<PermissionDto> permissionDtoList = new ArrayList<>();
 
@@ -285,13 +285,13 @@ public class AuthController {
             if (passwordEncoder.upgradeEncoding(user.getPassword())) {
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
                 user = userRepo.save(user);
-                System.out.println("✅ Password rehashed (BCrypt upgrade) for user: " + user.getUsername());
+                System.out.println(" Password rehashed (BCrypt upgrade) for user: " + user.getUsername());
             }
 
             String accessToken = jwtUtil.generateToken(user);
             RefreshToken refreshToken = createRefreshToken(user);
             
-            System.out.println("✅ User connected: " + user.getUsername());
+            System.out.println(" User connected: " + user.getUsername());
 
             // Get permissions for user's roles
             for (Role role : user.getRoles()) {

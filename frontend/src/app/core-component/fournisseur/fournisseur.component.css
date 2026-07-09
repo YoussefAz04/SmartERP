@@ -841,19 +841,6 @@
 }
 
 /* =============================================
-   NOTATION STARS
-   ============================================= */
-.rating-stars {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  font-size: 14px;
-  white-space: nowrap;
-}
-.rating-stars .star-on { color: #f59e0b; }
-.rating-stars .star-off { color: #e2e8f0; }
-
-/* =============================================
    ANIMATIONS
    ============================================= */
 @keyframes fadeInDown {

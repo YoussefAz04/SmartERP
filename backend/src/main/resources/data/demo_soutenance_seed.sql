@@ -786,8 +786,5 @@ BEGIN CATCH
     IF OBJECT_ID('facture_de_vente', 'U') IS NOT NULL SET IDENTITY_INSERT facture_de_vente OFF;
     IF OBJECT_ID('stock_mouvement', 'U') IS NOT NULL SET IDENTITY_INSERT stock_mouvement OFF;
 
-    DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-    DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
-    DECLARE @ErrorState INT = ERROR_STATE();
-    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+    THROW;
 END CATCH;

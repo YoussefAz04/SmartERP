@@ -9,8 +9,6 @@ export interface Fournisseur {
   telephone: string;
   adresse: string;
   secteurActivite?: string;
-  tauxLivraison?: number;
-  notation?: number;
   ville: string;
   pays: string;
   codePostal: string;

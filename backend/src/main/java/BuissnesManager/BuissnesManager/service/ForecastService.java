@@ -26,33 +26,6 @@ import java.util.Map;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @Service
 public class ForecastService {
 
@@ -60,12 +33,6 @@ public class ForecastService {
 
     @Autowired
     private CommandeVenteRepository commandeVenteRepository;
-
-    
-
-
-
-
 
 
     @Autowired(required = false)
@@ -141,9 +108,7 @@ public class ForecastService {
                 historicalSeries, currentValues, prevValues, hasPrevYear,
                 observedCurrentMonths, currentMonth);
             if (mlDto != null) return mlDto;
-            
-            
-            
+        
         }
 
         

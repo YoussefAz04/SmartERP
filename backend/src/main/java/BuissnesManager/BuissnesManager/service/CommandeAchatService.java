@@ -61,11 +61,11 @@ public class CommandeAchatService {
     public List<CommandeAchat> getAllCommandes() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         
-        logger.info("🔵 getAllCommandes() called");
+        logger.info(" getAllCommandes() called");
         logger.info("   Enterprise ID from JWT: {}", entrepriseId);
         
         if (entrepriseId == null) {
-            logger.error("❌ CRITICAL: No enterprise ID found in JWT token!");
+            logger.error(" CRITICAL: No enterprise ID found in JWT token!");
             logger.error("   User is not properly authenticated with an enterprise.");
             throw new RuntimeException("Enterprise context required");
         }
@@ -81,7 +81,7 @@ public class CommandeAchatService {
         if (!toSave.isEmpty()) {
             commandeAchatRepository.saveAll(toSave);
         }
-        logger.info("✅ Found {} purchase orders for enterprise {}", commandes.size(), entrepriseId);
+        logger.info(" Found {} purchase orders for enterprise {}", commandes.size(), entrepriseId);
         return commandes;
     }
 
@@ -149,18 +149,18 @@ public class CommandeAchatService {
         } else {
             Long jwtEntrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
             if (jwtEntrepriseId == null) {
-                logger.error("❌ Enterprise ID is required");
+                logger.error(" Enterprise ID is required");
                 throw new RuntimeException("L'entreprise est obligatoire. Veuillez vous reconnecter.");
             }
             resolvedEntrepriseId = jwtEntrepriseId;
         }
 
         if (dto.getFournisseurId() == null) {
-            logger.error("❌ Fournisseur ID is required");
+            logger.error(" Fournisseur ID is required");
             throw new RuntimeException("Le fournisseur est obligatoire.");
         }
 
-        logger.info("🔄 Creating commande");
+        logger.info(" Creating commande");
         logger.info("   Reference: {}", dto.getReference());
         logger.info("   Fournisseur ID: {}", dto.getFournisseurId());
         logger.info("   Enterprise ID: {}", resolvedEntrepriseId);
@@ -179,28 +179,28 @@ public class CommandeAchatService {
         
         Fournisseur fournisseur = fournisseurRepo.findById(dto.getFournisseurId())
                 .orElseThrow(() -> {
-                    logger.error("❌ Supplier not found with ID: {}", dto.getFournisseurId());
+                    logger.error(" Supplier not found with ID: {}", dto.getFournisseurId());
                     return new RuntimeException("Fournisseur non trouvé: " + dto.getFournisseurId());
                 });
         commande.setFournisseur(fournisseur);
-        logger.info("✅ Supplier set: {} (ID: {})", fournisseur.getNom(), fournisseur.getId());
+        logger.info(" Supplier set: {} (ID: {})", fournisseur.getNom(), fournisseur.getId());
 
         
         Entreprise entreprise = entrepriseRepo.findById(resolvedEntrepriseId)
                 .orElseThrow(() -> {
-                    logger.error("❌ Enterprise not found with ID: {}", resolvedEntrepriseId);
+                    logger.error(" Enterprise not found with ID: {}", resolvedEntrepriseId);
                     return new RuntimeException("Entreprise non trouvée: " + resolvedEntrepriseId);
                 });
         commande.setEntreprise(entreprise);
-        logger.info("✅ Enterprise set: {} (ID: {})", entreprise.getNom(), entreprise.getId());
+        logger.info(" Enterprise set: {} (ID: {})", entreprise.getNom(), entreprise.getId());
 
         
         CommandeAchat saved = commandeAchatRepository.save(commande);
-        logger.info("✅ Commande saved with ID: {}", saved.getId());
+        logger.info(" Commande saved with ID: {}", saved.getId());
 
         
         if (dto.getLignes() != null && !dto.getLignes().isEmpty()) {
-            logger.info("📝 Processing {} line items", dto.getLignes().size());
+            logger.info(" Processing {} line items", dto.getLignes().size());
 
             int lineCount = 0;
             for (int idx = 0; idx < dto.getLignes().size(); idx++) {
@@ -215,14 +215,14 @@ public class CommandeAchatService {
 
                     
                     if (ligneDto.getArticleAchatId() == null) {
-                        logger.error("❌ Line {}: Article ID is NULL!", lineNumber);
+                        logger.error(" Line {}: Article ID is NULL!", lineNumber);
                         throw new RuntimeException(
                                 String.format("Ligne %d: Sélectionnez un article!", lineNumber)
                         );
                     }
 
                     if (ligneDto.getArticleAchatId() <= 0) {
-                        logger.error("❌ Line {}: Article ID is invalid: {}", lineNumber, ligneDto.getArticleAchatId());
+                        logger.error(" Line {}: Article ID is invalid: {}", lineNumber, ligneDto.getArticleAchatId());
                         throw new RuntimeException(
                                 String.format("Ligne %d: Article ID invalide: %d", lineNumber, ligneDto.getArticleAchatId())
                         );
@@ -231,25 +231,25 @@ public class CommandeAchatService {
                     
                     Article article = articleRepository.findById(ligneDto.getArticleAchatId())
                             .orElseThrow(() -> {
-                                logger.error("❌ Line {}: Article not found with ID: {}", lineNumber, ligneDto.getArticleAchatId());
+                                logger.error(" Line {}: Article not found with ID: {}", lineNumber, ligneDto.getArticleAchatId());
                                 return new RuntimeException(
                                         String.format("Ligne %d: Article non trouvé avec l'ID: %d",
                                                 lineNumber, ligneDto.getArticleAchatId())
                                 );
                             });
 
-                    logger.info("✅ Line {}: Article found - {} (ID: {})", lineNumber, article.getNom(), article.getId());
+                    logger.info(" Line {}: Article found - {} (ID: {})", lineNumber, article.getNom(), article.getId());
 
                     
                     if (ligneDto.getPrixUnitaireHT() == null) {
-                        logger.error("❌ Line {}: Unit price HT is NULL!", lineNumber);
+                        logger.error(" Line {}: Unit price HT is NULL!", lineNumber);
                         throw new RuntimeException(
                                 String.format("Ligne %d: Le prix unitaire HT est obligatoire.", lineNumber)
                         );
                     }
 
                     if (ligneDto.getPrixUnitaireHT().compareTo(BigDecimal.ZERO) <= 0) {
-                        logger.error("❌ Line {}: Unit price HT is invalid: {}", lineNumber, ligneDto.getPrixUnitaireHT());
+                        logger.error(" Line {}: Unit price HT is invalid: {}", lineNumber, ligneDto.getPrixUnitaireHT());
                         throw new RuntimeException(
                                 String.format("Ligne %d: Le prix unitaire HT doit être supérieur à 0.", lineNumber)
                         );
@@ -257,13 +257,13 @@ public class CommandeAchatService {
 
                     
                     if (ligneDto.getQuantite() == null || ligneDto.getQuantite().compareTo(BigDecimal.ZERO) <= 0) {
-                        logger.error("❌ Line {}: Quantity is invalid: {}", lineNumber, ligneDto.getQuantite());
+                        logger.error(" Line {}: Quantity is invalid: {}", lineNumber, ligneDto.getQuantite());
                         throw new RuntimeException(
                                 String.format("Ligne %d: La quantité doit être supérieure à 0.", lineNumber)
                         );
                     }
 
-                    logger.info("✅ Line {}: Price validated - {}", lineNumber, ligneDto.getPrixUnitaireHT());
+                    logger.info(" Line {}: Price validated - {}", lineNumber, ligneDto.getPrixUnitaireHT());
 
                     
                     LigneCommandeAchat ligne = new LigneCommandeAchat();
@@ -278,22 +278,22 @@ public class CommandeAchatService {
                     
                     LigneCommandeAchat savedLigne = ligneCommandeAchatRepository.saveAndFlush(ligne);
                     lineCount++;
-                    logger.info("✅ Line {} saved successfully (ID: {})", lineNumber, savedLigne.getId());
+                    logger.info(" Line {} saved successfully (ID: {})", lineNumber, savedLigne.getId());
 
                 } catch (RuntimeException e) {
-                    logger.error("❌ Error processing line {}: {}", lineNumber, e.getMessage());
+                    logger.error(" Error processing line {}: {}", lineNumber, e.getMessage());
                     throw e;
                 }
             }
 
             if (lineCount == 0) {
-                logger.error("❌ CRITICAL: No lines were saved!");
+                logger.error(" CRITICAL: No lines were saved!");
                 throw new RuntimeException("Aucune ligne n'a pu être sauvegardée.");
             }
 
-            logger.info("✅ All {} lines saved successfully", lineCount);
+            logger.info(" All {} lines saved successfully", lineCount);
         } else {
-            logger.error("❌ No lines provided in order");
+            logger.error(" No lines provided in order");
             throw new RuntimeException("Au moins une ligne de commande est requise.");
         }
 
@@ -311,7 +311,7 @@ public class CommandeAchatService {
         factureAchat.setEntreprise(saved.getEntreprise());
         factureAchat.setCommandeAchat(saved);
         factureAchatRepository.save(factureAchat);
-        logger.info("✅ Preliminary FactureAchat created for commande {} (enterprise: {})", saved.getId(), saved.getEntreprise() != null ? saved.getEntreprise().getId() : null);
+        logger.info(" Preliminary FactureAchat created for commande {} (enterprise: {})", saved.getId(), saved.getEntreprise() != null ? saved.getEntreprise().getId() : null);
 
         if (saved.getEntreprise() != null) {
             notificationService.createCommandeAchatNotification(
@@ -320,7 +320,7 @@ public class CommandeAchatService {
                     saved.getEntreprise());
         }
 
-        logger.info("✅ Purchase order creation complete - ID: {}", saved.getId());
+        logger.info(" Purchase order creation complete - ID: {}", saved.getId());
         auditLogService.log("COMMANDE_ACHAT_CREEE",
                 "Commande d'achat créée: " + saved.getReference() + " (id=" + saved.getId() + ")");
         return saved;
@@ -430,7 +430,7 @@ public class CommandeAchatService {
         List<LigneFactureAchat> savedLignes = new java.util.ArrayList<>();
         if ((savedFacture.getLignes() == null || savedFacture.getLignes().isEmpty())
                 && commande.getLignes() != null && !commande.getLignes().isEmpty()) {
-            logger.info("📝 Creating {} invoice lines", commande.getLignes().size());
+            logger.info(" Creating {} invoice lines", commande.getLignes().size());
             for (LigneCommandeAchat ligneCommande : commande.getLignes()) {
                 LigneFactureAchat ligneFacture = new LigneFactureAchat();
                 ligneFacture.setDesignation(ligneCommande.getArticle() != null

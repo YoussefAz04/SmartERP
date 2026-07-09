@@ -54,11 +54,11 @@ public class JWTFilter extends OncePerRequestFilter {
                 path.startsWith("/v3/api-docs");
 
         if (isPublic) {
-            logger.debug("✅ [JWTFilter] SKIPPING JWT validation for PUBLIC path: {}", path);
+            logger.debug(" [JWTFilter] SKIPPING JWT validation for PUBLIC path: {}", path);
             return true;
         }
 
-        logger.debug("🔒 [JWTFilter] VALIDATING JWT for path: {}", path);
+        logger.debug(" [JWTFilter] VALIDATING JWT for path: {}", path);
         return false;
     }
 
@@ -91,7 +91,7 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        logger.info("🔍 [JWTFilter] Processing protected endpoint: {}", path);
+        logger.info(" [JWTFilter] Processing protected endpoint: {}", path);
 
         try {
             String token = extractToken(request);
@@ -103,14 +103,14 @@ public class JWTFilter extends OncePerRequestFilter {
                         List<String> roles = jwtUtil.extractRoles(token);
                         
                         Long enterpriseId = jwtUtil.getEnterpriseIdFromToken(token);
-                        logger.info("✅ [JWTFilter] Enterprise ID from token: {}", enterpriseId);
+                        logger.info(" [JWTFilter] Enterprise ID from token: {}", enterpriseId);
                         
                         if (enterpriseId != null) {
                             enterpriseIdThreadLocal.set(enterpriseId);
                             request.setAttribute("enterpriseId", enterpriseId);
-                            logger.info("✅ [JWTFilter] Set ThreadLocal enterprise ID: {}", enterpriseId);
+                            logger.info(" [JWTFilter] Set ThreadLocal enterprise ID: {}", enterpriseId);
                         } else {
-                            logger.warn("⚠️ [JWTFilter] No enterprise ID found in token for user: {}", username);
+                            logger.warn(" [JWTFilter] No enterprise ID found in token for user: {}", username);
                         }
                         
                         List<SimpleGrantedAuthority> authorities = roles.stream()
@@ -124,9 +124,9 @@ public class JWTFilter extends OncePerRequestFilter {
                                 new UsernamePasswordAuthenticationToken(username, null, authorities);
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
-                        logger.info("✅ [JWTFilter] Authentication set for user: {} with roles: {}", username, roles);
+                        logger.info(" [JWTFilter] Authentication set for user: {} with roles: {}", username, roles);
                     } else {
-                        logger.warn("⚠️ [JWTFilter] Invalid token for path: {}", path);
+                        logger.warn(" [JWTFilter] Invalid token for path: {}", path);
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                         return;
                     }
@@ -134,15 +134,15 @@ public class JWTFilter extends OncePerRequestFilter {
             } else {
                 // No token provided – continue without authentication.
                 // URL-level security (permitAll / authenticated) will decide access.
-                logger.debug("⚠️ [JWTFilter] No token for path: {} – proceeding unauthenticated", path);
+                logger.debug(" [JWTFilter] No token for path: {} – proceeding unauthenticated", path);
             }
 
             filterChain.doFilter(request, response);
         } catch (JWTVerificationException e) {
-            logger.error("❌ [JWTFilter] JWT verification failed: {}", e.getMessage());
+            logger.error(" [JWTFilter] JWT verification failed: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT verification failed");
         } catch (Exception e) {
-            logger.error("❌ [JWTFilter] Unexpected error: {}", e.getMessage(), e);
+            logger.error(" [JWTFilter] Unexpected error: {}", e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Authentication error");
         } finally {
             // Always clear ThreadLocal to prevent memory leaks in thread pools

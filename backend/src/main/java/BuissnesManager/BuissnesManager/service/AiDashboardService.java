@@ -16,7 +16,8 @@ import java.util.List;
 @Service
 public class AiDashboardService {
 
-    
+    // Limite les variations affichees pour eviter des pourcentages extremes
+    // quand la periode precedente est tres faible.
     private static final double MAX_CHANGE_PERCENT = 9999.0;
 
     @Autowired
@@ -40,19 +41,33 @@ public class AiDashboardService {
     public AiDashboardDto getAiDashboard(Long entrepriseId) {
         AiDashboardDto dashboard = new AiDashboardDto();
 
+        //  Analyse des ventes: CA mensuel, tendance, croissance et anomalies.
         dashboard.setSalesAnalysis(analyticService.analyzeSales(entrepriseId));
+
+        //  Prevision du chiffre d'affaires: modele ML si possible, sinon fallback statistique.
         ForecastDto forecast = forecastService.generateForecast(entrepriseId);
         dashboard.setForecast(forecast);
+
+        //  Intelligence produits: top produits, categories et segmentation de performance.
         ProductIntelligenceDto productIntelligence = analyticService.analyzeProducts(entrepriseId);
         dashboard.setProductIntelligence(productIntelligence);
+
+        //  Recommandations actionnables: stock, ventes, marge, fournisseurs et risques.
         dashboard.setRecommendations(recommendationService.generateRecommendations(entrepriseId));
+
+        //  Synthese KPI: cartes principales affichees en haut du dashboard.
         dashboard.setKpiSummary(buildKpiSummary(entrepriseId));
+
+        // Comparaisons de periode: mois courant, annee courante, achats et marge.
         dashboard.setComparison(buildComparisonMetrics(entrepriseId));
+
+        //  Details KPI: donnees utilisees par les vues detaillees du frontend.
         dashboard.setKpiDetails(buildKpiDetails(entrepriseId, productIntelligence, forecast));
 
         return dashboard;
     }
 
+    // Construit les indicateurs de pilotage affiches dans les cartes principales.
     private AiDashboardDto.KpiSummaryDto buildKpiSummary(Long entrepriseId) {
         AiDashboardDto.KpiSummaryDto kpi = new AiDashboardDto.KpiSummaryDto();
 
@@ -63,7 +78,7 @@ public class AiDashboardService {
         totalRevenue = totalRevenue != null ? totalRevenue : 0.0;
         kpi.setTotalRevenue(totalRevenue);
 
-        
+        // Prepare les bornes annuelles pour comparer l'annee courante a l'annee precedente.
         LocalDate startCurrentYear = LocalDate.of(currentYear, 1, 1);
         LocalDate endCurrentYear = LocalDate.of(currentYear, 12, 31);
         LocalDate startPrevYear = LocalDate.of(prevYear, 1, 1);
@@ -74,10 +89,7 @@ public class AiDashboardService {
         revenueCurrentYear = revenueCurrentYear != null ? revenueCurrentYear : 0.0;
         revenuePrevYear = revenuePrevYear != null ? revenuePrevYear : 0.0;
 
-        
-        
-        
-        
+        // Calcule la croissance du CA seulement si l'annee precedente existe.
         Double revenueGrowth = null;
         if (revenuePrevYear > 0) {
             double raw = ((revenueCurrentYear - revenuePrevYear) / revenuePrevYear) * 100.0;
@@ -90,13 +102,12 @@ public class AiDashboardService {
         Long totalOrders = commandeVenteRepository.getTotalSalesOrders(entrepriseId);
         kpi.setTotalOrders(totalOrders != null ? totalOrders : 0L);
 
-        
+        // Calcule la croissance du nombre de commandes sur le meme principe que le CA.
         Long ordersCurrentYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startCurrentYear, endCurrentYear);
         Long ordersPrevYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, startPrevYear, endPrevYear);
         long ocy = ordersCurrentYear != null ? ordersCurrentYear : 0L;
         long opy = ordersPrevYear != null ? ordersPrevYear : 0L;
-        
-        
+
         Double orderGrowth = null;
         if (opy > 0) {
             double raw = ((ocy - opy) / (double) opy) * 100.0;
@@ -112,19 +123,14 @@ public class AiDashboardService {
         Long lowStock = stockRepository.getLowStockItemsCount(entrepriseId);
         kpi.setLowStockAlerts(lowStock != null ? lowStock : 0L);
 
+        // Panier moyen = CA total / nombre total de commandes.
         if (totalOrders != null && totalOrders > 0 && totalRevenue > 0) {
             kpi.setAvgOrderValue(Math.round((totalRevenue / totalOrders) * 100.0) / 100.0);
         } else {
             kpi.setAvgOrderValue(0.0);
         }
 
-        
-        
-        
-        
-        
-        
-        
+        // Marge estimee: CA total moins cout d'achat des produits vendus.
         Double cogsAllTime = commandeVenteRepository.getCOGSInPeriod(
                 entrepriseId, LocalDate.of(1970, 1, 1), LocalDate.now());
         if (totalRevenue > 0 && cogsAllTime != null) {
@@ -137,6 +143,7 @@ public class AiDashboardService {
         return kpi;
     }
 
+    // Construit les comparaisons temporelles utilisees par les cartes d'evolution.
     private AiDashboardDto.ComparisonMetricsDto buildComparisonMetrics(Long entrepriseId) {
         AiDashboardDto.ComparisonMetricsDto comparison = new AiDashboardDto.ComparisonMetricsDto();
 
@@ -144,14 +151,11 @@ public class AiDashboardService {
         int currentYear = today.getYear();
         int currentMonth = today.getMonthValue();
 
-        
+        // Periode MTD: du debut du mois courant jusqu'a aujourd'hui.
         LocalDate mtdStart = LocalDate.of(currentYear, currentMonth, 1);
         LocalDate mtdEnd = today;
 
-        
-        
-        
-        
+        // Periode LTD: mois precedent complet, utilise comme reference courte.
         LocalDate lastMonthStart = mtdStart.minusMonths(1);
         LocalDate lastMonthEnd = mtdStart.minusDays(1); 
 
@@ -162,11 +166,9 @@ public class AiDashboardService {
 
         comparison.setMtdVsLtd(buildPeriodComparison(mtd, ltd));
 
-        
+        // Periode YTD: annee courante jusqu'a aujourd'hui, comparee au meme jour N-1.
         LocalDate ytdStart = LocalDate.of(currentYear, 1, 1);
         LocalDate lastYearStart = LocalDate.of(currentYear - 1, 1, 1);
-        
-        
         LocalDate lastYearSameDay = today.minusYears(1);
 
         Double ytd = commandeVenteRepository.getSalesInPeriod(entrepriseId, ytdStart, today);
@@ -176,15 +178,14 @@ public class AiDashboardService {
 
         comparison.setYtdVsLastYear(buildPeriodComparison(ytd, lastYear));
 
-        
+        // Compare les achats sur l'annee courante et l'annee precedente.
         Double purchaseYtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, ytdStart, today);
         Double purchaseLastYear = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
         purchaseYtd = purchaseYtd != null ? purchaseYtd : 0.0;
         purchaseLastYear = purchaseLastYear != null ? purchaseLastYear : 0.0;
         comparison.setPurchaseYtd(buildPeriodComparison(purchaseYtd, purchaseLastYear));
 
-        
-        
+        // Calcule la marge brute YTD a partir du CA et du cout d'achat vendu.
         Double cogsYtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, ytdStart, today);
         Double cogsLastYear = commandeVenteRepository.getCOGSInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
         cogsYtd = cogsYtd != null ? cogsYtd : 0.0;
@@ -192,33 +193,31 @@ public class AiDashboardService {
         double grossMargin = ytd - cogsYtd;
         comparison.setGrossMarginYtd(Math.round(grossMargin * 100.0) / 100.0);
 
-        
+        // Compte les commandes de vente et d'achat sur l'annee courante.
         Long salesOrderCount = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, ytdStart, today);
         comparison.setSalesOrderCountYtd(salesOrderCount != null ? salesOrderCount : 0L);
 
         Long purchaseOrderCount = commandeAchatRepository.getPurchaseOrderCountInPeriod(entrepriseId, ytdStart, today);
         comparison.setPurchaseOrderCountYtd(purchaseOrderCount != null ? purchaseOrderCount : 0L);
 
-        
-
-        
+        // Compare les achats du mois courant au mois precedent.
         Double purchaseMtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double purchaseLtd = commandeAchatRepository.getPurchasesInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
         purchaseMtd = purchaseMtd != null ? purchaseMtd : 0.0;
         purchaseLtd = purchaseLtd != null ? purchaseLtd : 0.0;
         comparison.setPurchaseMtdVsLtd(buildPeriodComparison(purchaseMtd, purchaseLtd));
 
-        
+        // Compare la marge du mois courant a celle du mois precedent.
         Double cogsMtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, mtdStart, mtdEnd);
         Double cogsLtd = commandeVenteRepository.getCOGSInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
         cogsMtd = cogsMtd != null ? cogsMtd : 0.0;
         cogsLtd = cogsLtd != null ? cogsLtd : 0.0;
         comparison.setMarginMtdVsLtd(buildPeriodComparison(mtd - cogsMtd, ltd - cogsLtd));
 
-        
+        // Compare la marge YTD a la marge sur la meme periode l'annee precedente.
         comparison.setMarginYtdVsLastYear(buildPeriodComparison(ytd - cogsYtd, lastYear - cogsLastYear));
 
-        
+        // Compare le nombre de commandes du mois courant au mois precedent.
         Long orderCountMtd = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, mtdStart, mtdEnd);
         Long orderCountLtd = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, lastMonthStart, lastMonthEnd);
         comparison.setOrderCountMtdVsLtd(buildPeriodComparison(
@@ -226,7 +225,7 @@ public class AiDashboardService {
                 orderCountLtd != null ? orderCountLtd.doubleValue() : 0.0
         ));
 
-        
+        // Compare le nombre de commandes YTD au meme intervalle de l'annee precedente.
         Long orderCountLastYear = commandeVenteRepository.getSalesOrderCountInPeriod(entrepriseId, lastYearStart, lastYearSameDay);
         comparison.setOrderCountYtdVsLastYear(buildPeriodComparison(
                 salesOrderCount != null ? salesOrderCount.doubleValue() : 0.0,
@@ -236,6 +235,7 @@ public class AiDashboardService {
         return comparison;
     }
 
+    // Normalise une comparaison: valeur actuelle, reference, difference, pourcentage et tendance.
     private AiDashboardDto.PeriodComparisonDto buildPeriodComparison(double current, double previous) {
         AiDashboardDto.PeriodComparisonDto dto = new AiDashboardDto.PeriodComparisonDto();
         dto.setCurrent(Math.round(current * 100.0) / 100.0);
@@ -244,8 +244,7 @@ public class AiDashboardService {
         dto.setChange(Math.round(change * 100.0) / 100.0);
 
         if (previous == 0.0) {
-            
-            
+            // Quand la reference vaut zero, le pourcentage n'est pas defini.
             dto.setChangePercent(null);
             if (current > 0) {
                 dto.setTrend("up");
@@ -256,7 +255,7 @@ public class AiDashboardService {
             }
         } else {
             double changePercent = Math.round((change / Math.abs(previous)) * 1000.0) / 10.0;
-            
+
             if (changePercent >  MAX_CHANGE_PERCENT) changePercent =  MAX_CHANGE_PERCENT;
             if (changePercent < -MAX_CHANGE_PERCENT) changePercent = -MAX_CHANGE_PERCENT;
             dto.setChangePercent(changePercent);
@@ -271,11 +270,12 @@ public class AiDashboardService {
         return dto;
     }
 
+    // Prepare les donnees detaillees qui alimentent les drill-down du dashboard IA.
     private AiDashboardDto.KpiDetailsDto buildKpiDetails(Long entrepriseId,
             ProductIntelligenceDto productIntelligence, ForecastDto forecast) {
         AiDashboardDto.KpiDetailsDto details = new AiDashboardDto.KpiDetailsDto();
 
-        
+        // Detail revenu: top produits et top clients.
         AiDashboardDto.RevenueDetailsDto revenue = new AiDashboardDto.RevenueDetailsDto();
         List<AiDashboardDto.NameValueDto> topProducts = new ArrayList<>();
         if (productIntelligence != null && productIntelligence.getTopProducts() != null) {
@@ -297,7 +297,7 @@ public class AiDashboardService {
         revenue.setPaymentMethods(new ArrayList<>());
         details.setRevenue(revenue);
 
-        
+        // Detail commandes: repartition par statut, total, CA et panier moyen.
         AiDashboardDto.OrdersDetailsDto orders = new AiDashboardDto.OrdersDetailsDto();
         List<AiDashboardDto.StatusCountDto> byStatus = new ArrayList<>();
         List<Object[]> rawStatus = commandeVenteRepository.getOrderStatusBreakdown(entrepriseId);
@@ -319,7 +319,7 @@ public class AiDashboardService {
         }
         details.setOrders(orders);
 
-        
+        // Detail produits: stock total, alertes, ruptures, valeur de stock et rotations.
         AiDashboardDto.ProductsDetailsDto products = new AiDashboardDto.ProductsDetailsDto();
         Long totalSKUs = stockRepository.getTotalSKUs(entrepriseId);
         products.setTotalSKUs(totalSKUs != null ? totalSKUs : 0L);
@@ -340,7 +340,7 @@ public class AiDashboardService {
         }
         details.setProducts(products);
 
-        
+        // Detail prevision: score de confiance, horizons et metriques de validation.
         AiDashboardDto.ForecastDetailsDto forecastDetails = new AiDashboardDto.ForecastDetailsDto();
         if (forecast != null) {
             forecastDetails.setAccuracy(forecast.getConfidenceScore());

@@ -45,7 +45,7 @@ public class SecurityConfig {
         // Allow frontend origin
         config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
 
-        // ✅ EXPLICITLY ALLOW DELETE METHOD
+        //  EXPLICITLY ALLOW DELETE METHOD
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
 
         // Allow all headers including Authorization
@@ -60,7 +60,7 @@ public class SecurityConfig {
         // Cache CORS preflight for 1 hour
         config.setMaxAge(3600L);
 
-        logger.info("✅ CORS Configuration:");
+        logger.info(" CORS Configuration:");
         logger.info("   - Allowed Origins: http://localhost:4200");
         logger.info("   - Allowed Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD");
         logger.info("   - Allowed Headers: *");
@@ -74,7 +74,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("═══════════════════════════════════════════════════");
-        logger.info("🔐 Configuring Spring Security Filter Chain");
+        logger.info(" Configuring Spring Security Filter Chain");
         logger.info("═══════════════════════════════════════════════════");
 
         http
@@ -86,7 +86,7 @@ public class SecurityConfig {
 
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Public endpoints - NO authentication required
+                        //  Public endpoints - NO authentication required
                         .requestMatchers(
                                 "/test/**",
                                 "/api/auth/**",
@@ -108,15 +108,15 @@ public class SecurityConfig {
 
         // Add JWT filter BEFORE the UsernamePasswordAuthenticationFilter
         if (jwtFilter != null) {
-            logger.info("✅ JWT Filter added to filter chain");
+            logger.info(" JWT Filter added to filter chain");
             http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         } else {
-            logger.warn("⚠️  JWT Filter NOT found!");
+            logger.warn("  JWT Filter NOT found!");
         }
 
-        logger.info("═══════════════════════════════════════════════════");
-        logger.info("✅ Security Configuration Complete");
-        logger.info("═══════════════════════════════════════════════════");
+        
+        logger.info(" Security Configuration Complete");
+        
 
         return http.build();
     }

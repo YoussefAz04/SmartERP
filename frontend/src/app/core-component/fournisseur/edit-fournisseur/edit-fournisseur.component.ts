@@ -21,9 +21,6 @@ export class EditFournisseurComponent implements OnInit {
   errorMessage = '';
   fournisseurId!: number;
 
-  readonly starValues = [1, 2, 3, 4, 5];
-  notationHover = 0;
-
   constructor(private fournisseurService: FournisseurService,
     private fb: FormBuilder,
     private router: Router,
@@ -49,20 +46,8 @@ export class EditFournisseurComponent implements OnInit {
       telephone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-\(\)\.]{8,}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       secteurActivite: [''],
-      notation: [null, [Validators.min(1), Validators.max(5)]],
       categorieId: ['', Validators.required],
     });
-  }
-
-  get notationCurrentValue(): number {
-    const v = this.fournisseurForm.get('notation')?.value;
-    return v !== '' && v != null ? Number(v) : 0;
-  }
-
-  setNotation(val: number): void {
-    this.fournisseurForm.patchValue({ notation: val });
-    this.fournisseurForm.get('notation')?.markAsTouched();
-    this.notationHover = 0;
   }
 
   loadFournisseur(): void {
@@ -76,7 +61,6 @@ export class EditFournisseurComponent implements OnInit {
           telephone: data.telephone,
           adresse: data.adresse,
           secteurActivite: data.secteurActivite || '',
-          notation: data.notation ?? null,
           categorieId: data.categorieFournisseur?.id || '',
         });
         this.isLoading = false;
@@ -123,7 +107,6 @@ export class EditFournisseurComponent implements OnInit {
         telephone: formValue.telephone.trim(),
         adresse: formValue.adresse.trim(),
         secteurActivite: formValue.secteurActivite ? formValue.secteurActivite.trim() : '',
-        notation: formValue.notation != null && formValue.notation !== '' ? parseFloat(formValue.notation) : null,
         categorieFournisseur: { id: formValue.categorieId }
       };
 

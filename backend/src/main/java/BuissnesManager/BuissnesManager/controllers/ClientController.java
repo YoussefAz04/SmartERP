@@ -24,7 +24,7 @@ public class ClientController {
     @Autowired
     private JWTUtil jwtUtil;
 
-    // ✅ ADD CLIENT
+    //  ADD CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping("/addClient/{idCategorie}")
     public ResponseEntity<Client> addClient(@RequestBody Client client, @PathVariable Long idCategorie) {
@@ -36,7 +36,7 @@ public class ClientController {
         }
     }
 
-    // ✅ GET ALL CLIENTS
+    //  GET ALL CLIENTS
     @GetMapping("/getAllClients")
     public ResponseEntity<List<Client>> getAllClients() {
         try {
@@ -46,7 +46,7 @@ public class ClientController {
         }
     }
 
-    // ✅ GET CLIENTS BY ENTERPRISE
+    //  GET CLIENTS BY ENTERPRISE
     @GetMapping("/byEntreprise/{entrepriseId}")
     public ResponseEntity<List<Client>> getClientsByEntreprise(
             @PathVariable Long entrepriseId,
@@ -65,7 +65,7 @@ public class ClientController {
         }
     }
 
-    // ✅ GET CLIENT BY ID
+    //  GET CLIENT BY ID
     @GetMapping("/getClientById/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable Long id) {
         try {
@@ -75,7 +75,7 @@ public class ClientController {
         }
     }
 
-    // ✅ DELETE CLIENT
+    //  DELETE CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @DeleteMapping("/deleteClient/{id}")
     public ResponseEntity<Map<String, Object>> deleteClient(@PathVariable Long id) {
@@ -94,7 +94,7 @@ public class ClientController {
         }
     }
 
-    // ✅ UPDATE CLIENT
+    //  UPDATE CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/updateClient/{id}")
     public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client client,
@@ -108,7 +108,7 @@ public class ClientController {
         }
     }
 
-    // ✅ ADD CATEGORY CLIENT
+    //  ADD CATEGORY CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping("/addCategorieClient")
     public ResponseEntity<CategorieClient> addCategorieClient(@RequestBody CategorieClient categorieClient) {
@@ -121,7 +121,7 @@ public class ClientController {
         }
     }
 
-    // ✅ GET ALL CATEGORIES
+    //  GET ALL CATEGORIES
     @GetMapping("/getAllCategorieClients")
     public ResponseEntity<List<CategorieClientDto>> getAllCategorieClients() {
         try {
@@ -131,7 +131,7 @@ public class ClientController {
         }
     }
 
-    // ✅ GET CATEGORY BY ID
+    //  GET CATEGORY BY ID
     @GetMapping("/getCategorieClientById/{id}")
     public ResponseEntity<CategorieClient> getCategorieClientById(@PathVariable Long id) {
         try {
@@ -141,7 +141,7 @@ public class ClientController {
         }
     }
 
-    // ✅ UPDATE CATEGORY CLIENT
+    //  UPDATE CATEGORY CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/updateCategorieClient/{id}")
     public ResponseEntity<CategorieClient> updateCategorieClient(

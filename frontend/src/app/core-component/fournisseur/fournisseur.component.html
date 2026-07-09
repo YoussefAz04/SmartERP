@@ -164,8 +164,6 @@
             <th>Adresse</th>
             <th>Catégorie</th>
             <th>Secteur</th>
-            <th>Notation</th>
-            <th title="Taux de livraison à temps : commandes reçues à la date prévue ÷ commandes livrées avec date prévue × 100">Taux Liv. <i class="feather icon-info" style="font-size:0.75rem;opacity:0.6;"></i></th>
             <th>Créé le</th>
             <th>Modifié le</th>
             <th class="text-center">Actions</th>
@@ -213,20 +211,6 @@
                 <span class="text-muted" *ngIf="!f.secteurActivite">—</span>
               </td>
               <td>
-                <span class="rating-stars" *ngIf="f.notation != null" [title]="f.notation + ' / 5'">
-                  <ng-container *ngFor="let s of [1,2,3,4,5]">
-                    <i class="feather icon-star" [class.star-on]="s <= (f.notation || 0)" [class.star-off]="s > (f.notation || 0)"></i>
-                  </ng-container>
-                </span>
-                <span class="text-muted" *ngIf="f.notation == null">—</span>
-              </td>
-              <td>
-                <span class="count-badge" *ngIf="f.tauxLivraison != null">
-                  {{ f.tauxLivraison }}%
-                </span>
-                <span class="text-muted" *ngIf="f.tauxLivraison == null">—</span>
-              </td>
-              <td>
                 <span class="date-badge">
                   <i class="feather icon-calendar"></i>
                   {{ f.createdAt | date:'dd/MM/yyyy' }}
@@ -271,7 +255,7 @@
 
           @if (filteredFournisseurs.length === 0 && !isLoading) {
             <tr>
-              <td colspan="10">
+              <td colspan="8">
                 <div class="empty-state">
                   <span class="empty-icon">
                     <i class="feather icon-package"></i>

@@ -30,10 +30,10 @@ public class CommandeAchatController {
     @GetMapping
     public ResponseEntity<List<CommandeAchat>> getAllCommandes() {
         try {
-            logger.info("📋 Getting all purchase orders");
+            logger.info(" Getting all purchase orders");
             return ResponseEntity.ok(commandeAchatService.getAllCommandes());
         } catch (Exception e) {
-            logger.error("❌ Error getting commandes", e);
+            logger.error(" Error getting commandes", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -41,12 +41,12 @@ public class CommandeAchatController {
     @GetMapping("/{id}")
     public ResponseEntity<CommandeAchat> getCommandeById(@PathVariable Long id) {
         try {
-            logger.info("📋 Getting commande with ID: {}", id);
+            logger.info(" Getting commande with ID: {}", id);
             return commandeAchatService.getCommandeById(id)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
-            logger.error("❌ Error getting commande", e);
+            logger.error(" Error getting commande", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -54,10 +54,10 @@ public class CommandeAchatController {
     @GetMapping("/entreprise/{entrepriseId}")
     public ResponseEntity<List<CommandeAchat>> getCommandesByEntreprise(@PathVariable Long entrepriseId) {
         try {
-            logger.info("📋 Getting commandes for entreprise: {}", entrepriseId);
+            logger.info(" Getting commandes for entreprise: {}", entrepriseId);
             return ResponseEntity.ok(commandeAchatService.getCommandesByEntreprise(entrepriseId));
         } catch (Exception e) {
-            logger.error("❌ Error getting commandes by entreprise", e);
+            logger.error(" Error getting commandes by entreprise", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -65,13 +65,13 @@ public class CommandeAchatController {
     @PostMapping("/add")
     public ResponseEntity<?> createCommande(@RequestBody CommandeAchatDto dto) {
         try {
-            logger.info("📥 Received DTO from frontend:");
+            logger.info(" Received DTO from frontend:");
             logger.info("   Reference: {}", dto.getReference());
             logger.info("   Fournisseur ID: {}", dto.getFournisseurId());
             logger.info("   Enterprise ID: {}", dto.getEntrepriseId());
             logger.info("   Number of lines: {}", dto.getLignes() != null ? dto.getLignes().size() : 0);
             
-            // ✅ LOG EACH LINE IN DETAIL
+            // ✅LOG EACH LINE IN DETAIL
             if (dto.getLignes() != null && !dto.getLignes().isEmpty()) {
                 for (int i = 0; i < dto.getLignes().size(); i++) {
                     LigneCommandeAchatDto ligne = dto.getLignes().get(i);
@@ -89,7 +89,7 @@ public class CommandeAchatController {
             CommandeAchat commande = commandeAchatService.createCommande(dto);
             return ResponseEntity.ok(commande);
         } catch (Exception e) {
-            logger.error("❌ Error creating commande: {}", e.getMessage(), e);
+            logger.error(" Error creating commande: {}", e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
             errorResponse.put("details", e.getCause() != null ? e.getCause().getMessage() : "No details");
@@ -100,14 +100,14 @@ public class CommandeAchatController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCommande(@PathVariable Long id, @RequestBody CommandeAchatDto dto) {
         try {
-            logger.info("✏️ Updating commande with ID: {}", id);
+            logger.info(" Updating commande with ID: {}", id);
             CommandeAchat commande = commandeAchatService.updateCommande(id, dto);
             return ResponseEntity.ok(commande);
         } catch (RuntimeException e) {
-            logger.error("❌ Commande not found: {}", id);
+            logger.error(" Commande not found: {}", id);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            logger.error("❌ Error updating commande", e);
+            logger.error(" Error updating commande", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Erreur lors de la mise à jour"));
         }
@@ -116,14 +116,14 @@ public class CommandeAchatController {
     @PatchMapping("/{id}/statut")
     public ResponseEntity<?> updateStatut(@PathVariable Long id, @RequestParam String statut) {
         try {
-            logger.info("🔄 Updating status for commande {}: {}", id, statut);
+            logger.info(" Updating status for commande {}: {}", id, statut);
             CommandeAchat commande = commandeAchatService.updateStatut(id, statut);
             return ResponseEntity.ok(commande);
         } catch (RuntimeException e) {
-            logger.error("❌ Error: {}", e.getMessage());
+            logger.error(" Error: {}", e.getMessage());
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
-            logger.error("❌ Error updating status", e);
+            logger.error(" Error updating status", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Erreur lors de la mise à jour du statut"));
         }
@@ -132,15 +132,15 @@ public class CommandeAchatController {
     @PutMapping("/{id}/valider")
     public ResponseEntity<?> validerCommande(@PathVariable Long id) {
         try {
-            logger.info("🔄 [VALIDATION] Starting invoice generation for order ID: {}", id);
+            logger.info(" [VALIDATION] Starting invoice generation for order ID: {}", id);
             FactureAchat facture = commandeAchatService.validerCommande(id);
-            logger.info("✅ [VALIDATION] Invoice created successfully with ID: {}", facture.getId());
+            logger.info(" [VALIDATION] Invoice created successfully with ID: {}", facture.getId());
             return ResponseEntity.ok(facture);
         } catch (RuntimeException e) {
-            logger.error("❌ [VALIDATION ERROR] {}", e.getMessage());
+            logger.error(" [VALIDATION ERROR] {}", e.getMessage());
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
-            logger.error("❌ [VALIDATION CRITICAL ERROR] Unexpected error", e);
+            logger.error(" [VALIDATION CRITICAL ERROR] Unexpected error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Erreur lors de la génération de la facture: " + e.getMessage()));
         }
@@ -149,15 +149,15 @@ public class CommandeAchatController {
     @PutMapping("/{id}/recevoir")
     public ResponseEntity<?> recevoirCommande(@PathVariable Long id) {
         try {
-            logger.info("📦 [RECEPTION] Receiving order ID: {}", id);
+            logger.info(" [RECEPTION] Receiving order ID: {}", id);
             BonReception bon = commandeAchatService.recevoirCommande(id);
-            logger.info("✅ [RECEPTION] Bon réception {} created, stock updated", bon.getId());
+            logger.info(" [RECEPTION] Bon réception {} created, stock updated", bon.getId());
             return ResponseEntity.ok(bon);
         } catch (RuntimeException e) {
-            logger.error("❌ [RECEPTION ERROR] {}", e.getMessage());
+            logger.error(" [RECEPTION ERROR] {}", e.getMessage());
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
-            logger.error("❌ [RECEPTION CRITICAL ERROR] Unexpected error", e);
+            logger.error(" [RECEPTION CRITICAL ERROR] Unexpected error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Erreur lors de la réception: " + e.getMessage()));
         }
@@ -166,14 +166,14 @@ public class CommandeAchatController {
     @PutMapping("/{id}/annuler")
     public ResponseEntity<?> annulerCommande(@PathVariable Long id) {
         try {
-            logger.info("🚫 Cancelling commande with ID: {}", id);
+            logger.info(" Cancelling commande with ID: {}", id);
             CommandeAchat commande = commandeAchatService.annulerCommande(id);
             return ResponseEntity.ok(commande);
         } catch (RuntimeException e) {
-            logger.error("❌ Error: {}", e.getMessage());
+            logger.error(" Error: {}", e.getMessage());
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
-            logger.error("❌ Error cancelling commande", e);
+            logger.error(" Error cancelling commande", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Erreur lors de l'annulation"));
         }
@@ -182,11 +182,11 @@ public class CommandeAchatController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCommande(@PathVariable Long id) {
         try {
-            logger.info("🗑️ Deleting commande with ID: {}", id);
+            logger.info(" Deleting commande with ID: {}", id);
             commandeAchatService.deleteCommande(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            logger.error("❌ Error deleting commande", e);
+            logger.error(" Error deleting commande", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Erreur lors de la suppression"));
         }

@@ -39,11 +39,3 @@
   margin: 10px 0;
 }
 
-.rating-stars {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 16px;
-}
-.rating-stars .star-on { color: #f59e0b; }
-.rating-stars .star-off { color: #e2e8f0; }
