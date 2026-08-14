@@ -6,19 +6,19 @@
       <i class="feather icon-edit-3"></i>
     </div>
     <div class="ph-text">
-      <h3 class="page-title">Modifier un Fournisseur</h3>
+      <h3 class="page-title">Edit un Supplier</h3>
       <ul class="breadcrumb">
         <li class="breadcrumb-item">
           <a routerLink="/dashboard"><i class="feather icon-home"></i> Dashboard</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/fournisseur/listFournisseur">Fournisseurs</a>
+          <a routerLink="/fournisseur/listFournisseur">Suppliers</a>
         </li>
-        <li class="breadcrumb-item active">Modifier</li>
+        <li class="breadcrumb-item active">Edit</li>
       </ul>
     </div>
     <div class="ph-badge-wrap">
-      <span class="edit-badge"><i class="feather icon-edit-3"></i> Modifier</span>
+      <span class="edit-badge"><i class="feather icon-edit-3"></i> Edit</span>
     </div>
   </div>
 </div>
@@ -41,14 +41,14 @@
             <i class="feather icon-edit-3"></i>
           </div>
           <div class="header-text">
-            <h5 class="card-title">Modifier le Fournisseur</h5>
+            <h5 class="card-title">Edit le Supplier</h5>
             <p class="card-subtitle">Mettez à jour les informations puis enregistrez les modifications</p>
           </div>
         </div>
         <div class="step-strip">
           <div class="step-item">
             <div class="step-dot">1</div>
-            <span>Identité</span>
+            <span>Identity</span>
           </div>
           <div class="step-line"></div>
           <div class="step-item">
@@ -84,7 +84,7 @@
               <!-- Nom Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Nom <span class="text-danger">*</span></label>
+                  <label class="form-label">Name <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-user input-icon"></i>
                     <input
@@ -93,12 +93,12 @@
                       formControlName="nom"
                       placeholder="Entrez le nom"
                       [class.is-invalid]="isFieldInvalid('nom')"
-                      aria-label="Nom du fournisseur">
+                      aria-label="Name du fournisseur">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('nom')">
                     <i class="feather icon-alert-circle"></i>
                     <span *ngIf="fournisseurForm.get('nom')?.hasError('required')">Le nom est requis</span>
-                    <span *ngIf="fournisseurForm.get('nom')?.hasError('minlength')">Min 2 caractères</span>
+                    <span *ngIf="fournisseurForm.get('nom')?.hasError('minlength')">Min 2 characters</span>
                   </span>
                 </div>
               </div>
@@ -106,15 +106,15 @@
               <!-- Prenom Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Prénom <span class="optional-badge">Optionnel</span></label>
+                  <label class="form-label">First name <span class="optional-badge">Optionnel</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-user input-icon"></i>
                     <input
                       type="text"
                       class="form-control"
                       formControlName="prenom"
-                      placeholder="Entrez le prénom (optionnel)"
-                      aria-label="Prénom du fournisseur">
+                      placeholder="Entrez le prénom (optional)"
+                      aria-label="First name du fournisseur">
                   </div>
                 </div>
               </div>
@@ -122,19 +122,19 @@
             </div>
           </div>
 
-          <!-- ── Section 2: Coordonnées ──────────────────── -->
+          <!-- ── Section 2: Contact Details ──────────────────── -->
           <div class="form-section">
             <div class="section-header">
               <span class="section-num">2</span>
               <i class="feather icon-phone"></i>
-              <span>Coordonnées</span>
+              <span>Contact Details</span>
             </div>
             <div class="row">
 
               <!-- Telephone Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                  <label class="form-label">Phone <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-phone input-icon"></i>
                     <input
@@ -143,11 +143,11 @@
                       formControlName="telephone"
                       placeholder="Ex: +216 20 000 000"
                       [class.is-invalid]="isFieldInvalid('telephone')"
-                      aria-label="Téléphone du fournisseur">
+                      aria-label="Phone du fournisseur">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('telephone')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('telephone')?.hasError('required')">Le téléphone est requis</span>
+                    <span *ngIf="fournisseurForm.get('telephone')?.hasError('required')">Phone is required</span>
                     <span *ngIf="fournisseurForm.get('telephone')?.hasError('pattern')">Min 8 chiffres</span>
                   </span>
                 </div>
@@ -178,21 +178,21 @@
               <!-- Adresse Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                  <label class="form-label">Address <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-map-pin input-icon"></i>
                     <input
                       type="text"
                       class="form-control"
                       formControlName="adresse"
-                      placeholder="Entrez l'adresse complète"
+                      placeholder="Enter the full address"
                       [class.is-invalid]="isFieldInvalid('adresse')"
-                      aria-label="Adresse du fournisseur">
+                      aria-label="Address du fournisseur">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('adresse')">
                     <i class="feather icon-alert-circle"></i>
                     <span *ngIf="fournisseurForm.get('adresse')?.hasError('required')">L'adresse est requise</span>
-                    <span *ngIf="fournisseurForm.get('adresse')?.hasError('minlength')">Min 5 caractères</span>
+                    <span *ngIf="fournisseurForm.get('adresse')?.hasError('minlength')">Min 5 characters</span>
                   </span>
                 </div>
               </div>
@@ -200,7 +200,7 @@
               <!-- Secteur Activite Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Secteur d'Activité <span class="optional-badge">Optionnel</span></label>
+                  <label class="form-label">Business Sector <span class="optional-badge">Optionnel</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-briefcase input-icon"></i>
                     <input
@@ -208,7 +208,7 @@
                       class="form-control"
                       formControlName="secteurActivite"
                       placeholder="Ex: Technologie, Commerce..."
-                      aria-label="Secteur d'activité">
+                      aria-label="Business sector">
                   </div>
                 </div>
               </div>
@@ -228,21 +228,21 @@
               <!-- Categorie Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Catégorie Fournisseur <span class="text-danger">*</span></label>
+                  <label class="form-label">Category Supplier <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-tag input-icon"></i>
                     <select
                       class="form-select"
                       formControlName="categorieId"
                       [class.is-invalid]="isFieldInvalid('categorieId')"
-                      aria-label="Catégorie du fournisseur">
-                      <option value="">-- Sélectionnez une catégorie --</option>
+                      aria-label="Category du fournisseur">
+                      <option value="">-- Select a category --</option>
                       <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
                     </select>
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('categorieId')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="fournisseurForm.get('categorieId')?.hasError('required')">La catégorie est requise</span>
+                    <span *ngIf="fournisseurForm.get('categorieId')?.hasError('required')">Category is required</span>
                   </span>
                 </div>
               </div>
@@ -254,12 +254,12 @@
           <div class="form-actions">
             <button type="button" class="btn btn-cancel" [disabled]="isLoading" (click)="onCancel()">
               <i class="feather icon-x"></i>
-              <span>Annuler</span>
+              <span>Cancel</span>
             </button>
             <button type="submit" class="btn btn-submit" [disabled]="!fournisseurForm.valid || isLoading">
               <span class="spinner" *ngIf="isLoading"></span>
               <i class="feather icon-save" *ngIf="!isLoading"></i>
-              <span>{{ isLoading ? 'En cours...' : 'Enregistrer les Modifications' }}</span>
+              <span>{{ isLoading ? 'En cours...' : 'Enregistrer les Updates' }}</span>
             </button>
           </div>
 

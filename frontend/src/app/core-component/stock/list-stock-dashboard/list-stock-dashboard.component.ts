@@ -79,7 +79,7 @@ export class ListStockDashboardComponent implements OnInit, AfterViewInit, OnDes
         setTimeout(() => this.contentReady = true, 50);
       },
       error: (err) => {
-        console.error('Erreur chargement stocks:', err);
+        console.error('Stock loading error:', err);
         this.isLoading = false;
         this.contentReady = true;
       }
@@ -118,8 +118,8 @@ export class ListStockDashboardComponent implements OnInit, AfterViewInit, OnDes
 
   getStatusLabel(stock: Stock): string {
     const status = this.getStockStatus(stock);
-    if (status === 'OUT_OF_STOCK') return 'Rupture';
-    if (status === 'LOW_STOCK') return 'Stock bas';
+    if (status === 'OUT_OF_STOCK') return 'Out of stock';
+    if (status === 'LOW_STOCK') return 'Low stock';
     return 'OK';
   }
 

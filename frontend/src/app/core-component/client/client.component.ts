@@ -129,14 +129,14 @@ export class ClientComponent implements OnInit, AfterViewInit {
           },
           error: (err) => {
             this.isDeleting = false;
-            console.error('Erreur lors de la suppression:', err);
+            console.error('Error during deletion:', err);
             
-            const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
-            this.notification.error('✗ Erreur: ' + errorMsg);
+            const errorMsg = err.error?.message || err.message || 'Unknown error';
+            this.notification.error('Error: ' + errorMsg);
           }
         });
       } else {
-        console.log('Suppression annulée');
+        console.log('Deletion canceled');
       }
     });
   }
@@ -148,7 +148,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
     if (item) {
       try {
         currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
-        console.log('User connecté:', currentUser?.name);
+        console.log('Connected user:', currentUser?.name);
         console.log('Token:', currentUser?.token);
         console.log('Permissions:', currentUser?.permission);
 
@@ -159,7 +159,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
         const canByRole = isSuperAdmin || isAdmin;
 
         // Match the exact module title used by this page (accent- and case-insensitive)
-        // to avoid cross-matching the "Catégories Clients" permission row.
+        // to avoid cross-matching the "Categorys Clients" permission row.
         const normalize = (s: string | undefined | null) =>
           (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
         const targetTitle = normalize('gestion de Client');
@@ -194,7 +194,7 @@ export class ClientComponent implements OnInit, AfterViewInit {
         }
 
         console.log('canCreateClient:', this.canCreateClient, 'canEditClient:', this.canEditClient, 'canDeleteClient:', this.canDeleteClient);
-        console.log('Entreprise:', currentUser?.entreprise?.nom);
+        console.log('Company:', currentUser?.entreprise?.nom);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }

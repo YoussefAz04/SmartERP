@@ -51,12 +51,12 @@ export class DetaisFactureDeVenteComponent implements OnInit {
     this.factureService.updateFacture(this.factureId, this.factureDetais).subscribe({
       next: () => {
         this.isSaving = false;
-        this.successMessage = 'Facture mise à jour avec succès.';
+        this.successMessage = 'Invoice updated successfully.';
         setTimeout(() => this.router.navigate(['/facture/listFactureVente']), 1200);
       },
       error: () => {
         this.isSaving = false;
-        this.errorMessage = 'Erreur lors de la mise à jour de la facture.';
+        this.errorMessage = 'Error while updating invoice.';
       }
     });
   }
@@ -79,7 +79,7 @@ export class DetaisFactureDeVenteComponent implements OnInit {
       },
       error: () => {
         this.isDeleting = false;
-        this.errorMessage = 'Erreur lors de la suppression de la facture.';
+        this.errorMessage = 'Error while deleting the invoice.';
       }
     });
   }

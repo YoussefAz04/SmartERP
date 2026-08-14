@@ -64,7 +64,7 @@ public class UserController {
             }
             User createdUser = userService.createUserWithEntreprise(request, idEntreprise);
             auditLogService.log("USER_CREATED",
-                    "Utilisateur créé: " + createdUser.getUsername() + " pour l'entreprise " + idEntreprise);
+                    "User créé: " + createdUser.getUsername() + " pour l'entreprise " + idEntreprise);
             return ResponseEntity.ok(createdUser);
         } catch (IllegalArgumentException e) {
             logger.error("Validation error creating user: {}", e.getMessage());
@@ -75,7 +75,7 @@ public class UserController {
         } catch (Exception e) {
             logger.error("Unexpected error creating user: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur: " + e.getMessage());
+                    .body("Error: " + e.getMessage());
         }
     }
 
@@ -108,7 +108,7 @@ public class UserController {
         } catch (Exception e) {
             logger.error("Unexpected error creating employee: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur inattendue s'est produite lors de la création de l'employé");
+                    .body("Une error inattendue s'est produite lors de la création de l'employé");
         }
     }
 
@@ -201,10 +201,10 @@ public class UserController {
                 }
             }
             userService.updateUser(userDTO, id);
-            auditLogService.log("USER_UPDATED", "Utilisateur mis à jour, id=" + id);
+            auditLogService.log("USER_UPDATED", "User mis à jour, id=" + id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error : " + e.getMessage());
         }
     }
 
@@ -227,7 +227,7 @@ public class UserController {
                 }
             }
             userService.deleteUser(id);
-            auditLogService.log("USER_DELETED", "Utilisateur supprimé, id=" + id);
+            auditLogService.log("USER_DELETED", "User supprimé, id=" + id);
             return ResponseEntity.ok(Map.of("message", "User deleted successfully", "status", "success"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -264,7 +264,7 @@ public class UserController {
             auditLogService.log("USER_STATUS_CHANGED",
                     "Statut utilisateur id=" + id + " changé à: " + (enabled ? "actif" : "inactif"));
             return ResponseEntity.ok(Map.of(
-                    "message", enabled ? "Utilisateur activé avec succès" : "Utilisateur désactivé avec succès",
+                    "message", enabled ? "User activated successfully" : "User deactivated successfully",
                     "status", "success",
                     "user", updated));
         } catch (Exception e) {
@@ -298,13 +298,13 @@ public class UserController {
                     .getContext().getAuthentication().getName();
             userService.changePasswordForUsername(username, currentPassword, newPassword);
             auditLogService.log("USER_UPDATED", "Mot de passe changé pour l'utilisateur: " + username);
-            return ResponseEntity.ok(Map.of("message", "Mot de passe mis à jour avec succès."));
+            return ResponseEntity.ok(Map.of("message", "Password updated successfully."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             logger.error("Error changing password: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Erreur lors du changement de mot de passe."));
+                    .body(Map.of("error", "Error while changing password."));
         }
     }
 

@@ -590,7 +590,7 @@ public class CommandeVenteService {
                         articleName,
                         disponible,
                         stock.getSeuilMinimum(),
-                        String.format("RUPTURE DE STOCK : '%s' est épuisé !", articleName)));
+                        String.format("OUT OF STOCK: '%s' is depleted!", articleName)));
             } else if (disponible.compareTo(threshold) < 0) {
                 alerts.add(new StockAlertDto(
                         "FAIBLE_STOCK",

@@ -72,7 +72,7 @@ export class ListCategorieFournisseurComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erreur lors du chargement:', err);
-        this.notification.error('Erreur lors du chargement des catégories');
+        this.notification.error('Error while loading categories');
         this.isLoading = false;
       }
     });
@@ -84,7 +84,7 @@ export class ListCategorieFournisseurComponent implements OnInit {
       return;
     }
 
-    this.notification.confirm('Êtes-vous sûr de vouloir supprimer cette catégorie?').then(ok => {
+    this.notification.confirm('Are you sure you want to delete this category?').then(ok => {
       if (!ok) {
         return;
       }
@@ -92,13 +92,13 @@ export class ListCategorieFournisseurComponent implements OnInit {
       this.isLoading = true;
       this.fournisseurService.deleteCategorieFournisseur(id).subscribe({
         next: (response: any) => {
-          this.notification.success('✓ Catégorie supprimée avec succès');
+          this.notification.success('✓ Category supprimée avec succès');
           this.loadCategories();
           this.isLoading = false;
         },
         error: (err: any) => {
-          console.error('Erreur lors de la suppression:', err);
-          this.notification.error('Erreur lors de la suppression');
+          console.error('Error during deletion:', err);
+          this.notification.error('Error during deletion');
           this.isLoading = false;
         }
       });

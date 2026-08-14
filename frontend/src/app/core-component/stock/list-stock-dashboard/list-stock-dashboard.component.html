@@ -10,10 +10,10 @@
     <div class="header-text">
       <div class="header-badge">
         <i class="feather icon-layers"></i>
-        <span>Gestion des Stocks</span>
+        <span>Stock Management</span>
       </div>
       <h1 class="header-title">Gestion du Stock</h1>
-      <p class="header-subtitle">Vue d'ensemble de votre inventaire en temps réel</p>
+      <p class="header-subtitle">Real-time overview of your inventory</p>
     </div>
     <div class="header-actions">
       <button class="btn-modern btn-modern-outline" routerLink="/stock/list">
@@ -46,7 +46,7 @@
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ totalItems }}</div>
-            <div class="kpi-label">Articles en stock</div>
+            <div class="kpi-label">Products en stock</div>
             <div class="kpi-trend">
               <i class="feather icon-trending-up"></i>
               <span>Inventaire actif</span>
@@ -57,7 +57,7 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir l'inventaire</span>
+          <span>View l'inventaire</span>
           <i class="feather icon-arrow-right"></i>
         </div>
       </div>
@@ -67,10 +67,10 @@
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ totalAvailable }}</div>
-            <div class="kpi-label">Quantité disponible</div>
+            <div class="kpi-label">Quantity disponible</div>
             <div class="kpi-trend">
               <i class="feather icon-check-circle"></i>
-              <span>Unités en stock</span>
+              <span>Units in stock</span>
             </div>
           </div>
           <div class="kpi-icon-wrap">
@@ -78,7 +78,7 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir le stock</span>
+          <span>View le stock</span>
           <i class="feather icon-arrow-right"></i>
         </div>
       </div>
@@ -88,10 +88,10 @@
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ lowStockCount }}</div>
-            <div class="kpi-label">Ruptures de stock</div>
+            <div class="kpi-label">Out of Stocks de stock</div>
             <div class="kpi-trend">
               <i class="feather icon-alert-triangle"></i>
-              <span>À réapprovisionner</span>
+              <span>To restock</span>
             </div>
           </div>
           <div class="kpi-icon-wrap">
@@ -99,7 +99,7 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir les alertes</span>
+          <span>View alerts</span>
           <i class="feather icon-arrow-right"></i>
         </div>
       </div>
@@ -109,7 +109,7 @@
         <div class="kpi-body">
           <div class="kpi-info">
             <div class="kpi-number">{{ movements.length }}</div>
-            <div class="kpi-label">Mouvements totaux</div>
+            <div class="kpi-label">Movements totaux</div>
             <div class="kpi-trend">
               <i class="feather icon-activity"></i>
               <span>Historique complet</span>
@@ -120,7 +120,7 @@
           </div>
         </div>
         <div class="kpi-footer">
-          <span>Voir l'historique</span>
+          <span>View l'historique</span>
           <i class="feather icon-arrow-right"></i>
         </div>
       </div>
@@ -136,8 +136,8 @@
     <div class="action-card action-blue" routerLink="/stock/list" style="--stagger: 0">
       <div class="action-icon"><i class="feather icon-list"></i></div>
       <div class="action-text">
-        <h4>Voir tout l'inventaire</h4>
-        <p>Liste complète des articles</p>
+        <h4>View all l'inventaire</h4>
+        <p>Complete product list</p>
       </div>
       <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
     </div>
@@ -145,7 +145,7 @@
       <div class="action-icon"><i class="feather icon-sliders"></i></div>
       <div class="action-text">
         <h4>Ajuster le stock</h4>
-        <p>Modifier les quantités</p>
+        <p>Edit quantities</p>
       </div>
       <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
     </div>
@@ -161,7 +161,7 @@
       <div class="action-icon"><i class="feather icon-alert-triangle"></i></div>
       <div class="action-text">
         <h4>Alertes stock bas</h4>
-        <p>Articles à réapprovisionner</p>
+        <p>Products to restock</p>
       </div>
       <div class="action-arrow"><i class="feather icon-arrow-right"></i></div>
     </div>
@@ -177,11 +177,11 @@
             <div class="panel-icon-wrap">
               <i class="feather icon-alert-triangle"></i>
             </div>
-            <span>Articles En Rupture De Stock</span>
+            <span>Products En Out of Stock De Stock</span>
             <span class="panel-badge">{{ lowStockCount }}</span>
           </div>
           <a routerLink="/stock/list" class="panel-link">
-            Voir tout
+            View all
             <i class="feather icon-arrow-right"></i>
           </a>
         </div>
@@ -191,10 +191,10 @@
               <table class="modern-table mb-0">
                 <thead>
                   <tr>
-                    <th>Article</th>
+                    <th>Product</th>
                     <th>Localisation</th>
-                    <th class="text-center">Qté Dispo</th>
-                    <th class="text-center">Statut</th>
+                    <th class="text-center">Qty Dispo</th>
+                    <th class="text-center">Status</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -209,7 +209,7 @@
                             [class.avatar-warning]="getStockStatus(stock) === 'LOW_STOCK'">
                             {{ (stock.articleAchat?.nom || 'A')[0].toUpperCase() }}
                           </span>
-                          <span class="article-name">{{ stock.articleAchat?.nom || 'Article #' + stock.id }}</span>
+                          <span class="article-name">{{ stock.articleAchat?.nom || 'Product #' + stock.id }}</span>
                         </div>
                       </td>
                       <td class="location-cell">{{ stock.localisation || '—' }}</td>
@@ -239,7 +239,7 @@
               <div class="empty-icon success">
                 <i class="feather icon-check-circle"></i>
               </div>
-              <p>Aucune rupture de stock détectée</p>
+              <p>No stockout detected</p>
             </div>
           }
         </div>
@@ -254,10 +254,10 @@
             <div class="panel-icon-wrap">
               <i class="feather icon-activity"></i>
             </div>
-            <span>Derniers Mouvements</span>
+            <span>Derniers Movements</span>
           </div>
           <a routerLink="/stock/movements" class="panel-link">
-            Voir tout
+            View all
             <i class="feather icon-arrow-right"></i>
           </a>
         </div>
@@ -269,7 +269,7 @@
                   <tr>
                     <th>Date</th>
                     <th>Type</th>
-                    <th class="text-center">Quantité</th>
+                    <th class="text-center">Quantity</th>
                     <th>Motif</th>
                   </tr>
                 </thead>
@@ -307,7 +307,7 @@
               <div class="empty-icon neutral">
                 <i class="feather icon-inbox"></i>
               </div>
-              <p>Aucun mouvement enregistré</p>
+              <p>No movement recorded</p>
             </div>
           }
         </div>

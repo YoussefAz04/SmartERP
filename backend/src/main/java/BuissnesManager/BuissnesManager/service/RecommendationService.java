@@ -74,40 +74,40 @@ public class RecommendationService {
         if (outOfStockCount != null && outOfStockCount > 0) {
             String detail = worstStockArticle != null
                     ? String.format(Locale.FRANCE,
-                            " Article le plus touché : « %s ». Passez une commande fournisseur dès aujourd'hui pour éviter de perdre des ventes.",
+                            " Most affected product: \"%s\". Place a supplier order today to avoid losing sales.",
                             worstStockArticle)
-                    : " Passez les commandes fournisseurs nécessaires dès aujourd'hui pour éviter de perdre des ventes.";
+                    : " Place the necessary supplier orders today to avoid losing sales.";
             String headline = pick(v,
-                    outOfStockCount + " article(s) sont totalement en rupture de stock.",
-                    outOfStockCount + " article(s) ont un stock à zéro.",
-                    "Stock à zéro sur " + outOfStockCount + " article(s).");
+                    outOfStockCount + " product(s) are completely out of stock.",
+                    outOfStockCount + " product(s) have zero stock.",
+                    "Zero stock for " + outOfStockCount + " article(s).");
             recommendations.add(new RecommendationDto(
                 "STOCK_CRITIQUE",
-                "Rupture de Stock Détectée",
+                "Stockout Detected",
                 headline + detail,
                 "CRITIQUE",
                 "fa-exclamation-triangle",
-                "Voir Stock"
+                "View Stock"
             ));
         }
 
         if (lowStockCount != null && lowStockCount > 0) {
             String detail = worstStockArticle != null && (outOfStockCount == null || outOfStockCount == 0)
                     ? String.format(Locale.FRANCE,
-                            " Article le plus exposé : « %s ». Commandez avant qu'il ne tombe à zéro.",
+                            " Most exposed product: \"%s\". Order before it reaches zero.",
                             worstStockArticle)
-                    : " Passez vos commandes fournisseurs maintenant pour ne pas tomber en rupture.";
+                    : " Place supplier orders now to avoid a stockout.";
             String headline = pick(v,
-                    lowStockCount + " article(s) ont un stock faible et doivent être réapprovisionnés.",
-                    lowStockCount + " article(s) sont sous le seuil d'alerte.",
-                    lowStockCount + " article(s) risquent bientôt la rupture de stock.");
+                    lowStockCount + " product(s) have low stock and must be restocked.",
+                    lowStockCount + " product(s) are below the alert threshold.",
+                    lowStockCount + " product(s) may soon run out of stock.");
             recommendations.add(new RecommendationDto(
                 "STOCK_FAIBLE",
-                "Stock Faible - Action Requise",
+                "Low Stock - Action Required",
                 headline + detail,
                 "HAUTE",
                 "fa-boxes",
-                "Gérer Stock"
+                "Manage Stock"
             ));
         }
 
@@ -135,35 +135,35 @@ public class RecommendationService {
                     && salesThisMonth < 0.5 * expectedMtd) {
                 double shortfallPct = ((expectedMtd - salesThisMonth) / expectedMtd) * 100.0;
                 String levers = pick(v,
-                        "Lancez vos actions commerciales prioritaires et relancez vos clients existants.",
-                        "Contactez vos clients dormants et proposez une remise ciblée pour relancer les ventes.",
-                        "Reprenez contact avec vos anciens clients et relancez vos campagnes commerciales.");
+                        "Launch priority sales actions and follow up with existing customers.",
+                        "Contact inactive customers and offer a targeted discount to restart sales.",
+                        "Reconnect with former customers and relaunch your sales campaigns.");
                 recommendations.add(new RecommendationDto(
                     "VENTES_FAIBLES",
-                    "Ventes du mois en retard",
+                    "Monthly Sales Behind Target",
                     String.format(Locale.FRANCE,
-                        "Vos ventes du mois sont %.0f %% en dessous de votre moyenne habituelle (réalisé : %,.0f — attendu à ce stade du mois : %,.0f). %s",
+                        "This month's sales are %.0f %% below your usual average (actual: %,.0f - expected at this stage of the month: %,.0f). %s",
                         shortfallPct, salesThisMonth, expectedMtd, levers),
                     "MOYENNE",
                     "fa-chart-line",
-                    "Analyser Ventes"
+                    "Analyze Sales"
                 ));
             } else if (expectedMtd > 0 && now.getDayOfMonth() >= 10
                     && salesThisMonth > 1.3 * expectedMtd) {
                 double surgePct = ((salesThisMonth - expectedMtd) / expectedMtd) * 100.0;
                 String advice = pick(v,
-                        "Reconstituez le stock de vos meilleurs articles pour ne pas tomber en rupture.",
-                        "Augmentez vos commandes fournisseurs avant la fin du mois pour suivre la demande.",
-                        "Profitez de cette dynamique pour fidéliser vos nouveaux clients.");
+                        "Restock your best products to avoid stockouts.",
+                        "Increase supplier orders before the end of the month to keep up with demand.",
+                        "Use this momentum to retain new customers.");
                 recommendations.add(new RecommendationDto(
                     "TENDANCE_CROISSANCE",
-                    "Ventes du mois en forte hausse",
+                    "Monthly Sales Rising Strongly",
                     String.format(Locale.FRANCE,
-                        "Vos ventes du mois dépassent de %.0f %% votre moyenne habituelle (réalisé : %,.0f — attendu à ce stade du mois : %,.0f). %s",
+                        "This month's sales are %.0f %% above your usual average (actual: %,.0f - expected at this stage of the month: %,.0f). %s",
                         surgePct, salesThisMonth, expectedMtd, advice),
                     "INFO",
                     "fa-rocket",
-                    "Analyser Ventes"
+                    "Analyze Sales"
                 ));
             }
         }
@@ -180,13 +180,13 @@ public class RecommendationService {
             String topProduct = topProducts.get(0)[0].toString();
             recommendations.add(new RecommendationDto(
                 "PRODUIT_STAR",
-                "Article le plus vendu",
+                "Best-Selling Product",
                 String.format(Locale.FRANCE,
-                    "« %s » est l'article qui se vend le mieux. Gardez toujours un stock suffisant et proposez-le avec d'autres articles complémentaires pour augmenter vos ventes.",
+                    "\"%s\" is the best-selling product. Always keep enough stock and offer it with complementary products to increase sales.",
                     topProduct),
                 "BASSE",
                 "fa-star",
-                "Voir Produits"
+                "View Products"
             ));
         }
 
@@ -201,48 +201,48 @@ public class RecommendationService {
             String marginStr = String.format(Locale.FRANCE, "%.1f", margin);
             if (margin < 20.0) {
                 String levers = pick(v,
-                        "Renégociez vos prix d'achat avec vos fournisseurs ou augmentez vos prix de vente sur les articles les plus vendus.",
-                        "Repérez les articles vendus à perte ou à très faible marge et corrigez leur prix de vente.",
-                        "Comparez vos prix d'achat avec d'autres fournisseurs pour obtenir de meilleures conditions.");
+                        "Renegotiate purchase prices with suppliers or increase selling prices on your best-selling products.",
+                        "Identify products sold at a loss or with very low margins and adjust their selling price.",
+                        "Compare purchase prices with other suppliers to get better terms.");
                 recommendations.add(new RecommendationDto(
                     "MARGE_FAIBLE",
-                    "Marge trop faible",
+                    "Margin Too Low",
                     String.format(Locale.FRANCE,
-                        "Votre marge est de seulement %s %%. Sur %,.0f de ventes, vos achats vous coûtent %,.0f, ce qui ne vous laisse que %,.0f de bénéfice. %s",
+                        "Your margin is only %s %%. On %,.0f in sales, purchases cost %,.0f, leaving only %,.0f in profit. %s",
                         marginStr, totalSales, cogs, grossProfit, levers),
                     "HAUTE",
                     "fa-percentage",
-                    "Analyser Achats"
+                    "Analyze Purchases"
                 ));
             } else if (margin < 35.0) {
                 recommendations.add(new RecommendationDto(
                     "MARGE_CORRECTE",
-                    "Marge correcte",
+                    "Healthy Margin",
                     String.format(Locale.FRANCE,
-                        "Votre marge est de %s %%. Sur %,.0f de ventes, vous gagnez %,.0f. %s",
+                        "Your margin is %s %%. On %,.0f in sales, you earn %,.0f. %s",
                         marginStr, totalSales, grossProfit,
                         pick(v,
-                            "Visez 35 %% de marge pour gagner en sécurité financière.",
-                            "Négociez de meilleurs prix d'achat pour atteindre 35 %% de marge.",
-                            "Repérez les articles à faible marge pour améliorer le résultat global.")),
+                            "Aim for a 35 %% margin to improve financial safety.",
+                            "Negotiate better purchase prices to reach a 35 %% margin.",
+                            "Identify low-margin products to improve overall results.")),
                     "INFO",
                     "fa-percentage",
-                    "Voir Détails"
+                    "View Details"
                 ));
             } else {
                 recommendations.add(new RecommendationDto(
                     "BONNE_PERFORMANCE",
-                    "Très bonne marge",
+                    "Very Good Margin",
                     String.format(Locale.FRANCE,
-                        "Votre marge est excellente : %s %%. Sur %,.0f de ventes, vous gagnez %,.0f. %s",
+                        "Your margin is excellent: %s %%. On %,.0f in sales, you earn %,.0f. %s",
                         marginStr, totalSales, grossProfit,
                         pick(v,
-                            "Continuez à bien négocier vos prix d'achat pour garder cette marge.",
-                            "Utilisez ce bénéfice pour fidéliser vos clients et développer votre activité.",
-                            "Conservez ces bons prix d'achat en signant des accords de longue durée avec vos meilleurs fournisseurs.")),
+                            "Keep negotiating purchase prices well to maintain this margin.",
+                            "Use this profit to retain customers and grow the business.",
+                            "Keep these good purchase prices by signing long-term agreements with your best suppliers.")),
                     "INFO",
                     "fa-thumbs-up",
-                    "Voir Détails"
+                    "View Details"
                 ));
             }
         } else if (totalSales != null && totalPurchases != null
@@ -250,13 +250,13 @@ public class RecommendationService {
             double ratio = (totalPurchases / totalSales) * 100.0;
             recommendations.add(new RecommendationDto(
                 "RATIO_ACHATS",
-                "Comparaison achats / ventes",
+                "Purchase / Sales Comparison",
                 String.format(Locale.FRANCE,
-                    "Vos achats représentent %.1f %% de vos ventes (achats : %,.0f — ventes : %,.0f). Renseignez le prix d'achat de chaque article pour que le système calcule automatiquement votre marge réelle.",
+                    "Purchases represent %.1f %% of sales (purchases: %,.0f - sales: %,.0f). Enter each product's purchase price so the system can calculate your real margin automatically.",
                     ratio, totalPurchases, totalSales),
                 "INFO",
                 "fa-balance-scale",
-                "Voir Détails"
+                "View Details"
             ));
         }
 
@@ -267,33 +267,33 @@ public class RecommendationService {
             String urgency = overdueOrders > 5 ? "HAUTE" : "MOYENNE";
             String icon = overdueOrders > 5 ? "fa-exclamation-circle" : "fa-clock";
             String advice = pick(v,
-                    "Contactez vos fournisseurs pour connaître la nouvelle date de livraison.",
-                    "Demandez à vos fournisseurs une date de livraison ferme et changez de fournisseur si nécessaire.",
-                    "Identifiez les fournisseurs souvent en retard et revoyez vos conditions avec eux.");
+                    "Contact suppliers to get the new delivery date.",
+                    "Ask suppliers for a firm delivery date and change supplier if needed.",
+                    "Identify suppliers that are often late and review your terms with them.");
             recommendations.add(new RecommendationDto(
                 "LIVRAISON_RETARD",
-                "Commandes en retard",
+                "Overdue Orders",
                 String.format(Locale.FRANCE,
-                    "%d commande(s) fournisseur ont dépassé la date de livraison prévue. %s",
+                    "%d supplier order(s) passed the expected delivery date. %s",
                     overdueOrders, advice),
                 urgency,
                 icon,
-                "Voir Commandes"
+                "View Orders"
             ));
         } else if (activeOrders != null && activeOrders > 0) {
             recommendations.add(new RecommendationDto(
                 "LIVRAISON_OK",
-                "Livraisons à jour",
+                "Deliveries On Track",
                 String.format(Locale.FRANCE,
-                    "Toutes vos commandes fournisseurs en cours (%d) seront livrées dans les délais. %s",
+                    "All current supplier orders (%d) will be delivered on time. %s",
                     activeOrders,
                     pick(v,
-                        "Continuez à suivre les confirmations de vos fournisseurs pour garder ce niveau.",
-                        "Anticipez vos commandes pour les périodes de forte demande.",
-                        "Bonne gestion des approvisionnements — gardez le rythme.")),
+                        "Keep tracking supplier confirmations to maintain this level.",
+                        "Plan orders ahead for high-demand periods.",
+                        "Good supply management - keep the pace.")),
                 "INFO",
                 "fa-truck",
-                "Voir Commandes"
+                "View Orders"
             ));
         }
 
@@ -324,17 +324,17 @@ public class RecommendationService {
                 double topShare = (topCustomerRev / totalSales) * 100.0;
                 recommendations.add(new RecommendationDto(
                     "CONCENTRATION_CLIENT",
-                    "Trop dépendant de quelques clients",
+                    "Too Dependent on a Few Customers",
                     String.format(Locale.FRANCE,
-                        "Vos 3 plus gros clients représentent %.1f %% de vos ventes (le premier, « %s », pèse à lui seul %.1f %%). Si l'un d'eux part, vos ventes chuteront fortement. %s",
+                        "Your top 3 customers represent %.1f %% of sales (the first, \"%s\", alone represents %.1f %%). If one leaves, sales could drop sharply. %s",
                         concentration, topCustomerName, topShare,
                         pick(v,
-                            "Cherchez de nouveaux clients pour réduire ce risque.",
-                            "Lancez une action commerciale pour gagner de nouveaux clients.",
-                            "Fidélisez ces clients clés avec des conditions privilégiées ou un contrat.")),
+                            "Find new customers to reduce this risk.",
+                            "Launch a sales action to win new customers.",
+                            "Retain these key customers with preferred terms or a contract.")),
                     "HAUTE",
                     "fa-users",
-                    "Voir Clients"
+                    "View Customers"
                 ));
             }
         }
@@ -356,17 +356,17 @@ public class RecommendationService {
                 if (rate > 15.0) {
                     recommendations.add(new RecommendationDto(
                         "TAUX_ANNULATION",
-                        "Trop de commandes annulées",
+                        "Too Many Canceled Orders",
                         String.format(Locale.FRANCE,
-                            "%.1f %% de vos commandes de vente sont annulées (%d annulations sur %d commandes). %s",
+                            "%.1f %% of sales orders are canceled (%d cancellations out of %d orders). %s",
                             rate, cancelled, totalStatus,
                             pick(v,
-                                "Vérifiez que le stock est bien disponible au moment où le client commande.",
-                                "Demandez aux clients pourquoi ils annulent pour comprendre la cause.",
-                                "Vérifiez vos délais de confirmation et la qualité des fiches articles.")),
+                                "Check that stock is available when the customer orders.",
+                                "Ask customers why they cancel to understand the cause.",
+                                "Check confirmation delays and product sheet quality.")),
                         rate > 25.0 ? "HAUTE" : "MOYENNE",
                         "fa-ban",
-                        "Voir Commandes"
+                        "View Orders"
                     ));
                 }
             }
@@ -391,17 +391,17 @@ public class RecommendationService {
                     if (topShare > 70.0) {
                         recommendations.add(new RecommendationDto(
                             "CATEGORIE_DOMINANTE",
-                            "Trop dépendant d'une seule famille de produits",
+                            "Too Dependent on One Product Family",
                             String.format(Locale.FRANCE,
-                                "La famille « %s » représente à elle seule %.1f %% de vos ventes. Si cette famille perd des ventes, votre activité sera fortement impactée. %s",
+                                "The \"%s\" family alone represents %.1f %% of sales. If this family loses sales, the business will be strongly affected. %s",
                                 topCat, topShare,
                                 pick(v,
-                                    "Développez d'autres familles de produits pour réduire ce risque.",
-                                    "Choisissez une ou deux familles proches à développer en priorité.",
-                                    "Mettez en avant les autres familles de produits pour mieux équilibrer vos ventes.")),
+                                    "Develop other product families to reduce this risk.",
+                                    "Choose one or two related families to develop first.",
+                                    "Highlight other product families to better balance sales.")),
                             "MOYENNE",
                             "fa-layer-group",
-                            "Voir Produits"
+                            "View Products"
                         ));
                     }
                 }
@@ -429,17 +429,17 @@ public class RecommendationService {
                         if (share > 65.0 && suppliers.size() >= 2) {
                             recommendations.add(new RecommendationDto(
                                 "DIVERSIFICATION_FOURNISSEUR",
-                                "Trop dépendant d'un seul fournisseur",
+                                "Too Dependent on One Supplier",
                                 String.format(Locale.FRANCE,
-                                    "Le fournisseur « %s » représente %.1f %% de vos achats. Si ce fournisseur a un problème, vos approvisionnements seront bloqués. %s",
+                                    "Supplier \"%s\" represents %.1f %% of purchases. If this supplier has a problem, supply will be blocked. %s",
                                     name, share,
                                     pick(v,
-                                        "Trouvez un fournisseur alternatif pour vos articles les plus importants.",
-                                        "Mettez vos fournisseurs en concurrence pour obtenir de meilleurs prix.",
-                                        "Sécurisez vos approvisionnements en ajoutant un deuxième fournisseur principal.")),
+                                        "Find an alternative supplier for your most important products.",
+                                        "Put suppliers in competition to get better prices.",
+                                        "Secure supply by adding a second main supplier.")),
                                 "MOYENNE",
                                 "fa-truck-arrow-right",
-                                "Voir Commandes"
+                                "View Orders"
                             ));
                         }
                     }
@@ -469,17 +469,17 @@ public class RecommendationService {
                         if (notation >= 4.0) {
                             recommendations.add(new RecommendationDto(
                                 "FOURNISSEUR_PERFORMANT",
-                                "Très bon fournisseur",
+                                "Very Good Supplier",
                                 String.format(Locale.FRANCE,
-                                    "Le fournisseur « %s » a une note de %.1f/5 et livre %.0f %% de ses commandes dans les délais. %s",
+                                    "Supplier \"%s\" has a %.1f/5 rating and delivers %.0f %% of orders on time. %s",
                                     best[1].toString(), notation, tauxLiv,
                                     pick(v,
-                                        "Privilégiez-le pour vos articles les plus importants.",
-                                        "Sécurisez votre relation avec un contrat de longue durée.",
-                                        "Étendez votre collaboration à d'autres familles de produits.")),
+                                        "Prioritize this supplier for your most important products.",
+                                        "Secure the relationship with a long-term contract.",
+                                        "Extend collaboration to other product families.")),
                                 "INFO",
                                 "fa-medal",
-                                "Voir Commandes"
+                                "View Orders"
                             ));
                         }
                     }
@@ -504,32 +504,32 @@ public class RecommendationService {
                 if (delta < -15.0) {
                     recommendations.add(new RecommendationDto(
                         "PANIER_MOYEN_BAISSE",
-                        "Vos clients dépensent moins par commande",
+                        "Customers Spend Less per Order",
                         String.format(Locale.FRANCE,
-                            "Sur les 90 derniers jours, vos clients dépensent en moyenne %,.0f par commande, soit %.0f %% de moins qu'avant (moyenne historique : %,.0f). %s",
+                            "Over the last 90 days, customers spend an average of %,.0f per order, %.0f %% less than before (historical average: %,.0f). %s",
                             recentAov, Math.abs(delta), aov,
                             pick(v,
-                                "Proposez des lots ou des articles complémentaires pour augmenter le montant des commandes.",
-                                "Limitez les remises pour préserver la valeur de chaque commande.",
-                                "Identifiez les clients qui commandent moins et adaptez votre offre pour eux.")),
+                                "Offer bundles or complementary products to increase order value.",
+                                "Limit discounts to preserve each order's value.",
+                                "Identify customers who order less and adapt your offer for them.")),
                         "MOYENNE",
                         "fa-cart-shopping",
-                        "Analyser Ventes"
+                        "Analyze Sales"
                     ));
                 } else if (delta > 15.0) {
                     recommendations.add(new RecommendationDto(
                         "PANIER_MOYEN_HAUSSE",
-                        "Vos clients dépensent plus par commande",
+                        "Customers Spend More per Order",
                         String.format(Locale.FRANCE,
-                            "Sur les 90 derniers jours, vos clients dépensent en moyenne %,.0f par commande, soit %.0f %% de plus qu'avant (moyenne historique : %,.0f). %s",
+                            "Over the last 90 days, customers spend an average of %,.0f per order, %.0f %% more than before (historical average: %,.0f). %s",
                             recentAov, delta, aov,
                             pick(v,
-                                "Profitez-en pour proposer des articles haut de gamme et des produits complémentaires.",
-                                "Continuez à vendre ensemble les articles qui font monter le montant des commandes.",
-                                "Identifiez ce qui marche actuellement et appliquez-le à tous vos clients.")),
+                                "Use this to offer premium products and complementary products.",
+                                "Keep selling together the products that increase order value.",
+                                "Identify what currently works and apply it to all customers.")),
                         "INFO",
                         "fa-cart-arrow-down",
-                        "Analyser Ventes"
+                        "Analyze Sales"
                     ));
                 }
             }
@@ -549,17 +549,17 @@ public class RecommendationService {
             if (ratio > 1.5 && recentPurchases > 1000.0) {
                 recommendations.add(new RecommendationDto(
                     "CASH_FLOW",
-                    "Attention à votre trésorerie",
+                    "Cash Flow Warning",
                     String.format(Locale.FRANCE,
-                        "Sur les 30 derniers jours, vous avez dépensé %,.0f en achats pour seulement %,.0f de ventes (vous dépensez %.1f fois plus que ce que vous encaissez). %s",
+                        "Over the last 30 days, you spent %,.0f on purchases for only %,.0f in sales (you spend %.1f times more than you collect). %s",
                         recentPurchases, recentSales30, ratio,
                         pick(v,
-                            "Étalez vos commandes fournisseurs ou demandez des délais de paiement plus longs.",
-                            "Vérifiez que ces achats correspondent vraiment à la demande prévue.",
-                            "Vendez d'abord le stock que vous avez avant de passer de nouvelles commandes.")),
+                            "Spread supplier orders over time or request longer payment terms.",
+                            "Check that these purchases really match expected demand.",
+                            "Sell existing stock before placing new orders.")),
                     "HAUTE",
                     "fa-wallet",
-                    "Voir Commandes"
+                    "View Orders"
                 ));
             }
         }
@@ -578,17 +578,17 @@ public class RecommendationService {
                     if (monthsOfStock > 6.0) {
                         recommendations.add(new RecommendationDto(
                             "VALEUR_STOCK",
-                            "Trop de stock immobilisé",
+                            "Too Much Stock Tied Up",
                             String.format(Locale.FRANCE,
-                                "Vous avez %,.0f de marchandise en stock, soit environ %.1f mois de ventes. C'est beaucoup de trésorerie bloquée. %s",
+                                "You have %,.0f worth of goods in stock, about %.1f months of sales. This is a lot of cash tied up. %s",
                                 stockValue, monthsOfStock,
                                 pick(v,
-                                    "Repérez les articles en surstock pour libérer de la trésorerie.",
-                                    "Lancez un déstockage sur les articles qui se vendent peu.",
-                                    "Réduisez les quantités commandées sur les articles trop stockés.")),
+                                    "Identify overstocked products to free up cash.",
+                                    "Run a clearance action on slow-selling products.",
+                                    "Reduce ordered quantities for overstocked products.")),
                             "MOYENNE",
                             "fa-warehouse",
-                            "Voir Stock"
+                            "View Stock"
                         ));
                     }
                 }
@@ -601,17 +601,17 @@ public class RecommendationService {
         if (totalOrders != null && totalOrders < 10) {
             recommendations.add(new RecommendationDto(
                 "DONNEES_INSUFFISANTES",
-                "Ajoutez plus de données",
+                "Add More Data",
                 String.format(Locale.FRANCE,
-                    "Vous n'avez que %d commande(s) enregistrée(s). C'est trop peu pour fournir des analyses fiables. %s",
+                    "You only have %d recorded order(s). This is too little to provide reliable analysis. %s",
                     totalOrders,
                     pick(v,
-                        "Plus vous ajoutez de données, plus les analyses et prévisions seront précises.",
-                        "Les prévisions automatiques s'activent à partir de 30 commandes — continuez à enrichir votre historique.",
-                        "Importez votre historique de commandes pour activer toutes les prévisions et recommandations.")),
+                        "The more data you add, the more accurate analysis and forecasts become.",
+                        "Automatic forecasts activate from 30 orders - keep enriching your history.",
+                        "Import your order history to activate all forecasts and recommendations.")),
                 "INFO",
                 "fa-database",
-                "Ajouter Commandes"
+                "Add Orders"
             ));
         }
 

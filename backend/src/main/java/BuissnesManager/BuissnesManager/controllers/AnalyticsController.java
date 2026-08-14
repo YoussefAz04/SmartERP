@@ -70,7 +70,7 @@ public class AnalyticsController {
             Long entrepriseId = extractEntrepriseId(authHeader);
             if (entrepriseId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Impossible de déterminer l'entreprise depuis le token.");
+                        .body("Unable to determine the company from the token.");
             }
             AiDashboardDto dashboard = aiDashboardService.getAiDashboard(entrepriseId);
             // Log the freshly-issued forecast so we can later compare it to
@@ -86,7 +86,7 @@ public class AnalyticsController {
         } catch (Exception e) {
             log.error("AI dashboard failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors du chargement du tableau de bord IA.");
+                    .body("Error while loading the AI dashboard.");
         }
     }
 
@@ -97,14 +97,14 @@ public class AnalyticsController {
             Long entrepriseId = extractEntrepriseId(authHeader);
             if (entrepriseId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Impossible de déterminer l'entreprise depuis le token.");
+                        .body("Unable to determine the company from the token.");
             }
             SalesAnalysisDto analysis = analyticService.analyzeSales(entrepriseId);
             return ResponseEntity.ok(analysis);
         } catch (Exception e) {
             log.error("Sales analysis failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de l'analyse des ventes.");
+                    .body("Error while analyzing sales.");
         }
     }
 
@@ -115,7 +115,7 @@ public class AnalyticsController {
             Long entrepriseId = extractEntrepriseId(authHeader);
             if (entrepriseId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Impossible de déterminer l'entreprise depuis le token.");
+                        .body("Unable to determine the company from the token.");
             }
             ForecastDto forecast = forecastService.generateForecast(entrepriseId);
             try {
@@ -127,7 +127,7 @@ public class AnalyticsController {
         } catch (Exception e) {
             log.error("Forecast generation failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la génération des prévisions.");
+                    .body("Error lors de la génération des prévisions.");
         }
     }
 
@@ -138,14 +138,14 @@ public class AnalyticsController {
             Long entrepriseId = extractEntrepriseId(authHeader);
             if (entrepriseId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Impossible de déterminer l'entreprise depuis le token.");
+                        .body("Unable to determine the company from the token.");
             }
             ProductIntelligenceDto products = analyticService.analyzeProducts(entrepriseId);
             return ResponseEntity.ok(products);
         } catch (Exception e) {
             log.error("Product intelligence failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de l'analyse des produits.");
+                    .body("Error while analyzing products.");
         }
     }
 
@@ -156,14 +156,14 @@ public class AnalyticsController {
             Long entrepriseId = extractEntrepriseId(authHeader);
             if (entrepriseId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Impossible de déterminer l'entreprise depuis le token.");
+                        .body("Unable to determine the company from the token.");
             }
             List<RecommendationDto> recommendations = recommendationService.generateRecommendations(entrepriseId);
             return ResponseEntity.ok(recommendations);
         } catch (Exception e) {
             log.error("Recommendations generation failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la génération des recommandations.");
+                    .body("Error lors de la génération des recommandations.");
         }
     }
 
@@ -174,14 +174,14 @@ public class AnalyticsController {
             Long entrepriseId = extractEntrepriseId(authHeader);
             if (entrepriseId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Impossible de déterminer l'entreprise depuis le token.");
+                        .body("Unable to determine the company from the token.");
             }
             PredictionAccuracyDto history = predictionLogService.getHistory(entrepriseId);
             return ResponseEntity.ok(history);
         } catch (Exception e) {
             log.error("Prediction history failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors du chargement de l'historique des prédictions.");
+                    .body("Error lors du chargement de l'historique des prédictions.");
         }
     }
 
@@ -192,7 +192,7 @@ public class AnalyticsController {
             Long entrepriseId = extractEntrepriseId(authHeader);
             if (entrepriseId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("Impossible de déterminer l'entreprise depuis le token.");
+                        .body("Unable to determine the company from the token.");
             }
             int settled = predictionLogService.reconcile(entrepriseId);
             Map<String, Object> body = new HashMap<>();
@@ -201,7 +201,7 @@ public class AnalyticsController {
         } catch (Exception e) {
             log.error("Prediction reconciliation failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la réconciliation des prédictions.");
+                    .body("Error lors de la réconciliation des prédictions.");
         }
     }
 }

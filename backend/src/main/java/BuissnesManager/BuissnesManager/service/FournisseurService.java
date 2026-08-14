@@ -177,7 +177,7 @@ public class FournisseurService {
         factureAchatRepo.detachFournisseur(id);
         fournisseurRepo.deleteById(id);
         auditLogService.log("FOURNISSEUR_DELETED",
-                "Fournisseur supprimé: " + fournisseur.getNom() + " " + fournisseur.getPrenom() + " (id=" + id + ")");
+                "Supplier deleted: " + fournisseur.getNom() + " " + fournisseur.getPrenom() + " (id=" + id + ")");
     }
 
     

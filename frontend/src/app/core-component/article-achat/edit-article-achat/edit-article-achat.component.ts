@@ -85,7 +85,7 @@ export class EditArticleAchatComponent implements OnInit {
   loadCategories(): void {
     this.articleAchatService.getCategoriesArticle().subscribe({
       next: (data) => { this.categories = data; },
-      error: (err) => { console.error('Erreur chargement catégories:', err); }
+      error: (err) => { console.error('Error loading categories:', err); }
     });
   }
 
@@ -121,13 +121,13 @@ export class EditArticleAchatComponent implements OnInit {
       this.articleAchatService.updateArticleAchat(this.articleId, articleData).subscribe({
         next: () => {
           this.isLoading = false;
-          this.notify.success('Article mis à jour avec succès !');
+          this.notify.success('Product updated successfully!');
           setTimeout(() => this.router.navigate(['/article-achat/listArticleAchat']), 1200);
         },
         error: (err: any) => {
           this.isLoading = false;
           const errorMsg = err.error?.message || err.message || 'Impossible de mettre à jour l\'article';
-          this.notify.error('Erreur : ' + errorMsg);
+          this.notify.error('Error: ' + errorMsg);
         }
       });
     } else {

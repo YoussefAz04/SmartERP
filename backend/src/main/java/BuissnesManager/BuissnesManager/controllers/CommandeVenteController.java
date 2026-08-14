@@ -60,7 +60,7 @@ public class CommandeVenteController {
         } catch (Exception e) {
             logger.error("❌ Unexpected error creating commande vente: {}", e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Une erreur système est survenue");
+            errorResponse.put("message", "Une error système est survenue");
             errorResponse.put("details", e.getMessage());
             errorResponse.put("timestamp", System.currentTimeMillis());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -104,7 +104,7 @@ public class CommandeVenteController {
         } catch (Exception e) {
             logger.error("Error updating commande: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorBody("Erreur lors de la mise à jour de la commande"));
+                    .body(errorBody("Error lors de la mise à jour de la commande"));
         }
     }
 
@@ -122,7 +122,7 @@ public class CommandeVenteController {
         } catch (Exception e) {
             logger.error("Error deleting commande: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorBody("Erreur lors de la suppression"));
+                    .body(errorBody("Error lors de la suppression"));
         }
     }
 
@@ -141,7 +141,7 @@ public class CommandeVenteController {
         } catch (Exception e) {
             logger.error("? [VALIDATION] Error during validation: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorBody("Erreur lors de la validation de la commande"));
+                    .body(errorBody("Error lors de la validation de la commande"));
         }
     }
 
@@ -156,7 +156,7 @@ public class CommandeVenteController {
         } catch (Exception e) {
             logger.error("Error cancelling commande: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorBody("Erreur lors de l'annulation"));
+                    .body(errorBody("Error lors de l'annulation"));
         }
     }
 
@@ -170,7 +170,7 @@ public class CommandeVenteController {
         } catch (Exception e) {
             logger.error("Error delivering commande: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorBody("Erreur lors de la livraison"));
+                    .body(errorBody("Error lors de la livraison"));
         }
     }
 

@@ -376,7 +376,7 @@ export class PermissionsComponent implements OnInit {
         .then(data => {
           this.updateLocalStoragePermission(data, moduleId);
 
-          // Mettre à jour le sidebar si c'est l'utilisateur actuel
+          // Update le sidebar si c'est l'utilisateur actuel
           const item = localStorage.getItem('myLSkey');
           if (item) {
             const currentUser: any = JSON.parse(decodeURIComponent(escape(atob(item))));
@@ -486,7 +486,7 @@ export class PermissionsComponent implements OnInit {
         }
       });
     } else {
-      console.warn("Aucun utilisateur trouvé dans localStorage");
+      console.warn("No user found dans localStorage");
     }
   }
 

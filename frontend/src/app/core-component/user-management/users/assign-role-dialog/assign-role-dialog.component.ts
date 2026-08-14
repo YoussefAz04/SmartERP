@@ -37,7 +37,7 @@ export class AssignRoleDialogComponent {
 
   assignRole(): void {
     if (!this.selectedRoleId) {
-      this.notification.warning('Veuillez sélectionner un rôle');
+      this.notification.warning('Please select a role');
       return;
     }
     this.dialogRef.close({ roleId: this.selectedRoleId });

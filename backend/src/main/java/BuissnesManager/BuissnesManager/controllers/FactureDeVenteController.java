@@ -117,7 +117,7 @@ public class FactureDeVenteController {
             mailService.sendMailWithAttachment(to, subject, text, file);
             return ResponseEntity.ok("Email envoyé avec succès !");
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erreur : " + e.getMessage());
+            return ResponseEntity.status(500).body("Error : " + e.getMessage());
         }
     }
 }

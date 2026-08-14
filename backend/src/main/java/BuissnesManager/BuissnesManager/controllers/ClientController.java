@@ -88,7 +88,7 @@ public class ClientController {
             ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
-                "message", "Erreur: " + e.getMessage(),
+                "message", "Error: " + e.getMessage(),
                 "status", "error"
             ));
         }
@@ -162,13 +162,13 @@ public class ClientController {
         try {
             clientService.deleteCategorie(id);
             return ResponseEntity.ok(Map.of(
-                "message", "Catégorie supprimée avec succès",
+                "message", "Category supprimée avec succès",
                 "status", "success",
                 "id", id
             ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
-                "message", "Erreur: " + e.getMessage(),
+                "message", "Error: " + e.getMessage(),
                 "status", "error"
             ));
         }

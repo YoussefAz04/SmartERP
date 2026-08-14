@@ -48,7 +48,7 @@ public class RoleController {
             }
             return ResponseEntity.ok(roleService.create(role));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erreur : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error : " + e.getMessage());
         }
     }
 

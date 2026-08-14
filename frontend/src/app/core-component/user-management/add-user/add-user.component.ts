@@ -123,11 +123,11 @@ export class AddUserComponent implements OnInit {
 
   private readonly moduleDisplayNames: { [key: string]: string } = {
     'gestion de Client': 'Clients',
-    'gestion de Categorie Client': 'Catégories Clients',
+    'gestion de Categorie Client': 'Categorys Clients',
     'gestion de Fournisseur': 'Fournisseurs',
-    'gestion de Categorie Fournisseur': 'Catégories Fournisseurs',
-    'gestion Article Achat': 'Articles Achat',
-    'gestion Article Vente': 'Articles Vente',
+    'gestion de Categorie Fournisseur': 'Categorys Fournisseurs',
+    'gestion Article Achat': 'Purchase Products',
+    'gestion Article Vente': 'Sales Products',
     'gestion Stock': 'Stock',
     'Commande Achat': 'Commandes Achat',
     'Commande Vente': 'Commandes Vente',
@@ -293,7 +293,7 @@ export class AddUserComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error creating employee:', err);
-        this.notification.error('✗ Erreur : ' + (err.error?.message || err.error || err.message));
+        this.notification.error('✗ Error: ' + (err.error?.message || err.error || err.message));
         this.isSubmitting = false;
       }
     });

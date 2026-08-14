@@ -121,7 +121,7 @@ export class UsersComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error loading roles:', err);
-        this.notification.error('Erreur lors du chargement des rôles');
+        this.notification.error('Error while loading roles');
       }
     });
   }
@@ -195,11 +195,11 @@ export class UsersComponent implements OnInit {
     }
 
     if (this.isDeleting) {
-      this.notification.info('Opération en cours...');
+      this.notification.info('Operation in progress...');
       return;
     }
 
-    this.notification.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.').then(confirmed => {
+    this.notification.confirm('Are you sure you want to delete this user? This action cannot be undone.').then(confirmed => {
       if (confirmed) {
         this.isDeleting = true;
         this.deletingUserId = userId;
@@ -214,16 +214,16 @@ export class UsersComponent implements OnInit {
             this.isDeleting = false;
             this.deletingUserId = null;
 
-            this.notification.success('✓ Utilisateur supprimé avec succès');
+            this.notification.success('✓ User supprimé avec succès');
             this.loadUsers();
           },
           error: (err: any) => {
             this.isDeleting = false;
             this.deletingUserId = null;
 
-            const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+            const errorMsg = err.error?.message || err.message || 'Unknown error';
             console.error('Erreur suppression:', err);
-            this.notification.error('✗ Erreur lors de la suppression: ' + errorMsg);
+            this.notification.error('✗ Error during deletion: ' + errorMsg);
           }
         });
       }
@@ -241,15 +241,15 @@ export class UsersComponent implements OnInit {
     }
 
     if (this.isTogglingStatus) {
-      this.notification.info('Opération en cours...');
+      this.notification.info('Operation in progress...');
       return;
     }
 
     const newEnabled = !user.enabled;
-    const actionLabel = newEnabled ? 'activer' : 'désactiver';
+    const actionLabel = newEnabled ? 'activate' : 'désactivate';
     const message = newEnabled
-      ? `Êtes-vous sûr de vouloir activer le compte de "${user.username}" ?`
-      : `Êtes-vous sûr de vouloir désactiver le compte de "${user.username}" ? L'utilisateur ne pourra plus se connecter.`;
+      ? `Êtes-vous sûr de vouloir activate le compte de "${user.username}" ?`
+      : `Êtes-vous sûr de vouloir désactivate le compte de "${user.username}" ? The user will no longer be able to sign in.`;
 
     this.notification.confirm(message).then(confirmed => {
       if (!confirmed) {
@@ -270,16 +270,16 @@ export class UsersComponent implements OnInit {
           this.togglingUserId = null;
           this.notification.success(
             newEnabled
-              ? '✓ Utilisateur activé avec succès'
-              : '✓ Utilisateur désactivé avec succès'
+              ? '✓ User activated successfully'
+              : '✓ User deactivated successfully'
           );
         },
         error: (err: any) => {
           this.isTogglingStatus = false;
           this.togglingUserId = null;
-          const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur inconnue';
+          const errorMsg = err.error?.error || err.error?.message || err.message || 'Unknown error';
           console.error(`Erreur ${actionLabel} utilisateur:`, err);
-          this.notification.error(`✗ Erreur lors de l'opération: ${errorMsg}`);
+          this.notification.error(`Error during operation: ${errorMsg}`);
         }
       });
     });
@@ -320,13 +320,13 @@ export class UsersComponent implements OnInit {
     this.roleService.assignRoleToUser(userId, roleId).subscribe({
       next: () => {
         console.log('Role assigned successfully');
-        this.notification.success('✓ Rôle assigné avec succès');
+        this.notification.success('Role assigned successfully');
         this.assignRoleForm.reset();
         this.loadUsers();
       },
       error: (err: any) => {
         console.error('Error assigning role:', err);
-        const errorMsg = err.error?.message || 'Erreur inconnue';
+        const errorMsg = err.error?.message || 'Unknown error';
         this.notification.error('✗ Erreur lors de l\'assignation du rôle: ' + errorMsg);
       }
     });
@@ -338,7 +338,7 @@ export class UsersComponent implements OnInit {
     if (item) {
       try {
         const currentUser: ResponseDto = JSON.parse(decodeURIComponent(escape(atob(item))));
-        console.log('User connecté:', currentUser?.name);
+        console.log('Connected user:', currentUser?.name);
 
         const roles: string[] = Array.isArray(currentUser?.roles) ? currentUser.roles : [];
         this.isSuperAdmin = roles.includes('SUPER_ADMIN');

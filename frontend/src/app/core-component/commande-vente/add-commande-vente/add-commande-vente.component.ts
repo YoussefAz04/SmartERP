@@ -247,7 +247,7 @@ export class AddCommandeVenteComponent implements OnInit {
       request.subscribe({
         next: () => {
           this.isLoading = false;
-          this.notification.success(this.isEditMode ? '✅ Commande modifiée avec succès!' : '✅ Commande créée avec succès!');
+          this.notification.success(this.isEditMode ? '✅ Order updated successfully!' : '✅ Order created successfully!');
           this.router.navigate(['/commande-vente/list']);
         },
         error: (err: any) => {

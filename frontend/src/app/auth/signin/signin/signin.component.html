@@ -22,8 +22,8 @@
         <span class="brand-name"><span class="brand-smart">Smart</span><span class="brand-erp">ERP</span></span>
       </div>
 
-      <h1 class="card-title">Bienvenue !</h1>
-      <p class="card-subtitle">Connectez-vous pour accéder à votre espace</p>
+      <h1 class="card-title">Welcome!</h1>
+      <p class="card-subtitle">Sign in to access your workspace</p>
     </div>
 
     <!-- Form -->
@@ -31,7 +31,7 @@
 
       <!-- Username -->
       <div class="field-group">
-        <label class="field-label" for="username">Nom d'utilisateur</label>
+        <label class="field-label" for="username">Username</label>
         <div class="input-wrap" [class.is-error]="f['username'].invalid && f['username'].touched">
           <i class="fas fa-user input-icon"></i>
           <input
@@ -39,17 +39,17 @@
             id="username"
             formControlName="username"
             class="field-input"
-            placeholder="Entrez votre identifiant"
+            placeholder="Enter your username"
             autocomplete="username">
         </div>
         <span class="field-error-msg" *ngIf="f['username'].invalid && f['username'].touched">
-          <i class="fas fa-circle-exclamation"></i> Nom d'utilisateur requis
+          <i class="fas fa-circle-exclamation"></i> Username is required
         </span>
       </div>
 
       <!-- Password -->
       <div class="field-group">
-        <label class="field-label" for="password">Mot de passe</label>
+        <label class="field-label" for="password">Password</label>
         <div class="input-wrap" [class.is-error]="f['password'].invalid && f['password'].touched">
           <i class="fas fa-lock input-icon"></i>
           <input
@@ -68,7 +68,7 @@
           </button>
         </div>
         <span class="field-error-msg" *ngIf="f['password'].invalid && f['password'].touched">
-          <i class="fas fa-circle-exclamation"></i> Mot de passe requis
+          <i class="fas fa-circle-exclamation"></i> Password is required
         </span>
       </div>
 
@@ -83,16 +83,16 @@
         <label class="checkbox-label">
           <input type="checkbox" class="checkbox-native" [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
           <span class="checkbox-box"></span>
-          <span class="checkbox-text">Se souvenir de moi</span>
+          <span class="checkbox-text">Remember me</span>
         </label>
-        <a class="link-forgot" [routerLink]="routes.forgotPassword">Mot de passe oublié ?</a>
+        <a class="link-forgot" [routerLink]="routes.forgotPassword">Forgot password?</a>
       </div>
 
       <!-- Submit -->
       <button type="submit" class="btn-submit" [disabled]="loading"
-              [attr.aria-label]="loading ? 'Connexion en cours' : 'Se connecter'">
+              [attr.aria-label]="loading ? 'Signing in' : 'Sign in'">
         <span *ngIf="loading" class="btn-spinner" role="status" aria-hidden="true"></span>
-        <span class="btn-label">{{ loading ? 'Connexion en cours...' : 'Se connecter' }}</span>
+        <span class="btn-label">{{ loading ? 'Signing in...' : 'Sign in' }}</span>
         <i *ngIf="!loading" class="fas fa-arrow-right btn-arrow"></i>
       </button>
 
@@ -100,7 +100,7 @@
 
     <!-- Footer -->
     <p class="card-footer-note">
-      <i class="fas fa-shield-halved"></i> Connexion sécurisée · SmartERP &copy; 2025
+      <i class="fas fa-shield-halved"></i> Secure login - SmartERP &copy; 2025
     </p>
 
   </div>

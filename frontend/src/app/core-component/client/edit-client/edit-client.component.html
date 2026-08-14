@@ -9,7 +9,7 @@
           <span class="title-icon">
             <i class="feather icon-edit-3"></i>
           </span>
-          Modifier un Client
+          Edit a Customer
         </h3>
         <ul class="breadcrumb">
           <li class="breadcrumb-item">
@@ -18,9 +18,9 @@
             </a>
           </li>
           <li class="breadcrumb-item">
-            <a routerLink="/client/listClient">Clients</a>
+            <a routerLink="/client/listClient">Customers</a>
           </li>
-          <li class="breadcrumb-item active">Modifier client</li>
+          <li class="breadcrumb-item active">Edit client</li>
         </ul>
       </div>
     </div>
@@ -54,7 +54,7 @@
         <div class="fields-grid">
 
           <div class="field-group">
-            <label class="field-label required" for="nom">Nom</label>
+            <label class="field-label required" for="nom">Name</label>
             <div class="input-wrapper" [class.invalid]="isFieldInvalid('nom')">
               <span class="input-icon"><i class="feather icon-user"></i></span>
               <input id="nom" type="text" class="field-input"
@@ -66,12 +66,12 @@
             <div class="field-error" *ngIf="isFieldInvalid('nom')" role="alert">
               <i class="feather icon-alert-circle"></i>
               <span *ngIf="clientForm.get('nom')?.hasError('required')">Le nom est requis</span>
-              <span *ngIf="clientForm.get('nom')?.hasError('minlength')">Min 2 caractères</span>
+              <span *ngIf="clientForm.get('nom')?.hasError('minlength')">Min 2 characters</span>
             </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label required" for="prenom">Prénom</label>
+            <label class="field-label required" for="prenom">First name</label>
             <div class="input-wrapper" [class.invalid]="isFieldInvalid('prenom')">
               <span class="input-icon"><i class="feather icon-user"></i></span>
               <input id="prenom" type="text" class="field-input"
@@ -83,7 +83,7 @@
             <div class="field-error" *ngIf="isFieldInvalid('prenom')" role="alert">
               <i class="feather icon-alert-circle"></i>
               <span *ngIf="clientForm.get('prenom')?.hasError('required')">Le prénom est requis</span>
-              <span *ngIf="clientForm.get('prenom')?.hasError('minlength')">Min 2 caractères</span>
+              <span *ngIf="clientForm.get('prenom')?.hasError('minlength')">Min 2 characters</span>
             </div>
           </div>
 
@@ -97,7 +97,7 @@
             <i class="feather icon-phone"></i>
           </div>
           <div class="section-text">
-            <h2 class="section-title">Coordonnées</h2>
+            <h2 class="section-title">Contact Details</h2>
             <p class="section-subtitle">Mettez à jour les moyens de contact pour conserver une relation client fluide.</p>
           </div>
           <span class="section-step">2 / 3</span>
@@ -106,7 +106,7 @@
         <div class="fields-grid">
 
           <div class="field-group">
-            <label class="field-label required" for="telephone">Téléphone</label>
+            <label class="field-label required" for="telephone">Phone</label>
             <div class="input-wrapper" [class.invalid]="isFieldInvalid('telephone')">
               <span class="input-icon"><i class="feather icon-phone"></i></span>
               <input id="telephone" type="tel" class="field-input"
@@ -117,7 +117,7 @@
             </div>
             <div class="field-error" *ngIf="isFieldInvalid('telephone')" role="alert">
               <i class="feather icon-alert-circle"></i>
-              <span *ngIf="clientForm.get('telephone')?.hasError('required')">Le téléphone est requis</span>
+              <span *ngIf="clientForm.get('telephone')?.hasError('required')">Phone is required</span>
               <span *ngIf="clientForm.get('telephone')?.hasError('pattern')">Format invalide (ex: 20000000 ou +216 20 000 000)</span>
             </div>
           </div>
@@ -140,24 +140,24 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label required" for="adresse">Adresse</label>
+            <label class="field-label required" for="adresse">Address</label>
             <div class="input-wrapper" [class.invalid]="isFieldInvalid('adresse')">
               <span class="input-icon"><i class="feather icon-map-pin"></i></span>
               <input id="adresse" type="text" class="field-input"
                 formControlName="adresse"
-                placeholder="Entrez l'adresse complète"
+                placeholder="Enter the full address"
                 [class.is-invalid]="isFieldInvalid('adresse')"
                 aria-required="true">
             </div>
             <div class="field-error" *ngIf="isFieldInvalid('adresse')" role="alert">
               <i class="feather icon-alert-circle"></i>
               <span *ngIf="clientForm.get('adresse')?.hasError('required')">L'adresse est requise</span>
-              <span *ngIf="clientForm.get('adresse')?.hasError('minlength')">Min 5 caractères</span>
+              <span *ngIf="clientForm.get('adresse')?.hasError('minlength')">Min 5 characters</span>
             </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label required" for="secteurActivite">Secteur d'Activité</label>
+            <label class="field-label required" for="secteurActivite">Business Sector</label>
             <div class="input-wrapper" [class.invalid]="isFieldInvalid('secteurActivite')">
               <span class="input-icon"><i class="feather icon-briefcase"></i></span>
               <input id="secteurActivite" type="text" class="field-input"
@@ -169,7 +169,7 @@
             <div class="field-error" *ngIf="isFieldInvalid('secteurActivite')" role="alert">
               <i class="feather icon-alert-circle"></i>
               <span *ngIf="clientForm.get('secteurActivite')?.hasError('required')">Le secteur est requis</span>
-              <span *ngIf="clientForm.get('secteurActivite')?.hasError('minlength')">Min 3 caractères</span>
+              <span *ngIf="clientForm.get('secteurActivite')?.hasError('minlength')">Min 3 characters</span>
             </div>
           </div>
 
@@ -183,7 +183,7 @@
             <i class="feather icon-tag"></i>
           </div>
           <div class="section-text">
-            <h2 class="section-title">Catégorisation</h2>
+            <h2 class="section-title">Categorization</h2>
             <p class="section-subtitle">Rattachez le client à la bonne catégorie pour conserver un tri performant.</p>
           </div>
           <span class="section-step">3 / 3</span>
@@ -192,13 +192,13 @@
         <div class="fields-grid">
 
           <div class="field-group">
-            <label class="field-label required" for="categorieId">Catégorie Client</label>
+            <label class="field-label required" for="categorieId">Category Customer</label>
             <div class="select-wrapper" [class.invalid]="isFieldInvalid('categorieId')">
               <span class="select-icon"><i class="feather icon-tag"></i></span>
               <select id="categorieId" class="field-select"
                 formControlName="categorieId"
                 aria-required="true">
-                <option value="">— Sélectionnez une catégorie —</option>
+                <option value="">— Select a category —</option>
                 <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
               </select>
               <span class="select-chevron" aria-hidden="true">
@@ -207,7 +207,7 @@
             </div>
             <div class="field-error" *ngIf="isFieldInvalid('categorieId')" role="alert">
               <i class="feather icon-alert-circle"></i>
-              <span *ngIf="clientForm.get('categorieId')?.hasError('required')">La catégorie est requise</span>
+              <span *ngIf="clientForm.get('categorieId')?.hasError('required')">Category is required</span>
             </div>
           </div>
 
@@ -218,12 +218,12 @@
       <div class="form-actions section-animate" style="animation-delay:.26s">
         <button type="button" class="btn-cancel" [disabled]="isLoading" (click)="onCancel()">
           <i class="feather icon-arrow-left"></i>
-          Annuler
+          Cancel
         </button>
         <button type="submit" class="btn-submit" [disabled]="!clientForm.valid || isLoading">
           <span class="btn-spinner" *ngIf="isLoading" aria-hidden="true"></span>
           <i class="feather icon-save" *ngIf="!isLoading"></i>
-          {{ isLoading ? 'Enregistrement...' : 'Mettre à jour le client' }}
+          {{ isLoading ? 'Saving...' : 'Update customer' }}
         </button>
       </div>
 

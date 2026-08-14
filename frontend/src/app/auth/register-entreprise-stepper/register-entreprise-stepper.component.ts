@@ -84,7 +84,7 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
               this.idEntreprise = data.id;
               resolve(this.idEntreprise);
             } else {
-              reject(new Error('Entreprise creation returned no ID'));
+              reject(new Error('Company creation returned no ID'));
             }
           },
           error: (err) => {
@@ -92,7 +92,7 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
           }
         });
       } else {
-        reject(new Error('Entreprise form is invalid'));
+        reject(new Error('Company form is invalid'));
       }
     });
   }
@@ -112,7 +112,7 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
         });
       }
     } catch (error) {
-      console.error("Erreur lors de la création:", error);
+      console.error("Error during creation:", error);
     }
   }
 
@@ -136,8 +136,8 @@ export class RegisterEntrepriseStepperComponent implements OnInit {
   // assigne(){
   //   this.entrepriseService.assignerUserToEntreprise(this.userFormGroup.value.username, this.entrepriseFormGroup.value.nom)
   //     .subscribe({
-  //       next: (res) => alert('Succès : ' + res),
-  //       error: (err) => alert('Erreur : ' + err.error)
+  //       next: (res) => alert('Success: ' + res),
+  //       error: (err) => alert('Error: ' + err.error)
   //     });
   // }
 

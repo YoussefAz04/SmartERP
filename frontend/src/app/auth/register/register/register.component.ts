@@ -54,8 +54,8 @@ export class RegisterComponent implements OnInit {
     if (!field) return '';
     if (field.hasError('required')) return 'Ce champ est obligatoire';
     if (field.hasError('email')) return 'Email invalide';
-    if (field.hasError('minlength')) return `Minimum ${field.errors?.['minlength']?.requiredLength} caractères`;
-    if (field.hasError('maxlength')) return `Maximum ${field.errors?.['maxlength']?.requiredLength} caractères`;
+    if (field.hasError('minlength')) return `Minimum ${field.errors?.['minlength']?.requiredLength} characters`;
+    if (field.hasError('maxlength')) return `Maximum ${field.errors?.['maxlength']?.requiredLength} characters`;
     if (field.hasError('pattern')) return 'Format invalide';
     return '';
   }

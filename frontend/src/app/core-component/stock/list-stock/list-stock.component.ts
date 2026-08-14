@@ -85,7 +85,7 @@ export class ListStockComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erreur chargement stocks:', err);
+        console.error('Stock loading error:', err);
         this.isLoading = false;
       }
     });
@@ -131,8 +131,8 @@ export class ListStockComponent implements OnInit {
 
   getStatusLabel(stock: Stock): string {
     const status = this.getStockStatus(stock);
-    if (status === 'OUT_OF_STOCK') return 'Rupture';
-    if (status === 'LOW_STOCK') return 'Stock bas';
+    if (status === 'OUT_OF_STOCK') return 'Out of stock';
+    if (status === 'LOW_STOCK') return 'Low stock';
     return 'OK';
   }
 
@@ -151,21 +151,21 @@ export class ListStockComponent implements OnInit {
   deleteStock(id: number | undefined): void {
     if (!id) return;
     Swal.fire({
-      title: 'Êtes-vous sûr?',
-      text: 'Cette action est irréversible!',
+      title: 'Are you sure?',
+      text: 'This action cannot be undone!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Oui, supprimer',
-      cancelButtonText: 'Annuler'
+      cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         this.stockService.deleteStock(id).subscribe({
           next: () => {
             this.stocks = this.stocks.filter(s => s.id !== id);
             this.applyFilters();
-            this.notify.success('Le stock a été supprimé.');
+            this.notify.success('The stock has been deleted.');
           },
           error: () => this.notify.error('Impossible de supprimer le stock.')
         });

@@ -79,7 +79,7 @@ export class ListFactureDeVenteComponent implements OnInit{
       },
       error: () => {
         this.isLoading = false;
-        this.notify.error('Erreur lors du chargement des factures.');
+        this.notify.error('Error while loading invoices.');
       }
     });
   }
@@ -184,13 +184,13 @@ export class ListFactureDeVenteComponent implements OnInit{
 
     Swal.fire({
       title: 'Confirmer la suppression',
-      text: 'Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible.',
+      text: 'Are you sure you want to delete this invoice? This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Oui, supprimer',
-      cancelButtonText: 'Annuler',
+      cancelButtonText: 'Cancel',
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
@@ -204,7 +204,7 @@ export class ListFactureDeVenteComponent implements OnInit{
           },
           error: () => {
             this.deletingIds.delete(id);
-            this.notify.error('Erreur lors de la suppression de la facture.');
+            this.notify.error('Error while deleting the invoice.');
           }
         });
       }
@@ -249,7 +249,7 @@ export class ListFactureDeVenteComponent implements OnInit{
         this.clients = data;
       },
       error: () => {
-        this.notify.error('Erreur lors du chargement des clients.');
+        this.notify.error('Error while loading customers.');
       }
     });
   }
@@ -303,7 +303,7 @@ export class ListFactureDeVenteComponent implements OnInit{
     const statusLabels: Record<string, string> = {
       'PAYEE': 'Payée',
       'PARTIELLEMENT_PAYEE': 'Partiellement Payée',
-      'ANNULEE': 'Annulée',
+      'ANNULEE': 'Canceled',
       'EN_ATTENTE': 'En Attente'
     };
 
@@ -316,9 +316,9 @@ export class ListFactureDeVenteComponent implements OnInit{
       confirmButtonColor: '#0ea5e9',
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Changer',
-      cancelButtonText: 'Annuler',
+      cancelButtonText: 'Cancel',
       reverseButtons: true,
-      inputPlaceholder: 'Sélectionner un statut'
+      inputPlaceholder: 'Select a status'
     }).then((result) => {
       const newStatus = result.value as string;
       if (result.isConfirmed && newStatus && newStatus !== facture.statut) {

@@ -67,7 +67,7 @@ export class ViewStockComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erreur chargement stock:', err);
+        console.error('Stock loading error:', err);
         this.isLoading = false;
       }
     });
@@ -112,8 +112,8 @@ export class ViewStockComponent implements OnInit {
   getStockStatus(): string {
     if (!this.stock) return '';
     const qty = this.stock.quantiteDisponible || 0;
-    if (qty === 0) return 'Rupture de stock';
-    if (qty < 5) return 'Stock bas';
+    if (qty === 0) return 'Out of stock de stock';
+    if (qty < 5) return 'Low stock';
     return 'OK';
   }
 
@@ -126,7 +126,7 @@ export class ViewStockComponent implements OnInit {
   }
 
   exportCSV(): void {
-    const headers = ['Date', 'Type', 'Quantité', 'Référence', 'Motif', 'Utilisateur'];
+    const headers = ['Date', 'Type', 'Quantity', 'Reference', 'Motif', 'User'];
     const rows = this.filteredMovements.map(m => [
       m.dateMouvement ? new Date(m.dateMouvement).toLocaleString('fr-FR') : '',
       m.typeMouvement,

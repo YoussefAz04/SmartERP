@@ -2,13 +2,13 @@
 <div class="modern-page-header">
   <div class="header-content">
     <div class="header-title">
-      <h1>Détail Facture de Vente</h1>
-      <p class="subtitle">Modifier et gérer les informations de la facture de vente</p>
+      <h1>Sales Invoice Detail</h1>
+      <p class="subtitle">Edit and manage sales invoice information</p>
     </div>
     <div class="header-actions">
       <button class="btn-header back" (click)="goBack()">
         <i class="feather icon-arrow-left"></i>
-        Retour
+        Back
       </button>
     </div>
   </div>
@@ -31,13 +31,13 @@
       <i class="feather icon-alert-triangle"></i>
     </div>
     <h4>Confirmer la suppression</h4>
-    <p>Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible.</p>
+    <p>Are you sure you want to delete this invoice? This action cannot be undone.</p>
     <div class="confirm-actions">
-      <button class="btn-confirm cancel" (click)="cancelDelete()">Annuler</button>
+      <button class="btn-confirm cancel" (click)="cancelDelete()">Cancel</button>
       <button class="btn-confirm delete" (click)="deleteFacture()" [disabled]="isDeleting">
         <span *ngIf="isDeleting" class="btn-spinner"></span>
         <i *ngIf="!isDeleting" class="feather icon-trash-2"></i>
-        {{ isDeleting ? 'Suppression...' : 'Supprimer' }}
+        {{ isDeleting ? 'Deleting...' : 'Delete' }}
       </button>
     </div>
   </div>
@@ -47,11 +47,11 @@
 <div class="detail-card" *ngIf="factureDetais">
   <form (ngSubmit)="onSubmit()" #factureForm="ngForm">
 
-    <!-- Section: Informations Générales -->
+    <!-- Section: General Information -->
     <div class="form-section">
       <div class="section-header">
         <i class="feather icon-file-text"></i>
-        <h3>Informations Générales</h3>
+        <h3>General Information</h3>
       </div>
       <div class="form-grid">
         <div class="form-group">
@@ -60,7 +60,7 @@
                  [(ngModel)]="factureDetais.dateAchat" required>
         </div>
         <div class="form-group">
-          <label for="referance" class="form-label">Référence <span class="required">*</span></label>
+          <label for="referance" class="form-label">Reference <span class="required">*</span></label>
           <input type="text" id="referance" class="form-input" name="referance"
                  [(ngModel)]="factureDetais.referance" required>
         </div>
@@ -70,7 +70,7 @@
                  [(ngModel)]="factureDetais.modePaiement">
         </div>
         <div class="form-group">
-          <label for="statut" class="form-label">Statut</label>
+          <label for="statut" class="form-label">Status</label>
           <input type="text" id="statut" class="form-input" name="statut"
                  [(ngModel)]="factureDetais.statut">
         </div>
@@ -79,15 +79,15 @@
 
     <div class="section-divider"></div>
 
-    <!-- Section: Informations Financières -->
+    <!-- Section: Financial Information -->
     <div class="form-section">
       <div class="section-header">
         <i class="feather icon-dollar-sign"></i>
-        <h3>Informations Financières</h3>
+        <h3>Financial Information</h3>
       </div>
       <div class="form-grid form-grid-3">
         <div class="form-group">
-          <label for="montantHT" class="form-label">Montant HT</label>
+          <label for="montantHT" class="form-label">Amount excl. tax</label>
           <div class="input-with-unit">
             <input type="number" id="montantHT" class="form-input" name="montantHT"
                    [(ngModel)]="factureDetais.montantHT">
@@ -95,7 +95,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="montantTVA" class="form-label">Montant TVA</label>
+          <label for="montantTVA" class="form-label">VAT amount</label>
           <div class="input-with-unit">
             <input type="number" id="montantTVA" class="form-input" name="montantTVA"
                    [(ngModel)]="factureDetais.montantTVA">
@@ -103,7 +103,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="montantTTC" class="form-label">Montant TTC</label>
+          <label for="montantTTC" class="form-label">Amount incl. tax</label>
           <div class="input-with-unit">
             <input type="number" id="montantTTC" class="form-input" name="montantTTC"
                    [(ngModel)]="factureDetais.montantTTC">
@@ -111,7 +111,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="montantTotal" class="form-label">Montant Total</label>
+          <label for="montantTotal" class="form-label">Amount Total</label>
           <div class="input-with-unit">
             <input type="number" id="montantTotal" class="form-input" name="montantTotal"
                    [(ngModel)]="factureDetais.montantTotal">
@@ -135,7 +135,7 @@
     <div class="form-section">
       <div class="section-header">
         <i class="feather icon-info"></i>
-        <h3>Détails Supplémentaires</h3>
+        <h3>Additional Details</h3>
       </div>
       <div class="form-grid form-grid-1">
         <div class="form-group">
@@ -155,7 +155,7 @@
     <div class="form-actions">
       <button type="button" class="btn-action-form back" (click)="goBack()">
         <i class="feather icon-arrow-left"></i>
-        Retour
+        Back
       </button>
       <div class="action-right">
         <button type="button" class="btn-action-form delete"
@@ -163,14 +163,14 @@
                 *ngIf="permissionVente?.delete"
                 [disabled]="isDeleting">
           <i class="feather icon-trash-2"></i>
-          Supprimer
+          Delete
         </button>
         <button type="submit" class="btn-action-form save"
                 *ngIf="permissionVente?.update"
                 [disabled]="!factureForm.form.valid || isSaving">
           <span *ngIf="isSaving" class="btn-spinner"></span>
           <i *ngIf="!isSaving" class="feather icon-save"></i>
-          {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+          {{ isSaving ? 'Saving...' : 'Enregistrer' }}
         </button>
       </div>
     </div>
@@ -178,11 +178,11 @@
   </form>
 </div>
 
-<!-- Lignes de la Facture -->
+<!-- Invoice Lines -->
 <div class="detail-card" *ngIf="factureDetais">
   <div class="section-header card-section-header">
     <i class="feather icon-list"></i>
-    <h3>Lignes de la Facture</h3>
+    <h3>Lignes de la Invoice</h3>
   </div>
 
   <!-- Single detail (manual facture) -->
@@ -190,8 +190,8 @@
     <table class="modern-table">
       <thead>
         <tr>
-          <th>Article</th>
-          <th>Quantité</th>
+          <th>Product</th>
+          <th>Quantity</th>
           <th>Prix Unitaire HT</th>
           <th>TVA</th>
           <th>Total TTC</th>
@@ -215,11 +215,11 @@
     <table class="modern-table">
       <thead>
         <tr>
-          <th>Article</th>
-          <th>Quantité</th>
+          <th>Product</th>
+          <th>Quantity</th>
           <th>Prix Unitaire HT</th>
           <th>TVA</th>
-          <th>Montant HT</th>
+          <th>Amount excl. tax</th>
           <th>Total TTC</th>
         </tr>
       </thead>
@@ -240,7 +240,7 @@
   <div class="empty-state"
        *ngIf="!factureDetais?.detaisFactureDeVente && !factureDetais?.commandeVente?.lignes?.length">
     <i class="feather icon-inbox"></i>
-    <p>Aucun détail disponible pour cette facture</p>
+    <p>No details available for this invoice</p>
   </div>
 </div>
 
@@ -248,15 +248,15 @@
 <div class="detail-card" *ngIf="factureDetais?.client">
   <div class="section-header card-section-header">
     <i class="feather icon-user"></i>
-    <h3>Informations Client</h3>
+    <h3>Informations Customer</h3>
   </div>
   <div class="client-info-grid">
     <div class="client-info-item">
-      <span class="info-label">Nom</span>
+      <span class="info-label">Name</span>
       <span class="info-value">{{ factureDetais.client?.nom }}</span>
     </div>
     <div class="client-info-item">
-      <span class="info-label">Prénom</span>
+      <span class="info-label">First name</span>
       <span class="info-value">{{ factureDetais.client?.prenom }}</span>
     </div>
     <div class="client-info-item">
@@ -264,15 +264,15 @@
       <span class="info-value">{{ factureDetais.client?.email }}</span>
     </div>
     <div class="client-info-item">
-      <span class="info-label">Téléphone</span>
+      <span class="info-label">Phone</span>
       <span class="info-value">{{ factureDetais.client?.telephone }}</span>
     </div>
     <div class="client-info-item">
-      <span class="info-label">Adresse</span>
+      <span class="info-label">Address</span>
       <span class="info-value">{{ factureDetais.client?.adresse }}</span>
     </div>
     <div class="client-info-item">
-      <span class="info-label">Secteur d'Activité</span>
+      <span class="info-label">Business Sector</span>
       <span class="info-value">{{ factureDetais.client?.secteurActivite }}</span>
     </div>
   </div>

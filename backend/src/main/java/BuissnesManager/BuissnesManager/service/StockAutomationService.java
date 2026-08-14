@@ -74,7 +74,7 @@ public class StockAutomationService {
             mouvement.setTypeMouvement(TypeMouvement.ENTREE);
             mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
             mouvement.setReferenceCommande(referenceCommande);
-            mouvement.setMotif("Réception commande achat " + referenceCommande);
+            mouvement.setMotif("Purchase order reception " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
@@ -151,7 +151,7 @@ public class StockAutomationService {
             mouvement.setTypeMouvement(TypeMouvement.SORTIE);
             mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
             mouvement.setReferenceCommande(referenceCommande);
-            mouvement.setMotif("Livraison commande vente " + referenceCommande);
+            mouvement.setMotif("Sales order delivery " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
@@ -174,7 +174,7 @@ public class StockAutomationService {
                         articleName,
                         remaining,
                         stock.getSeuilMinimum(),
-                        String.format("RUPTURE DE STOCK : '%s' est épuisé !", articleName)));
+                        String.format("OUT OF STOCK: '%s' is depleted!", articleName)));
             } else if (stock.getSeuilMinimum() != null
                     && remaining.compareTo(stock.getSeuilMinimum()) < 0) {
                 alerts.add(new StockAlertDto(
@@ -233,7 +233,7 @@ public class StockAutomationService {
             mouvement.setTypeMouvement(TypeMouvement.RESERVATION);
             mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
             mouvement.setReferenceCommande(referenceCommande);
-            mouvement.setMotif("Réservation commande vente " + referenceCommande);
+            mouvement.setMotif("Reservation commande vente " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
@@ -280,7 +280,7 @@ public class StockAutomationService {
             mouvement.setTypeMouvement(TypeMouvement.SORTIE);
             mouvement.setQuantite(-(int) Math.round(toReverse.doubleValue()));
             mouvement.setReferenceCommande(referenceCommande);
-            mouvement.setMotif("Annulation réception commande achat " + referenceCommande);
+            mouvement.setMotif("Purchase order reception cancellation " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
             if (currentUser != null) mouvement.setUtilisateur(currentUser);
@@ -327,7 +327,7 @@ public class StockAutomationService {
             mouvement.setTypeMouvement(TypeMouvement.RESERVATION);
             mouvement.setQuantite(-(int) Math.round(toRelease.doubleValue()));
             mouvement.setReferenceCommande(referenceCommande);
-            mouvement.setMotif("Annulation réservation commande vente " + referenceCommande);
+            mouvement.setMotif("Sales order reservation cancellation " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
             mouvement.setStock(stock);
             if (currentUser != null) mouvement.setUtilisateur(currentUser);

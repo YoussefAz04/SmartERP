@@ -147,7 +147,7 @@ public class AnalyticService {
         
         if (growth.samples >= 2) {
             ModelMetricsDto metrics = new ModelMetricsDto();
-            metrics.setModelName("OLS log-linéaire + bootstrap");
+            metrics.setModelName("Log-linear OLS + bootstrap");
             metrics.setSamples(growth.samples);
             metrics.setFeatures(1);
             metrics.setRSquared(Math.round(growth.rSquared * 1000.0) / 1000.0);
@@ -629,11 +629,11 @@ public class AnalyticService {
         for (double v : values) if (v > 0) nonZero++;
         if (g.samples >= 2) {
             return String.format(
-                "Tendance LOESS (bande 0.5, noyau tricube) + taux de croissance OLS log-linéaire bootstrap (%d mois actifs, R²=%.2f)",
+                "LOESS trend (bande 0.5, noyau tricube) + taux de croissance OLS log-linéaire bootstrap (%d mois actifs, R²=%.2f)",
                 g.samples, g.rSquared);
         }
         return String.format(
-                "Tendance LOESS (bande 0.5) — %d mois actifs, croissance calculée par ratio semestriel",
+                "LOESS trend (bande 0.5) — %d mois actifs, croissance calculée par ratio semestriel",
                 nonZero);
     }
 }

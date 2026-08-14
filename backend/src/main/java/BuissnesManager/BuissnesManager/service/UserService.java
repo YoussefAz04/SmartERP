@@ -53,7 +53,7 @@ public class UserService {
             throw new IllegalArgumentException("L'email est requis");
         }
         if (request.getPassword() == null || request.getPassword().length() < 6) {
-            throw new IllegalArgumentException("Le mot de passe doit contenir au moins 6 caractères");
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins 6 characters");
         }
         if (request.getEnterpriseId() == null) {
             throw new IllegalArgumentException("L'identifiant de l'entreprise est requis");
@@ -245,7 +245,7 @@ public class UserService {
 
     public UserDTO getUserById(Long idUser){
         User user = userRepository.findById(idUser)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + idUser));
+                .orElseThrow(() -> new RuntimeException("User not found avec l'id : " + idUser));
         UserDTO dto =new UserDTO();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
@@ -267,7 +267,7 @@ public class UserService {
     }
     public void updateUser(UserDTO userDTO , Long idUser){
         User user = userRepository.findById(idUser)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + idUser));
+                .orElseThrow(() -> new RuntimeException("User not found avec l'id : " + idUser));
         user.setUsername(userDTO.getUsername());
         user.setPhone(userDTO.getPhone());
         Entreprise entreprise = entrepriseRepo.findById(userDTO.getEntrepriseId())
@@ -281,7 +281,7 @@ public class UserService {
                 String trimmed = roleName.trim();
                 if (!trimmed.isEmpty()) {
                     Role role = roleRepo.findByName(trimmed)
-                            .orElseThrow(() -> new RuntimeException("Rôle non trouvé : " + trimmed));
+                            .orElseThrow(() -> new RuntimeException("Role non trouvé : " + trimmed));
                     roles.add(role);
                 }
             }
@@ -304,10 +304,10 @@ public class UserService {
 
     public void changePasswordForUsername(String username, String currentPassword, String newPassword) {
         if (newPassword == null || newPassword.length() < 6) {
-            throw new IllegalArgumentException("Le nouveau mot de passe doit contenir au moins 6 caractères.");
+            throw new IllegalArgumentException("Le nouveau mot de passe doit contenir au moins 6 characters.");
         }
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé : " + username));
+                .orElseThrow(() -> new RuntimeException("User not found : " + username));
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException("Le mot de passe actuel est incorrect.");
         }
@@ -322,7 +322,7 @@ public class UserService {
 
     public UserDTO setUserEnabled(Long idUser, boolean enabled) {
         User user = userRepository.findById(idUser)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + idUser));
+                .orElseThrow(() -> new RuntimeException("User not found avec l'id : " + idUser));
         user.setEnabled(enabled);
         userRepository.save(user);
         return toUserDTO(user);

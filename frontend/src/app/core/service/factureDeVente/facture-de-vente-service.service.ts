@@ -37,12 +37,12 @@ export class FactureDeVenteServiceService {
     return this.http.get<FactureVente>(`${this.baseUrl}/getFactureById/${id}`);
   }
 
-  // Mettre à jour une facture
+  // Update une facture
   updateFacture(id: number, facture: FactureVente): Observable<FactureVente> {
     return this.http.put<FactureVente>(`${this.baseUrl}/updateFacture/${id}`, facture);
   }
 
-  // Mettre à jour uniquement le statut d'une facture
+  // Update uniquement le statut d'une facture
   updateStatut(id: number, statut: string): Observable<FactureVente> {
     return this.http.patch<FactureVente>(`${this.baseUrl}/${id}/statut`, { statut });
   }
@@ -119,8 +119,8 @@ export class FactureDeVenteServiceService {
 
     // ── STATUS WATERMARK ─────────────────────────────────────────────────────
     const watermarkLabel =
-      statut.includes('PAYEE')   ? 'PAYÉE'    :
-      statut.includes('ANNUL')   ? 'ANNULÉE'  :
+      statut.includes('PAYEE')   ? 'PAID'    :
+      statut.includes('ANNUL')   ? 'CANCELED'  :
       statut.includes('PARTIEL') ? 'PARTIELLE': null;
     if (watermarkLabel) {
       doc.setFontSize(64);
@@ -206,8 +206,8 @@ export class FactureDeVenteServiceService {
     doc.setFontSize(6.5);
     doc.setFont('helvetica', 'bold');
     const statutLabelsV: Record<string, string> = {
-      'PAYEE': 'PAYÉE', 'EN_ATTENTE': 'EN ATTENTE',
-      'ANNULEE': 'ANNULÉE', 'PARTIELLEMENT_PAYEE': 'PART. PAYÉE'
+      'PAYEE': 'PAID', 'EN_ATTENTE': 'EN ATTENTE',
+      'ANNULEE': 'CANCELED', 'PARTIELLEMENT_PAYEE': 'PART. PAID'
     };
     const statutDisplay = statutLabelsV[factureData.statut || ''] || statut;
     doc.text(statutDisplay, W - 34.5, 38.2, { align: 'center' });
@@ -219,7 +219,7 @@ export class FactureDeVenteServiceService {
     const lX   = mg;
     const lW   = 88;
 
-    // LEFT PANEL — ÉMETTEUR
+    // LEFT PANEL — ISSUER
     doc.setFillColor(247, 250, 248);
     doc.setDrawColor(hR, hG, hB);
     doc.setLineWidth(0.3);
@@ -230,7 +230,7 @@ export class FactureDeVenteServiceService {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text('ÉMETTEUR', lX + 5, pTop + 6.5);
+    doc.text('ISSUER', lX + 5, pTop + 6.5);
 
     doc.setTextColor(22, 40, 28);
     doc.setFontSize(10.5);
@@ -241,7 +241,7 @@ export class FactureDeVenteServiceService {
     const emLines = [
       this.entreprise.adresse   || '',
       this.entreprise.email     || '',
-      telEntreprise ? `Tél : ${telEntreprise}` : '',
+      telEntreprise ? `Phone : ${telEntreprise}` : '',
       this.entreprise.siteWeb   || ''
     ].filter(l => l.trim() !== '');
     doc.setFontSize(8);
@@ -265,7 +265,7 @@ export class FactureDeVenteServiceService {
     doc.text('INFORMATIONS FACTURE', rX + 5, pTop + 6.5);
 
     const invoiceFields: Array<{ label: string; value: string }> = [
-      { label: 'N° Facture', value: referance },
+      { label: 'Invoice No.', value: referance },
       { label: 'Date',       value: dateStr },
       { label: 'Paiement',   value: factureData.modePaiement || '—' }
     ];
@@ -293,7 +293,7 @@ export class FactureDeVenteServiceService {
     doc.setTextColor(0, 0, 0);
     doc.setLineWidth(0.2);
 
-    // ── FACTURÉ À SECTION ─────────────────────────────────────────────────────
+    // ── BILLED TO SECTION ─────────────────────────────────────────────────────
     const secTop = pTop + pH + 7;
 
     doc.setFillColor(hR, hG, hB);
@@ -302,7 +302,7 @@ export class FactureDeVenteServiceService {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('FACTURÉ À', mg + 6, secTop + 6.5);
+    doc.text('BILLED TO', mg + 6, secTop + 6.5);
     doc.setTextColor(0, 0, 0);
 
     const clientLines: string[] = [];
@@ -310,11 +310,11 @@ export class FactureDeVenteServiceService {
     if (fullName)                          { clientLines.push(fullName); }
     if (factureData.client?.adresse)       { clientLines.push(factureData.client.adresse); }
     if (factureData.client?.email)         { clientLines.push(factureData.client.email); }
-    if (factureData.client?.telephone)     { clientLines.push(`Tél : ${factureData.client.telephone}`); }
+    if (factureData.client?.telephone)     { clientLines.push(`Phone : ${factureData.client.telephone}`); }
     if (factureData.client?.secteurActivite) {
       clientLines.push(`Secteur : ${factureData.client.secteurActivite}`);
     }
-    if (clientLines.length === 0)          { clientLines.push('Client non renseigné'); }
+    if (clientLines.length === 0)          { clientLines.push('Customer not specified'); }
 
     const boxH = Math.max(28, clientLines.length * 6.5 + 12);
     doc.setFillColor(250, 252, 251);
@@ -361,7 +361,7 @@ export class FactureDeVenteServiceService {
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(hR, hG, hB);
-    doc.text('DÉTAIL DES ARTICLES', mg, tableStartY - 3);
+    doc.text('ITEM DETAILS', mg, tableStartY - 3);
     doc.setTextColor(0, 0, 0);
 
     const rawDetails = factureData.detaisFactureDeVente;
@@ -405,7 +405,7 @@ export class FactureDeVenteServiceService {
 
     autoTable(doc, {
       startY: tableStartY,
-      head: [['#', 'Désignation', 'Qté', 'Prix HT', 'TVA', 'Montant HT', 'Total TTC']],
+      head: [['#', 'Description', 'Qty', 'Price excl. tax', 'TVA', 'Amount excl. tax', 'Total incl. tax']],
       body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—', '—']],
       margin: { left: mg, right: mg },
       theme: 'grid',
@@ -549,7 +549,7 @@ export class FactureDeVenteServiceService {
     doc.setFontSize(6.5);
     doc.setTextColor(188, 225, 205);
     doc.text(
-      `Document généré le ${new Date().toLocaleString('fr-FR')}`,
+      `Document generated on ${new Date().toLocaleString('fr-FR')}`,
       W - mg, 284, { align: 'right' }
     );
     doc.setTextColor(0, 0, 0);
@@ -581,8 +581,8 @@ export class FactureDeVenteServiceService {
         formData.append("text", "Veuillez trouver ci-joint votre facture.");
 
         this.http.post(`${this.baseUrl}/send-facture`, formData).subscribe({
-          next: () => this.notification.success("Facture envoyée avec succès !"),
-          error: (err) => console.error("Erreur envoi email:", err)
+          next: () => this.notification.success("Invoice sent successfully!"),
+          error: (err) => console.error("Email sending error:", err)
         });
       });
     }

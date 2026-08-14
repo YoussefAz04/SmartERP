@@ -15,7 +15,7 @@ export class RoleService {
 
   constructor(private http: HttpClient) {}
 
-  // Créer un rôle
+  // Create a role
   createRole(role: Role): Observable<Role> {
     return this.http.post<Role>(`${this.apiUrl}/create`, role);
   }
@@ -40,7 +40,7 @@ export class RoleService {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   }
 
-  // Assigner un rôle à un utilisateur
+  // Assign role à un utilisateur
   assignRoleToUser(idUser: number, idRole: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/assign-role/${idUser}/${idRole}`, null);
   }

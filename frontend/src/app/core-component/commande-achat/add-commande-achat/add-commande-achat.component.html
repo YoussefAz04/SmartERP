@@ -20,7 +20,7 @@
       <i class="feather icon-check-circle"></i>
     </div>
     <div class="banner-body">
-      Entreprise sélectionnée :&nbsp;<strong>{{ selectedEntrepriseName }}</strong>
+      Company sélectionnée :&nbsp;<strong>{{ selectedEntrepriseName }}</strong>
     </div>
   </div>
 
@@ -36,16 +36,16 @@
         </div>
         <div>
           <h1 class="hero-title">
-            {{ isEditMode ? 'Modifier Commande Achat' : 'Nouvelle Commande Achat' }}
+            {{ isEditMode ? 'Edit Purchase Order' : 'New Purchase Order' }}
           </h1>
           <nav class="breadcrumb" aria-label="breadcrumb">
             <a routerLink="/dashboard" class="bc-link">
               <i class="feather icon-home"></i> Dashboard
             </a>
             <span class="bc-sep">›</span>
-            <a routerLink="/commande-achat/list" class="bc-link">Commandes Achat</a>
+            <a routerLink="/commande-achat/list" class="bc-link">Purchase Orders</a>
             <span class="bc-sep">›</span>
-            <span class="bc-current">{{ isEditMode ? 'Modifier' : 'Ajouter' }}</span>
+            <span class="bc-current">{{ isEditMode ? 'Edit' : 'Add' }}</span>
           </nav>
         </div>
       </div>
@@ -65,7 +65,7 @@
       <div class="step-dot step-violet">
         <i class="feather icon-package"></i>
       </div>
-      <span class="step-label">Articles</span>
+      <span class="step-label">Products</span>
     </div>
   </div>
 
@@ -79,7 +79,7 @@
 
   <form [formGroup]="commandeForm" (ngSubmit)="onSubmit()">
 
-    <!-- ── Card 1 : Informations Générales ─────────────────────────────── -->
+    <!-- ── Card 1 : General Information ─────────────────────────────── -->
     <div class="form-card sec-animate" style="animation-delay:.05s">
       <div class="form-section">
         <div class="section-header">
@@ -87,27 +87,27 @@
             <i class="feather icon-file-text"></i>
           </div>
           <div class="sec-text">
-            <h2 class="sec-title">Informations Générales</h2>
-            <p class="sec-sub">Renseignez les détails principaux de la commande</p>
+            <h2 class="sec-title">General Information</h2>
+            <p class="sec-sub">Enter the main order details</p>
           </div>
-          <span class="step-badge step-badge-indigo">Étape 1</span>
+          <span class="step-badge step-badge-indigo">Step 1</span>
         </div>
 
-        <!-- Row 1 : Référence | Date Commande | Date Livraison -->
+        <!-- Row 1 : Reference | Order Date | Delivery Date -->
         <div class="fields-grid three-cols">
           <div class="field-group">
-            <label class="field-label required">Référence</label>
+            <label class="field-label required">Reference</label>
             <div class="input-wrap" [class.invalid]="isFieldInvalid('reference')">
               <i class="feather icon-hash field-icon"></i>
               <input type="text" class="field-input" formControlName="reference" placeholder="CA-0001">
             </div>
             <div class="field-error" *ngIf="isFieldInvalid('reference')">
-              <i class="feather icon-alert-circle"></i> La référence est obligatoire
+              <i class="feather icon-alert-circle"></i> La reference est obligatoire
             </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label required">Date Commande</label>
+            <label class="field-label required">Date Order</label>
             <div class="input-wrap" [class.invalid]="isFieldInvalid('dateCommande')">
               <i class="feather icon-calendar field-icon"></i>
               <input type="date" class="field-input" formControlName="dateCommande">
@@ -118,7 +118,7 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">Date Livraison Prévue <span class="optional-tag">optionnel</span></label>
+            <label class="field-label">Expected Delivery Date <span class="optional-tag">optional</span></label>
             <div class="input-wrap" [class.invalid]="commandeForm.hasError('dateLivraisonInvalid')">
               <i class="feather icon-truck field-icon"></i>
               <input type="date" class="field-input" formControlName="dateLivraisonPrevue">
@@ -132,7 +132,7 @@
         <!-- Row 2 : Fournisseur | Notes -->
         <div class="fields-grid two-cols mt-16">
           <div class="field-group">
-            <label class="field-label required">Fournisseur</label>
+            <label class="field-label required">Supplier</label>
             <div class="select-wrap" [class.invalid]="isFieldInvalid('fournisseurId')">
               <i class="feather icon-users field-icon"></i>
               <select class="field-select" formControlName="fournisseurId">
@@ -147,9 +147,9 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">Notes <span class="optional-tag">optionnel</span></label>
+            <label class="field-label">Notes <span class="optional-tag">optional</span></label>
             <textarea class="field-textarea" formControlName="note" rows="2"
-                      placeholder="Ajouter des notes ou instructions..."></textarea>
+                      placeholder="Add des notes ou instructions..."></textarea>
           </div>
         </div>
       </div>
@@ -163,13 +163,13 @@
             <i class="feather icon-package"></i>
           </div>
           <div class="sec-text">
-            <h2 class="sec-title">Articles <span class="sec-title-light">(Lignes de Commande)</span></h2>
+            <h2 class="sec-title">Products <span class="sec-title-light">(Lignes de Order)</span></h2>
             <p class="sec-sub">Ajoutez les articles à commander</p>
           </div>
-          <span class="step-badge step-badge-violet">Étape 2</span>
+          <span class="step-badge step-badge-violet">Step 2</span>
           <button type="button" class="btn-add-article" (click)="addLigne()">
             <i class="feather icon-plus-circle"></i>
-            Ajouter un article
+            Add a product
           </button>
         </div>
 
@@ -177,12 +177,12 @@
           <table class="ca-table" formArrayName="lignes">
             <thead>
               <tr>
-                <th class="col-article">Article Achat</th>
-                <th class="col-qty">Quantité</th>
+                <th class="col-article">Purchase Product</th>
+                <th class="col-qty">Quantity</th>
                 <th class="col-price">Prix Unit. HT</th>
                 <th class="col-tva">TVA (%)</th>
-                <th class="col-ht text-right">Montant HT</th>
-                <th class="col-ttc text-right">Montant TTC</th>
+                <th class="col-ht text-right">Amount excl. tax</th>
+                <th class="col-ttc text-right">Amount incl. tax</th>
                 <th class="col-action"></th>
               </tr>
             </thead>
@@ -193,7 +193,7 @@
                   <select class="tbl-select" formControlName="articleAchatId"
                           (change)="onArticleChange(i)"
                           [compareWith]="compareNumbers">
-                    <option [value]="null">— Article —</option>
+                    <option [value]="null">— Product —</option>
                     <option *ngFor="let a of articles" [ngValue]="a.id">{{ a.nom }}</option>
                   </select>
                 </td>
@@ -219,7 +219,7 @@
                   <input type="number" class="tbl-input tbl-readonly tbl-highlight" formControlName="montantTTC" readonly>
                 </td>
                 <td class="text-center">
-                  <button type="button" class="btn-row-delete" (click)="removeLigne(i)" title="Supprimer">
+                  <button type="button" class="btn-row-delete" (click)="removeLigne(i)" title="Delete">
                     <i class="feather icon-trash-2"></i>
                   </button>
                 </td>
@@ -232,8 +232,8 @@
                     <div class="empty-icon-wrap">
                       <i class="feather icon-inbox"></i>
                     </div>
-                    <p class="empty-title">Aucun article ajouté</p>
-                    <span class="empty-hint">Cliquez sur <strong>Ajouter un article</strong> pour commencer</span>
+                    <p class="empty-title">No product added</p>
+                    <span class="empty-hint">Cliquez sur <strong>Add a product</strong> pour commencer</span>
                   </div>
                 </td>
               </tr>
@@ -242,7 +242,7 @@
             <!-- Totals footer -->
             <tfoot *ngIf="lignesArray.length > 0">
               <tr class="tfoot-row tfoot-sub">
-                <td colspan="4" class="tfoot-label">Montant TVA :</td>
+                <td colspan="4" class="tfoot-label">VAT amount :</td>
                 <td colspan="2" class="tfoot-value">{{ totalTVA | number:'1.2-2' }} <span class="tfoot-currency">DT</span></td>
                 <td></td>
               </tr>
@@ -268,12 +268,12 @@
     <div class="order-summary-panel sec-animate" style="animation-delay:.16s" *ngIf="lignesArray.length > 0">
       <div class="osp-header">
         <i class="feather icon-clipboard"></i>
-        <span>Récapitulatif de la commande</span>
+        <span>Order Summary</span>
         <span class="osp-article-count">{{ lignesArray.length }} article(s)</span>
       </div>
       <div class="osp-body">
         <div class="osp-row">
-          <span class="osp-label">Montant Hors Taxes</span>
+          <span class="osp-label">Amount Hors Taxes</span>
           <span class="osp-value">{{ totalHT | number:'1.2-2' }} DT</span>
         </div>
         <div class="osp-row">
@@ -292,12 +292,12 @@
     <div class="form-actions sec-animate" style="animation-delay:.20s">
       <button type="button" class="btn-cancel" (click)="onCancel()">
         <i class="feather icon-x"></i>
-        Annuler
+        Cancel
       </button>
       <button type="submit" class="btn-submit" [disabled]="isLoading">
         <span *ngIf="isLoading" class="btn-spinner" aria-hidden="true"></span>
         <i *ngIf="!isLoading" class="feather icon-save"></i>
-        {{ isEditMode ? 'Enregistrer les modifications' : 'Créer la commande' }}
+        {{ isEditMode ? 'Save changes' : 'Create order' }}
       </button>
     </div>
 

@@ -2,17 +2,17 @@
 <div class="page-header">
   <div class="add-item d-flex">
     <div class="page-title">
-      <h4>Détail du Stock</h4>
+      <h4>Stock Detail</h4>
       <h6>
         @if (stock) {
-          {{ stock.articleAchat?.nom || 'Article #' + stock.id }}
+          {{ stock.articleAchat?.nom || 'Product #' + stock.id }}
         }
       </h6>
     </div>
   </div>
   <div class="page-btn d-flex gap-2">
     <button class="btn btn-secondary" (click)="goBack()">
-      <i class="feather icon-arrow-left me-2"></i>Retour
+      <i class="feather icon-arrow-left me-2"></i>Back
     </button>
     @if (stock) {
       <button class="btn btn-added" [routerLink]="['/stock/adjust', stock.id]">
@@ -37,12 +37,12 @@
       <div class="row align-items-center">
         <div class="col-md-8">
           <h5 class="mb-1">
-            <strong>{{ stock.articleAchat?.nom || 'Article #' + stock.id }}</strong>
+            <strong>{{ stock.articleAchat?.nom || 'Product #' + stock.id }}</strong>
             <span [class]="getStatusClass()" class="ms-2">{{ getStockStatus() }}</span>
           </h5>
           <p class="text-muted mb-1">
             <i class="feather icon-map-pin me-1"></i>
-            Localisation: <strong>{{ stock.localisation || 'Non définie' }}</strong>
+            Localisation: <strong>{{ stock.localisation || 'Not defined' }}</strong>
           </p>
           <p class="text-muted mb-0">
             <i class="feather icon-calendar me-1"></i>
@@ -50,8 +50,8 @@
           </p>
         </div>
         <div class="col-md-4 text-end">
-          <p class="text-muted small mb-1">Créé le: {{ stock.createdAt | date:'dd/MM/yyyy' }}</p>
-          <p class="text-muted small mb-0">Modifié le: {{ stock.updatedAt | date:'dd/MM/yyyy' }}</p>
+          <p class="text-muted small mb-1">Created on: {{ stock.createdAt | date:'dd/MM/yyyy' }}</p>
+          <p class="text-muted small mb-0">Updated on: {{ stock.updatedAt | date:'dd/MM/yyyy' }}</p>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@
       <div class="card text-center">
         <div class="card-body">
           <div class="fs-1 fw-bold text-primary">{{ stock.quantiteEntree || 0 }}</div>
-          <div class="text-muted">Quantité entrée</div>
+          <div class="text-muted">Incoming Quantity</div>
         </div>
       </div>
     </div>
@@ -76,7 +76,7 @@
             [class.text-danger]="(stock.quantiteDisponible || 0) === 0">
             {{ stock.quantiteDisponible || 0 }}
           </div>
-          <div class="text-muted">Quantité disponible</div>
+          <div class="text-muted">Quantity disponible</div>
         </div>
       </div>
     </div>
@@ -84,7 +84,7 @@
       <div class="card text-center">
         <div class="card-body">
           <div class="fs-1 fw-bold text-info">{{ stock.quantiteReserve || 0 }}</div>
-          <div class="text-muted">Quantité réservée</div>
+          <div class="text-muted">Reserved Quantity</div>
         </div>
       </div>
     </div>
@@ -92,7 +92,7 @@
       <div class="card text-center">
         <div class="card-body">
           <div class="fs-1 fw-bold text-secondary">{{ stock.quantiteVendue || 0 }}</div>
-          <div class="text-muted">Quantité vendue</div>
+          <div class="text-muted">Quantity vendue</div>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
         <li class="nav-item">
           <button class="nav-link" [class.active]="activeTab === 'movements'"
             (click)="activeTab = 'movements'">
-            <i class="feather icon-activity me-1"></i>Mouvements
+            <i class="feather icon-activity me-1"></i>Movements
             <span class="badge bg-secondary ms-1">{{ movements.length }}</span>
           </button>
         </li>
@@ -125,13 +125,13 @@
           <div class="col-md-6">
             <h6 class="border-bottom pb-2 mb-3">Informations article</h6>
             <dl class="row">
-              <dt class="col-sm-5">Nom:</dt>
+              <dt class="col-sm-5">Name:</dt>
               <dd class="col-sm-7">{{ stock.articleAchat?.nom || '-' }}</dd>
               <dt class="col-sm-5">SKU:</dt>
               <dd class="col-sm-7">{{ stock.articleAchat?.sku || '-' }}</dd>
               <dt class="col-sm-5">Description:</dt>
               <dd class="col-sm-7">{{ stock.articleAchat?.description || '-' }}</dd>
-              <dt class="col-sm-5">Fournisseur:</dt>
+              <dt class="col-sm-5">Supplier:</dt>
               <dd class="col-sm-7">{{ stock.articleAchat?.fournisseur?.nom || '-' }}</dd>
             </dl>
           </div>
@@ -142,9 +142,9 @@
               <dd class="col-sm-7">{{ stock.localisation || '-' }}</dd>
               <dt class="col-sm-5">Dernier inventaire:</dt>
               <dd class="col-sm-7">{{ stock.dateDernierInventaire | date:'dd/MM/yyyy' }}</dd>
-              <dt class="col-sm-5">Créé le:</dt>
+              <dt class="col-sm-5">Created on:</dt>
               <dd class="col-sm-7">{{ stock.createdAt | date:'dd/MM/yyyy' }}</dd>
-              <dt class="col-sm-5">Modifié le:</dt>
+              <dt class="col-sm-5">Updated on:</dt>
               <dd class="col-sm-7">{{ stock.updatedAt | date:'dd/MM/yyyy' }}</dd>
             </dl>
           </div>
@@ -158,14 +158,14 @@
             <select class="form-select form-select-sm" style="width: auto"
               [(ngModel)]="filterType" (change)="applyFilters()">
               <option value="">Tous les types</option>
-              <option value="ENTREE">Entrée</option>
+              <option value="ENTREE">Entry</option>
               <option value="SORTIE">Sortie</option>
               <option value="AJUSTEMENT">Ajustement</option>
-              <option value="RESERVATION">Réservation</option>
+              <option value="RESERVATION">Reservation</option>
             </select>
           </div>
-          <button class="btn btn-sm btn-outline-success" (click)="exportCSV()" title="Exporter CSV">
-            <i class="feather icon-download me-1"></i>Exporter CSV
+          <button class="btn btn-sm btn-outline-success" (click)="exportCSV()" title="Export CSV">
+            <i class="feather icon-download me-1"></i>Export CSV
           </button>
         </div>
 
@@ -181,10 +181,10 @@
                 <tr>
                   <th>Date</th>
                   <th>Type</th>
-                  <th class="text-center">Quantité</th>
-                  <th>Référence</th>
+                  <th class="text-center">Quantity</th>
+                  <th>Reference</th>
                   <th>Motif</th>
-                  <th>Utilisateur</th>
+                  <th>User</th>
                 </tr>
               </thead>
               <tbody>
@@ -206,7 +206,7 @@
                 } @else {
                   <tr>
                     <td colspan="6" class="text-center py-3 text-muted">
-                      Aucun mouvement trouvé
+                      No movement found
                     </td>
                   </tr>
                 }
@@ -243,6 +243,6 @@
   <div class="text-center py-5">
     <i class="feather icon-alert-circle fs-1 text-danger"></i>
     <p class="mt-2">Stock introuvable.</p>
-    <button class="btn btn-primary" (click)="goBack()">Retour à la liste</button>
+    <button class="btn btn-primary" (click)="goBack()">Back to list</button>
   </div>
 }

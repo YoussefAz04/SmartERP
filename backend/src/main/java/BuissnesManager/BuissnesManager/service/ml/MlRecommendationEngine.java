@@ -168,12 +168,12 @@ public class MlRecommendationEngine {
                     : "Passez une commande fournisseur avant que le stock ne soit épuisé.";
             out.add(new RecommendationDto(
                 "ML_RISQUE_STOCK",
-                "Risque de rupture — " + r.articleName,
+                "Stockout risk - " + r.articleName,
                 String.format(Locale.FRANCE,
-                    "Cet article a %.0f %% de risque de tomber en rupture dans les %d prochains jours. Il vous reste environ %s de stock. Vous en vendez %.0f par mois en moyenne, et le fournisseur livre en %.0f jours. Quantité à commander : %.0f unité(s). %s",
+                    "Cet article a %.0f %% de risque de tomber en rupture dans les %d prochains jours. Il vous reste environ %s de stock. Vous en vendez %.0f par mois en moyenne, et le fournisseur livre en %.0f jours. Quantity à commander : %.0f unité(s). %s",
                     pStockout * 100.0, horizonDays, coverStr,
                     r.avgMonthlyDemand, r.leadTimeDays, suggestedQty, urgencyHint),
-                prio, icon, "Voir Stock"
+                prio, icon, "View Stock"
             ));
         }
         return out;
@@ -246,7 +246,7 @@ public class MlRecommendationEngine {
             "PRODUIT_STAR",
             "Article à fort potentiel — " + topRow.productName,
             String.format(Locale.FRANCE,
-                "« %s » est l'article qui a le plus fort potentiel de croissance d'après l'analyse. Ventes actuelles : %,.0f — Quantité vendue : %.0f unité(s) — Marge par unité estimée : %,.0f. Gardez un stock suffisant, mettez-le en avant et proposez-le avec d'autres articles complémentaires pour vendre encore plus.",
+                "« %s » est l'article qui a le plus fort potentiel de croissance d'après l'analyse. Ventes actuelles : %,.0f — Quantity vendue : %.0f unité(s) — Marge par unité estimée : %,.0f. Gardez un stock suffisant, mettez-le en avant et proposez-le avec d'autres articles complémentaires pour vendre encore plus.",
                 topRow.productName, topRow.revenue, topRow.quantitySold, topRow.marginProxy),
             "BASSE", "fa-star", "Voir Produits"
         ));
@@ -269,7 +269,7 @@ public class MlRecommendationEngine {
                 "OPPORTUNITE",
                 "Opportunité de vente — " + r.productName,
                 String.format(Locale.FRANCE,
-                    "« %s » fait partie des articles qui peuvent encore beaucoup progresser. Ventes actuelles : %,.0f — Quantité vendue : %.0f unité(s). %s",
+                    "« %s » fait partie des articles qui peuvent encore beaucoup progresser. Ventes actuelles : %,.0f — Quantity vendue : %.0f unité(s). %s",
                     r.productName, r.revenue, r.quantitySold, hint),
                 "MOYENNE", "fa-arrow-trend-up", "Voir Produits"
             ));

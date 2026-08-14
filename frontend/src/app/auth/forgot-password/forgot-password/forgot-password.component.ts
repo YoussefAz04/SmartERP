@@ -48,7 +48,7 @@ export class ForgotPasswordComponent {
       next: () => {
         this.loading = false;
         this.successMessage =
-          'Si un compte existe pour cette adresse, un lien de réinitialisation vous a été envoyé par e-mail. Veuillez vérifier votre boîte de réception.';
+          'If an account exists for this address, a reset link has been sent by email. Please check your inbox.';
       },
       error: (error: any) => {
         this.loading = false;
@@ -56,7 +56,7 @@ export class ForgotPasswordComponent {
           (error?.error && typeof error.error === 'string'
             ? error.error
             : error?.error?.message) ||
-          'Une erreur est survenue. Veuillez réessayer.';
+          'An error occurred. Please try again.';
       },
     });
   }

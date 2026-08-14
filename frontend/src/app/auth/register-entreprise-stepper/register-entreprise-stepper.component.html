@@ -1,5 +1,5 @@
 <div class="container">
-  <a [routerLink]="routes.signIn" class="back-button" mat-icon-button aria-label="Retour">
+  <a [routerLink]="routes.signIn" class="back-button" mat-icon-button aria-label="Back">
     <mat-icon>arrow_back</mat-icon>
   </a>
 
@@ -16,7 +16,7 @@
         <span *ngIf="currentStep <= 1">1</span>
       </div>
       <div class="step-label" [class.active]="currentStep === 1">
-        Détails de l'entreprise
+        Company Details
       </div>
     </div>
 
@@ -34,19 +34,19 @@
   </div>
 
   <div class="form-section">
-    <!-- Étape 1: Entreprise -->
+    <!-- Step 1: Entreprise -->
     <div *ngIf="currentStep === 1" class="step-transition active">
       <form [formGroup]="entrepriseFormGroup">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="nom">
-              Nom de l'entreprise <span class="required">*</span>
+              Name de l'entreprise <span class="required">*</span>
             </label>
             <input type="text"
                    id="nom"
                    class="form-input"
                    formControlName="nom"
-                   placeholder="Nom de votre entreprise"
+                   placeholder="Name de votre entreprise"
                    [class.error]="entrepriseFormGroup.get('nom')?.invalid && entrepriseFormGroup.get('nom')?.touched">
           </div>
           <div class="form-group">
@@ -73,33 +73,33 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="secteurActivite">Secteur d'activité</label>
+            <label class="form-label" for="secteurActivite">Business sector</label>
             <input type="text"
                    id="secteurActivite"
                    class="form-input"
                    formControlName="secteurActivite"
-                   placeholder="Secteur d'activité">
+                   placeholder="Business sector">
           </div>
           <div class="form-group">
-            <label class="form-label" for="statutJuridique">Statut juridique</label>
+            <label class="form-label" for="statutJuridique">Status juridique</label>
             <input type="text"
                    id="statutJuridique"
                    class="form-input"
                    formControlName="statutJuridique"
-                   placeholder="Statut juridique">
+                   placeholder="Status juridique">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="numeroIdentificationFiscale">
-              Numéro d'identification fiscale
+              Tax identification number
             </label>
             <input type="text"
                    id="numeroIdentificationFiscale"
                    class="form-input"
                    formControlName="numeroIdentificationFiscale"
-                   placeholder="Numéro fiscal">
+                   placeholder="Tax number">
           </div>
           <div class="form-group">
             <label class="form-label" for="registreCommerce">Registre de commerce</label>
@@ -122,7 +122,7 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="dateCreation">
-              Date de création <span class="required">*</span>
+              Creation date <span class="required">*</span>
             </label>
             <input type="date"
                    id="dateCreation"
@@ -143,24 +143,24 @@
       </form>
     </div>
 
-    <!-- Étape 2: Utilisateur -->
+    <!-- Step 2: User -->
     <div *ngIf="currentStep === 2" class="step-transition active">
       <form [formGroup]="userFormGroup">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="prenom">
-              Prénom <span class="required">*</span>
+              First name <span class="required">*</span>
             </label>
             <input type="text"
                    id="prenom"
                    class="form-input"
                    formControlName="prenom"
-                   placeholder="Votre prénom"
+                   placeholder="Your first name"
                    [class.error]="userFormGroup.get('prenom')?.invalid && userFormGroup.get('prenom')?.touched">
           </div>
           <div class="form-group">
             <label class="form-label" for="nom_user">
-              Nom <span class="required">*</span>
+              Name <span class="required">*</span>
             </label>
             <input type="text"
                    id="nom_user"
@@ -184,7 +184,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="telephone">Téléphone</label>
+          <label class="form-label" for="telephone">Phone</label>
           <input type="tel"
                  id="telephone"
                  class="form-input"
@@ -194,25 +194,25 @@
 
         <div class="form-group">
           <label class="form-label" for="username">
-            Nom d'utilisateur <span class="required">*</span>
+            Username <span class="required">*</span>
           </label>
           <input type="text"
                  id="username"
                  class="form-input"
                  formControlName="username"
-                 placeholder="Nom d'utilisateur"
+                 placeholder="Username"
                  [class.error]="userFormGroup.get('username')?.invalid && userFormGroup.get('username')?.touched">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="password">
-            Mot de passe <span class="required">*</span>
+            Password <span class="required">*</span>
           </label>
           <input type="password"
                  id="password"
                  class="form-input"
                  formControlName="password"
-                 placeholder="Mot de passe sécurisé"
+                 placeholder="Secure password"
                  [class.error]="userFormGroup.get('password')?.invalid && userFormGroup.get('password')?.touched">
         </div>
 
@@ -220,13 +220,13 @@
           <button type="button"
                   class="btn btn-secondary"
                   (click)="goToStep(1)">
-            ← Retour
+            ← Back
           </button>
           <button type="button"
                   class="btn btn-primary"
                   (click)="createUser()"
                   [disabled]="!userFormGroup.valid">
-            Créer le compte
+            Create account
           </button>
         </div>
       </form>

@@ -393,7 +393,7 @@ public class AuthController {
             e.printStackTrace();
             Map<String, String> body = new HashMap<>();
             body.put("error", "AUTH_ERROR");
-            body.put("message", "Identifiants invalides. Veuillez réessayer.");
+            body.put("message", "Invalid credentials. Please try again.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
         }
     }

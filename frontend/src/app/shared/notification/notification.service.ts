@@ -82,7 +82,7 @@ export class NotificationService {
       icon: options.icon ?? 'question',
       showCancelButton: true,
       confirmButtonText: options.confirmText ?? 'Confirmer',
-      cancelButtonText: options.cancelText ?? 'Annuler',
+      cancelButtonText: options.cancelText ?? 'Cancel',
       reverseButtons: true,
       focusCancel: true,
       buttonsStyling: false,

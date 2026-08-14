@@ -11,15 +11,15 @@
           <i class="feather icon-edit"></i>
         </div>
         <div>
-          <h1 class="hero-title">Modifier un Article Vente</h1>
+          <h1 class="hero-title">Edit a Sales Product</h1>
           <nav class="breadcrumb" aria-label="breadcrumb">
             <a routerLink="/dashboard" class="bc-link">
               <i class="feather icon-home"></i> Dashboard
             </a>
             <span class="bc-sep">›</span>
-            <a routerLink="/article-vente/listArticleVente" class="bc-link">Articles Vente</a>
+            <a routerLink="/article-vente/listArticleVente" class="bc-link">Sales Products</a>
             <span class="bc-sep">›</span>
-            <span class="bc-current">Modifier</span>
+            <span class="bc-current">Edit</span>
           </nav>
         </div>
       </div>
@@ -54,15 +54,15 @@
   <div class="form-card">
     <form [formGroup]="articleForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
 
-      <!-- ── Section 1 : Informations Générales ─────────────────── -->
+      <!-- ── Section 1 : General Information ─────────────────── -->
       <div class="form-section sec-animate" style="animation-delay:.05s">
         <div class="section-header">
           <div class="sec-icon-wrap sec-info">
             <i class="feather icon-info"></i>
           </div>
           <div class="sec-text">
-            <h2 class="sec-title">Informations Générales</h2>
-            <p class="sec-sub">Identité et description de l'article</p>
+            <h2 class="sec-title">General Information</h2>
+            <p class="sec-sub">Identity et description de l'article</p>
           </div>
           <span class="step-badge">1 / 3</span>
         </div>
@@ -71,7 +71,7 @@
 
           <!-- Nom -->
           <div class="field-group">
-            <label class="field-label required" for="nom">Nom de l'article</label>
+            <label class="field-label required" for="nom">Name de l'article</label>
             <div class="input-wrap" [class.invalid]="isFieldInvalid('nom')">
               <i class="feather icon-package field-icon"></i>
               <input id="nom" type="text" class="field-input" formControlName="nom"
@@ -82,19 +82,19 @@
             <div id="nom-err" class="field-error" *ngIf="isFieldInvalid('nom')" role="alert">
               <i class="feather icon-alert-circle"></i>
               <span *ngIf="articleForm.get('nom')?.hasError('required')">Le nom est requis</span>
-              <span *ngIf="articleForm.get('nom')?.hasError('minlength')">Minimum 2 caractères</span>
+              <span *ngIf="articleForm.get('nom')?.hasError('minlength')">Minimum 2 characters</span>
             </div>
           </div>
 
-          <!-- SKU / Référence -->
+          <!-- SKU / Reference -->
           <div class="field-group">
-            <label class="field-label" for="sku">SKU / Référence</label>
+            <label class="field-label" for="sku">SKU / Reference</label>
             <div class="input-wrap">
               <i class="feather icon-hash field-icon"></i>
               <input id="sku" type="text" class="field-input" formControlName="sku"
                      placeholder="Ex: ART-2024-001">
             </div>
-            <small class="field-hint">Identifiant unique de l'article (optionnel)</small>
+            <small class="field-hint">Identifiant unique de l'article (optional)</small>
           </div>
 
           <!-- Description (full width) -->
@@ -117,7 +117,7 @@
             <i class="feather icon-dollar-sign"></i>
           </div>
           <div class="sec-text">
-            <h2 class="sec-title">Prix &amp; Lien Article Achat</h2>
+            <h2 class="sec-title">Price &amp; Purchase Product Link</h2>
             <p class="sec-sub">Tarification et article d'achat associé</p>
           </div>
           <span class="step-badge step-badge-indigo">2 / 3</span>
@@ -127,11 +127,11 @@
 
           <!-- Article Achat lié -->
           <div class="field-group">
-            <label class="field-label" for="articleAchatId">Article Achat lié</label>
+            <label class="field-label" for="articleAchatId">Purchase Product lié</label>
             <div class="select-wrap">
               <i class="feather icon-link field-icon"></i>
               <select id="articleAchatId" class="field-select" formControlName="articleAchatId">
-                <option value="">— Aucun (lier optionnel) —</option>
+                <option value="">— Aucun (lier optional) —</option>
                 <option *ngFor="let a of articlesAchat" [value]="a.id">
                   {{ a.nom }} — {{ a.prixUnitaire | number:'1.2-2' }} DT
                 </option>
@@ -140,11 +140,11 @@
             </div>
             <div *ngIf="selectedArticleAchatPrice != null" class="info-pill">
               <i class="feather icon-info"></i>
-              Prix d'achat de référence :&nbsp;<strong>{{ selectedArticleAchatPrice | number:'1.2-2' }} DT</strong>
+              Prix d'achat de reference :&nbsp;<strong>{{ selectedArticleAchatPrice | number:'1.2-2' }} DT</strong>
             </div>
             <div *ngIf="selectedArticleAchatCategorie" class="info-pill">
               <i class="feather icon-tag"></i>
-              Catégorie :&nbsp;<strong>{{ selectedArticleAchatCategorie }}</strong>
+              Category :&nbsp;<strong>{{ selectedArticleAchatCategorie }}</strong>
             </div>
           </div>
 
@@ -200,16 +200,16 @@
           </div>
           <div class="sec-text">
             <h2 class="sec-title">Stock &amp; Conditionnement</h2>
-            <p class="sec-sub">Quantité et unité de mesure de l'article</p>
+            <p class="sec-sub">Quantity et unité de mesure de l'article</p>
           </div>
           <span class="step-badge step-badge-violet">3 / 3</span>
         </div>
 
         <div class="fields-grid">
 
-          <!-- Quantité -->
+          <!-- Quantity -->
           <div class="field-group">
-            <label class="field-label required" for="quantite">Quantité</label>
+            <label class="field-label required" for="quantite">Quantity</label>
             <div class="input-wrap" [class.invalid]="isFieldInvalid('quantite')">
               <i class="feather icon-hash field-icon"></i>
               <input id="quantite" type="number" class="field-input" formControlName="quantite"
@@ -240,12 +240,12 @@
       <div class="form-actions sec-animate" style="animation-delay:.26s">
         <button type="button" class="btn-cancel" [disabled]="isLoading" (click)="onCancel()">
           <i class="feather icon-x"></i>
-          Annuler
+          Cancel
         </button>
         <button type="submit" class="btn-submit" [disabled]="isLoading">
           <span *ngIf="isLoading" class="btn-spinner" aria-hidden="true"></span>
           <i *ngIf="!isLoading" class="feather icon-check"></i>
-          {{ isLoading ? 'Enregistrement...' : 'Mettre à jour' }}
+          {{ isLoading ? 'Saving...' : 'Update' }}
         </button>
       </div>
 

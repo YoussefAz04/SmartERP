@@ -95,7 +95,7 @@ export class AddArticleAchatComponent implements OnInit {
   loadCategories(): void {
     this.articleAchatService.getCategoriesArticle().subscribe({
       next: (data) => { this.categories = data; },
-      error: (err) => { console.error('Erreur chargement catégories:', err); }
+      error: (err) => { console.error('Error loading categories:', err); }
     });
   }
 

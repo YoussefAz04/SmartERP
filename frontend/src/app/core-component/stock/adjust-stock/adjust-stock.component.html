@@ -12,7 +12,7 @@
           <i class="feather icon-sliders"></i>
         </div>
         <div>
-          <h1 class="hero-title">Ajustement de Stock</h1>
+          <h1 class="hero-title">Stock Adjustment</h1>
           <nav class="breadcrumb" aria-label="breadcrumb">
             <a routerLink="/dashboard" class="bc-link">
               <i class="feather icon-home"></i> Dashboard
@@ -109,7 +109,7 @@
               </div>
               <div class="stock-info-grid">
                 <div class="stock-info-item">
-                  <span class="si-label"><i class="feather icon-package"></i> Article</span>
+                  <span class="si-label"><i class="feather icon-package"></i> Product</span>
                   <span class="si-value">{{ selectedStock.articleAchat?.nom || 'N/A' }}</span>
                 </div>
                 <div class="stock-info-item">
@@ -117,7 +117,7 @@
                   <span class="si-value">{{ selectedStock.localisation || 'N/A' }}</span>
                 </div>
                 <div class="stock-info-item">
-                  <span class="si-label"><i class="feather icon-layers"></i> Quantité actuelle</span>
+                  <span class="si-label"><i class="feather icon-layers"></i> Quantity actuelle</span>
                   <span class="qty-pill"
                     [class.qty-ok]="quantiteActuelle >= 5"
                     [class.qty-low]="quantiteActuelle > 0 && quantiteActuelle < 5"
@@ -153,7 +153,7 @@
                 <i class="feather icon-arrow-down-circle"></i>
               </div>
               <div class="type-badge entree">ENTRÉE</div>
-              <div class="type-desc">Ajouter au stock</div>
+              <div class="type-desc">Add to stock</div>
               <div class="type-check entree">
                 <i class="feather icon-check"></i>
               </div>
@@ -199,20 +199,20 @@
             </div>
             <div class="sec-text">
               <h2 class="sec-title">Détails du mouvement</h2>
-              <p class="sec-sub">Quantité, date et localisation</p>
+              <p class="sec-sub">Quantity, date et localisation</p>
             </div>
             <span class="step-badge step-badge-indigo">3 / 4</span>
           </div>
 
           <div class="fields-grid">
 
-            <!-- Quantité -->
+            <!-- Quantity -->
             <div class="field-group">
               <label class="field-label required">
                 @if (adjustForm.get('typeMouvement')?.value === 'AJUSTEMENT') {
                   Nouvelle quantité exacte
                 } @else {
-                  Quantité à {{ adjustForm.get('typeMouvement')?.value === 'ENTREE' ? 'ajouter' : 'retirer' }}
+                  Quantity à {{ adjustForm.get('typeMouvement')?.value === 'ENTREE' ? 'ajouter' : 'retirer' }}
                 }
               </label>
               <div class="input-wrap" [class.invalid]="isFieldInvalid('quantite')">
@@ -249,7 +249,7 @@
 
             <!-- Date -->
             <div class="field-group">
-              <label class="field-label">Date du mouvement</label>
+              <label class="field-label">Movement date</label>
               <div class="input-wrap">
                 <i class="feather icon-calendar field-icon"></i>
                 <input type="datetime-local" class="field-input" formControlName="dateMouvement">
@@ -258,7 +258,7 @@
 
             <!-- Localisation -->
             <div class="field-group">
-              <label class="field-label">Localisation <span class="optional-tag">optionnel</span></label>
+              <label class="field-label">Localisation <span class="optional-tag">optional</span></label>
               <div class="input-wrap">
                 <i class="feather icon-map-pin field-icon"></i>
                 <input type="text" class="field-input" formControlName="localisation"
@@ -266,9 +266,9 @@
               </div>
             </div>
 
-            <!-- Référence document -->
+            <!-- Reference document -->
             <div class="field-group">
-              <label class="field-label">Référence document <span class="optional-tag">optionnel</span></label>
+              <label class="field-label">Reference document <span class="optional-tag">optional</span></label>
               <div class="input-wrap">
                 <i class="feather icon-file-text field-icon"></i>
                 <input type="text" class="field-input" formControlName="referenceCommande"
@@ -311,15 +311,15 @@
         <div class="form-actions sec-animate" style="animation-delay:.25s">
           <button type="button" class="btn-cancel" (click)="cancel()">
             <i class="feather icon-x"></i>
-            Annuler
+            Cancel
           </button>
           <button type="submit" class="btn-submit" [disabled]="isSubmitting">
             @if (isSubmitting) {
               <span class="btn-spinner" aria-hidden="true"></span>
-              Enregistrement...
+              Saving...
             } @else {
               <i class="feather icon-check"></i>
-              Enregistrer l'ajustement
+              Save adjustment
             }
           </button>
         </div>

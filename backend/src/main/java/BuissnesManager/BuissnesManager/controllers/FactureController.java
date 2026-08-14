@@ -37,7 +37,7 @@ public class FactureController {
         }catch (Exception e){
             log.error("Failed to load purchase invoices", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors du chargement des factures d'achat: " + e.getMessage());
+                    .body("Error lors du chargement des factures d'achat: " + e.getMessage());
         }
     }
 
@@ -48,7 +48,7 @@ public class FactureController {
         }catch (Exception e){
             log.error("Failed to load purchase invoice {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors du chargement de la facture d'achat: " + e.getMessage());
+                    .body("Error lors du chargement de la facture d'achat: " + e.getMessage());
         }
     }
 

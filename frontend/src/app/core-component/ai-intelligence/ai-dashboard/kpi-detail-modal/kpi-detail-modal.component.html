@@ -10,10 +10,10 @@
         <h3 class="modal-title">{{ modalTitle }}</h3>
       </div>
       <div class="modal-actions">
-        <button class="btn-export" (click)="exportCsv()" title="Exporter CSV">
-          <i class="fas fa-download me-1"></i> Exporter
+        <button class="btn-export" (click)="exportCsv()" title="Export CSV">
+          <i class="fas fa-download me-1"></i> Export
         </button>
-        <button class="btn-close-modal" (click)="close()" title="Fermer">
+        <button class="btn-close-modal" (click)="close()" title="Close">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -37,11 +37,11 @@
 
         <!-- Tab 0: Top Products -->
         <div *ngIf="activeTab === 0">
-          <p class="modal-subtitle"><i class="fas fa-trophy me-2 text-warning"></i>Top Produits par Revenu</p>
+          <p class="modal-subtitle"><i class="fas fa-trophy me-2 text-warning"></i>Top Products par Revenue</p>
           <div *ngIf="kpiDetails.revenue.topProducts?.length; else noData">
             <table class="modal-table">
               <thead>
-                <tr><th>#</th><th>Produit</th><th>Revenu</th></tr>
+                <tr><th>#</th><th>Product</th><th>Revenue</th></tr>
               </thead>
               <tbody>
                 <tr *ngFor="let p of kpiDetails.revenue.topProducts; let i = index">
@@ -56,11 +56,11 @@
 
         <!-- Tab 1: Top Customers -->
         <div *ngIf="activeTab === 1">
-          <p class="modal-subtitle"><i class="fas fa-users me-2 text-info"></i>Top Clients par Revenu</p>
+          <p class="modal-subtitle"><i class="fas fa-users me-2 text-info"></i>Top Customers par Revenue</p>
           <div *ngIf="kpiDetails.revenue.topCustomers?.length; else noData">
             <table class="modal-table">
               <thead>
-                <tr><th>#</th><th>Client</th><th>Revenu</th></tr>
+                <tr><th>#</th><th>Customer</th><th>Revenue</th></tr>
               </thead>
               <tbody>
                 <tr *ngFor="let c of kpiDetails.revenue.topCustomers; let i = index">
@@ -80,7 +80,7 @@
 
         <!-- Tab 0: Status Breakdown -->
         <div *ngIf="activeTab === 0">
-          <p class="modal-subtitle"><i class="fas fa-tasks me-2 text-primary"></i>Répartition par Statut</p>
+          <p class="modal-subtitle"><i class="fas fa-tasks me-2 text-primary"></i>Breakdown by Status</p>
           <div *ngIf="kpiDetails.orders.byStatus?.length; else noData">
             <div class="status-grid">
               <div class="status-card" *ngFor="let s of kpiDetails.orders.byStatus">
@@ -96,15 +96,15 @@
           <p class="modal-subtitle"><i class="fas fa-chart-pie me-2 text-success"></i>Vue d'ensemble</p>
           <div class="overview-grid">
             <div class="overview-card">
-              <span class="ov-label">Total Commandes</span>
+              <span class="ov-label">Total Orders</span>
               <span class="ov-value">{{ kpiDetails.orders.totalOrders | number }}</span>
             </div>
             <div class="overview-card">
-              <span class="ov-label">Valeur Moy. Commande</span>
+              <span class="ov-label">Value Moy. Order</span>
               <span class="ov-value">{{ formatCurrency(kpiDetails.orders.avgOrderValue) }} TND</span>
             </div>
             <div class="overview-card">
-              <span class="ov-label">Revenu Total</span>
+              <span class="ov-label">Total Revenuee</span>
               <span class="ov-value highlight">{{ formatCurrency(kpiDetails.orders.totalRevenue) }} TND</span>
             </div>
           </div>
@@ -117,22 +117,22 @@
 
         <!-- Tab 0: Stock Levels -->
         <div *ngIf="activeTab === 0">
-          <p class="modal-subtitle"><i class="fas fa-boxes me-2 text-success"></i>Niveaux de Stock</p>
+          <p class="modal-subtitle"><i class="fas fa-boxes me-2 text-success"></i>Stock Levels</p>
           <div class="overview-grid">
             <div class="overview-card">
-              <span class="ov-label">Total Articles (SKUs)</span>
+              <span class="ov-label">Total Products (SKUs)</span>
               <span class="ov-value">{{ kpiDetails.products.totalSKUs | number }}</span>
             </div>
             <div class="overview-card">
-              <span class="ov-label">Alertes Stock Faible</span>
+              <span class="ov-label">Low Stock Alerts</span>
               <span class="ov-value text-warning">{{ kpiDetails.products.lowStockCount | number }}</span>
             </div>
             <div class="overview-card">
-              <span class="ov-label">Ruptures de Stock</span>
+              <span class="ov-label">Out of Stock Items</span>
               <span class="ov-value text-danger">{{ kpiDetails.products.outOfStockCount | number }}</span>
             </div>
             <div class="overview-card">
-              <span class="ov-label">Valeur Total Stock</span>
+              <span class="ov-label">Total Stock Value</span>
               <span class="ov-value highlight">{{ formatCurrency(kpiDetails.products.totalStockValue) }} TND</span>
             </div>
           </div>
@@ -140,11 +140,11 @@
 
         <!-- Tab 1: Fast/Slow movers -->
         <div *ngIf="activeTab === 1">
-          <p class="modal-subtitle"><i class="fas fa-rocket me-2 text-primary"></i>Top Produits Vendus</p>
+          <p class="modal-subtitle"><i class="fas fa-rocket me-2 text-primary"></i>Top Products Vendus</p>
           <div *ngIf="kpiDetails.products.topProducts?.length; else noData">
             <table class="modal-table">
               <thead>
-                <tr><th>#</th><th>Produit</th><th>Qté Vendue</th></tr>
+                <tr><th>#</th><th>Product</th><th>Qty Sold</th></tr>
               </thead>
               <tbody>
                 <tr *ngFor="let p of kpiDetails.products.topProducts; let i = index">
@@ -164,18 +164,18 @@
 
         <!-- Tab 0: Forecast Values -->
         <div *ngIf="activeTab === 0">
-          <p class="modal-subtitle"><i class="fas fa-magic me-2 text-primary"></i>Prévisions de Ventes</p>
+          <p class="modal-subtitle"><i class="fas fa-magic me-2 text-primary"></i>Sales Forecasts</p>
           <div class="overview-grid">
             <div class="overview-card">
-              <span class="ov-label">Mois prochain</span>
+              <span class="ov-label">Next month</span>
               <span class="ov-value highlight">{{ formatCurrency(kpiDetails.forecast.predictedNextMonth) }} TND</span>
             </div>
             <div class="overview-card">
-              <span class="ov-label">3 prochains mois</span>
+              <span class="ov-label">Next 3 months</span>
               <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext3Months) }} TND</span>
             </div>
             <div class="overview-card">
-              <span class="ov-label">6 prochains mois</span>
+              <span class="ov-label">Next 6 months</span>
               <span class="ov-value">{{ formatCurrency(kpiDetails.forecast.predictedNext6Months) }} TND</span>
             </div>
           </div>
@@ -184,33 +184,33 @@
 
         <!-- Tab 1: Accuracy -->
         <div *ngIf="activeTab === 1">
-          <p class="modal-subtitle"><i class="fas fa-bullseye me-2 text-success"></i>Précision du Modèle</p>
+          <p class="modal-subtitle"><i class="fas fa-bullseye me-2 text-success"></i>Model Accuracy</p>
           <div class="accuracy-display">
             <div class="accuracy-ring">
               <span class="accuracy-value">{{ kpiDetails.forecast.accuracy | number:'1.0-0' }}%</span>
-              <span class="accuracy-label">Score de fiabilité</span>
+              <span class="accuracy-label">Reliability Score</span>
             </div>
             <div class="accuracy-description">
               <p *ngIf="kpiDetails.forecast.accuracy >= 75" class="text-success">
-                <i class="fas fa-check-circle me-1"></i> Haute fiabilité – Prévisions très fiables
+                <i class="fas fa-check-circle me-1"></i> High reliability - Forecasts are very reliable
               </p>
               <p *ngIf="kpiDetails.forecast.accuracy >= 50 && kpiDetails.forecast.accuracy < 75" class="text-warning">
-                <i class="fas fa-exclamation-triangle me-1"></i> Fiabilité modérée – Utiliser avec prudence
+                <i class="fas fa-exclamation-triangle me-1"></i> Moderate reliability - Use with caution
               </p>
               <p *ngIf="kpiDetails.forecast.accuracy < 50" class="text-danger">
-                <i class="fas fa-times-circle me-1"></i> Fiabilité faible – Données insuffisantes
+                <i class="fas fa-times-circle me-1"></i> Low reliability - Insufficient data
               </p>
             </div>
           </div>
           <div class="ml-metrics" *ngIf="kpiDetails.forecast.selectedModel">
-            <p class="modal-subtitle mt-3"><i class="fas fa-robot me-2 text-primary"></i>Diagnostics ML</p>
+            <p class="modal-subtitle mt-3"><i class="fas fa-robot me-2 text-primary"></i>ML Diagnostics</p>
             <div class="overview-grid">
               <div class="overview-card">
-                <span class="ov-label">Modèle sélectionné</span>
+                <span class="ov-label">Selected Model</span>
                 <span class="ov-value">{{ kpiDetails.forecast.selectedModel }}</span>
               </div>
               <div class="overview-card" *ngIf="kpiDetails.forecast.crossValidatedMape != null">
-                <span class="ov-label">MAPE (validation croisée)</span>
+                <span class="ov-label">MAPE (Cross-Validation)</span>
                 <span class="ov-value" [class.text-success]="kpiDetails.forecast.crossValidatedMape! <= 0.15"
                                        [class.text-warning]="kpiDetails.forecast.crossValidatedMape! > 0.15 && kpiDetails.forecast.crossValidatedMape! <= 0.30"
                                        [class.text-danger]="kpiDetails.forecast.crossValidatedMape! > 0.30">
@@ -218,7 +218,7 @@
                 </span>
               </div>
               <div class="overview-card" *ngIf="kpiDetails.forecast.crossValidatedSmape != null">
-                <span class="ov-label">sMAPE (validation croisée)</span>
+                <span class="ov-label">sMAPE (Cross-Validation)</span>
                 <span class="ov-value" [class.text-success]="kpiDetails.forecast.crossValidatedSmape! <= 0.15"
                                        [class.text-warning]="kpiDetails.forecast.crossValidatedSmape! > 0.15 && kpiDetails.forecast.crossValidatedSmape! <= 0.30"
                                        [class.text-danger]="kpiDetails.forecast.crossValidatedSmape! > 0.30">
@@ -226,7 +226,7 @@
                 </span>
               </div>
               <div class="overview-card" *ngIf="kpiDetails.forecast.crossValidatedRmse != null">
-                <span class="ov-label">RMSE (validation croisée)</span>
+                <span class="ov-label">RMSE (Cross-Validation)</span>
                 <span class="ov-value">{{ kpiDetails.forecast.crossValidatedRmse | number:'1.0-0' }} TND</span>
               </div>
             </div>
@@ -244,6 +244,6 @@
 <ng-template #noData>
   <div class="no-data-modal">
     <i class="fas fa-info-circle"></i>
-    <p>Aucune donnée disponible</p>
+    <p>No data available</p>
   </div>
 </ng-template>

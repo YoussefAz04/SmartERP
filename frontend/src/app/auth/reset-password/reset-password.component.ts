@@ -42,7 +42,7 @@ export class ResetPasswordComponent implements OnInit {
     if (!this.token) {
       this.tokenMissing = true;
       this.errorMessage =
-        'Le jeton de réinitialisation est manquant. Veuillez demander un nouveau lien.';
+        'The reset token is missing. Please request a new link.';
     }
   }
 
@@ -68,7 +68,7 @@ export class ResetPasswordComponent implements OnInit {
       if (this.resetForm.errors?.['mismatch']) {
         this.errorMessage = 'Les mots de passe ne correspondent pas.';
       } else {
-        this.errorMessage = 'Veuillez saisir un mot de passe valide (au moins 6 caractères).';
+        this.errorMessage = 'Please enter a valid password (at least 6 characters).';
       }
       return;
     }
@@ -81,7 +81,7 @@ export class ResetPasswordComponent implements OnInit {
         this.loading = false;
         this.successMessage =
           response?.message ||
-          'Mot de passe mis à jour avec succès. Vous pouvez désormais vous connecter.';
+          'Password updated successfully. You can now sign in.';
         // Redirect to sign-in shortly so the user sees the confirmation first.
         setTimeout(() => {
           this.router.navigate(['/auth/signin']);
@@ -93,7 +93,7 @@ export class ResetPasswordComponent implements OnInit {
           (error?.error && typeof error.error === 'string'
             ? error.error
             : error?.error?.message) ||
-          'Impossible de réinitialiser le mot de passe. Le lien a peut-être expiré.';
+          'Unable to reset the password. The link may have expired.';
       },
     });
   }

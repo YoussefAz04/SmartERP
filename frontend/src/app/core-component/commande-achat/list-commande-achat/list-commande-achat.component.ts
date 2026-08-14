@@ -132,7 +132,7 @@ export class ListCommandeAchatComponent implements OnInit {
           this.showFactureModal = true;
           this.loadCommandes();
           console.log('✅ Commande validée ! Facture achat générée:', facture);
-          this.notification.success('✅ Commande validée ! Facture achat générée : ' + facture.referance + '. Le stock a été mis à jour.');
+          this.notification.success('✅ Commande validée ! Facture achat générée : ' + facture.referance + '. Stock has been updated.');
         },
         error: (err) => {
           this.isLoading = false;
@@ -161,7 +161,7 @@ export class ListCommandeAchatComponent implements OnInit {
         next: (bon) => {
           this.loadCommandes();
           this.isLoading = false;
-          this.notification.success('✅ Commande reçue ! Bon de réception créé : ' + bon.reference + '. Le stock a été mis à jour.');
+          this.notification.success('✅ Commande reçue ! Bon de réception créé : ' + bon.reference + '. Stock has been updated.');
         },
         error: (err) => {
           this.isLoading = false;
@@ -199,7 +199,7 @@ export class ListCommandeAchatComponent implements OnInit {
   }
 
   annulerCommande(id: number): void {
-    this.notification.confirm('Annuler cette commande ?').then(ok => {
+    this.notification.confirm('Cancel cette commande ?').then(ok => {
       if (!ok) return;
       
       this.isLoading = true;
@@ -209,7 +209,7 @@ export class ListCommandeAchatComponent implements OnInit {
         next: () => {
           this.loadCommandes();
           this.isLoading = false;
-          this.notification.success('✅ Commande annulée.');
+          this.notification.success('✅ Order canceled.');
         },
         error: (err) => {
           this.isLoading = false;
@@ -233,12 +233,12 @@ export class ListCommandeAchatComponent implements OnInit {
         next: () => {
           this.loadCommandes();
           this.isLoading = false;
-          this.notification.success('✅ Commande supprimée.');
+          this.notification.success('✅ Order deleted.');
         },
         error: (err) => {
           this.isLoading = false;
           console.error('❌ Erreur suppression:', err);
-          const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
+          const errorMessage = err?.error?.message || 'Error during deletion';
           this.errorMessage = errorMessage;
           this.notification.error('❌ ' + errorMessage);
         }
@@ -259,9 +259,9 @@ export class ListCommandeAchatComponent implements OnInit {
   getStatutLabel(statut?: string): string {
     switch (statut) {
       case 'EN_ATTENTE': return 'En attente';
-      case 'CONFIRMEE':  return 'Confirmée';
+      case 'CONFIRMEE':  return 'Confirmed';
       case 'RECUE':      return 'Reçue';
-      case 'ANNULEE':    return 'Annulée';
+      case 'ANNULEE':    return 'Canceled';
       default:           return statut || '-';
     }
   }
@@ -295,7 +295,7 @@ export class ListCommandeAchatComponent implements OnInit {
   }
 
   exportCSV(): void {
-    const headers = ['Référence', 'Date Commande', 'Fournisseur', 'Statut', 'Montant HT', 'Montant TVA', 'Montant TTC'];
+    const headers = ['Reference', 'Date Commande', 'Fournisseur', 'Statut', 'Amount excl. tax', 'VAT Amount', 'Amount incl. tax'];
     const rows = this.filteredCommandes.map(c => [
       c.reference ?? '',
       c.dateCommande ?? '',

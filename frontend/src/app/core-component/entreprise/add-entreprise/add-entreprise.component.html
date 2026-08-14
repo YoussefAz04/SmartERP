@@ -4,7 +4,7 @@
   <span class="hero-orb hero-orb--b" aria-hidden="true"></span>
   <div class="hero-inner">
     <div class="hero-left">
-      <a routerLink="/entreprise/listEntreprise" class="back-btn" title="Retour à la liste">
+      <a routerLink="/entreprise/listEntreprise" class="back-btn" title="Back to list">
         <i class="feather icon-arrow-left"></i>
       </a>
       <div class="hero-icon-wrap">
@@ -13,10 +13,10 @@
       <div class="hero-text">
         <p class="hero-eyebrow">
           <i class="feather icon-briefcase"></i>
-          Gestion des Entreprises
+          Company Management
         </p>
-        <h1 class="hero-title">Nouvelle Entreprise</h1>
-        <p class="hero-sub">Remplissez les informations pour créer une entreprise</p>
+        <h1 class="hero-title">Nouvelle Company</h1>
+        <p class="hero-sub">Fill in the information to create a company</p>
       </div>
     </div>
     <div class="hero-meta">
@@ -38,25 +38,25 @@
       </span>
       <div class="title-text-block">
         <span class="title-main">Informations de l'entreprise</span>
-        <span class="title-sub">Les champs marqués d'un <strong>*</strong> sont obligatoires</span>
+        <span class="title-sub">Fields marked with <strong>*</strong> are required</span>
       </div>
     </div>
     <a routerLink="/entreprise/listEntreprise" class="btn-ghost">
-      <i class="feather icon-arrow-left"></i> Retour
+      <i class="feather icon-arrow-left"></i> Back
     </a>
   </div>
 
   <!-- Form -->
   <form [formGroup]="entrepriseFormGroup" (ngSubmit)="createEntreprise()" class="ent-form">
 
-    <!-- ── Section 1 : Identité ─────────────────────────────── -->
+    <!-- ── Section 1 : Identity ─────────────────────────────── -->
     <div class="form-section">
       <div class="section-header">
         <div class="section-header__icon section-header__icon--indigo">
           <i class="feather icon-briefcase"></i>
         </div>
         <div>
-          <div class="section-title">Identité</div>
+          <div class="section-title">Identity</div>
           <div class="section-desc">Informations principales de l'entreprise</div>
         </div>
       </div>
@@ -64,12 +64,12 @@
 
         <!-- Nom -->
         <div class="field-group">
-          <label class="field-label required">Nom commercial</label>
+          <label class="field-label required">Name commercial</label>
           <div class="input-wrap" [class.has-error]="isFieldInvalid('nom')">
             <i class="feather icon-briefcase input-icon"></i>
             <input type="text" class="field-input"
                    formControlName="nom"
-                   placeholder="Ex : Entreprise Bensalem">
+                   placeholder="Ex : Company Bensalem">
           </div>
           <div class="error-msg" *ngIf="isFieldInvalid('nom')">
             <i class="feather icon-alert-circle"></i>
@@ -92,26 +92,26 @@
           </div>
         </div>
 
-        <!-- Secteur d'activité -->
+        <!-- Business sector -->
         <div class="field-group">
-          <label class="field-label">Secteur d'activité</label>
+          <label class="field-label">Business sector</label>
           <div class="select-wrap">
             <i class="feather icon-layers input-icon"></i>
             <select class="field-select" formControlName="secteurActivite">
-              <option value="">— Sélectionner un secteur —</option>
+              <option value="">— Select a sector —</option>
               <option value="Technologie & Informatique">Technologie &amp; Informatique</option>
               <option value="Commerce & Distribution">Commerce &amp; Distribution</option>
               <option value="Industrie & Fabrication">Industrie &amp; Fabrication</option>
               <option value="Agriculture & Agroalimentaire">Agriculture &amp; Agroalimentaire</option>
               <option value="Finance & Banque">Finance &amp; Banque</option>
-              <option value="Santé & Pharmacie">Santé &amp; Pharmacie</option>
+              <option value="Santé & Pharmacie">Health &amp; Pharmacy</option>
               <option value="Construction & BTP">Construction &amp; BTP</option>
               <option value="Transport & Logistique">Transport &amp; Logistique</option>
               <option value="Services & Conseil">Services &amp; Conseil</option>
-              <option value="Éducation & Formation">Éducation &amp; Formation</option>
-              <option value="Tourisme & Hôtellerie">Tourisme &amp; Hôtellerie</option>
-              <option value="Énergie & Mines">Énergie &amp; Mines</option>
-              <option value="Médias & Communication">Médias &amp; Communication</option>
+              <option value="Éducation & Formation">Education &amp; Training</option>
+              <option value="Tourisme & Hôtellerie">Tourism &amp; Hospitality</option>
+              <option value="Énergie & Mines">Energy &amp; Mining</option>
+              <option value="Médias & Communication">Media &amp; Communication</option>
               <option value="Autre">Autre</option>
             </select>
             <i class="feather icon-chevron-down select-arrow"></i>
@@ -120,17 +120,17 @@
 
         <!-- Statut Juridique -->
         <div class="field-group">
-          <label class="field-label">Statut Juridique</label>
+          <label class="field-label">Status Juridique</label>
           <div class="select-wrap">
             <i class="feather icon-shield input-icon"></i>
             <select class="field-select" formControlName="statutJuridique">
-              <option value="">— Sélectionner un statut —</option>
-              <option value="SARL">SARL — Société à Responsabilité Limitée</option>
-              <option value="EURL">EURL — Entreprise Unipersonnelle</option>
-              <option value="SPA">SPA — Société par Actions</option>
-              <option value="SA">SA — Société Anonyme</option>
-              <option value="SNC">SNC — Société en Nom Collectif</option>
-              <option value="GIE">GIE — Groupement d'Intérêt Économique</option>
+              <option value="">— Select a status —</option>
+              <option value="SARL">SARL — Limited Liability Company</option>
+              <option value="EURL">EURL — Company Unipersonnelle</option>
+              <option value="SPA">SPA — Joint Stock Company</option>
+              <option value="SA">SA — Public Limited Company</option>
+              <option value="SNC">SNC — General Partnership</option>
+              <option value="GIE">GIE — Economic Interest Group</option>
               <option value="Auto-entrepreneur">Auto-entrepreneur</option>
               <option value="Autre">Autre</option>
             </select>
@@ -143,22 +143,22 @@
 
     <div class="form-divider"></div>
 
-    <!-- ── Section 2 : Coordonnées ─────────────────────────── -->
+    <!-- ── Section 2 : Contact Details ─────────────────────────── -->
     <div class="form-section">
       <div class="section-header">
         <div class="section-header__icon section-header__icon--violet">
           <i class="feather icon-phone"></i>
         </div>
         <div>
-          <div class="section-title">Coordonnées</div>
-          <div class="section-desc">Téléphone, email et présence en ligne</div>
+          <div class="section-title">Contact Details</div>
+          <div class="section-desc">Phone, email, and online presence</div>
         </div>
       </div>
       <div class="fields-grid two-col">
 
-        <!-- Téléphone -->
+        <!-- Phone -->
         <div class="field-group">
-          <label class="field-label">Téléphone</label>
+          <label class="field-label">Phone</label>
           <div class="input-wrap" [class.has-error]="isFieldInvalid('telephone')">
             <i class="feather icon-phone input-icon"></i>
             <input type="tel" class="field-input"
@@ -173,7 +173,7 @@
 
         <!-- Email -->
         <div class="field-group">
-          <label class="field-label">Adresse Email</label>
+          <label class="field-label">Address Email</label>
           <div class="input-wrap" [class.has-error]="isFieldInvalid('email')">
             <i class="feather icon-mail input-icon"></i>
             <input type="email" class="field-input"
@@ -201,9 +201,9 @@
           </div>
         </div>
 
-        <!-- Date de Création -->
+        <!-- Creation Date -->
         <div class="field-group">
-          <label class="field-label required">Date de Création</label>
+          <label class="field-label required">Creation Date</label>
           <div class="input-wrap" [class.has-error]="isFieldInvalid('dateCreation')">
             <i class="feather icon-calendar input-icon"></i>
             <input type="date" class="field-input"
@@ -227,7 +227,7 @@
           <i class="feather icon-award"></i>
         </div>
         <div>
-          <div class="section-title">Légal &amp; Fiscal</div>
+          <div class="section-title">Legal &amp; Tax</div>
           <div class="section-desc">Identifiants officiels et registres</div>
         </div>
       </div>
@@ -268,22 +268,22 @@
 
     <div class="form-divider"></div>
 
-    <!-- ── Section 4 : Informations complémentaires ─────────── -->
+    <!-- ── Section 4 : Additional Information ─────────── -->
     <div class="form-section">
       <div class="section-header">
         <div class="section-header__icon section-header__icon--amber">
           <i class="feather icon-map-pin"></i>
         </div>
         <div>
-          <div class="section-title">Informations complémentaires</div>
-          <div class="section-desc">Adresse physique et présentation de l'activité</div>
+          <div class="section-title">Additional Information</div>
+          <div class="section-desc">Physical address and business overview</div>
         </div>
       </div>
       <div class="fields-grid one-col">
 
         <!-- Adresse -->
         <div class="field-group">
-          <label class="field-label">Adresse du siège</label>
+          <label class="field-label">Head office address</label>
           <div class="input-wrap" [class.has-error]="isFieldInvalid('adresse')">
             <i class="feather icon-map-pin input-icon"></i>
             <input type="text" class="field-input"
@@ -298,13 +298,13 @@
 
         <!-- Description -->
         <div class="field-group">
-          <label class="field-label">Description de l'activité</label>
+          <label class="field-label">Business description</label>
           <textarea class="field-textarea"
                     formControlName="description"
                     rows="4"
-                    placeholder="Décrivez brièvement l'activité principale, les produits ou services proposés…"></textarea>
+                    placeholder="Briefly describe the main activity, products, or services offered..."></textarea>
           <div class="field-hint">
-            <span>{{ getRemainingChars('description', 500) }} caractères restants</span>
+            <span>{{ getRemainingChars('description', 500) }} characters restants</span>
           </div>
           <div class="error-msg" *ngIf="isFieldInvalid('description')">
             <i class="feather icon-alert-circle"></i>
@@ -318,11 +318,11 @@
     <!-- ── Footer Actions ──────────────────────────────────── -->
     <div class="form-footer">
       <a routerLink="/entreprise/listEntreprise" class="btn-cancel">
-        <i class="feather icon-x"></i> Annuler
+        <i class="feather icon-x"></i> Cancel
       </a>
       <button type="submit" class="btn-save" [disabled]="!entrepriseFormGroup.valid">
         <i class="feather icon-check-circle"></i>
-        Créer l'entreprise
+        Create company
       </button>
     </div>
 

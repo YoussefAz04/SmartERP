@@ -48,10 +48,10 @@ export class KpiDetailModalComponent implements OnChanges {
 
   get modalTitle(): string {
     switch (this.modalType) {
-      case 'revenue': return 'Détails du Revenu';
-      case 'orders': return 'Détails des Commandes';
-      case 'products': return 'Détails des Produits';
-      case 'forecast': return 'Détails des Prévisions';
+      case 'revenue': return 'Revenue Details';
+      case 'orders': return 'Order Details';
+      case 'products': return 'Product Details';
+      case 'forecast': return 'Détails des Forecasts';
       default: return '';
     }
   }
@@ -70,8 +70,8 @@ export class KpiDetailModalComponent implements OnChanges {
     switch (this.modalType) {
       case 'revenue': return ['Top Produits', 'Top Clients'];
       case 'orders': return ['Statut', 'Vue d\'ensemble'];
-      case 'products': return ['Niveaux de Stock', 'Mouvements'];
-      case 'forecast': return ['Prévisions', 'Précision'];
+      case 'products': return ['Stock Levels', 'Movements'];
+      case 'forecast': return ['Forecasts', 'Accuracy'];
       default: return [];
     }
   }
@@ -83,13 +83,13 @@ export class KpiDetailModalComponent implements OnChanges {
     if (this.modalType === 'revenue' && this.kpiDetails?.revenue) {
       if (this.activeTab === 0) {
         filename = 'top_produits.csv';
-        rows = ['Produit,Revenu (DA)'];
+        rows = ['Product,Revenue (TND)'];
         (this.kpiDetails.revenue.topProducts || []).forEach(p =>
           rows.push(`"${p.name}",${p.value}`)
         );
       } else {
         filename = 'top_clients.csv';
-        rows = ['Client,Revenu (DA)'];
+        rows = ['Customer,Revenue (TND)'];
         (this.kpiDetails.revenue.topCustomers || []).forEach(c =>
           rows.push(`"${c.name}",${c.value}`)
         );
@@ -102,13 +102,13 @@ export class KpiDetailModalComponent implements OnChanges {
       );
     } else if (this.modalType === 'products' && this.kpiDetails?.products) {
       filename = 'produits.csv';
-      rows = ['Produit,Quantité Vendue'];
+      rows = ['Produit,Quantity Sold'];
       (this.kpiDetails.products.topProducts || []).forEach(p =>
         rows.push(`"${p.name}",${p.value}`)
       );
     } else if (this.modalType === 'forecast' && this.kpiDetails?.forecast) {
       filename = 'previsions.csv';
-      rows = ['Période,Valeur (DA)'];
+      rows = ['Period,Value (TND)'];
       rows.push(`"Mois prochain",${this.kpiDetails.forecast.predictedNextMonth}`);
       rows.push(`"3 prochains mois",${this.kpiDetails.forecast.predictedNext3Months}`);
       rows.push(`"6 prochains mois",${this.kpiDetails.forecast.predictedNext6Months}`);

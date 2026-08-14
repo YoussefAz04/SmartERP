@@ -81,7 +81,7 @@ export class AdjustStockComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erreur chargement stocks:', err);
+        console.error('Stock loading error:', err);
         this.isLoading = false;
       }
     });
@@ -98,7 +98,7 @@ export class AdjustStockComponent implements OnInit {
           this.selectedStock = data;
           this.adjustForm.patchValue({ localisation: data.localisation || '' });
         },
-        error: (err) => console.error('Erreur chargement stock:', err)
+        error: (err) => console.error('Stock loading error:', err)
       });
     }
   }
@@ -112,7 +112,7 @@ export class AdjustStockComponent implements OnInit {
     const name = stock.articleAchat?.nom || `Stock #${stock.id}`;
     const qty = stock.quantiteDisponible || 0;
     const loc = stock.localisation ? ` (${stock.localisation})` : '';
-    return `${name}${loc} - Qté: ${qty}`;
+    return `${name}${loc} - Qty: ${qty}`;
   }
 
   onSubmit(): void {
@@ -172,7 +172,7 @@ export class AdjustStockComponent implements OnInit {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Confirmer',
-        cancelButtonText: 'Annuler'
+        cancelButtonText: 'Cancel'
       }).then(result => {
         if (result.isConfirmed) performSubmit();
       });

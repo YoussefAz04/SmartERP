@@ -61,11 +61,11 @@ public class ArticleVenteController {
             ArticleVente created = articleVenteService.addArticleVente(articleVente, articleAchatId, clientId);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.badRequest().body("Contrainte d'intégrité violée: l'article avec id=" + articleAchatId + " n'existe pas ou la référence est invalide.");
+            return ResponseEntity.badRequest().body("Contrainte d'intégrité violée: l'article avec id=" + articleAchatId + " n'existe pas ou la reference est invalide.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la création de l'article vente");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error lors de la création de l'article vente");
         }
     }
 

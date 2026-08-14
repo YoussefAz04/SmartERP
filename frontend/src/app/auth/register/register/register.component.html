@@ -25,8 +25,8 @@
         </svg>
         <span class="brand-text"><span class="brand-smart">Smart</span><span class="brand-erp">ERP</span></span>
       </div>
-      <h2>Créer un compte</h2>
-      <p>Rejoignez SmartERP pour gérer votre entreprise intelligemment</p>
+      <h2>Create an account</h2>
+      <p>Join SmartERP to manage your company intelligently</p>
     </div>
 
     <!-- Form -->
@@ -37,10 +37,10 @@
         <div class="input-wrapper" [class.input-error]="f['name'].invalid && f['name'].touched">
           <i class="fas fa-user field-icon"></i>
           <input type="text" id="reg-name" formControlName="name" class="modern-input" placeholder=" " autocomplete="name">
-          <label for="reg-name" class="floating-label">Nom complet</label>
+          <label for="reg-name" class="floating-label">Name complet</label>
         </div>
         <span class="field-error" *ngIf="f['name'].invalid && f['name'].touched">
-          <i class="fas fa-info-circle"></i> Nom requis (3 caractères minimum)
+          <i class="fas fa-info-circle"></i> Name required (minimum 3 characters)
         </span>
       </div>
 
@@ -49,10 +49,10 @@
         <div class="input-wrapper" [class.input-error]="f['email'].invalid && f['email'].touched">
           <i class="fas fa-envelope field-icon"></i>
           <input type="email" id="reg-email" formControlName="email" class="modern-input" placeholder=" " autocomplete="email">
-          <label for="reg-email" class="floating-label">Adresse e-mail</label>
+          <label for="reg-email" class="floating-label">Address e-mail</label>
         </div>
         <span class="field-error" *ngIf="f['email'].invalid && f['email'].touched">
-          <i class="fas fa-info-circle"></i> Adresse e-mail valide requise
+          <i class="fas fa-info-circle"></i> Address e-mail valide requise
         </span>
       </div>
 
@@ -62,7 +62,7 @@
           <i class="fas fa-lock field-icon"></i>
           <input [type]="password[1] ? 'text' : 'password'" id="reg-password" formControlName="password"
                  class="modern-input" placeholder=" " autocomplete="new-password">
-          <label for="reg-password" class="floating-label">Mot de passe</label>
+          <label for="reg-password" class="floating-label">Password</label>
           <span class="toggle-password fas"
                 [class.fa-eye]="!password[1]"
                 [class.fa-eye-slash]="password[1]"
@@ -73,7 +73,7 @@
           </span>
         </div>
         <span class="field-error" *ngIf="f['password'].invalid && f['password'].touched">
-          <i class="fas fa-info-circle"></i> Mot de passe requis (6 caractères minimum)
+          <i class="fas fa-info-circle"></i> Password is required (minimum 6 characters)
         </span>
       </div>
 
@@ -110,16 +110,16 @@
 
       <!-- Submit -->
       <button type="button" class="btn-submit" (click)="navigation()" [disabled]="isLoading"
-              [attr.aria-label]="isLoading ? 'Création en cours' : 'Créer le compte'">
+              [attr.aria-label]="isLoading ? 'Creating account' : 'Create account'">
         <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"></span>
-        <span>{{ isLoading ? 'Création en cours...' : 'Créer le compte' }}</span>
+        <span>{{ isLoading ? 'Creating account...' : 'Create account' }}</span>
         <i *ngIf="!isLoading" class="fas fa-arrow-right btn-arrow"></i>
       </button>
 
       <!-- Sign in link -->
       <div class="form-footer">
-        <span>Vous avez déjà un compte ?</span>
-        <a routerLink="/auth/signin" class="signin-link">Se connecter</a>
+        <span>Already have an account?</span>
+        <a routerLink="/auth/signin" class="signin-link">Sign in</a>
       </div>
 
     </form>

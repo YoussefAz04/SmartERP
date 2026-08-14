@@ -78,7 +78,7 @@ export class ProfileComponent implements OnInit {
     if (!session) {
       this.isLoading = false;
       this.loadError = true;
-      this.notification.error('Session expirée, veuillez vous reconnecter.');
+      this.notification.error('Session expired, please sign in again.');
       return;
     }
 
@@ -90,7 +90,7 @@ export class ProfileComponent implements OnInit {
     if (!this.userId) {
       this.isLoading = false;
       this.loadError = true;
-      this.notification.error("Impossible de déterminer l'utilisateur courant.");
+      this.notification.error("Unable to determine the current user.");
       return;
     }
 
@@ -152,7 +152,7 @@ export class ProfileComponent implements OnInit {
     this.userService.updateUser(this.userId, this.user).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.notification.success('Profil mis à jour avec succès.');
+        this.notification.success('Profile updated successfully.');
         // Keep session display name in sync with the new username.
         this.syncSessionUsername(this.user!.username);
       },
@@ -160,9 +160,9 @@ export class ProfileComponent implements OnInit {
         this.isSubmitting = false;
         const message =
           (err && err.error && (err.error.message || err.error)) ||
-          'Erreur lors de la mise à jour du profil.';
+          'Error while updating profile.';
         this.notification.error(
-          typeof message === 'string' ? message : 'Erreur lors de la mise à jour du profil.',
+          typeof message === 'string' ? message : 'Error while updating profile.',
         );
       },
     });
@@ -204,7 +204,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
     if (this.newPassword.length < 6) {
-      this.notification.error('Le nouveau mot de passe doit contenir au moins 6 caractères.');
+      this.notification.error('Le nouveau mot de passe doit contenir au moins 6 characters.');
       return;
     }
     if (this.newPassword !== this.confirmPassword) {
@@ -215,13 +215,13 @@ export class ProfileComponent implements OnInit {
     this.userService.changePassword(this.currentPassword, this.newPassword).subscribe({
       next: () => {
         this.isChangingPassword = false;
-        this.notification.success('Mot de passe mis à jour avec succès.');
+        this.notification.success('Password updated successfully.');
         this.togglePasswordForm();
       },
       error: (err) => {
         this.isChangingPassword = false;
-        const message = err?.error?.error || err?.error?.message || 'Erreur lors du changement de mot de passe.';
-        this.notification.error(typeof message === 'string' ? message : 'Erreur lors du changement de mot de passe.');
+        const message = err?.error?.error || err?.error?.message || 'Error while changing password.';
+        this.notification.error(typeof message === 'string' ? message : 'Error while changing password.');
       },
     });
   }

@@ -1,7 +1,7 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 export const DATE_LIVRAISON_ERROR_MESSAGE =
-  'La date de livraison doit être postérieure ou égale à la date de commande';
+  'The delivery date must be later than or equal to the order date';
 
 /**
  * Form-group validator: ensures dateLivraisonPrevue is not before dateCommande.

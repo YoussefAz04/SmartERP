@@ -242,7 +242,7 @@ export class ArticleVenteComponent implements OnInit {
             }
           },
           error: (err) => {
-            console.error('Erreur lors de la suppression:', err);
+            console.error('Error during deletion:', err);
             completed++;
             if (completed === ids.length) {
               this.applyFilters();
@@ -278,8 +278,8 @@ export class ArticleVenteComponent implements OnInit {
         this.notification.success('✓ Article supprimé avec succès');
       },
       error: (err) => {
-        console.error('Erreur lors de la suppression:', err);
-        this.notification.error('✗ Erreur lors de la suppression');
+        console.error('Error during deletion:', err);
+        this.notification.error('✗ Error during deletion');
         this.isLoading = false;
       }
       });
@@ -288,7 +288,7 @@ export class ArticleVenteComponent implements OnInit {
 
   // --- CSV Export ---
   exportCSV(): void {
-    const headers = ['ID', 'Nom', 'SKU', 'Prix Unitaire', 'Quantité', 'Unité', 'Markup (%)', 'Article Achat', 'Créé le'];
+    const headers = ['ID', 'Nom', 'SKU', 'Prix Unitaire', 'Quantity', 'Unité', 'Markup (%)', 'Article Achat', 'Created on'];
     const rows = this.filteredList.map(a => [
       a.id ?? '',
       `"${a.nom}"`,

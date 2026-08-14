@@ -205,7 +205,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       case 'EN_ATTENTE': return 'En Attente';
       case 'PENDING': return 'En Attente';
       case 'ANNULEE':
-      case 'CANCELLED': return 'Annulée';
+      case 'CANCELLED': return 'Canceled';
       default: return statut || '—';
     }
   }

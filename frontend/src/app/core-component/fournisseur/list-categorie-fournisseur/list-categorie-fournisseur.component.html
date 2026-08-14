@@ -6,19 +6,19 @@
   <div class="hero-content">
     <div class="hero-left">
       <span class="hero-badge">
-        <i class="feather icon-layers"></i> Gestion des Catégories
+        <i class="feather icon-layers"></i> Gestion des Categorys
       </span>
-      <h1 class="hero-title">Catégories Fournisseur</h1>
+      <h1 class="hero-title">Categorys Supplier</h1>
       <p class="hero-subtitle">Organisez et structurez vos fournisseurs par catégories pour une meilleure gestion et navigation.</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadCategories()">
-        <i class="feather icon-rotate-ccw"></i> Actualiser
+        <i class="feather icon-rotate-ccw"></i> Refresh
       </button>
       <button type="button" class="btn-hero btn-hero-primary"
         *ngIf="canManageCategorie"
         (click)="router.navigate(['/fournisseur/addCategorieFournisseur'])">
-        <i class="feather icon-plus-circle"></i> Ajouter Catégorie
+        <i class="feather icon-plus-circle"></i> Add Category
       </button>
     </div>
   </div>
@@ -29,7 +29,7 @@
       </div>
       <div class="hero-stat-info">
         <span class="hero-stat-value">{{ categories.length }}</span>
-        <span class="hero-stat-label">Total Catégories</span>
+        <span class="hero-stat-label">Total Categories</span>
       </div>
     </div>
     <div class="hero-stat-sep"></div>
@@ -39,7 +39,7 @@
       </div>
       <div class="hero-stat-info">
         <span class="hero-stat-value hero-stat-value-sm">{{ mostUsedCategory }}</span>
-        <span class="hero-stat-label">Plus utilisée</span>
+        <span class="hero-stat-label">Most used</span>
       </div>
     </div>
     <div class="hero-stat-sep"></div>
@@ -49,7 +49,7 @@
       </div>
       <div class="hero-stat-info">
         <span class="hero-stat-value">{{ mostUsedCount }}</span>
-        <span class="hero-stat-label">Fournisseurs (top cat.)</span>
+        <span class="hero-stat-label">Suppliers (top cat.)</span>
       </div>
     </div>
   </div>
@@ -60,14 +60,14 @@
   <div class="panel-header panel-header-cat-fournisseur">
     <h5 class="panel-title">
       <i class="feather icon-layers"></i>
-      Liste des Catégories
+      Category List
       <span class="panel-badge">{{ categories.length }}</span>
     </h5>
   </div>
   <div class="panel-body">
     <div class="panel-toolbar" *ngIf="!isLoading && categories.length > 0">
       <div class="panel-toolbar-copy">
-        <span class="panel-toolbar-label">Aperçu</span>
+        <span class="panel-toolbar-label">Overview</span>
         <p>{{ categories.length }} catégories configurées pour structurer votre portefeuille fournisseur.</p>
       </div>
     </div>
@@ -88,11 +88,11 @@
       <table class="cat-fournisseur-table">
         <thead>
           <tr>
-            <th>Catégorie</th>
+            <th>Category</th>
             <th>Description</th>
-            <th>Fournisseurs</th>
-            <th>Créé le</th>
-            <th>Modifié le</th>
+            <th>Suppliers</th>
+            <th>Created on</th>
+            <th>Updated on</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
@@ -110,7 +110,7 @@
               <div class="description-stack">
                 <span class="description-label">Description</span>
                 <span class="description-text" *ngIf="categorie.description">{{ categorie.description }}</span>
-                <span class="description-text description-text-muted" *ngIf="!categorie.description">Aucune description</span>
+                <span class="description-text description-text-muted" *ngIf="!categorie.description">No description</span>
               </div>
             </td>
             <td>
@@ -136,13 +136,13 @@
                 <button type="button" class="action-btn action-btn-edit"
                   *ngIf="canManageCategorie"
                   (click)="router.navigate(['/fournisseur/editCategorieFournisseur', categorie.id])"
-                  title="Modifier" [disabled]="isLoading">
+                  title="Edit" [disabled]="isLoading">
                   <i class="feather icon-edit"></i>
                 </button>
                 <button type="button" class="action-btn action-btn-delete"
                   *ngIf="canManageCategorie"
                   (click)="deleteCategorie(categorie.id)"
-                  title="Supprimer" [disabled]="isLoading">
+                  title="Delete" [disabled]="isLoading">
                   <i class="feather icon-trash-2"></i>
                 </button>
               </div>
@@ -152,11 +152,11 @@
             <td colspan="6">
               <div class="empty-state">
                 <i class="feather icon-layers empty-icon"></i>
-                <p>Aucune catégorie fournisseur trouvée</p>
+                <p>No supplier category found</p>
                 <button type="button" class="btn-retry"
                   *ngIf="canManageCategorie"
                   (click)="router.navigate(['/fournisseur/addCategorieFournisseur'])">
-                  <i class="feather icon-plus"></i> Ajouter une catégorie
+                  <i class="feather icon-plus"></i> Add a category
                 </button>
               </div>
             </td>

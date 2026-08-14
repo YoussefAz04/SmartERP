@@ -3,15 +3,15 @@
   <!-- Header -->
   <div class="ai-header">
     <div class="ai-header-left">
-      <h1>Tableau de Bord Analytique</h1>
+      <h1>Analytics Dashboard</h1>
       <p class="ai-subtitle">Analyses prédictives et recommandations stratégiques</p>
       <div class="hero-highlights" *ngIf="dashboard && !loading">
         <div class="hero-highlight">
-          <span class="hero-highlight-label">Meilleur mois</span>
+          <span class="hero-highlight-label">Best month</span>
           <strong>{{ dashboard.salesAnalysis.bestMonth }}</strong>
         </div>
         <div class="hero-highlight">
-          <span class="hero-highlight-label">Revenu total</span>
+          <span class="hero-highlight-label">Total revenue</span>
           <strong>{{ formatCurrency(dashboard.kpiSummary.totalRevenue) }} TND</strong>
         </div>
         <div class="hero-highlight">
@@ -27,7 +27,7 @@
       </span>
       <button class="btn-refresh" (click)="refresh()" [disabled]="isRefreshing">
         <i class="fas fa-sync-alt" [class.fa-spin]="isRefreshing"></i>
-        Actualiser
+        Refresh
       </button>
     </div>
   </div>
@@ -36,14 +36,14 @@
     <div class="insight-pill">
       <div class="pill-icon pill-icon-warning"><i class="fas fa-bell"></i></div>
       <div class="pill-content">
-        <span class="pill-label">Recommandations prioritaires</span>
+        <span class="pill-label">Priority recommendations</span>
         <span class="pill-value">{{ criticalRecs.length + highRecs.length }}</span>
       </div>
     </div>
     <div class="insight-pill">
       <div class="pill-icon pill-icon-success"><i class="fas fa-tasks"></i></div>
       <div class="pill-content">
-        <span class="pill-label">Recommandations totales</span>
+        <span class="pill-label">Total recommendations</span>
         <span class="pill-value">{{ dashboard.recommendations.length }}</span>
       </div>
     </div>
@@ -61,7 +61,7 @@
   <div *ngIf="error && !loading" class="ai-error">
     <i class="fas fa-exclamation-circle"></i>
     <p>Impossible de charger les analyses. Vérifiez votre connexion.</p>
-    <button class="btn-retry" (click)="loadDashboard()">Réessayer</button>
+    <button class="btn-retry" (click)="loadDashboard()">Retry</button>
   </div>
 
   <!-- Dashboard content -->
@@ -69,10 +69,10 @@
 
     <!-- KPI Cards -->
     <div class="kpi-grid">
-      <div class="kpi-card kpi-revenue kpi-clickable" (click)="openModal('revenue')" title="Voir les détails">
+      <div class="kpi-card kpi-revenue kpi-clickable" (click)="openModal('revenue')" title="View details">
         <div class="kpi-icon"><i class="fas fa-coins"></i></div>
         <div class="kpi-body">
-          <div class="kpi-label">Revenu Total</div>
+          <div class="kpi-label">Total Revenuee</div>
           <div class="kpi-value">{{ formatCurrency(dashboard.kpiSummary.totalRevenue) }} TND</div>
           <div class="kpi-trend" [ngClass]="growthClass">
             {{ growthArrow }} {{ dashboard.salesAnalysis.growthRate | number:'1.1-1' }}% vs S1
@@ -81,32 +81,32 @@
         <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
 
-      <div class="kpi-card kpi-orders kpi-clickable" (click)="openModal('orders')" title="Voir les détails">
+      <div class="kpi-card kpi-orders kpi-clickable" (click)="openModal('orders')" title="View details">
         <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
         <div class="kpi-body">
-          <div class="kpi-label">Commandes Totales</div>
+          <div class="kpi-label">Total Orders</div>
           <div class="kpi-value">{{ dashboard.kpiSummary.totalOrders | number }}</div>
-          <div class="kpi-trend text-muted">Valeur moy. {{ formatCurrency(dashboard.kpiSummary.avgOrderValue) }} TND</div>
+          <div class="kpi-trend text-muted">Avg. value {{ formatCurrency(dashboard.kpiSummary.avgOrderValue) }} TND</div>
         </div>
         <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
 
-      <div class="kpi-card kpi-products kpi-clickable" (click)="openModal('products')" title="Voir les détails">
+      <div class="kpi-card kpi-products kpi-clickable" (click)="openModal('products')" title="View details">
         <div class="kpi-icon"><i class="fas fa-boxes"></i></div>
         <div class="kpi-body">
-          <div class="kpi-label">Articles en Stock</div>
+          <div class="kpi-label">Products in Stock</div>
           <div class="kpi-value">{{ dashboard.kpiSummary.totalProducts | number }}</div>
           <div class="kpi-trend text-warning" *ngIf="dashboard.kpiSummary.lowStockAlerts > 0">
-            <i class="fas fa-exclamation-triangle"></i> {{ dashboard.kpiSummary.lowStockAlerts }} alertes stock
+            <i class="fas fa-exclamation-triangle"></i> {{ dashboard.kpiSummary.lowStockAlerts }} stock alerts
           </div>
           <div class="kpi-trend text-success" *ngIf="dashboard.kpiSummary.lowStockAlerts === 0">
-            <i class="fas fa-check-circle"></i> Stock optimal
+            <i class="fas fa-check-circle"></i> Optimal stock
           </div>
         </div>
         <div class="kpi-details-hint"><i class="fas fa-chevron-right"></i></div>
       </div>
 
-      <div class="kpi-card kpi-forecast kpi-clickable" (click)="openModal('forecast')" title="Voir les détails">
+      <div class="kpi-card kpi-forecast kpi-clickable" (click)="openModal('forecast')" title="View details">
         <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
         <div class="kpi-body">
           <div class="kpi-label">Prévision Mois Prochain</div>
@@ -130,10 +130,10 @@
       <!-- Sales Analysis Chart -->
       <div class="chart-card chart-large chart-sales">
         <div class="chart-header">
-          <h3><i class="fas fa-chart-bar me-2"></i>Analyse des Ventes Mensuelles</h3>
+          <h3><i class="fas fa-chart-bar me-2"></i>Monthly Sales Analysis</h3>
           <div class="chart-meta">
             <span class="meta-badge">Année en cours</span>
-            <span class="meta-badge best-month">Meilleur mois: {{ dashboard.salesAnalysis.bestMonth }}</span>
+            <span class="meta-badge best-month">Best month: {{ dashboard.salesAnalysis.bestMonth }}</span>
           </div>
         </div>
         <div class="chart-body">
@@ -157,14 +157,14 @@
         </div>
         <div class="chart-footer">
           <span>Total: <strong>{{ formatCurrency(dashboard.salesAnalysis.totalRevenue) }} TND</strong></span>
-          <span>Moyenne/mois: <strong>{{ formatCurrency(dashboard.salesAnalysis.averageMonthlyRevenue) }} TND</strong></span>
+          <span>Average/month: <strong>{{ formatCurrency(dashboard.salesAnalysis.averageMonthlyRevenue) }} TND</strong></span>
         </div>
       </div>
 
       <!-- Product Donut Chart -->
       <div class="chart-card chart-small chart-donut">
         <div class="chart-header">
-          <h3><i class="fas fa-trophy me-2"></i>Top 5 Produits</h3>
+          <h3><i class="fas fa-trophy me-2"></i>Top 5 Products</h3>
         </div>
         <div class="chart-body">
           <apx-chart
@@ -191,23 +191,23 @@
     <!-- Forecast Chart -->
     <div class="chart-card chart-forecast mb-4">
       <div class="chart-header">
-        <h3><i class="fas fa-magic me-2"></i>Prévisions de Ventes</h3>
+        <h3><i class="fas fa-magic me-2"></i>Sales Forecasts</h3>
       </div>
       <div class="forecast-kpis">
         <div class="forecast-kpi">
-          <span class="fkpi-label">Mois prochain</span>
+          <span class="fkpi-label">Next month</span>
           <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} TND</span>
         </div>
         <div class="forecast-kpi">
-          <span class="fkpi-label">3 prochains mois</span>
+          <span class="fkpi-label">Next 3 months</span>
           <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext3Months) }} TND</span>
         </div>
         <div class="forecast-kpi">
-          <span class="fkpi-label">6 prochains mois</span>
+          <span class="fkpi-label">Next 6 months</span>
           <span class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext6Months) }} TND</span>
         </div>
         <div class="forecast-kpi">
-          <span class="fkpi-label">Score de fiabilité</span>
+          <span class="fkpi-label">Reliability Score</span>
           <span class="fkpi-value confidence">{{ dashboard.forecast.confidenceScore | number:'1.0-0' }}%</span>
         </div>
       </div>
@@ -236,17 +236,17 @@
       <!-- Top Products Table -->
       <div class="intel-card">
         <div class="intel-header">
-          <h3><i class="fas fa-star me-2"></i>Intelligence Produits</h3>
+          <h3><i class="fas fa-star me-2"></i>Product Intelligence</h3>
         </div>
         <table class="intel-table" *ngIf="dashboard.productIntelligence.topProducts?.length">
           <thead>
             <tr>
               <th>#</th>
-              <th>Produit</th>
-              <th>Qté Vendue</th>
-              <th>Revenu</th>
-              <th>Part</th>
-              <th>Statut</th>
+              <th>Product</th>
+              <th>Qty Sold</th>
+              <th>Revenue</th>
+              <th>Share</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -287,13 +287,13 @@
         </div>
         <div class="rec-summary-chips">
           <span class="rec-chip rec-chip-critical" *ngIf="criticalRecs.length">
-            <span class="rec-chip-dot"></span> Critique · {{ criticalRecs.length }}
+            <span class="rec-chip-dot"></span> Critical · {{ criticalRecs.length }}
           </span>
           <span class="rec-chip rec-chip-high" *ngIf="highRecs.length">
-            <span class="rec-chip-dot"></span> Haute · {{ highRecs.length }}
+            <span class="rec-chip-dot"></span> High · {{ highRecs.length }}
           </span>
           <span class="rec-chip rec-chip-medium" *ngIf="mediumRecs.length">
-            <span class="rec-chip-dot"></span> Moyenne · {{ mediumRecs.length }}
+            <span class="rec-chip-dot"></span> Medium · {{ mediumRecs.length }}
           </span>
           <span class="rec-chip rec-chip-info" *ngIf="infoRecs.length">
             <span class="rec-chip-dot"></span> Info · {{ infoRecs.length }}

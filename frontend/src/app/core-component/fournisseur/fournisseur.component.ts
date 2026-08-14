@@ -99,7 +99,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
       error: (err) => {
         this.isLoading = false;
         console.error('Error loading fournisseurs:', err);
-        this.notification.error('Erreur lors du chargement des fournisseurs');
+        this.notification.error('Error while loading suppliers');
       }
     });
   }
@@ -139,28 +139,28 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.notification.confirm('Êtes-vous sûr de vouloir supprimer ce fournisseur ?').then(confirmed => {
+    this.notification.confirm('Are you sure you want to delete this supplier?').then(confirmed => {
       if (confirmed) {
         this.isDeleting = true;
         console.log('Suppression du fournisseur:', id);
 
         this.fournisseurService.deleteFournisseur(id).subscribe({
           next: (response) => {
-            console.log('Fournisseur supprimé:', response);
+            console.log('Supplier deleted:', response);
             this.fournisseurList = this.fournisseurList.filter(f => f.id !== id);
             this.isDeleting = false;
-            this.notification.success('✓ Fournisseur supprimé avec succès');
+            this.notification.success('Supplier deleted successfully');
             this.loadFournisseurs();
           },
           error: (err) => {
             this.isDeleting = false;
-            console.error('Erreur lors de la suppression:', err);
-            const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
-            this.notification.error('✗ Erreur: ' + errorMsg);
+            console.error('Error during deletion:', err);
+            const errorMsg = err.error?.message || err.message || 'Unknown error';
+            this.notification.error('Error: ' + errorMsg);
           }
         });
       } else {
-        console.log('Suppression annulée');
+        console.log('Deletion canceled');
       }
     });
   }
@@ -172,7 +172,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
     if (item) {
       try {
         currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
-        console.log('User connecté:', currentUser?.name);
+        console.log('Connected user:', currentUser?.name);
         console.log('Permissions:', currentUser?.permission);
 
         const roles: string[] = Array.isArray(currentUser?.roles) ? (currentUser.roles as string[]) : [];
@@ -182,7 +182,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         const canByRole = isSuperAdmin || isAdmin;
 
         // Match the exact module title used by this page (accent- and case-insensitive)
-        // to avoid cross-matching the "Catégories Fournisseurs" permission row.
+        // to avoid cross-matching the "Categorys Fournisseurs" permission row.
         const normalize = (s: string | undefined | null) =>
           (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
         const targetTitle = normalize('gestion de Fournisseur');
@@ -198,7 +198,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
             this.canCreateFournisseur = fournisseurPerm.create === true;
             this.canEditFournisseur = fournisseurPerm.update === true;
             this.canDeleteFournisseur = fournisseurPerm.delete === true;
-            console.log('Permission Fournisseur:', this.permissionFournisseur);
+            console.log('Supplier permission:', this.permissionFournisseur);
           }
         }
 
@@ -217,7 +217,7 @@ export class FournisseurComponent implements OnInit, AfterViewInit {
         }
 
         console.log('canCreateFournisseur:', this.canCreateFournisseur, 'canEditFournisseur:', this.canEditFournisseur, 'canDeleteFournisseur:', this.canDeleteFournisseur);
-        console.log('Entreprise:', currentUser?.entreprise?.nom);
+        console.log('Company:', currentUser?.entreprise?.nom);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }

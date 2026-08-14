@@ -109,7 +109,7 @@ public class CommandeAchatController {
         } catch (Exception e) {
             logger.error(" Error updating commande", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de la mise à jour"));
+                    .body(new ErrorResponse("Error lors de la mise à jour"));
         }
     }
 
@@ -125,7 +125,7 @@ public class CommandeAchatController {
         } catch (Exception e) {
             logger.error(" Error updating status", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de la mise à jour du statut"));
+                    .body(new ErrorResponse("Error lors de la mise à jour du statut"));
         }
     }
 
@@ -142,7 +142,7 @@ public class CommandeAchatController {
         } catch (Exception e) {
             logger.error(" [VALIDATION CRITICAL ERROR] Unexpected error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de la génération de la facture: " + e.getMessage()));
+                    .body(new ErrorResponse("Error lors de la génération de la facture: " + e.getMessage()));
         }
     }
 
@@ -159,7 +159,7 @@ public class CommandeAchatController {
         } catch (Exception e) {
             logger.error(" [RECEPTION CRITICAL ERROR] Unexpected error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de la réception: " + e.getMessage()));
+                    .body(new ErrorResponse("Error lors de la réception: " + e.getMessage()));
         }
     }
 
@@ -175,7 +175,7 @@ public class CommandeAchatController {
         } catch (Exception e) {
             logger.error(" Error cancelling commande", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de l'annulation"));
+                    .body(new ErrorResponse("Error lors de l'annulation"));
         }
     }
 
@@ -188,7 +188,7 @@ public class CommandeAchatController {
         } catch (Exception e) {
             logger.error(" Error deleting commande", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Erreur lors de la suppression"));
+                    .body(new ErrorResponse("Error lors de la suppression"));
         }
     }
 

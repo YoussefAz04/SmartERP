@@ -93,7 +93,7 @@ export class ListCommandeVenteComponent implements OnInit {
       error: (err) => {
         console.error('❌ Erreur lors du chargement:', err);
         this.errorMessage = err?.name === 'TimeoutError'
-          ? 'Le chargement des commandes prend trop de temps. Veuillez réessayer.'
+          ? 'Loading orders is taking too long. Please try again.'
           : 'Erreur lors du chargement des commandes';
       }
     });
@@ -124,7 +124,7 @@ export class ListCommandeVenteComponent implements OnInit {
   }
 
   validerCommande(id: number): void {
-    this.notification.confirm('Valider cette commande ? Une facture vente sera automatiquement générée.').then(ok => { if (!ok) return;
+    this.notification.confirm('Validate this order? A sales invoice will be generated automatically.').then(ok => { if (!ok) return;
     this.isLoading = true;
     this.commandeVenteService.validerCommande(id).subscribe({
       next: (response) => {
@@ -136,7 +136,7 @@ export class ListCommandeVenteComponent implements OnInit {
         this.lastGeneratedFacture = facture;
         this.showFactureModal = true;
         this.loadCommandes();
-        this.notification.success('✅ Commande validée ! Facture vente générée : ' + facture.referance);
+        this.notification.success('✅ Order validated! Sales invoice generated: ' + facture.referance);
 
         // Show a red toast for each article whose stock fell below the threshold.
         for (const alert of alerts) {
@@ -155,7 +155,7 @@ export class ListCommandeVenteComponent implements OnInit {
   }
 
   livrerCommande(id: number): void {
-    this.notification.confirm('Marquer cette commande comme livrée ? Le stock sera automatiquement décrémenté.').then(ok => { if (!ok) return;
+    this.notification.confirm('Mark this order as delivered? Stock will be decremented automatically.').then(ok => { if (!ok) return;
     this.isLoading = true;
     this.commandeVenteService.livrerCommande(id).subscribe({
       next: (response) => {
@@ -165,14 +165,14 @@ export class ListCommandeVenteComponent implements OnInit {
         const bon = response?.bonLivraison ?? response;
         const alerts: { type?: string; message?: string; articleName?: string }[] =
           response?.stockAlerts ?? [];
-        this.notification.success('✅ Commande livrée ! Bon de livraison créé : ' + bon?.reference + '. Le stock a été mis à jour.');
+        this.notification.success('✅ Order delivered! Delivery note created: ' + bon?.reference + '. Stock has been updated.');
 
         // Immediately warn the user when an article fell to rupture or below
         // its seuilMinimum after this sale — a red toast per affected article.
         for (const alert of alerts) {
           const msg = alert?.message
             || (alert?.type === 'RUPTURE'
-                ? `RUPTURE DE STOCK : '${alert?.articleName ?? ''}' est épuisé !`
+                ? `OUT OF STOCK: '${alert?.articleName ?? ''}' is depleted!`
                 : `STOCK FAIBLE : '${alert?.articleName ?? ''}' en dessous du seuil.`);
           this.notification.error(msg);
         }
@@ -188,11 +188,11 @@ export class ListCommandeVenteComponent implements OnInit {
   }
 
   annulerCommande(id: number): void {
-    this.notification.confirm('Annuler cette commande ?').then(ok => { if (!ok) return;
+    this.notification.confirm('Cancel cette commande ?').then(ok => { if (!ok) return;
     this.commandeVenteService.annulerCommande(id).subscribe({
       next: () => {
         this.loadCommandes();
-        this.notification.success('✅ Commande annulée.');
+        this.notification.success('✅ Order canceled.');
       },
       error: (err) => {
         console.error('❌ Erreur annulation:', err);
@@ -208,11 +208,11 @@ export class ListCommandeVenteComponent implements OnInit {
     this.commandeVenteService.deleteCommande(id).subscribe({
       next: () => {
         this.loadCommandes();
-        this.notification.success('✅ Commande supprimée.');
+        this.notification.success('✅ Order deleted.');
       },
       error: (err) => {
         console.error('❌ Erreur suppression:', err);
-        const errorMessage = err?.error?.message || 'Erreur lors de la suppression';
+        const errorMessage = err?.error?.message || 'Error during deletion';
         this.notification.error('❌ ' + errorMessage);
       }
       });
@@ -246,9 +246,9 @@ export class ListCommandeVenteComponent implements OnInit {
     switch (statut) {
       case 'BROUILLON':  return 'Brouillon';
       case 'EN_ATTENTE': return 'En attente';
-      case 'CONFIRMEE':  return 'Confirmée';
-      case 'LIVREE':     return 'Livrée';
-      case 'ANNULEE':    return 'Annulée';
+      case 'CONFIRMEE':  return 'Confirmed';
+      case 'LIVREE':     return 'Delivered';
+      case 'ANNULEE':    return 'Canceled';
       default:           return statut || '-';
     }
   }
@@ -282,7 +282,7 @@ export class ListCommandeVenteComponent implements OnInit {
   }
 
   exportCSV(): void {
-    const headers = ['Référence', 'Date Commande', 'Date Livraison Prévue', 'Client', 'Statut', 'Montant HT', 'Montant TVA', 'Montant TTC'];
+    const headers = ['Reference', 'Date Commande', 'Expected Delivery Date', 'Client', 'Statut', 'Amount excl. tax', 'VAT Amount', 'Amount incl. tax'];
     const rows = this.filteredCommandes.map(c => [
       c.reference ?? '',
       c.dateCommande ?? '',

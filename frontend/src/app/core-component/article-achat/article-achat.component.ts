@@ -249,10 +249,10 @@ export class ArticleAchatComponent implements OnInit {
             }
           },
           error: (err) => {
-            console.error('Erreur lors de la suppression:', err);
+            console.error('Error during deletion:', err);
             const message = err?.error && typeof err.error === 'string'
               ? err.error
-              : 'Erreur lors de la suppression de l\'article ' + id;
+              : 'Error during deletion de l\'article ' + id;
             this.notification.error('✗ ' + message);
             completed++;
             if (completed === ids.length) {
@@ -289,10 +289,10 @@ export class ArticleAchatComponent implements OnInit {
         this.notification.success('✓ Article supprimé avec succès');
       },
       error: (err) => {
-        console.error('Erreur lors de la suppression:', err);
+        console.error('Error during deletion:', err);
         const message = err?.error && typeof err.error === 'string'
           ? err.error
-          : 'Erreur lors de la suppression de l\'article';
+          : 'Error during deletion de l\'article';
         this.notification.error('✗ ' + message);
         this.isLoading = false;
       }
@@ -302,7 +302,7 @@ export class ArticleAchatComponent implements OnInit {
 
   // --- CSV Export ---
   exportCSV(): void {
-    const headers = ['ID', 'Nom', 'SKU', 'Prix Unitaire', 'Quantité', 'Unité', 'Fournisseur', 'Catégorie', 'Créé le'];
+    const headers = ['ID', 'Nom', 'SKU', 'Prix Unitaire', 'Quantity', 'Unité', 'Fournisseur', 'Category', 'Created on'];
     const rows = this.filteredList.map(a => [
       a.id ?? '',
       `"${a.nom}"`,

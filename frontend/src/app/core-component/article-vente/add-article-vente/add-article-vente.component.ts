@@ -138,7 +138,7 @@ export class AddArticleVenteComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         this.isLoading = false;
         const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter l\'article';
-        this.notify.error('Erreur : ' + errorMsg);
+        this.notify.error('Error: ' + errorMsg);
       }
     });
     this.subs.add(sub);

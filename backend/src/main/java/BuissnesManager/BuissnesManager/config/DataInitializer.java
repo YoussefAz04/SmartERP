@@ -26,11 +26,11 @@ public class DataInitializer implements CommandLineRunner {
         UserRequest userRequest = new UserRequest("admin", "admin@gmail.com","admin123","54575533","");
         try {
             userService.createUser(userRequest);
-            System.out.println("Utilisateur admin créé avec succès.");
+            System.out.println("Admin user created successfully.");
             Role role = new Role();
             role.setName("Super_admin");
             roleService.create(role);
-            System.out.println("Role créé avec succès.");
+            System.out.println("Role created successfully.");
             User user =userService.findByUsername("admin").orElse(null);
             if (user != null){
                 userService.assignRoleToUser(user.getId(),

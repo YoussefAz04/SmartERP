@@ -182,29 +182,29 @@ generateSidebarData(modules: ModuleTittle[]) {
 
     // titleMap: maps ModuleTittle.moduleTittle (section-level DB names) to display labels
     const titleMap: { [key: string]: string } = {
-      'Gestion Article achat': "Les Articles d'Achats",
-      'Gestion Article vente': 'Les Articles de Ventes',
-      'Gestion Stock': 'Gestion des Stocks',
-      'Gestion Fournisseur': 'Les Fournisseurs',
-      'gestion de Client': 'Gestion des Clients',
-      'gestion de Fournisseur': 'Gestion des Fournisseurs',
-      'gestion Article': 'Gestion des Articles',
-      'gestion Achat': 'Gestion des Achats',
-      'gestion Vente': 'Gestion des Ventes',
-      'gestion Comptabilite': 'Gestion de la Comptabilité',
-      'gestion Document': 'Gestion des Documents',
-      'Parametrage': 'Paramétrage',
+      'Gestion Article achat': "Purchase Products",
+      'Gestion Article vente': 'Sales Products',
+      'Gestion Stock': 'Stock Management',
+      'Gestion Fournisseur': 'Suppliers',
+      'gestion de Client': 'Customer Management',
+      'gestion de Fournisseur': 'Supplier Management',
+      'gestion Article': 'Product Management',
+      'gestion Achat': 'Purchase Management',
+      'gestion Vente': 'Sales Management',
+      'gestion Comptabilite': 'Accounting Management',
+      'gestion Document': 'Document Management',
+      'Parametrage': 'Settings',
     };
 
     // menuValueMap: maps Module.title (item-level DB names) to display labels
     const menuValueMap: { [key: string]: string } = {
-      'Liste Article': 'Liste des Articles',
+      'Liste Article': 'Product List',
       'gestion de Client': 'Clients',
-      'gestion de Categorie Client': 'Catégories Clients',
+      'gestion de Categorie Client': 'Categorys Clients',
       'gestion de Fournisseur': 'Fournisseurs',
-      'gestion de Categorie Fournisseur': 'Catégories Fournisseurs',
-      'gestion Article Achat': 'Articles Achat',
-      'gestion Article Vente': 'Articles Vente',
+      'gestion de Categorie Fournisseur': 'Categorys Fournisseurs',
+      'gestion Article Achat': 'Purchase Products',
+      'gestion Article Vente': 'Sales Products',
       'gestion Stock': 'Stock',
       'Commande Achat': 'Commandes Achat',
       'Commande Vente': 'Commandes Vente',
@@ -312,8 +312,8 @@ generateSidebarData(modules: ModuleTittle[]) {
 
       if (userRole === 'SUPER_ADMIN') {
         // SUPER_ADMIN is platform-level: all sections come from the hardcoded
-        // "Administration Plateforme" block below. DB-sourced sections are hidden
-        // entirely to avoid duplicate items (e.g. Gestion des Utilisateurs).
+        // "Platform Administration" block below. DB-sourced sections are hidden
+        // entirely to avoid duplicate items (e.g. User Management).
         activeModules = [];
       } else if (userRole === 'ADMIN') {
         // ADMIN (Enterprise Owner) sees all business modules
@@ -362,14 +362,14 @@ generateSidebarData(modules: ModuleTittle[]) {
     const result: any[] = [...data];
     if (userRole === 'ADMIN') {
       result.push({
-        tittle: 'Intelligence Artificielle',
+        tittle: 'Artificial Intelligence',
         showAsTab: false,
         separateRoute: false,
         hasSubRoute: false,
         showSubRoute: true,
         menu: [
           {
-            menuValue: 'Intelligence Prédictive',
+            menuValue: 'Predictive Intelligence',
             hasSubRoute: false,
             showSubRoute: false,
             icon: 'cpu',
@@ -387,7 +387,7 @@ generateSidebarData(modules: ModuleTittle[]) {
         showSubRoute: true,
         menu: [
           {
-            menuValue: "Journal d'Audit",
+            menuValue: "Audit Log",
             hasSubRoute: false,
             showSubRoute: false,
             icon: 'clipboard',
@@ -402,14 +402,14 @@ generateSidebarData(modules: ModuleTittle[]) {
     // Platform Administration section is only visible to SUPER_ADMIN
     if (userRole === 'SUPER_ADMIN') {
       result.push({
-        tittle: 'Administration Plateforme',
+        tittle: 'Platform Administration',
         showAsTab: false,
         separateRoute: false,
         hasSubRoute: false,
         showSubRoute: true,
         menu: [
           {
-            menuValue: 'Gestion des Entreprises',
+            menuValue: 'Company Management',
             hasSubRoute: false,
             showSubRoute: false,
             icon: 'briefcase',
@@ -418,7 +418,7 @@ generateSidebarData(modules: ModuleTittle[]) {
             subMenus: []
           },
           {
-            menuValue: 'Gestion des Utilisateurs',
+            menuValue: 'User Management',
             hasSubRoute: false,
             showSubRoute: false,
             icon: 'users',
@@ -427,7 +427,7 @@ generateSidebarData(modules: ModuleTittle[]) {
             subMenus: []
           },
           {
-            menuValue: 'Rôles & Permissions',
+            menuValue: 'Roles & Permissions',
             hasSubRoute: false,
             showSubRoute: false,
             icon: 'shield',
@@ -436,7 +436,7 @@ generateSidebarData(modules: ModuleTittle[]) {
             subMenus: []
           },
           {
-            menuValue: "Journal d'Audit",
+            menuValue: "Audit Log",
             hasSubRoute: false,
             showSubRoute: false,
             icon: 'clipboard',
@@ -475,7 +475,7 @@ generateSidebarData(modules: ModuleTittle[]) {
   //     menu: [
   //       {
   //         menuValue:  this.data$.subscribe(data => {
-  //           console.log('Modules partagés :', data);
+  //           console.log('Shared modules:', data);
   //         }),
   //         hasSubRoute: true,
   //         showSubRoute: true,

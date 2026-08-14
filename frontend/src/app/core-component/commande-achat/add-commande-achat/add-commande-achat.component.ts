@@ -359,7 +359,7 @@ export class AddCommandeAchatComponent implements OnInit {
     // Validate quantity
     const quantiteNum = parseFloat(quantite);
     if (!quantite || isNaN(quantiteNum) || quantiteNum <= 0) {
-      this.errorMessage = `❌ Ligne ${i + 1}: Quantité doit être > 0`;
+      this.errorMessage = `❌ Ligne ${i + 1}: Quantity doit être > 0`;
       console.error(`❌ Line ${i + 1} - Invalid quantity:`, quantite);
       return;
     }
@@ -423,7 +423,7 @@ export class AddCommandeAchatComponent implements OnInit {
     next: (response: any) => {
       console.log('✅✅✅ SUCCESS! Response:', response);
       this.isLoading = false;
-      this.notification.success('✅ Commande créée avec succès!');
+      this.notification.success('✅ Order created successfully!');
       this.router.navigate(['/commande-achat/list']);
     },
     error: (err: any) => {

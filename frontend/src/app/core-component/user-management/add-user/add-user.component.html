@@ -7,11 +7,11 @@
         <i class="feather icon-user-plus"></i>
       </div>
       <div>
-        <h1 class="page-hero__title">Ajouter un nouvel employé</h1>
+        <h1 class="page-hero__title">Add un nouvel employé</h1>
         <nav class="page-hero__breadcrumb" aria-label="breadcrumb">
           <a href="javascript:void(0);" class="breadcrumb-link">Accueil</a>
           <span class="breadcrumb-sep" aria-hidden="true">/</span>
-          <span class="breadcrumb-current">Ajouter un employé</span>
+          <span class="breadcrumb-current">Add un employé</span>
         </nav>
       </div>
     </div>
@@ -49,7 +49,7 @@
                 <!-- Username -->
                 <div class="field-group">
                   <label class="field-label" for="username">
-                    Nom d'utilisateur <span class="field-required">*</span>
+                    Username <span class="field-required">*</span>
                   </label>
                   <div class="field-input-wrap" [class.is-invalid]="isFieldInvalid('username')">
                     <i class="feather icon-user field-icon"></i>
@@ -62,7 +62,7 @@
                   </div>
                   <span class="field-error" *ngIf="isFieldInvalid('username')">
                     <i class="feather icon-alert-circle"></i>
-                    Le nom d'utilisateur est requis (min 3 caractères)
+                    Le nom d'utilisateur est requis (min 3 characters)
                   </span>
                 </div>
 
@@ -89,7 +89,7 @@
                 <!-- Password -->
                 <div class="field-group">
                   <label class="field-label" for="password">
-                    Mot de passe <span class="field-required">*</span>
+                    Password <span class="field-required">*</span>
                   </label>
                   <div class="field-input-wrap" [class.is-invalid]="isFieldInvalid('password')">
                     <i class="feather icon-lock field-icon"></i>
@@ -102,13 +102,13 @@
                   </div>
                   <span class="field-error" *ngIf="isFieldInvalid('password')">
                     <i class="feather icon-alert-circle"></i>
-                    Le mot de passe est requis (min 6 caractères)
+                    Le mot de passe est requis (min 6 characters)
                   </span>
                 </div>
 
                 <!-- Phone -->
                 <div class="field-group">
-                  <label class="field-label" for="phone">Téléphone</label>
+                  <label class="field-label" for="phone">Phone</label>
                   <div class="field-input-wrap">
                     <i class="feather icon-phone field-icon"></i>
                     <input
@@ -130,7 +130,7 @@
                 Permissions par module
               </h3>
               <p class="form-section__hint">
-                Activez un module et choisissez les actions CRUD (Créer, Lire, Modifier, Supprimer) que l'employé peut effectuer.
+                Activez un module et choisissez les actions CRUD (Créer, Lire, Edit, Delete) que l'employé peut effectuer.
                 Utilisez les raccourcis pour accorder un <em>Accès complet</em> ou un accès en <em>Lecture seule</em>.
               </p>
 
@@ -203,7 +203,7 @@
                 </div>
 
                 <div class="empty-msg" *ngIf="!enterprisesLoading && enterprises.length === 0">
-                  Aucune entreprise disponible.
+                  No company available.
                 </div>
 
                 <div class="field-input-wrap" *ngIf="!enterprisesLoading && enterprises.length > 0">
@@ -231,11 +231,11 @@
               <div class="enterprise-preview" *ngIf="selectedEnterpriseInfo">
                 <div class="enterprise-preview__row">
                   <div class="enterprise-preview__cell">
-                    <span class="preview-label">Nom de l'entreprise</span>
+                    <span class="preview-label">Name de l'entreprise</span>
                     <span class="preview-value">{{ selectedEnterpriseInfo.nom }}</span>
                   </div>
                   <div class="enterprise-preview__cell">
-                    <span class="preview-label">Statut</span>
+                    <span class="preview-label">Status</span>
                     <span class="preview-value">
                       <span class="status-pill"
                         [ngClass]="selectedEnterpriseInfo.active ? 'status-pill--active' : 'status-pill--inactive'"
@@ -251,7 +251,7 @@
                     <span class="preview-value">{{ selectedEnterpriseInfo.userCount || 0 }}</span>
                   </div>
                   <div class="enterprise-preview__cell">
-                    <span class="preview-label">Date de création</span>
+                    <span class="preview-label">Creation date</span>
                     <span class="preview-value">{{ formatDate(selectedEnterpriseInfo.dateCreation) }}</span>
                   </div>
                 </div>
@@ -274,7 +274,7 @@
                 (click)="goBack()"
                 [disabled]="isSubmitting">
                 <i class="feather icon-x"></i>
-                Annuler
+                Cancel
               </button>
             </div>
 

@@ -65,7 +65,7 @@ export class EditCategorieClientComponent implements OnInit {
     this.isLoading = true;
     this.clientService.updateCategorieClient(this.categorieId, this.categorieClientForm.value).subscribe({
       next: () => {
-        this.notification.success('✓ Catégorie mise à jour avec succès');
+        this.notification.success('✓ Category mise à jour avec succès');
         this.router.navigate(['/client/listCategorieClient']);
         this.isLoading = false;
       },

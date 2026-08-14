@@ -2,11 +2,11 @@
 <div class="page-header">
   <div class="row">
     <div class="col">
-      <h3 class="page-title">Modifier Catégorie Fournisseur</h3>
+      <h3 class="page-title">Edit Category Supplier</h3>
       <ul class="breadcrumb">
         <li class="breadcrumb-item"><a routerLink="/dashboard">Dashboard</a></li>
-        <li class="breadcrumb-item"><a routerLink="/fournisseur/listCategorieFournisseur">Catégories</a></li>
-        <li class="breadcrumb-item active">Modifier</li>
+        <li class="breadcrumb-item"><a routerLink="/fournisseur/listCategorieFournisseur">Categorys</a></li>
+        <li class="breadcrumb-item active">Edit</li>
       </ul>
     </div>
   </div>
@@ -22,7 +22,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title">
-          <h5>Modifier Catégorie Fournisseur</h5>
+          <h5>Edit Category Supplier</h5>
         </div>
       </div>
       <div class="card-body">
@@ -36,7 +36,7 @@
         <form [formGroup]="categorieForm" (ngSubmit)="onSubmit()">
           <!-- Nom Field -->
           <div class="form-group mb-3">
-            <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+            <label for="nom" class="form-label">Name <span class="text-danger">*</span></label>
             <input
               type="text"
               class="form-control"
@@ -46,7 +46,7 @@
               [class.is-invalid]="isFieldInvalid('nom')">
             <div class="invalid-feedback" *ngIf="isFieldInvalid('nom')">
               <span *ngIf="categorieForm.get('nom')?.errors?.['required']">Le nom est requis</span>
-              <span *ngIf="categorieForm.get('nom')?.errors?.['minlength']">Le nom doit contenir au moins 2 caractères</span>
+              <span *ngIf="categorieForm.get('nom')?.errors?.['minlength']">Le nom doit contenir au moins 2 characters</span>
             </div>
           </div>
 
@@ -62,7 +62,7 @@
               [class.is-invalid]="isFieldInvalid('description')"></textarea>
             <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
               <span *ngIf="categorieForm.get('description')?.errors?.['required']">La description est requise</span>
-              <span *ngIf="categorieForm.get('description')?.errors?.['minlength']">La description doit contenir au moins 5 caractères</span>
+              <span *ngIf="categorieForm.get('description')?.errors?.['minlength']">La description doit contenir au moins 5 characters</span>
             </div>
           </div>
 
@@ -72,14 +72,14 @@
               type="submit"
               class="btn btn-primary"
               [disabled]="isLoading || categorieForm.invalid">
-              <i class="feather icon-save"></i> Enregistrer
+              <i class="feather icon-save"></i> Save
             </button>
             <button
               type="button"
               class="btn btn-secondary"
               (click)="cancelForm()"
               [disabled]="isLoading">
-              <i class="feather icon-x"></i> Annuler
+              <i class="feather icon-x"></i> Cancel
             </button>
           </div>
         </form>

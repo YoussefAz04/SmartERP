@@ -18,14 +18,14 @@
     <div class="db-header__inner">
       <div class="db-header__left">
         <span class="db-header__eyebrow">
-          Tableau de Bord Opérationnel
+          Operational Dashboard
         </span>
         <h1 class="db-header__title">
           <span class="enterprise-name-title">{{ entrepriseName || 'Mon Tableau de Bord' }}</span>
         </h1>
         <p class="db-header__sub">
-          
-          Bienvenue, <strong>{{ userName }}</strong>
+
+          Welcome, <strong>{{ userName }}</strong>
           <span class="header-divider" aria-hidden="true">•</span>
           <span class="today-pill">
             <i class="feather icon-clock"></i>
@@ -37,7 +37,7 @@
         <div class="meta-pill header-live-pill">
           <span class="live-dot" aria-hidden="true"></span>
           <i class="feather icon-activity"></i>
-          <span>Activité en direct</span>
+          <span>Live Activity</span>
         </div>
 
       </div>
@@ -49,32 +49,32 @@
     <a class="quick-action quick-action--indigo slide-up" routerLink="/client/addClient" style="animation-delay:0.10s">
       <span class="quick-action__icon"><i class="feather icon-user-plus"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">Nouveau client</span>
-        <span class="quick-action__hint">Ajouter un client</span>
+        <span class="quick-action__label">New customer</span>
+        <span class="quick-action__hint">Add a customer</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--amber slide-up" routerLink="/fournisseur/addFournisseur" style="animation-delay:0.16s">
       <span class="quick-action__icon"><i class="feather icon-truck"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">Nouveau fournisseur</span>
-        <span class="quick-action__hint">Enregistrer un fournisseur</span>
+        <span class="quick-action__label">New supplier</span>
+        <span class="quick-action__hint">Register a supplier</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--emerald slide-up" routerLink="/article-achat/add" style="animation-delay:0.22s">
       <span class="quick-action__icon"><i class="feather icon-package"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">Ajouter un article</span>
-        <span class="quick-action__hint">Créer un article de stock</span>
+        <span class="quick-action__label">Add a product</span>
+        <span class="quick-action__hint">Create a stock product</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--violet slide-up" routerLink="/commande-vente/add" style="animation-delay:0.28s">
       <span class="quick-action__icon"><i class="feather icon-file-plus"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">Nouvelle commande</span>
-        <span class="quick-action__hint">Saisir une commande vente</span>
+        <span class="quick-action__label">New order</span>
+        <span class="quick-action__hint">Enter a sales order</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
@@ -92,7 +92,7 @@
             <i class="feather icon-users"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--up">
-            <i class="feather icon-trending-up"></i> Actifs
+            <i class="feather icon-trending-up"></i> Active
           </span>
         </div>
         <div class="stat-card__body">
@@ -102,10 +102,10 @@
             </ng-container>
             <ng-template #skeleton><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Total Clients</div>
+          <div class="stat-card__label">Total Customers</div>
         </div>
         <a class="stat-card__link" routerLink="/client/listClient">
-          Voir tout <i class="feather icon-arrow-right"></i>
+          View all <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -117,7 +117,7 @@
             <i class="feather icon-truck"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--neutral">
-            <i class="feather icon-refresh-cw"></i> Référencés
+            <i class="feather icon-refresh-cw"></i> Referenced
           </span>
         </div>
         <div class="stat-card__body">
@@ -127,10 +127,10 @@
             </ng-container>
             <ng-template #skelF><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Fournisseurs</div>
+          <div class="stat-card__label">Suppliers</div>
         </div>
         <a class="stat-card__link" routerLink="/fournisseur/listFournisseur">
-          Voir tout <i class="feather icon-arrow-right"></i>
+          View all <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -142,7 +142,7 @@
             <i class="feather icon-package"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--up">
-            <i class="feather icon-box"></i> En catalogue
+            <i class="feather icon-box"></i> In catalog
           </span>
         </div>
         <div class="stat-card__body">
@@ -152,10 +152,10 @@
             </ng-container>
             <ng-template #skelA><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Articles en Stock</div>
+          <div class="stat-card__label">Products in Stock</div>
         </div>
         <a class="stat-card__link" routerLink="/article-achat/listArticleAchat">
-          Voir tout <i class="feather icon-arrow-right"></i>
+          View all <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -167,7 +167,7 @@
             <i class="feather icon-file-text"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--violet">
-            <i class="feather icon-check-circle"></i> Actives
+            <i class="feather icon-check-circle"></i> Active
           </span>
         </div>
         <div class="stat-card__body">
@@ -177,10 +177,10 @@
             </ng-container>
             <ng-template #skelC><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Commandes</div>
+          <div class="stat-card__label">Orders</div>
         </div>
         <a class="stat-card__link" routerLink="/commande-vente">
-          Voir tout <i class="feather icon-arrow-right"></i>
+          View all <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -193,9 +193,9 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-users"></i>
-        Clients Récents
+        Customers Recent
       </div>
-      <a class="view-all-link" routerLink="/client/listClient">Voir tous les clients →</a>
+      <a class="view-all-link" routerLink="/client/listClient">View tous les clients →</a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingClients" class="skel-rows">
@@ -203,19 +203,19 @@
       </div>
       <div *ngIf="!loadingClients && errorClients" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Erreur lors du chargement des clients</span>
-        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+        <span>Error while loading customers</span>
+        <button class="btn-retry" (click)="retryLoad()">Retry</button>
       </div>
       <div *ngIf="!loadingClients && !errorClients && recentClients.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> Aucun client trouvé
+        <i class="feather icon-inbox"></i> No customer found
       </div>
       <div *ngIf="!loadingClients && !errorClients && recentClients.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Nom</th>
+              <th>Name</th>
               <th>Email</th>
-              <th>Téléphone</th>
+              <th>Phone</th>
               <th class="col-action">Actions</th>
             </tr>
           </thead>
@@ -231,7 +231,7 @@
               <td class="text-muted">{{ c.telephone }}</td>
               <td class="col-action">
                 <div class="action-btns">
-                  <button class="btn-icon btn-view" title="Voir" (click)="navigateTo('/client/listClient')">
+                  <button class="btn-icon btn-view" title="View" (click)="navigateTo('/client/listClient')">
                     <i class="feather icon-eye"></i>
                   </button>
                 </div>
@@ -250,9 +250,9 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-truck"></i>
-        Fournisseurs Récents
+        Suppliers Recent
       </div>
-      <a class="view-all-link" routerLink="/fournisseur/listFournisseur">Voir tous les fournisseurs →</a>
+      <a class="view-all-link" routerLink="/fournisseur/listFournisseur">View tous les fournisseurs →</a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingFournisseurs" class="skel-rows">
@@ -260,19 +260,19 @@
       </div>
       <div *ngIf="!loadingFournisseurs && errorFournisseurs" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Erreur lors du chargement des fournisseurs</span>
-        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+        <span>Error while loading suppliers</span>
+        <button class="btn-retry" (click)="retryLoad()">Retry</button>
       </div>
       <div *ngIf="!loadingFournisseurs && !errorFournisseurs && recentFournisseurs.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> Aucun fournisseur trouvé
+        <i class="feather icon-inbox"></i> No supplier found
       </div>
       <div *ngIf="!loadingFournisseurs && !errorFournisseurs && recentFournisseurs.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Nom</th>
-              <th>Téléphone</th>
-              <th>Ville</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>City</th>
               <th class="col-action">Actions</th>
             </tr>
           </thead>
@@ -288,7 +288,7 @@
               <td class="text-muted">{{ f.ville }}</td>
               <td class="col-action">
                 <div class="action-btns">
-                  <button class="btn-icon btn-view" title="Voir" (click)="navigateTo('/fournisseur/listFournisseur')">
+                  <button class="btn-icon btn-view" title="View" (click)="navigateTo('/fournisseur/listFournisseur')">
                     <i class="feather icon-eye"></i>
                   </button>
                 </div>
@@ -307,9 +307,9 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-package"></i>
-        Articles en Stock
+        Products in Stock
       </div>
-      <a class="view-all-link" routerLink="/article-achat/listArticleAchat">Voir tous les articles →</a>
+      <a class="view-all-link" routerLink="/article-achat/listArticleAchat">View tous les articles →</a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingArticles" class="skel-rows">
@@ -317,19 +317,19 @@
       </div>
       <div *ngIf="!loadingArticles && errorArticles" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Erreur lors du chargement des articles</span>
-        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+        <span>Error while loading products</span>
+        <button class="btn-retry" (click)="retryLoad()">Retry</button>
       </div>
       <div *ngIf="!loadingArticles && !errorArticles && recentArticles.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> Aucun article trouvé
+        <i class="feather icon-inbox"></i> No product found
       </div>
       <div *ngIf="!loadingArticles && !errorArticles && recentArticles.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Article</th>
-              <th>Quantité</th>
-              <th>Statut Stock</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Stock Status</th>
             </tr>
           </thead>
           <tbody>
@@ -354,9 +354,9 @@
                       [class.badge--low-stock]="a.stockStatus === 'LOW_STOCK'"
                       [class.badge--out-of-stock]="a.stockStatus === 'OUT_OF_STOCK'">
                   <ng-container [ngSwitch]="a.stockStatus">
-                    <ng-container *ngSwitchCase="'IN_STOCK'">En Stock</ng-container>
-                    <ng-container *ngSwitchCase="'LOW_STOCK'">Stock Faible</ng-container>
-                    <ng-container *ngSwitchDefault>Rupture</ng-container>
+                    <ng-container *ngSwitchCase="'IN_STOCK'">In Stock</ng-container>
+                    <ng-container *ngSwitchCase="'LOW_STOCK'">Low Stock</ng-container>
+                    <ng-container *ngSwitchDefault>Out of Stock</ng-container>
                   </ng-container>
                 </span>
               </td>
@@ -374,9 +374,9 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-file-text"></i>
-        Commandes Récentes
+        Orders Recent
       </div>
-      <a class="view-all-link" routerLink="/commande-vente">Voir toutes les commandes →</a>
+      <a class="view-all-link" routerLink="/commande-vente">View alles les commandes →</a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingCommandes" class="skel-rows">
@@ -384,21 +384,21 @@
       </div>
       <div *ngIf="!loadingCommandes && errorCommandes" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Erreur lors du chargement des commandes</span>
-        <button class="btn-retry" (click)="retryLoad()">Réessayer</button>
+        <span>Error while loading orders</span>
+        <button class="btn-retry" (click)="retryLoad()">Retry</button>
       </div>
       <div *ngIf="!loadingCommandes && !errorCommandes && recentCommandes.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> Aucune commande trouvée
+        <i class="feather icon-inbox"></i> No order found
       </div>
       <div *ngIf="!loadingCommandes && !errorCommandes && recentCommandes.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Référence</th>
-              <th>Client</th>
-              <th>Montant TTC</th>
+              <th>Reference</th>
+              <th>Customer</th>
+              <th>Amount incl. tax</th>
               <th>Date</th>
-              <th>Statut</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>

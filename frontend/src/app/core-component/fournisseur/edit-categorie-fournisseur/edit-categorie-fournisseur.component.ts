@@ -73,8 +73,8 @@ export class EditCategorieFournisseurComponent implements OnInit {
     this.isLoading = true;
     this.fournisseurService.updateCategorieFournisseur(this.categorieId, this.categorieForm.value).subscribe({
       next: (data) => {
-        console.log('Catégorie mise à jour avec succès', data);
-        this.notification.success('✓ Catégorie mise à jour avec succès');
+        console.log('Category mise à jour avec succès', data);
+        this.notification.success('✓ Category mise à jour avec succès');
         this.router.navigate(['/fournisseur/listCategorieFournisseur']);
         this.isLoading = false;
       },

@@ -46,7 +46,7 @@ export class DetaisEntrepriseComponent implements OnInit{
 
     if (item) {
       currentUser = JSON.parse(decodeURIComponent(escape(atob(item))));
-      console.log('User connecté:', currentUser?.name);
+      console.log('Connected user:', currentUser?.name);
 
       console.log('Token:', currentUser?.token);
       console.log('Permissions:', currentUser?.permission);
@@ -71,7 +71,7 @@ export class DetaisEntrepriseComponent implements OnInit{
         }
       }
 
-      console.log('Entreprise:', currentUser?.entreprise?.nom);
+      console.log('Company:', currentUser?.entreprise?.nom);
     }
   }
 

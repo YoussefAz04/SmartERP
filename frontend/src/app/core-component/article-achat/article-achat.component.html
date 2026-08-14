@@ -13,9 +13,9 @@
     <div class="aa-hero__left">
       <span class="hero-badge">
         <i class="feather icon-shopping-bag"></i>
-        Gestion des Achats
+        Purchase Management
       </span>
-      <h1 class="hero-title">Articles Achat</h1>
+      <h1 class="hero-title">Purchase Products</h1>
       <p class="hero-sub">
         <i class="feather icon-package"></i>
         {{ totalCount }} article(s) dans le catalogue d'achat
@@ -25,11 +25,11 @@
     <div class="hero-actions">
       <button type="button" class="btn-outline-hero" (click)="exportCSV()">
         <i class="feather icon-download"></i>
-        Exporter CSV
+        Export CSV
       </button>
       <button *ngIf="canCreateArticle" type="button" class="btn-primary-hero" (click)="addArticle()">
         <i class="feather icon-plus-circle"></i>
-        Ajouter Article
+        Add Product
       </button>
     </div>
   </div>
@@ -49,9 +49,9 @@
       <span class="kpi-chip"><i class="feather icon-trending-up"></i> Catalogue</span>
     </div>
     <div class="kpi-number">{{ totalCount }}</div>
-    <div class="kpi-label">Total Articles</div>
+    <div class="kpi-label">Total Products</div>
     <div class="kpi-footer">
-      <i class="feather icon-list"></i> Voir tous les articles
+      <i class="feather icon-list"></i> View tous les articles
     </div>
   </div>
 
@@ -64,9 +64,9 @@
       <span class="kpi-chip"><i class="feather icon-tag"></i> DT</span>
     </div>
     <div class="kpi-number">{{ avgPrice | number:'1.2-2' }}</div>
-    <div class="kpi-label">Prix Moyen Achat</div>
+    <div class="kpi-label">Average Purchase Price</div>
     <div class="kpi-footer">
-      <i class="feather icon-bar-chart-2"></i> Moyenne catalogue
+      <i class="feather icon-bar-chart-2"></i> Medium catalogue
     </div>
   </div>
 
@@ -76,25 +76,25 @@
     <span class="kpi-blob"  aria-hidden="true"></span>
     <div class="kpi-top">
       <div class="kpi-icon-wrap"><i class="feather icon-users"></i></div>
-      <span class="kpi-chip"><i class="feather icon-users"></i> Partenaires</span>
+      <span class="kpi-chip"><i class="feather icon-users"></i> Shareenaires</span>
     </div>
     <div class="kpi-number">{{ uniqueFournisseurs.length }}</div>
-    <div class="kpi-label">Fournisseurs Actifs</div>
+    <div class="kpi-label">Suppliers Active</div>
     <div class="kpi-footer">
       <i class="feather icon-user"></i> Réseau fournisseurs
     </div>
   </div>
 
-  <!-- Catégories Actives -->
+  <!-- Categorys Actives -->
   <div class="kpi-card kpi-card--amber kpi-d4">
     <span class="kpi-sheen" aria-hidden="true"></span>
     <span class="kpi-blob"  aria-hidden="true"></span>
     <div class="kpi-top">
       <div class="kpi-icon-wrap"><i class="feather icon-grid"></i></div>
-      <span class="kpi-chip"><i class="feather icon-layers"></i> Catégories</span>
+      <span class="kpi-chip"><i class="feather icon-layers"></i> Categorys</span>
     </div>
     <div class="kpi-number">{{ uniqueCategories.length }}</div>
-    <div class="kpi-label">Catégories Actives</div>
+    <div class="kpi-label">Categorys Active</div>
     <div class="kpi-footer">
       <i class="feather icon-tag"></i> Diversité catalogue
     </div>
@@ -121,7 +121,7 @@
         <label class="filter-label">Recherche</label>
         <div class="filter-input-wrap">
           <i class="feather icon-search filter-icon"></i>
-          <input type="text" class="filter-input" placeholder="Nom, SKU, description…"
+          <input type="text" class="filter-input" placeholder="Name, SKU, description…"
                  [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
         </div>
       </div>
@@ -145,7 +145,7 @@
       </div>
 
       <div class="filter-group">
-        <label class="filter-label">Fournisseur</label>
+        <label class="filter-label">Supplier</label>
         <div class="filter-input-wrap">
           <i class="feather icon-user filter-icon"></i>
           <select class="filter-input filter-select"
@@ -163,7 +163,7 @@
         <label class="filter-label">&nbsp;</label>
         <button type="button" class="btn-reset" (click)="resetFilters()">
           <i class="feather icon-refresh-cw"></i>
-          Réinitialiser
+          Reset
         </button>
       </div>
 
@@ -179,14 +179,14 @@
   <div class="table-panel__header">
     <div class="table-panel__title">
       <span class="panel-icon-wrap"><i class="feather icon-shopping-bag"></i></span>
-      Liste des Articles Achat
+      Purchase Product List
       <span class="panel-badge">{{ filteredList.length }}</span>
     </div>
     <div class="table-panel__right">
       @if (selectedIds.size > 0) {
         <button *ngIf="canDeleteArticle" type="button" class="btn-bulk-delete" (click)="bulkDelete()">
           <i class="feather icon-trash-2"></i>
-          Supprimer ({{ selectedIds.size }})
+          Delete ({{ selectedIds.size }})
         </button>
       }
     </div>
@@ -204,7 +204,7 @@
               </label>
             </th>
             <th class="sortable th-article" (click)="setSort('nom')">
-              Article
+              Product
               <i class="feather sort-icon"
                  [class.icon-chevron-up]="sortField==='nom' && sortAsc"
                  [class.icon-chevron-down]="sortField==='nom' && !sortAsc"
@@ -217,9 +217,9 @@
                  [class.icon-chevron-down]="sortField==='prixUnitaire' && !sortAsc"
                  [class.icon-chevrons-up]="sortField!=='prixUnitaire'"></i>
             </th>
-            <th>Fournisseur</th>
-            <th>Catégorie</th>
-            <th>Créé le</th>
+            <th>Supplier</th>
+            <th>Category</th>
+            <th>Created on</th>
             <th class="th-center">Actions</th>
           </tr>
         </thead>
@@ -268,11 +268,11 @@
                 <td class="th-center">
                   <div class="action-btns">
                     <button *ngIf="canEditArticle" type="button"
-                            class="act-btn act-btn--edit" (click)="editArticle(a.id)" title="Modifier">
+                            class="act-btn act-btn--edit" (click)="editArticle(a.id)" title="Edit">
                       <i class="feather icon-edit-2"></i>
                     </button>
                     <button *ngIf="canDeleteArticle" type="button"
-                            class="act-btn act-btn--delete" (click)="deleteArticle(a.id)" title="Supprimer">
+                            class="act-btn act-btn--delete" (click)="deleteArticle(a.id)" title="Delete">
                       <i class="feather icon-trash-2"></i>
                     </button>
                   </div>

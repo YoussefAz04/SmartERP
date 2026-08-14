@@ -157,7 +157,7 @@
         <div class="cmp-tile cmp-tile--orders" *ngIf="comparison.orderCountMtdVsLtd">
           <div class="cmp-tile__icon"><i class="fas fa-receipt"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Commandes MTD</span>
+            <span class="cmp-tile__label">Orders MTD</span>
             <span class="cmp-tile__value text-primary">
               {{ comparison.orderCountMtdVsLtd.current | number:'1.0-0' }}
             </span>
@@ -353,7 +353,7 @@
         <div class="cmp-tile cmp-tile--orders" *ngIf="comparison.orderCountYtdVsLastYear">
           <div class="cmp-tile__icon"><i class="fas fa-receipt"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Commandes YTD</span>
+            <span class="cmp-tile__label">Orders YTD</span>
             <span class="cmp-tile__value text-primary">
               {{ comparison.orderCountYtdVsLastYear.current | number:'1.0-0' }}
             </span>

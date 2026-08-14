@@ -8,10 +8,10 @@
     <div class="inv-hero-left">
       <div class="inv-badge">
         <i class="feather icon-database"></i>
-        <span>Gestion des Stocks</span>
+        <span>Stock Management</span>
       </div>
       <h1 class="inv-title">Inventaire</h1>
-      <p class="inv-subtitle">Liste complète et temps réel de l'inventaire</p>
+      <p class="inv-subtitle">Complete real-time inventory list</p>
     </div>
     <div class="inv-hero-actions">
       <button class="inv-btn inv-btn-ghost" routerLink="/stock/listStockDashboard">
@@ -30,9 +30,9 @@
 <div class="inv-filters-card">
   <div class="inv-filters-row">
     <div class="inv-filter-group">
-      <label class="inv-filter-label"><i class="feather icon-search"></i> Rechercher</label>
+      <label class="inv-filter-label"><i class="feather icon-search"></i> Search</label>
       <div class="inv-input-wrap">
-        <input type="text" class="inv-input" placeholder="Nom, SKU, localisation..."
+        <input type="text" class="inv-input" placeholder="Name, SKU, localisation..."
           [(ngModel)]="searchTerm" (input)="applyFilters()">
       </div>
     </div>
@@ -46,17 +46,17 @@
       </select>
     </div>
     <div class="inv-filter-group">
-      <label class="inv-filter-label"><i class="feather icon-sliders"></i> Statut</label>
+      <label class="inv-filter-label"><i class="feather icon-sliders"></i> Status</label>
       <select class="inv-select" [(ngModel)]="filterStatus" (change)="applyFilters()">
         <option value="">Tous les statuts</option>
         <option value="OK">OK</option>
-        <option value="LOW_STOCK">Stock bas</option>
-        <option value="OUT_OF_STOCK">Rupture</option>
+        <option value="LOW_STOCK">Low stock</option>
+        <option value="OUT_OF_STOCK">Out of Stock</option>
       </select>
     </div>
     <div class="inv-filter-actions">
       <button class="inv-btn-reset" (click)="clearFilters()">
-        <i class="feather icon-x"></i> Réinitialiser
+        <i class="feather icon-x"></i> Reset
       </button>
     </div>
   </div>
@@ -76,7 +76,7 @@
     <div class="inv-table-header">
       <div class="inv-table-count">
         <span class="inv-count-num">{{ filteredStocks.length }}</span>
-        <span class="inv-count-label">article(s) trouvé(s)</span>
+        <span class="inv-count-label">product(s) found</span>
       </div>
       <div class="inv-table-controls">
         <span class="inv-control-label">Lignes :</span>
@@ -94,15 +94,15 @@
         <thead>
           <tr>
             <th class="col-num">#</th>
-            <th>Article</th>
+            <th>Product</th>
             <th>SKU</th>
-            <th class="col-center">Qté Entrée</th>
-            <th class="col-center">Qté Dispo</th>
-            <th class="col-center">Réservée</th>
+            <th class="col-center">Qty Entry</th>
+            <th class="col-center">Qty Dispo</th>
+            <th class="col-center">Reserved</th>
             <th class="col-center">Vendue</th>
             <th>Localisation</th>
             <th>Dernier inventaire</th>
-            <th class="col-center">Statut</th>
+            <th class="col-center">Status</th>
             <th class="col-center">Actions</th>
           </tr>
         </thead>
@@ -116,7 +116,7 @@
                     <div class="inv-article-avatar">
                       <i class="feather icon-box"></i>
                     </div>
-                    <span class="inv-article-name">{{ stock.articleAchat?.nom || 'Article #' + stock.id }}</span>
+                    <span class="inv-article-name">{{ stock.articleAchat?.nom || 'Product #' + stock.id }}</span>
                   </div>
                 </td>
                 <td><span class="inv-sku">{{ stock.articleAchat?.sku || '—' }}</span></td>
@@ -149,7 +149,7 @@
                 </td>
                 <td class="col-center">
                   <div class="inv-actions">
-                    <button class="inv-action-btn inv-action-view" title="Voir détails" (click)="viewStock(stock.id)">
+                    <button class="inv-action-btn inv-action-view" title="View details" (click)="viewStock(stock.id)">
                       <i class="feather icon-eye"></i>
                     </button>
                     <button *ngIf="canAdjustStock" class="inv-action-btn inv-action-edit" title="Ajuster stock" (click)="adjustStock(stock.id)">
@@ -158,7 +158,7 @@
                     <button class="inv-action-btn inv-action-history" title="Historique" (click)="viewMovements(stock.id)">
                       <i class="feather icon-clock"></i>
                     </button>
-                    <button *ngIf="canDeleteStock" class="inv-action-btn inv-action-delete" title="Supprimer" (click)="deleteStock(stock.id)">
+                    <button *ngIf="canDeleteStock" class="inv-action-btn inv-action-delete" title="Delete" (click)="deleteStock(stock.id)">
                       <i class="feather icon-trash-2"></i>
                     </button>
                   </div>
@@ -172,7 +172,7 @@
                   <div class="inv-empty-icon">
                     <i class="feather icon-inbox"></i>
                   </div>
-                  <p class="inv-empty-title">Aucun stock trouvé</p>
+                  <p class="inv-empty-title">No stock found</p>
                   <p class="inv-empty-sub">Essayez de modifier vos filtres</p>
                 </div>
               </td>

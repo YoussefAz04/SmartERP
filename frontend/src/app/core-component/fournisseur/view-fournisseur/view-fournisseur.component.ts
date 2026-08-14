@@ -61,8 +61,8 @@ export class ViewFournisseurComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erreur lors du chargement du fournisseur:', err);
-        this.errorMessage = 'Erreur lors du chargement du fournisseur';
+        console.error('Error while loading the supplier:', err);
+        this.errorMessage = 'Error while loading the supplier';
         this.isLoading = false;
       }
     });

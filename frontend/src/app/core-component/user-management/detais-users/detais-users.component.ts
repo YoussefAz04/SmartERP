@@ -76,11 +76,11 @@ export class DetaisUsersComponent implements OnInit {
 
   private readonly moduleDisplayNames: { [key: string]: string } = {
     'gestion de Client': 'Clients',
-    'gestion de Categorie Client': 'Catégories Clients',
+    'gestion de Categorie Client': 'Categorys Clients',
     'gestion de Fournisseur': 'Fournisseurs',
-    'gestion de Categorie Fournisseur': 'Catégories Fournisseurs',
-    'gestion Article Achat': 'Articles Achat',
-    'gestion Article Vente': 'Articles Vente',
+    'gestion de Categorie Fournisseur': 'Categorys Fournisseurs',
+    'gestion Article Achat': 'Purchase Products',
+    'gestion Article Vente': 'Sales Products',
     'gestion Stock': 'Stock',
     'Commande Achat': 'Commandes Achat',
     'Commande Vente': 'Commandes Vente',
@@ -279,7 +279,7 @@ export class DetaisUsersComponent implements OnInit {
     }
 
     if (this.isSubmitting) {
-      this.notification.info('Opération en cours...');
+      this.notification.info('Operation in progress...');
       return;
     }
 
@@ -299,12 +299,12 @@ export class DetaisUsersComponent implements OnInit {
       this.userService.updateUser(this.userId, this.user).subscribe({
         next: () => {
           this.isSubmitting = false;
-          this.notification.success('✓ Utilisateur mis à jour avec succès');
+          this.notification.success('✓ User mis à jour avec succès');
           this.router.navigate(['/user-management/users']);
         },
         error: (err: any) => {
           this.isSubmitting = false;
-          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+          const errorMsg = err.error?.message || err.message || 'Unknown error';
           this.notification.error('✗ Erreur lors de la mise à jour: ' + errorMsg);
         }
       });
@@ -316,12 +316,12 @@ export class DetaisUsersComponent implements OnInit {
       }).subscribe({
         next: () => {
           this.isSubmitting = false;
-          this.notification.success('✓ Utilisateur mis à jour avec succès');
+          this.notification.success('✓ User mis à jour avec succès');
           this.router.navigate(['/user-management/users']);
         },
         error: (err: any) => {
           this.isSubmitting = false;
-          const errorMsg = err.error?.message || err.message || 'Erreur inconnue';
+          const errorMsg = err.error?.message || err.message || 'Unknown error';
           this.notification.error('✗ Erreur lors de la mise à jour: ' + errorMsg);
         }
       });

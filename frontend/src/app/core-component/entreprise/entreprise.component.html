@@ -12,10 +12,10 @@
         <i class="feather icon-briefcase"></i>
       </div>
       <div class="hero-text">
-        <p class="hero-eyebrow"><i class="feather icon-briefcase"></i> Gestion des Entreprises</p>
+        <p class="hero-eyebrow"><i class="feather icon-briefcase"></i> Company Management</p>
         <h1 class="hero-title">
-          <ng-container *ngIf="isSuperAdmin">Liste des Entreprises</ng-container>
-          <ng-container *ngIf="!isSuperAdmin">Mon Entreprise</ng-container>
+          <ng-container *ngIf="isSuperAdmin">Liste des Companies</ng-container>
+          <ng-container *ngIf="!isSuperAdmin">Mon Company</ng-container>
         </h1>
         <p class="hero-sub" *ngIf="isSuperAdmin">
           <i class="feather icon-bar-chart-2"></i>
@@ -30,10 +30,10 @@
 
     <div class="hero-actions">
       <button type="button" class="hero-btn hero-btn--ghost" (click)="refreshData()">
-        <i class="feather icon-rotate-ccw"></i> Actualiser
+        <i class="feather icon-rotate-ccw"></i> Refresh
       </button>
       <button type="button" class="hero-btn hero-btn--primary" (click)="addEntreprise()" *ngIf="isSuperAdmin">
-        <i class="feather icon-plus"></i> Ajouter
+        <i class="feather icon-plus"></i> Add
       </button>
     </div>
   </div>
@@ -58,7 +58,7 @@
       <div class="stat-card__icon"><i class="feather icon-check-circle"></i></div>
       <div class="stat-card__body">
         <div class="stat-card__number">{{ totalCount }}</div>
-        <div class="stat-card__label">Actives</div>
+        <div class="stat-card__label">Active</div>
       </div>
       <div class="stat-card__bg-icon"><i class="feather icon-check-circle"></i></div>
     </div>
@@ -79,7 +79,7 @@
       <input
         type="text"
         class="search-card__input"
-        placeholder="Rechercher par nom, raison sociale, email, secteur, adresse…"
+        placeholder="Search par nom, raison sociale, email, secteur, adresse…"
         [(ngModel)]="searchTerm"
       />
       <button type="button" class="search-card__clear" *ngIf="searchTerm" (click)="resetFilters()" title="Effacer">
@@ -87,7 +87,7 @@
       </button>
     </div>
     <span class="search-card__count" *ngIf="searchTerm">
-      {{ filteredEntreprises.length }} résultat(s)
+      {{ filteredEntreprises.length }} result(s)
     </span>
   </div>
 
@@ -96,7 +96,7 @@
     <div class="main-card__header">
       <div class="main-card__title">
         <i class="feather icon-briefcase"></i>
-        Entreprises
+        Companies
         <span class="count-pill">{{ filteredEntreprises.length }}</span>
       </div>
     </div>
@@ -112,7 +112,7 @@
       <i class="feather icon-alert-circle state-box__icon"></i>
       <p>{{ errorMessage }}</p>
       <button type="button" class="btn-retry" (click)="loadEntreprises()">
-        <i class="feather icon-refresh-cw"></i> Réessayer
+        <i class="feather icon-refresh-cw"></i> Retry
       </button>
     </div>
 
@@ -121,14 +121,14 @@
       <table class="ent-table">
         <thead>
           <tr>
-            <th>Entreprise</th>
+            <th>Company</th>
             <th>Secteur</th>
-            <th>Statut Juridique</th>
+            <th>Status Juridique</th>
             <th>Contact</th>
             <th>Site Web</th>
             <th>NIF / RC</th>
             <th>Créée le</th>
-            <th class="col-center">Statut</th>
+            <th class="col-center">Status</th>
             <th class="col-center">Actions</th>
           </tr>
         </thead>
@@ -189,13 +189,13 @@
             </td>
             <td class="col-center">
               <div class="action-group">
-                <button type="button" class="act-btn act-btn--view" (click)="editEntreprise(e.id)" title="Voir / Modifier">
+                <button type="button" class="act-btn act-btn--view" (click)="editEntreprise(e.id)" title="View / Edit">
                   <i class="feather icon-eye"></i>
                 </button>
-                <button type="button" class="act-btn act-btn--off" (click)="disableEntreprise(e.id)" title="Désactiver" *ngIf="e.active !== false">
+                <button type="button" class="act-btn act-btn--off" (click)="disableEntreprise(e.id)" title="Désactivate" *ngIf="e.active !== false">
                   <i class="feather icon-slash"></i>
                 </button>
-                <button type="button" class="act-btn act-btn--on" (click)="enableEntreprise(e.id)" title="Réactiver" *ngIf="e.active === false">
+                <button type="button" class="act-btn act-btn--on" (click)="enableEntreprise(e.id)" title="Réactivate" *ngIf="e.active === false">
                   <i class="feather icon-check-circle"></i>
                 </button>
               </div>
@@ -235,7 +235,7 @@
     <i class="feather icon-alert-circle state-box__icon"></i>
     <p>{{ errorMessage }}</p>
     <button type="button" class="btn-retry" (click)="refreshData()">
-      <i class="feather icon-refresh-cw"></i> Réessayer
+      <i class="feather icon-refresh-cw"></i> Retry
     </button>
   </div>
 
@@ -254,14 +254,14 @@
           <i class="feather icon-eye"></i> Lecture seule
         </span>
         <button type="button" class="btn-edit" (click)="editEntreprise(currentEntreprise.id)" *ngIf="isAdmin">
-          <i class="feather icon-edit-2"></i> Modifier
+          <i class="feather icon-edit-2"></i> Edit
         </button>
       </div>
     </div>
 
     <div class="info-grid">
       <div class="info-item">
-        <div class="info-label"><i class="feather icon-briefcase"></i> Nom</div>
+        <div class="info-label"><i class="feather icon-briefcase"></i> Name</div>
         <div class="info-value">{{ currentEntreprise.nom || '—' }}</div>
       </div>
       <div class="info-item">
@@ -269,21 +269,21 @@
         <div class="info-value">{{ currentEntreprise.raisonSociale || '—' }}</div>
       </div>
       <div class="info-item">
-        <div class="info-label"><i class="feather icon-layers"></i> Secteur d'Activité</div>
+        <div class="info-label"><i class="feather icon-layers"></i> Business Sector</div>
         <div class="info-value">
           <span class="pill pill--indigo" *ngIf="currentEntreprise.secteurActivite">{{ currentEntreprise.secteurActivite }}</span>
           <span *ngIf="!currentEntreprise.secteurActivite">—</span>
         </div>
       </div>
       <div class="info-item">
-        <div class="info-label"><i class="feather icon-award"></i> Statut Juridique</div>
+        <div class="info-label"><i class="feather icon-award"></i> Status Juridique</div>
         <div class="info-value">
           <span class="pill pill--teal" *ngIf="currentEntreprise.statutJuridique">{{ currentEntreprise.statutJuridique }}</span>
           <span *ngIf="!currentEntreprise.statutJuridique">—</span>
         </div>
       </div>
       <div class="info-item">
-        <div class="info-label"><i class="feather icon-phone"></i> Téléphone</div>
+        <div class="info-label"><i class="feather icon-phone"></i> Phone</div>
         <div class="info-value">
           <a class="contact-link" [href]="'tel:' + currentEntreprise.telephone" *ngIf="currentEntreprise.telephone">
             {{ currentEntreprise.telephone }}
@@ -324,7 +324,7 @@
         </div>
       </div>
       <div class="info-item">
-        <div class="info-label"><i class="feather icon-calendar"></i> Date de Création</div>
+        <div class="info-label"><i class="feather icon-calendar"></i> Creation Date</div>
         <div class="info-value">{{ currentEntreprise.dateCreation | date:'dd/MM/yyyy' }}</div>
       </div>
       <div class="info-item info-item--full" *ngIf="currentEntreprise.description">
@@ -332,7 +332,7 @@
         <div class="info-value">{{ currentEntreprise.description }}</div>
       </div>
       <div class="info-item info-item--full" *ngIf="currentEntreprise.adresse">
-        <div class="info-label"><i class="feather icon-map-pin"></i> Adresse</div>
+        <div class="info-label"><i class="feather icon-map-pin"></i> Address</div>
         <div class="info-value">{{ currentEntreprise.adresse }}</div>
       </div>
     </div>

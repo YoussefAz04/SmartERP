@@ -29,7 +29,7 @@ public class DocumentService {
 
     public Document ajouterDocument(Document document, Long categorieId) {
         CategorieDocument categorie = categorieDocumentRepo.findById(categorieId)
-                .orElseThrow(() -> new RuntimeException("Catégorie introuvable"));
+                .orElseThrow(() -> new RuntimeException("Category introuvable"));
         document.setCategorieDocument(categorie);
         document.setDateAjout(LocalDateTime.now());
         return documentRepo.save(document);

@@ -1,7 +1,7 @@
 <div class="page-header">
   <div class="page-title">
-    <h4>Détails Utilisateur</h4>
-    <h6>Modifier les informations de l'utilisateur</h6>
+    <h4>Détails User</h4>
+    <h6>Edit les informations de l'utilisateur</h6>
   </div>
 </div>
 
@@ -9,7 +9,7 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h5>Informations Utilisateur</h5>
+        <h5>Informations User</h5>
       </div>
       <div class="card-body">
         @if (isLoading) {
@@ -22,7 +22,7 @@
           <form (ngSubmit)="onSubmit()" #userForm="ngForm">
             <!-- Username -->
             <div class="mb-3">
-              <label for="username" class="form-label">Nom d'utilisateur</label>
+              <label for="username" class="form-label">Username</label>
               <input type="text" id="username" class="form-control" name="username" [(ngModel)]="user!.username" required>
             </div>
 
@@ -34,7 +34,7 @@
 
             <!-- Enabled Status -->
             <div class="mb-3">
-              <label for="enabled" class="form-label">Statut</label>
+              <label for="enabled" class="form-label">Status</label>
               <select id="enabled" class="form-select" name="enabled" [(ngModel)]="user!.enabled" required>
                 <option [ngValue]="true">Actif</option>
                 <option [ngValue]="false">Inactif</option>
@@ -43,11 +43,11 @@
 
             <!-- Roles -->
             <div class="mb-3">
-              <label class="form-label">Rôles</label>
+              <label class="form-label">Roles</label>
               @if (rolesLoading) {
                 <div class="text-muted small">Chargement des rôles...</div>
               } @else if (rolesLoadError) {
-                <div class="text-danger small">Erreur lors du chargement des rôles.</div>
+                <div class="text-danger small">Error lors du chargement des rôles.</div>
               } @else if (availableRoles.length > 0) {
                 <div class="d-flex flex-wrap gap-3 pt-1">
                   @for (role of availableRoles; track role.id) {
@@ -119,7 +119,7 @@
 
             <!-- Entreprise -->
             <div class="mb-3">
-              <label for="entrepriseNom" class="form-label">Entreprise</label>
+              <label for="entrepriseNom" class="form-label">Company</label>
               <input type="text" id="entrepriseNom" class="form-control" name="entrepriseNom"
                      [(ngModel)]="user!.entrepriseNom" min="1" required>
             </div>
@@ -127,15 +127,15 @@
             <!-- Buttons -->
             <div class="form-group d-flex gap-2">
               <button type="submit" class="btn btn-primary" [disabled]="isSubmitting" >
-                <i class="feather icon-save"></i> Enregistrer
+                <i class="feather icon-save"></i> Save
               </button>
               <button type="button" class="btn btn-secondary" (click)="goBack()" [disabled]="isSubmitting">
-                <i class="feather icon-x"></i> Annuler
+                <i class="feather icon-x"></i> Cancel
               </button>
             </div>
           </form>
         } @else {
-          <div class="alert alert-danger">Utilisateur non trouvé</div>
+          <div class="alert alert-danger">User non trouvé</div>
         }
       </div>
     </div>

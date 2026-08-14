@@ -18,7 +18,7 @@
     <div class="hero-inner">
       <div class="hero-left">
         <!-- Back button -->
-        <a routerLink="/entreprise/listEntreprise" class="back-btn" title="Retour">
+        <a routerLink="/entreprise/listEntreprise" class="back-btn" title="Back">
           <i class="feather icon-arrow-left"></i>
         </a>
 
@@ -29,9 +29,9 @@
         <div class="hero-text">
           <p class="hero-eyebrow">
             <i class="feather icon-briefcase"></i>
-            Gestion des Entreprises
+            Company Management
           </p>
-          <h1 class="hero-title">{{ entreprise.nom || 'Mon Entreprise' }}</h1>
+          <h1 class="hero-title">{{ entreprise.nom || 'My Company' }}</h1>
           <p class="hero-sub" *ngIf="entreprise.raisonSociale">
             <i class="feather icon-file-text"></i>
             {{ entreprise.raisonSociale }}
@@ -76,7 +76,7 @@
         </div>
       </div>
       <a routerLink="/entreprise/listEntreprise" class="btn-ghost">
-        <i class="feather icon-arrow-left"></i> Retour
+        <i class="feather icon-arrow-left"></i> Back
       </a>
     </div>
 
@@ -92,27 +92,27 @@
     <!-- Form body -->
     <form id="entrepriseForm" (ngSubmit)="onSubmit()" #entrepriseFormRef="ngForm" class="ent-form">
 
-      <!-- ── Section 1: Identité ──────────────────────────── -->
+      <!-- ── Section 1: Identity ──────────────────────────── -->
       <div class="form-section">
         <div class="section-header">
           <div class="section-header__icon section-header__icon--indigo">
             <i class="feather icon-briefcase"></i>
           </div>
           <div>
-            <div class="section-title">Identité</div>
+            <div class="section-title">Identity</div>
             <div class="section-desc">Informations principales de l'entreprise</div>
           </div>
         </div>
         <div class="fields-grid two-col">
 
           <div class="field-group">
-            <label class="field-label required">Nom</label>
+            <label class="field-label required">Name</label>
             <div class="input-wrap">
               <i class="feather icon-briefcase input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="nom" [(ngModel)]="entreprise.nom" required
                      [attr.readonly]="isSuperAdmin || null"
-                     placeholder="Nom de l'entreprise">
+                     placeholder="Name de l'entreprise">
             </div>
           </div>
 
@@ -128,7 +128,7 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">Secteur d'activité</label>
+            <label class="field-label">Business sector</label>
             <div class="input-wrap">
               <i class="feather icon-layers input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
@@ -139,7 +139,7 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">Statut Juridique</label>
+            <label class="field-label">Status Juridique</label>
             <div class="input-wrap">
               <i class="feather icon-shield input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
@@ -162,13 +162,13 @@
           </div>
           <div>
             <div class="section-title">Contact</div>
-            <div class="section-desc">Coordonnées et présence en ligne</div>
+            <div class="section-desc">Contact Details et présence en ligne</div>
           </div>
         </div>
         <div class="fields-grid two-col">
 
           <div class="field-group">
-            <label class="field-label">Téléphone</label>
+            <label class="field-label">Phone</label>
             <div class="input-wrap">
               <i class="feather icon-phone input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
@@ -201,7 +201,7 @@
           </div>
 
           <div class="field-group">
-            <label class="field-label">Date de Création</label>
+            <label class="field-label">Creation Date</label>
             <div class="input-wrap">
               <i class="feather icon-calendar input-icon"></i>
               <input type="date" class="field-input" [class.field-input--readonly]="isSuperAdmin"
@@ -222,7 +222,7 @@
             <i class="feather icon-award"></i>
           </div>
           <div>
-            <div class="section-title">Légal &amp; Fiscal</div>
+            <div class="section-title">Legal &amp; Tax</div>
             <div class="section-desc">Identifiants officiels et registres</div>
           </div>
         </div>
@@ -256,27 +256,27 @@
 
       <div class="form-divider"></div>
 
-      <!-- ── Section 4: Informations complémentaires ─────────── -->
+      <!-- ── Section 4: Additional Information ─────────── -->
       <div class="form-section">
         <div class="section-header">
           <div class="section-header__icon section-header__icon--amber">
             <i class="feather icon-map-pin"></i>
           </div>
           <div>
-            <div class="section-title">Informations complémentaires</div>
-            <div class="section-desc">Adresse et description de l'activité</div>
+            <div class="section-title">Additional Information</div>
+            <div class="section-desc">Address et description de l'activité</div>
           </div>
         </div>
         <div class="fields-grid one-col">
 
           <div class="field-group">
-            <label class="field-label">Adresse</label>
+            <label class="field-label">Address</label>
             <div class="input-wrap">
               <i class="feather icon-map-pin input-icon"></i>
               <input type="text" class="field-input" [class.field-input--readonly]="isSuperAdmin"
                      name="adresse" [(ngModel)]="entreprise.adresse"
                      [attr.readonly]="isSuperAdmin || null"
-                     placeholder="Adresse complète de l'entreprise">
+                     placeholder="Address complète de l'entreprise">
             </div>
           </div>
 
@@ -286,7 +286,7 @@
                       name="description" [(ngModel)]="entreprise.description"
                       [attr.readonly]="isSuperAdmin || null"
                       rows="4"
-                      placeholder="Description de l'activité de l'entreprise…"></textarea>
+                      placeholder="Business description de l'entreprise…"></textarea>
           </div>
 
         </div>
@@ -296,7 +296,7 @@
       <div class="form-footer" *ngIf="!isSuperAdmin">
         <button type="submit" class="btn-save">
           <i class="feather icon-save"></i>
-          Enregistrer les modifications
+          Save les modifications
         </button>
       </div>
 

@@ -82,7 +82,7 @@ export class AddFournisseurComponent implements OnInit {
         error: (err: any) => {
           this.isLoading = false;
           const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter le fournisseur';
-          this.notification.error('✗ Erreur: ' + errorMsg);
+          this.notification.error('Error: ' + errorMsg);
         }
       });
     } else {

@@ -17,17 +17,17 @@
         <span class="dot-pulse"></span>
         Gestion des achats
       </div>
-      <h1> <span class="title-accent">Commandes Achat</span></h1>
+      <h1> <span class="title-accent">Purchase Orders</span></h1>
       <p class="subtitle">Gestion complète de vos commandes d'achat</p>
     </div>
     <div class="header-actions">
-      <button class="btn-header-action btn-refresh" (click)="loadCommandes()" [disabled]="isLoading" title="Actualiser">
+      <button class="btn-header-action btn-refresh" (click)="loadCommandes()" [disabled]="isLoading" title="Refresh">
         <span class="btn-icon"><i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i></span>
-        <span>Actualiser</span>
+        <span>Refresh</span>
       </button>
       <button *ngIf="canCreate" class="btn-header-action btn-add" (click)="addCommande()">
         <span class="btn-icon"><i class="feather icon-plus"></i></span>
-        <span>Nouvelle Commande</span>
+        <span>Nouvelle Order</span>
       </button>
     </div>
   </div>
@@ -43,7 +43,7 @@
     </div>
     <div class="kpi-data">
       <span class="kpi-value">{{ commandes.length }}</span>
-      <span class="kpi-label">Total Commandes</span>
+      <span class="kpi-label">Total Orders</span>
     </div>
     <div class="kpi-trend"><i class="feather icon-bar-chart-2"></i></div>
   </div>
@@ -55,7 +55,7 @@
     </div>
     <div class="kpi-data">
       <span class="kpi-value">{{ totalMontantTTC | number:'1.0-0' }} DT</span>
-      <span class="kpi-label">Valeur TTC Totale</span>
+      <span class="kpi-label">Value TTC Totale</span>
     </div>
     <div class="kpi-trend"><i class="feather icon-activity"></i></div>
   </div>
@@ -67,7 +67,7 @@
     </div>
     <div class="kpi-data">
       <span class="kpi-value">{{ commandesEnAttente }}</span>
-      <span class="kpi-label">En Attente</span>
+      <span class="kpi-label">Pending</span>
     </div>
     <div class="kpi-trend"><i class="feather icon-zap"></i></div>
   </div>
@@ -93,7 +93,7 @@
     </div>
     <div class="stage-body">
       <span class="stage-count">{{ commandesEnAttente }}</span>
-      <span class="stage-label">En Attente</span>
+      <span class="stage-label">Pending</span>
     </div>
   </div>
   <div class="pipeline-connector"><i class="feather icon-chevrons-right pipeline-arrow-icon"></i></div>
@@ -103,7 +103,7 @@
     </div>
     <div class="stage-body">
       <span class="stage-count">{{ commandesConfirmees }}</span>
-      <span class="stage-label">Confirmées</span>
+      <span class="stage-label">Confirmeds</span>
     </div>
   </div>
   <div class="pipeline-connector"><i class="feather icon-chevrons-right pipeline-arrow-icon"></i></div>
@@ -137,7 +137,7 @@
   <div class="search-box">
     <i class="feather icon-search"></i>
     <input type="text"
-           placeholder="Rechercher par référence ou fournisseur..."
+           placeholder="Search par reference ou fournisseur..."
            [(ngModel)]="searchTerm"
            (ngModelChange)="applyFilters()"
            class="search-input">
@@ -156,15 +156,15 @@
     </div>
     <div class="filter-date-wrapper">
       <i class="feather icon-calendar filter-icon"></i>
-      <input type="date" class="filter-date" [(ngModel)]="dateDebut" (ngModelChange)="applyFilters()" title="Date début">
+      <input type="date" class="filter-date" [(ngModel)]="dateDebut" (ngModelChange)="applyFilters()" title="Start date">
     </div>
     <div class="filter-date-wrapper">
       <i class="feather icon-calendar filter-icon"></i>
       <input type="date" class="filter-date" [(ngModel)]="dateFin" (ngModelChange)="applyFilters()" title="Date fin">
     </div>
-    <button class="btn-reset" (click)="searchTerm=''; selectedStatut=''; dateDebut=''; dateFin=''; applyFilters()" title="Réinitialiser les filtres">
+    <button class="btn-reset" (click)="searchTerm=''; selectedStatut=''; dateDebut=''; dateFin=''; applyFilters()" title="Reset les filtres">
       <i class="feather icon-x-circle"></i>
-      Réinitialiser
+      Reset
     </button>
   </div>
 </div>
@@ -173,15 +173,15 @@
 <div class="modern-card">
   <div class="card-header-modern">
     <div class="card-header-left">
-      <h5 class="card-title">{{ filteredCommandes.length }} Commande(s)</h5>
+      <h5 class="card-title">{{ filteredCommandes.length }} Order(s)</h5>
       <span class="count-badge" [ngClass]="filteredCommandes.length > 0 ? 'badge-info' : 'badge-warning'">
         {{ filteredCommandes.length }}
       </span>
     </div>
     <div class="card-header-right">
-      <button class="btn-header-action btn-export" (click)="exportCSV()" title="Exporter en CSV" [disabled]="filteredCommandes.length === 0">
+      <button class="btn-header-action btn-export" (click)="exportCSV()" title="Export as CSV" [disabled]="filteredCommandes.length === 0">
         <span class="btn-icon"><i class="feather icon-download"></i></span>
-        <span>Exporter CSV</span>
+        <span>Export CSV</span>
       </button>
     </div>
   </div>
@@ -197,7 +197,7 @@
     <i class="feather icon-alert-circle"></i>
     <p>{{ errorMessage }}</p>
     <button class="btn-retry" (click)="loadCommandes()">
-      <i class="feather icon-refresh-cw"></i> Réessayer
+      <i class="feather icon-refresh-cw"></i> Retry
     </button>
   </div>
 
@@ -206,14 +206,14 @@
     <table class="modern-table">
       <thead>
         <tr>
-          <th>Référence</th>
-          <th>Date Commande</th>
-          <th>Date Livraison</th>
-          <th>Fournisseur</th>
-          <th class="amount-col">Montant HT</th>
+          <th>Reference</th>
+          <th>Date Order</th>
+          <th>Delivery Date</th>
+          <th>Supplier</th>
+          <th class="amount-col">Amount excl. tax</th>
           <th class="amount-col">TVA</th>
-          <th class="amount-col">Montant TTC</th>
-          <th class="status-col">Statut</th>
+          <th class="amount-col">Amount incl. tax</th>
+          <th class="status-col">Status</th>
           <th class="actions-col">Actions</th>
         </tr>
       </thead>
@@ -246,7 +246,7 @@
               <button *ngIf="canUpdate && commande.statut === 'EN_ATTENTE'"
                       class="btn-action validate"
                       (click)="validerCommande(commande.id!)"
-                      title="Confirmer et générer facture">
+                      title="Confirm and generate invoice">
                 <i class="feather icon-check-circle"></i>
               </button>
 
@@ -262,7 +262,7 @@
               <button *ngIf="commande.statut === 'CONFIRMEE' || commande.statut === 'RECUE'"
                       class="btn-action invoice"
                       (click)="viewFacture(commande.id!)"
-                      title="Voir la facture générée">
+                      title="View the generated invoice">
                 <i class="feather icon-file-text"></i>
               </button>
 
@@ -270,7 +270,7 @@
               <button *ngIf="canUpdate && commande.statut !== 'RECUE' && commande.statut !== 'ANNULEE' && commande.statut !== 'CONFIRMEE'"
                       class="btn-action edit"
                       (click)="editCommande(commande.id!)"
-                      title="Modifier">
+                      title="Edit">
                 <i class="feather icon-edit-2"></i>
               </button>
 
@@ -278,7 +278,7 @@
               <button *ngIf="canUpdate && commande.statut !== 'ANNULEE' && commande.statut !== 'RECUE'"
                       class="btn-action cancel"
                       (click)="annulerCommande(commande.id!)"
-                      title="Annuler la commande">
+                      title="Cancel la commande">
                 <i class="feather icon-x-circle"></i>
               </button>
 
@@ -286,7 +286,7 @@
               <button *ngIf="canDelete"
                       class="btn-action delete"
                       (click)="deleteCommande(commande.id!)"
-                      title="Supprimer">
+                      title="Delete">
                 <i class="feather icon-trash-2"></i>
               </button>
             </div>
@@ -297,7 +297,7 @@
             <div class="empty-message">
               <i class="feather icon-inbox"></i>
               <p>Aucune commande achat trouvée</p>
-              <small *ngIf="searchTerm || selectedStatut || dateDebut || dateFin">Essayez de modifier vos filtres de recherche</small>
+              <small *ngIf="searchTerm || selectedStatut || dateDebut || dateFin">Try changing your search filters</small>
               <small *ngIf="!searchTerm && !selectedStatut && !dateDebut && !dateFin">Commencez par créer une nouvelle commande d'achat</small>
             </div>
           </td>
@@ -310,7 +310,7 @@
   <div *ngIf="!isLoading && !errorMessage && filteredCommandes.length > 0" class="table-summary-strip">
     <div class="summary-left">
       <i class="feather icon-bar-chart-2"></i>
-      <span><strong>{{ filteredCommandes.length }}</strong> résultat(s) affiché(s)</span>
+      <span><strong>{{ filteredCommandes.length }}</strong> result(s) displayed</span>
     </div>
     <div class="summary-right">
       <div class="summary-fin-item">
@@ -337,8 +337,8 @@
         <i class="feather icon-file-text"></i>
       </div>
       <div>
-        <h5>Facture Achat Générée</h5>
-        <small>La commande a été validée avec succès</small>
+        <h5>Invoice Achat Générée</h5>
+        <small>The order has been validated successfully</small>
       </div>
       <button class="modal-close" (click)="closeFactureModal()">
         <i class="feather icon-x"></i>
@@ -346,7 +346,7 @@
     </div>
     <div class="modal-body-modern" *ngIf="lastGeneratedFacture">
       <div class="info-row">
-        <span class="info-label">Référence</span>
+        <span class="info-label">Reference</span>
         <span class="info-value badge-ref">{{ lastGeneratedFacture.referance }}</span>
       </div>
       <div class="info-row">
@@ -354,19 +354,19 @@
         <span class="info-value">{{ lastGeneratedFacture.dateAchat }}</span>
       </div>
       <div class="info-row">
-        <span class="info-label">Montant HT</span>
+        <span class="info-label">Amount excl. tax</span>
         <span class="info-value">{{ lastGeneratedFacture.montantHT | number:'1.2-2' }} DT</span>
       </div>
       <div class="info-row">
-        <span class="info-label">Montant TVA</span>
+        <span class="info-label">VAT amount</span>
         <span class="info-value">{{ lastGeneratedFacture.montantTVA | number:'1.2-2' }} DT</span>
       </div>
       <div class="info-row highlight">
-        <span class="info-label">Montant TTC</span>
+        <span class="info-label">Amount incl. tax</span>
         <span class="info-value amount-highlight">{{ lastGeneratedFacture.montantTTC | number:'1.2-2' }} DT</span>
       </div>
       <div class="info-row">
-        <span class="info-label">Statut</span>
+        <span class="info-label">Status</span>
         <span class="info-value">
           <span class="status-badge" [ngClass]="getStatutClass(lastGeneratedFacture.statut)">
             {{ getStatutLabel(lastGeneratedFacture.statut) }}
@@ -375,7 +375,7 @@
       </div>
     </div>
     <div class="modal-footer-modern">
-      <button class="btn-modal-close" (click)="closeFactureModal()">Fermer</button>
+      <button class="btn-modal-close" (click)="closeFactureModal()">Close</button>
     </div>
   </div>
 </div>

@@ -162,10 +162,10 @@ export class RolesPermissionsComponent implements OnInit{
               this.refreshRoles();
             },
             error: (err) => {
-              console.error('Erreur lors de la suppression', err);
+              console.error('Error during deletion', err);
               swalWithBootstrapButtons.fire(
                 'Error',
-                'Erreur lors de la suppression du rôle.',
+                'Error during deletion du rôle.',
                 'error'
               );
             },

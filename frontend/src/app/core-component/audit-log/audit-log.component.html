@@ -5,7 +5,7 @@
       <i class="feather icon-shield"></i>
     </div>
     <div class="al-header-text">
-      <h1>Journal d'Audit</h1>
+      <h1>Audit Log</h1>
       <p>Historique des actions importantes du système</p>
     </div>
   </div>
@@ -25,7 +25,7 @@
       <input
         type="search"
         class="al-search-input"
-        placeholder="Rechercher par utilisateur, détail…"
+        placeholder="Search par utilisateur, détail…"
         [(ngModel)]="searchText"
         (ngModelChange)="applyFilters()"
       />
@@ -70,7 +70,7 @@
         class="al-btn-reset"
         *ngIf="hasActiveFilters"
         (click)="resetFilters()"
-        title="Réinitialiser les filtres"
+        title="Reset les filtres"
       >
         <i class="feather icon-x"></i>
       </button>
@@ -89,7 +89,7 @@
       <i class="feather icon-clipboard"></i>
     </div>
     <h3>Aucune entrée trouvée</h3>
-    <p>Essayez d'ajuster vos critères de recherche ou de filtrage.</p>
+    <p>Try adjusting your search or filter criteria.</p>
   </div>
 
   <!-- Table -->
@@ -99,7 +99,7 @@
         <tr>
           <th class="al-th-date">Date</th>
           <th class="al-th-action">Action</th>
-          <th>Utilisateur</th>
+          <th>User</th>
           <th>Détails</th>
           <th>IP</th>
         </tr>

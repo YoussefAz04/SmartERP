@@ -66,8 +66,8 @@ export class EditFournisseurComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erreur lors du chargement du fournisseur:', err);
-        this.errorMessage = 'Erreur lors du chargement du fournisseur';
+        console.error('Error while loading the supplier:', err);
+        this.errorMessage = 'Error while loading the supplier';
         this.isLoading = false;
       }
     });
@@ -79,7 +79,7 @@ export class EditFournisseurComponent implements OnInit {
         this.categories = data;
       },
       error: (err) => {
-        console.error('Erreur lors du chargement des catégories:', err);
+        console.error('Error while loading categories:', err);
       }
     });
   }
@@ -121,7 +121,7 @@ export class EditFournisseurComponent implements OnInit {
           this.isLoading = false;
           console.error('Erreur lors de la mise à jour:', err);
           const errorMsg = err.error?.message || err.message || 'Impossible de mettre à jour le fournisseur';
-          this.notification.error('✗ Erreur: ' + errorMsg);
+          this.notification.error('Error: ' + errorMsg);
         }
       });
     } else {

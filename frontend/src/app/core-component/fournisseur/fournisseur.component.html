@@ -8,17 +8,17 @@
   <div class="hero-content">
     <div class="hero-left">
       <span class="hero-badge">
-        <i class="feather icon-package"></i> Gestion des Fournisseurs
+        <i class="feather icon-package"></i> Gestion des Suppliers
       </span>
-      <h1 class="hero-title">Fournisseurs</h1>
-      <p class="hero-subtitle">Gérez votre portefeuille fournisseur avec une vue claire, sobre et professionnelle.</p>
+      <h1 class="hero-title">Suppliers</h1>
+      <p class="hero-subtitle">Manage your supplier portfolio with a clear and professional view.</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadFournisseurs()">
-        <i class="feather icon-rotate-ccw"></i> Actualiser
+        <i class="feather icon-rotate-ccw"></i> Refresh
       </button>
       <button *ngIf="canCreateFournisseur" type="button" class="btn-hero btn-hero-primary" (click)="addFournisseur()">
-        <i class="feather icon-plus-circle"></i> Nouveau Fournisseur
+        <i class="feather icon-plus-circle"></i> Nouveau Supplier
       </button>
     </div>
   </div>
@@ -29,7 +29,7 @@
       </div>
       <div class="hero-stat-info">
         <span class="hero-stat-value">{{ totalCount }}</span>
-        <span class="hero-stat-label">Total Fournisseurs</span>
+        <span class="hero-stat-label">Total Suppliers</span>
       </div>
     </div>
     <div class="hero-stat-sep"></div>
@@ -39,7 +39,7 @@
       </div>
       <div class="hero-stat-info">
         <span class="hero-stat-value">{{ uniqueCategories }}</span>
-        <span class="hero-stat-label">Catégories</span>
+        <span class="hero-stat-label">Categorys</span>
       </div>
     </div>
     <div class="hero-stat-sep"></div>
@@ -64,10 +64,10 @@
         Filtres &amp; Recherche
       </span>
       <span class="filter-title-sub">
-        Recherchez instantanément un fournisseur par nom, email, téléphone ou adresse.
+        Instantly search for a supplier by name, email, phone, or address.
       </span>
     </div>
-    <span class="filter-live-badge">{{ filteredFournisseurs.length }} résultat(s)</span>
+    <span class="filter-live-badge">{{ filteredFournisseurs.length }} result(s)</span>
   </div>
 
   <div class="filter-body">
@@ -79,17 +79,17 @@
           <input
             type="text"
             class="filter-input"
-            placeholder="Nom, email, téléphone, adresse..."
+            placeholder="Name, email, phone, address..."
             [(ngModel)]="searchTerm">
         </div>
       </div>
 
       <div class="col-md-4">
-        <label class="filter-label">Catégorie</label>
+        <label class="filter-label">Category</label>
         <div class="filter-input-group">
           <i class="feather icon-layers filter-input-icon"></i>
           <select class="filter-input filter-select" [(ngModel)]="filterCategorie">
-            <option value="">Toutes catégories</option>
+            <option value="">All categories</option>
             @for (cat of categories; track cat.id) {
               <option [value]="cat.nom">{{ cat.nom }}</option>
             }
@@ -100,7 +100,7 @@
       <div class="col-md-2">
         <button type="button" class="btn-reset w-100" (click)="resetFilters()">
           <i class="feather icon-refresh-cw"></i>
-          Réinitialiser
+          Reset
         </button>
       </div>
     </div>
@@ -109,7 +109,7 @@
       <div class="filter-chip-list">
         <span class="mini-chip">
           <i class="feather icon-layers"></i>
-          Catégories {{ uniqueCategories }}
+          Categorys {{ uniqueCategories }}
         </span>
         <span class="mini-chip">
           <i class="feather icon-mail"></i>
@@ -132,8 +132,8 @@
     <h5 class="panel-title">
       <i class="feather icon-package"></i>
       <span class="panel-title-copy">
-        Liste des Fournisseurs
-        <small>Consultez et gérez l'ensemble de vos fournisseurs</small>
+        Liste des Suppliers
+        <small>View and manage all your suppliers</small>
       </span>
     </h5>
     <span class="panel-badge">{{ filteredFournisseurs.length }}</span>
@@ -159,13 +159,13 @@
       <table class="fournisseur-table">
         <thead>
           <tr>
-            <th>Fournisseur</th>
+            <th>Supplier</th>
             <th>Contact</th>
-            <th>Adresse</th>
-            <th>Catégorie</th>
+            <th>Address</th>
+            <th>Category</th>
             <th>Secteur</th>
-            <th>Créé le</th>
-            <th>Modifié le</th>
+            <th>Created on</th>
+            <th>Updated on</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
@@ -228,7 +228,7 @@
                     type="button"
                     class="action-btn action-btn-view"
                     (click)="viewFournisseur(f.id)"
-                    title="Voir détails">
+                    title="View details">
                     <i class="feather icon-eye"></i>
                   </button>
                   <button
@@ -236,7 +236,7 @@
                     type="button"
                     class="action-btn action-btn-edit"
                     (click)="editFournisseur(f.id)"
-                    title="Modifier">
+                    title="Edit">
                     <i class="feather icon-edit"></i>
                   </button>
                   <button
@@ -244,7 +244,7 @@
                     type="button"
                     class="action-btn action-btn-delete"
                     (click)="deleteFournisseur(f.id)"
-                    title="Supprimer"
+                    title="Delete"
                     [disabled]="isDeleting">
                     <i class="feather icon-trash-2"></i>
                   </button>
@@ -262,9 +262,9 @@
                   </span>
                   <p>
                     @if (searchTerm || filterCategorie) {
-                      Aucun fournisseur ne correspond à votre recherche actuelle.
+                      No supplier matches your current search.
                     } @else {
-                      La liste est vide pour le moment. Ajoutez un premier fournisseur pour démarrer.
+                      The list is empty for now. Add a first supplier to get started.
                     }
                   </p>
                   @if (searchTerm || filterCategorie) {
@@ -274,7 +274,7 @@
                     </button>
                   } @else if (canCreateFournisseur) {
                     <button type="button" class="btn-retry" (click)="addFournisseur()">
-                      <i class="feather icon-plus"></i> Ajouter un fournisseur
+                      <i class="feather icon-plus"></i> Add un fournisseur
                     </button>
                   }
                 </div>

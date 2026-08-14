@@ -65,7 +65,7 @@ public class MailService {
                 + "<p style=\"margin:24px 0;\">"
                 + "<a href=\"" + safeLink + "\" "
                 + "style=\"background:#6366f1;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;display:inline-block;\">"
-                + "Réinitialiser mon mot de passe</a>"
+                + "Reset mon mot de passe</a>"
                 + "</p>"
                 + "<p>Ou copiez/collez ce lien dans votre navigateur&nbsp;:<br/>"
                 + "<a href=\"" + safeLink + "\">" + safeLink + "</a></p>"

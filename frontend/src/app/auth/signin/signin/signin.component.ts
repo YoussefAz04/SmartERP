@@ -130,7 +130,7 @@ export class SigninComponent implements OnInit {
         } catch (err) {
           console.error('❌ Error saving session:', err);
           this.loading = false;
-          this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+          this.errorMessage = 'An error occurred. Please try again.';
         }
       },
       error: (error: any) => {
@@ -148,7 +148,7 @@ export class SigninComponent implements OnInit {
             this.errorMessage = 'Compte inactif. Veuillez contacter votre administrateur.';
             break;
           default:
-            this.errorMessage = serverMessage || 'Identifiants invalides. Veuillez réessayer.';
+            this.errorMessage = serverMessage || 'Invalid credentials. Please try again.';
         }
       }
     });

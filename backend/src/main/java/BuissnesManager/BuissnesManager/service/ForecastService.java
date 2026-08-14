@@ -524,19 +524,19 @@ public class ForecastService {
                 "Mesure d'ajustement in-sample. Une valeur élevée n'implique pas une bonne précision sur le futur."));
         g.put("mape", new MetricGlossaryEntryDto(
                 "MAPE",
-                "Erreur absolue moyenne en pourcentage.",
+                "Error absolue moyenne en pourcentage.",
                 "[0, +∞)",
                 "MAPE devient instable lorsque le CA approche zéro (division par 0). Nous privilégions sMAPE / MASE."));
         g.put("smape", new MetricGlossaryEntryDto(
                 "sMAPE",
-                "MAPE symétrique : erreur absolue / moyenne(|réel|, |prévu|).",
+                "MAPE symétrique : error absolue / moyenne(|réel|, |prévu|).",
                 "[0, 2]",
                 "Plus stable que MAPE près de zéro ; valeurs basses = bon."));
         g.put("mase", new MetricGlossaryEntryDto(
                 "MASE",
-                "Erreur absolue moyenne mise à l'échelle par la naïve saisonnière (12 mois).",
+                "Error absolue moyenne mise à l'échelle par la naïve saisonnière (12 mois).",
                 "[0, +∞)",
-                "MASE < 1 = on bat la prévision naïve (référence honnête). MASE ≥ 1 = on perd."));
+                "MASE < 1 = on bat la prévision naïve (reference honnête). MASE ≥ 1 = on perd."));
         return g;
     }
 

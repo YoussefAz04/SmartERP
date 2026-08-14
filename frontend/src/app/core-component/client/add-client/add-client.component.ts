@@ -88,7 +88,7 @@ export class AddClientComponent implements OnInit{
           this.isLoading = false;
           console.error('Erreur:', err);
           const errorMsg = err.error?.message || err.message || 'Impossible d\'ajouter le client';
-          this.notification.error('✗ Erreur: ' + errorMsg);
+          this.notification.error('Error: ' + errorMsg);
         }
       });
     } else {
@@ -100,7 +100,7 @@ export class AddClientComponent implements OnInit{
     this.clientService.getAllCategorieClients().subscribe({
       next: (data) => {
         this.categories = data;
-        console.log('Catégories chargées:', data);
+        console.log('Categorys chargées:', data);
       },
       error: (err: HttpErrorResponse) => {
         console.error('Erreur:', err);

@@ -50,10 +50,10 @@ public class NotificationService {
 
         if (quantiteActuelle.compareTo(BigDecimal.ZERO) <= 0) {
             type = NotificationType.RUPTURE;
-            message = String.format("RUPTURE DE STOCK: '%s' est épuisé! Quantité: 0", article.getNom());
+            message = String.format("RUPTURE DE STOCK: '%s' est épuisé! Quantity: 0", article.getNom());
         } else if (stock.getSeuilMinimum() != null && quantiteActuelle.compareTo(stock.getSeuilMinimum()) < 0) {
             type = NotificationType.FAIBLE_STOCK;
-            message = String.format("STOCK FAIBLE: '%s' en dessous du seuil. Quantité: %s (Seuil: %s)",
+            message = String.format("STOCK FAIBLE: '%s' en dessous du seuil. Quantity: %s (Seuil: %s)",
                     article.getNom(), quantiteActuelle, stock.getSeuilMinimum());
         } else {
             return;
@@ -154,7 +154,7 @@ public class NotificationService {
                 message = String.format("COMMANDE D'ACHAT REÇUE: '%s'.", ref);
                 break;
             case COMMANDE_ACHAT_ANNULEE:
-                message = String.format("COMMANDE D'ACHAT ANNULÉE: '%s'.", ref);
+                message = String.format("COMMANDE D'ACHAT CANCELED: '%s'.", ref);
                 break;
             default:
                 return;
@@ -177,7 +177,7 @@ public class NotificationService {
                 message = String.format("COMMANDE DE VENTE LIVRÉE: '%s'.", ref);
                 break;
             case COMMANDE_VENTE_ANNULEE:
-                message = String.format("COMMANDE DE VENTE ANNULÉE: '%s'.", ref);
+                message = String.format("COMMANDE DE VENTE CANCELED: '%s'.", ref);
                 break;
             default:
                 return;

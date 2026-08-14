@@ -71,7 +71,7 @@ public class ModuleController {
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la mise à jour du statut des modules.");
+                    .body("Error lors de la mise à jour du statut des modules.");
         }
     }
     @PostMapping("/addModuleTittle")

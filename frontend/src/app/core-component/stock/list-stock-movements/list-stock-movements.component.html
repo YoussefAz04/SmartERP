@@ -9,10 +9,10 @@
     <div class="mvt-hero-left">
       <div class="mvt-badge">
         <i class="feather icon-activity"></i>
-        <span>Gestion des Stocks</span>
+        <span>Stock Management</span>
       </div>
-      <h1 class="mvt-title">Mouvements</h1>
-      <p class="mvt-subtitle">Audit trail complet de l'inventaire en temps réel</p>
+      <h1 class="mvt-title">Movements</h1>
+      <p class="mvt-subtitle">Complete real-time inventory audit trail</p>
     </div>
     <div class="mvt-hero-actions">
       <button class="mvt-btn mvt-btn-ghost" routerLink="/stock/listStockDashboard">
@@ -21,7 +21,7 @@
       </button>
       <button class="mvt-btn mvt-btn-success" (click)="exportCSV()">
         <i class="feather icon-download"></i>
-        <span>Exporter CSV</span>
+        <span>Export CSV</span>
       </button>
     </div>
   </div>
@@ -31,22 +31,22 @@
 <div class="mvt-filters-card">
   <div class="mvt-filters-row">
     <div class="mvt-filter-group mvt-filter-grow">
-      <label class="mvt-filter-label"><i class="feather icon-search"></i> Rechercher</label>
-      <input type="text" class="mvt-input" placeholder="Article, motif, utilisateur..."
+      <label class="mvt-filter-label"><i class="feather icon-search"></i> Search</label>
+      <input type="text" class="mvt-input" placeholder="Product, motif, utilisateur..."
         [(ngModel)]="searchTerm" (input)="applyFilters()">
     </div>
     <div class="mvt-filter-group">
       <label class="mvt-filter-label"><i class="feather icon-tag"></i> Type</label>
       <select class="mvt-select" [(ngModel)]="filterType" (change)="applyFilters()">
         <option value="">Tous les types</option>
-        <option value="ENTREE">Entrée</option>
+        <option value="ENTREE">Entry</option>
         <option value="SORTIE">Sortie</option>
         <option value="AJUSTEMENT">Ajustement</option>
-        <option value="RESERVATION">Réservation</option>
+        <option value="RESERVATION">Reservation</option>
       </select>
     </div>
     <div class="mvt-filter-group">
-      <label class="mvt-filter-label"><i class="feather icon-calendar"></i> Date début</label>
+      <label class="mvt-filter-label"><i class="feather icon-calendar"></i> Start date</label>
       <input type="date" class="mvt-input" [(ngModel)]="filterDateFrom" (change)="applyFilters()">
     </div>
     <div class="mvt-filter-group">
@@ -58,7 +58,7 @@
         <i class="feather icon-x"></i> Reset
       </button>
       <button class="mvt-btn-refresh" (click)="loadMovements()">
-        <i class="feather icon-refresh-cw"></i> Actualiser
+        <i class="feather icon-refresh-cw"></i> Refresh
       </button>
     </div>
   </div>
@@ -85,14 +85,14 @@
       <div class="mvt-kpi-icon"><i class="feather icon-arrow-down-circle"></i></div>
       <div class="mvt-kpi-info">
         <div class="mvt-kpi-value">{{ totalEntree }}</div>
-        <div class="mvt-kpi-label">Total entrées (qté)</div>
+        <div class="mvt-kpi-label">Total entries (qty)</div>
       </div>
     </div>
     <div class="mvt-kpi-card mvt-kpi-sortie">
       <div class="mvt-kpi-icon"><i class="feather icon-arrow-up-circle"></i></div>
       <div class="mvt-kpi-info">
         <div class="mvt-kpi-value">{{ totalSortie }}</div>
-        <div class="mvt-kpi-label">Total sorties (qté)</div>
+        <div class="mvt-kpi-label">Total exits (qty)</div>
       </div>
     </div>
     <div class="mvt-kpi-card mvt-kpi-ajust">
@@ -126,12 +126,12 @@
         <thead>
           <tr>
             <th>Date</th>
-            <th>Article</th>
+            <th>Product</th>
             <th>Type</th>
-            <th class="col-center">Quantité</th>
-            <th>Référence</th>
+            <th class="col-center">Quantity</th>
+            <th>Reference</th>
             <th>Motif</th>
-            <th>Utilisateur</th>
+            <th>User</th>
             <th>Localisation</th>
           </tr>
         </thead>
@@ -185,7 +185,7 @@
               <td colspan="8">
                 <div class="mvt-empty">
                   <div class="mvt-empty-icon"><i class="feather icon-inbox"></i></div>
-                  <p class="mvt-empty-title">Aucun mouvement trouvé</p>
+                  <p class="mvt-empty-title">No movement found</p>
                   <p class="mvt-empty-sub">Essayez de modifier vos filtres ou la plage de dates</p>
                 </div>
               </td>

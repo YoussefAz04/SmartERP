@@ -6,18 +6,18 @@
       <i class="feather icon-users"></i>
     </div>
     <div class="ph-text">
-      <h3 class="page-title">Nouveau Client</h3>
+      <h3 class="page-title">Nouveau Customer</h3>
       <ul class="breadcrumb">
         <li class="breadcrumb-item">
           <a [routerLink]="routes.adminDashboard"><i class="feather icon-home"></i> Dashboard</a>
         </li>
         <li class="breadcrumb-item">
-          <a routerLink="/client/listClient">Clients</a>
+          <a routerLink="/client/listClient">Customers</a>
         </li>
-        <li class="breadcrumb-item active">Ajouter</li>
+        <li class="breadcrumb-item active">Add</li>
       </ul>
     </div>
-    
+
   </div>
 </div>
 <!-- /Page Header -->
@@ -33,14 +33,14 @@
             <i class="feather icon-user-plus"></i>
           </div>
           <div class="header-text">
-            <h5 class="card-title">Informations du Client</h5>
+            <h5 class="card-title">Informations du Customer</h5>
             <p class="card-subtitle">Remplissez tous les champs obligatoires marqués d'un <span class="star-req">*</span></p>
           </div>
         </div>
         <div class="step-strip">
           <div class="step-item">
             <div class="step-dot">1</div>
-            <span>Identité</span>
+            <span>Identity</span>
           </div>
           <div class="step-line"></div>
           <div class="step-item">
@@ -50,7 +50,7 @@
           <div class="step-line"></div>
           <div class="step-item">
             <div class="step-dot">3</div>
-            <span>Catégorie</span>
+            <span>Category</span>
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@
               <!-- Nom Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Nom <span class="text-danger">*</span></label>
+                  <label class="form-label">Name <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-user input-icon"></i>
                     <input
@@ -79,12 +79,12 @@
                       formControlName="nom"
                       placeholder="Entrez le nom"
                       [class.is-invalid]="isFieldInvalid('nom')"
-                      aria-label="Nom du client">
+                      aria-label="Name du client">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('nom')">
                     <i class="feather icon-alert-circle"></i>
                     <span *ngIf="clientForm.get('nom')?.hasError('required')">Le nom est requis</span>
-                    <span *ngIf="clientForm.get('nom')?.hasError('minlength')">Min 2 caractères</span>
+                    <span *ngIf="clientForm.get('nom')?.hasError('minlength')">Min 2 characters</span>
                   </span>
                 </div>
               </div>
@@ -92,7 +92,7 @@
               <!-- Prenom Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                  <label class="form-label">First name <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-user input-icon"></i>
                     <input
@@ -101,12 +101,12 @@
                       formControlName="prenom"
                       placeholder="Entrez le prénom"
                       [class.is-invalid]="isFieldInvalid('prenom')"
-                      aria-label="Prénom du client">
+                      aria-label="First name du client">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('prenom')">
                     <i class="feather icon-alert-circle"></i>
                     <span *ngIf="clientForm.get('prenom')?.hasError('required')">Le prénom est requis</span>
-                    <span *ngIf="clientForm.get('prenom')?.hasError('minlength')">Min 2 caractères</span>
+                    <span *ngIf="clientForm.get('prenom')?.hasError('minlength')">Min 2 characters</span>
                   </span>
                 </div>
               </div>
@@ -114,19 +114,19 @@
             </div>
           </div>
 
-          <!-- ── Section 2: Coordonnées ──────────────────── -->
+          <!-- ── Section 2: Contact Details ──────────────────── -->
           <div class="form-section">
             <div class="section-header">
               <span class="section-num">2</span>
               <i class="feather icon-phone"></i>
-              <span>Coordonnées</span>
+              <span>Contact Details</span>
             </div>
             <div class="row">
 
               <!-- Telephone Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                  <label class="form-label">Phone <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-phone input-icon"></i>
                     <input
@@ -135,11 +135,11 @@
                       formControlName="telephone"
                       placeholder="Ex: 20000000"
                       [class.is-invalid]="isFieldInvalid('telephone')"
-                      aria-label="Téléphone du client">
+                      aria-label="Phone du client">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('telephone')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="clientForm.get('telephone')?.hasError('required')">Le téléphone est requis</span>
+                    <span *ngIf="clientForm.get('telephone')?.hasError('required')">Phone is required</span>
                     <span *ngIf="clientForm.get('telephone')?.hasError('pattern')">Format invalide (ex: 20000000 ou +216 20 000 000)</span>
                   </span>
                 </div>
@@ -170,21 +170,21 @@
               <!-- Adresse Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                  <label class="form-label">Address <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-map-pin input-icon"></i>
                     <input
                       type="text"
                       class="form-control"
                       formControlName="adresse"
-                      placeholder="Entrez l'adresse complète"
+                      placeholder="Enter the full address"
                       [class.is-invalid]="isFieldInvalid('adresse')"
-                      aria-label="Adresse du client">
+                      aria-label="Address du client">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('adresse')">
                     <i class="feather icon-alert-circle"></i>
                     <span *ngIf="clientForm.get('adresse')?.hasError('required')">L'adresse est requise</span>
-                    <span *ngIf="clientForm.get('adresse')?.hasError('minlength')">Min 5 caractères</span>
+                    <span *ngIf="clientForm.get('adresse')?.hasError('minlength')">Min 5 characters</span>
                   </span>
                 </div>
               </div>
@@ -192,7 +192,7 @@
               <!-- Secteur Activite Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Secteur d'Activité <span class="text-danger">*</span></label>
+                  <label class="form-label">Business Sector <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-briefcase input-icon"></i>
                     <input
@@ -201,12 +201,12 @@
                       formControlName="secteurActivite"
                       placeholder="Ex: Technologie, Finance..."
                       [class.is-invalid]="isFieldInvalid('secteurActivite')"
-                      aria-label="Secteur d'activité">
+                      aria-label="Business sector">
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('secteurActivite')">
                     <i class="feather icon-alert-circle"></i>
                     <span *ngIf="clientForm.get('secteurActivite')?.hasError('required')">Le secteur est requis</span>
-                    <span *ngIf="clientForm.get('secteurActivite')?.hasError('minlength')">Min 3 caractères</span>
+                    <span *ngIf="clientForm.get('secteurActivite')?.hasError('minlength')">Min 3 characters</span>
                   </span>
                 </div>
               </div>
@@ -214,33 +214,33 @@
             </div>
           </div>
 
-          <!-- ── Section 3: Catégorisation ──────────────── -->
+          <!-- ── Section 3: Categorization ──────────────── -->
           <div class="form-section">
             <div class="section-header">
               <span class="section-num">3</span>
               <i class="feather icon-tag"></i>
-              <span>Catégorisation</span>
+              <span>Categorization</span>
             </div>
             <div class="row">
 
               <!-- Categorie Field -->
               <div class="col-lg-6">
                 <div class="input-blocks mb-3">
-                  <label class="form-label">Catégorie Client <span class="text-danger">*</span></label>
+                  <label class="form-label">Category Customer <span class="text-danger">*</span></label>
                   <div class="input-wrapper">
                     <i class="feather icon-tag input-icon"></i>
                     <select
                       class="form-select"
                       formControlName="categorieId"
                       [class.is-invalid]="isFieldInvalid('categorieId')"
-                      aria-label="Catégorie du client">
-                      <option value="">-- Sélectionnez une catégorie --</option>
+                      aria-label="Category du client">
+                      <option value="">-- Select a category --</option>
                       <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
                     </select>
                   </div>
                   <span class="error-message" *ngIf="isFieldInvalid('categorieId')">
                     <i class="feather icon-alert-circle"></i>
-                    <span *ngIf="clientForm.get('categorieId')?.hasError('required')">La catégorie est requise</span>
+                    <span *ngIf="clientForm.get('categorieId')?.hasError('required')">Category is required</span>
                   </span>
                 </div>
               </div>
@@ -252,7 +252,7 @@
           <div class="form-actions">
             <button type="button" class="btn btn-cancel" [disabled]="isLoading" (click)="onCancel()">
               <i class="feather icon-x"></i>
-              <span>Annuler</span>
+              <span>Cancel</span>
             </button>
             <button type="submit" class="btn btn-submit" [disabled]="!clientForm.valid || isLoading">
               <span class="spinner" *ngIf="isLoading"></span>

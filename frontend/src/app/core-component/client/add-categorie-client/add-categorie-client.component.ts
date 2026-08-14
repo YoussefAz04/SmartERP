@@ -46,8 +46,8 @@ export class AddCategorieClientComponent implements OnInit {
     this.isLoading = true;
     this.clientService.addCategorieClient(this.categorieClientForm.value).subscribe({
       next: (data: any) => {
-        console.log('Catégorie ajoutée avec succès', data);
-        this.notification.success('✓ Catégorie ajoutée avec succès');
+        console.log('Category ajoutée avec succès', data);
+        this.notification.success('✓ Category ajoutée avec succès');
         this.router.navigate(['/client/listCategorieClient']);
         this.isLoading = false;
       },

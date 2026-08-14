@@ -159,7 +159,7 @@ export class EntrepriseComponent implements OnInit{
       return;
     }
 
-    this.notification.confirm("Voulez-vous vraiment désactiver cette entreprise et tous ses utilisateurs ?").then(ok => {
+    this.notification.confirm("Voulez-vous vraiment désactivate cette entreprise et tous ses utilisateurs ?").then(ok => {
       if (ok) {
         this.entrepriseService.disableEntreprise(id).subscribe({
           next: () => {
@@ -168,7 +168,7 @@ export class EntrepriseComponent implements OnInit{
           },
           error: (err) => {
             console.error('❌ Error disabling entreprise:', err);
-            this.notification.error("Erreur : impossible de désactiver l'entreprise.");
+            this.notification.error("Error: impossible de désactivate l'entreprise.");
           }
         });
       }
@@ -181,7 +181,7 @@ export class EntrepriseComponent implements OnInit{
       return;
     }
 
-    this.notification.confirm("Voulez-vous vraiment réactiver cette entreprise et tous ses utilisateurs ?").then(ok => {
+    this.notification.confirm("Voulez-vous vraiment réactivate cette entreprise et tous ses utilisateurs ?").then(ok => {
       if (ok) {
         this.entrepriseService.enableEntreprise(id).subscribe({
           next: () => {
@@ -190,7 +190,7 @@ export class EntrepriseComponent implements OnInit{
           },
           error: (err) => {
             console.error('❌ Error enabling entreprise:', err);
-            this.notification.error("Erreur : impossible de réactiver l'entreprise.");
+            this.notification.error("Error: impossible de réactivate l'entreprise.");
           }
         });
       }

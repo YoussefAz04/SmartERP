@@ -132,7 +132,7 @@ export class ListStockMovementsComponent implements OnInit {
   }
 
   exportCSV(): void {
-    const headers = ['Date', 'Article', 'Type', 'Quantité', 'Référence', 'Motif', 'Utilisateur', 'Localisation'];
+    const headers = ['Date', 'Article', 'Type', 'Quantity', 'Reference', 'Motif', 'User', 'Localisation'];
     const rows = this.filteredMovements.map(m => [
       m.dateMouvement ? new Date(m.dateMouvement).toLocaleString('fr-FR') : '',
       m.stock?.articleAchat?.nom || `Stock #${m.stock?.id}`,

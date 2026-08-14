@@ -8,17 +8,17 @@
   <div class="hero-content">
     <div class="hero-left">
       <span class="hero-badge">
-        <i class="feather icon-users"></i> Gestion des Clients
+        <i class="feather icon-users"></i> Gestion des Customers
       </span>
-      <h1 class="hero-title">Clients</h1>
+      <h1 class="hero-title">Customers</h1>
       <p class="hero-subtitle">Gérez votre portefeuille client avec une vue claire, sobre et professionnelle.</p>
     </div>
     <div class="hero-actions">
       <button type="button" class="btn-hero btn-hero-outline" (click)="loadClients()">
-        <i class="feather icon-rotate-ccw"></i> Actualiser
+        <i class="feather icon-rotate-ccw"></i> Refresh
       </button>
       <button *ngIf="canCreateClient" type="button" class="btn-hero btn-hero-primary" (click)="addClient()">
-        <i class="feather icon-plus-circle"></i> Nouveau Client
+        <i class="feather icon-plus-circle"></i> Nouveau Customer
       </button>
     </div>
   </div>
@@ -29,7 +29,7 @@
       </div>
       <div class="hero-stat-info">
         <span class="hero-stat-value">{{ totalCount }}</span>
-        <span class="hero-stat-label">Total Clients</span>
+        <span class="hero-stat-label">Total Customers</span>
       </div>
     </div>
     <div class="hero-stat-sep"></div>
@@ -49,7 +49,7 @@
       </div>
       <div class="hero-stat-info">
         <span class="hero-stat-value">{{ withPhone }}</span>
-        <span class="hero-stat-label">Avec Téléphone</span>
+        <span class="hero-stat-label">Avec Phone</span>
       </div>
     </div>
   </div>
@@ -67,7 +67,7 @@
         </span>
       </div>
 
-      <span class="filter-live-badge">{{ filteredClients.length }} résultat(s)</span>
+      <span class="filter-live-badge">{{ filteredClients.length }} result(s)</span>
     </div>
 
     <div class="filter-body">
@@ -79,7 +79,7 @@
             <input
               type="text"
               class="filter-input"
-              placeholder="Nom, prénom, email, téléphone, secteur..."
+              placeholder="Name, prénom, email, téléphone, secteur..."
               [(ngModel)]="searchTerm">
           </div>
         </div>
@@ -87,7 +87,7 @@
         <div class="col-md-3">
           <button type="button" class="btn-reset w-100" (click)="resetFilters()">
             <i class="feather icon-refresh-cw"></i>
-            Réinitialiser
+            Reset
           </button>
         </div>
       </div>
@@ -100,7 +100,7 @@
           </span>
           <span class="mini-chip">
             <i class="feather icon-phone"></i>
-            Téléphones {{ withPhone }}
+            Phones {{ withPhone }}
           </span>
           <span class="mini-chip">
             <i class="feather icon-layers"></i>
@@ -123,7 +123,7 @@
       <h5 class="panel-title">
         <i class="feather icon-users"></i>
         <span class="panel-title-copy">
-          Liste des Clients
+          Liste des Customers
           <small>Présentation claire, actions visibles, navigation plus agréable</small>
         </span>
       </h5>
@@ -135,11 +135,11 @@
         <table class="client-table">
           <thead>
             <tr>
-              <th>Nom &amp; Prénom</th>
+              <th>Name &amp; First name</th>
               <th>Email</th>
-              <th>Téléphone</th>
-              <th>Adresse</th>
-              <th>Secteur d'Activité</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Business Sector</th>
               <th class="text-center">Actions</th>
             </tr>
           </thead>
@@ -153,7 +153,7 @@
                       <div class="client-avatar">{{ (d.nom || '?').charAt(0).toUpperCase() }}</div>
                       <div class="client-name-copy">
                         <strong>{{ d.nom }} {{ d.prenom }}</strong>
-                        <span class="client-id">Client #{{ d.id }}</span>
+                        <span class="client-id">Customer #{{ d.id }}</span>
                       </div>
                     </div>
                   </td>
@@ -205,7 +205,7 @@
                         type="button"
                         class="action-btn action-btn-view"
                         (click)="viewClient(d.id)"
-                        title="Voir">
+                        title="View">
                         <i class="feather icon-eye"></i>
                       </button>
                       <button
@@ -213,7 +213,7 @@
                         type="button"
                         class="action-btn action-btn-edit"
                         (click)="editClient(d.id)"
-                        title="Modifier">
+                        title="Edit">
                         <i class="feather icon-edit"></i>
                       </button>
                       <button
@@ -221,7 +221,7 @@
                         type="button"
                         class="action-btn action-btn-delete"
                         (click)="deleteClient(d.id)"
-                        title="Supprimer">
+                        title="Delete">
                         <i class="feather icon-trash-2"></i>
                       </button>
                     </div>

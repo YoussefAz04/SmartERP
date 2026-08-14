@@ -2,7 +2,7 @@
 <div class="profile-page-header">
   <div>
     <h4 class="profile-page-title">Mon Profil</h4>
-    <p class="profile-page-subtitle">Gérez les informations de votre compte utilisateur</p>
+    <p class="profile-page-subtitle">Manage your user account information</p>
   </div>
 </div>
 
@@ -71,7 +71,7 @@
         <!-- Logout -->
         <button type="button" class="profile-logout-btn" (click)="logout()">
           <i class="feather icon-log-out"></i>
-          <span>Déconnexion</span>
+          <span>Sign out</span>
         </button>
       </div>
     </div>
@@ -102,7 +102,7 @@
             <!-- Username -->
             <div class="profile-field-group">
               <label for="username" class="profile-field-label">
-                <i class="feather icon-user"></i>Nom d'utilisateur
+                <i class="feather icon-user"></i>Username
               </label>
               <input
                 type="text"
@@ -118,7 +118,7 @@
               <div class="profile-field-error"
                    *ngIf="usernameField.invalid && (usernameField.dirty || usernameField.touched)">
                 <i class="feather icon-alert-circle"></i>
-                Le nom d'utilisateur est requis (3 caractères minimum).
+                Username is required (minimum 3 characters).
               </div>
             </div>
 
@@ -140,14 +140,14 @@
               />
               <div class="profile-field-error"
                    *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)">
-                <i class="feather icon-alert-circle"></i>Adresse email invalide.
+                <i class="feather icon-alert-circle"></i>Address email invalide.
               </div>
             </div>
 
             <!-- Phone -->
             <div class="profile-field-group">
               <label for="phone" class="profile-field-label">
-                <i class="feather icon-phone"></i>Téléphone
+                <i class="feather icon-phone"></i>Phone
               </label>
               <input
                 type="text"
@@ -162,7 +162,7 @@
             <!-- Role (read-only) -->
             <div class="profile-field-group">
               <label class="profile-field-label">
-                <i class="feather icon-shield"></i>Rôle
+                <i class="feather icon-shield"></i>Role
               </label>
               <input
                 type="text"
@@ -175,7 +175,7 @@
             <!-- Entreprise (read-only) -->
             <div class="profile-field-group" *ngIf="entrepriseName">
               <label class="profile-field-label">
-                <i class="feather icon-briefcase"></i>Entreprise
+                <i class="feather icon-briefcase"></i>Company
               </label>
               <input
                 type="text"
@@ -188,7 +188,7 @@
             <!-- Account status (read-only) -->
             <div class="profile-field-group">
               <label class="profile-field-label">
-                <i class="feather icon-activity"></i>Statut du compte
+                <i class="feather icon-activity"></i>Status du compte
               </label>
               <div class="profile-status-field" [class.profile-status-active]="user.enabled" [class.profile-status-inactive]="!user.enabled">
                 <span class="profile-status-dot"></span>
@@ -206,7 +206,7 @@
               (click)="cancel()"
               [disabled]="isSubmitting"
             >
-              Annuler
+              Cancel
             </button>
             <button
               type="submit"
@@ -215,7 +215,7 @@
             >
               <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
               <i class="feather icon-save me-2" *ngIf="!isSubmitting"></i>
-              Enregistrer
+              Save
             </button>
           </div>
         </form>
@@ -229,11 +229,11 @@
           <span class="profile-form-header-icon"><i class="feather icon-lock"></i></span>
           <div>
             <h5 class="profile-form-title">Changer le mot de passe</h5>
-            <p class="profile-form-subtitle">Sécurisez votre compte avec un nouveau mot de passe</p>
+            <p class="profile-form-subtitle">Secure your account with a new password</p>
           </div>
         </div>
         <button type="button" class="profile-btn-cancel" (click)="togglePasswordForm()">
-          {{ showPasswordForm ? 'Fermer' : 'Modifier' }}
+          {{ showPasswordForm ? 'Close' : 'Edit' }}
         </button>
       </div>
 
@@ -241,7 +241,7 @@
         <div class="profile-fields-grid">
           <div class="profile-field-group">
             <label for="currentPassword" class="profile-field-label">
-              <i class="feather icon-lock"></i>Mot de passe actuel
+              <i class="feather icon-lock"></i>Password actuel
             </label>
             <input
               type="password"
@@ -264,7 +264,7 @@
               class="profile-field-input"
               [(ngModel)]="newPassword"
               [disabled]="isChangingPassword"
-              placeholder="6 caractères minimum"
+              placeholder="Minimum 6 characters"
             />
           </div>
           <div class="profile-field-group">
@@ -278,18 +278,18 @@
               class="profile-field-input"
               [(ngModel)]="confirmPassword"
               [disabled]="isChangingPassword"
-              placeholder="Répétez le nouveau mot de passe"
+              placeholder="Repeat the new password"
             />
           </div>
         </div>
         <div class="profile-form-actions">
           <button type="button" class="profile-btn-cancel" (click)="togglePasswordForm()" [disabled]="isChangingPassword">
-            Annuler
+            Cancel
           </button>
           <button type="button" class="profile-btn-save" (click)="onChangePassword()" [disabled]="isChangingPassword">
             <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
             <i class="feather icon-check me-2" *ngIf="!isChangingPassword"></i>
-            Mettre à jour
+            Update
           </button>
         </div>
       </div>

@@ -95,15 +95,15 @@ export class AddEntrepriseComponent implements OnInit{
     // NOM
     if (fieldName === 'nom') {
       if (field.hasError('required')) return 'Le nom est requis';
-      if (field.hasError('minlength')) return 'Le nom doit avoir au moins 2 caractères';
-      if (field.hasError('maxlength')) return 'Le nom ne doit pas dépasser 100 caractères';
+      if (field.hasError('minlength')) return 'Le nom doit avoir au moins 2 characters';
+      if (field.hasError('maxlength')) return 'Le nom ne doit pas dépasser 100 characters';
     }
 
     // RAISON SOCIALE
     if (fieldName === 'raisonSociale') {
       if (field.hasError('required')) return 'La raison sociale est requise';
-      if (field.hasError('minlength')) return 'La raison sociale doit avoir au moins 2 caractères';
-      if (field.hasError('maxlength')) return 'La raison sociale ne doit pas dépasser 150 caractères';
+      if (field.hasError('minlength')) return 'La raison sociale doit avoir au moins 2 characters';
+      if (field.hasError('maxlength')) return 'La raison sociale ne doit pas dépasser 150 characters';
     }
 
     // TELEPHONE
@@ -118,22 +118,22 @@ export class AddEntrepriseComponent implements OnInit{
 
     // ADRESSE
     if (fieldName === 'adresse') {
-      if (field.hasError('maxlength')) return 'L\'adresse ne doit pas dépasser 200 caractères';
+      if (field.hasError('maxlength')) return 'L\'adresse ne doit pas dépasser 200 characters';
     }
 
     // DESCRIPTION
     if (fieldName === 'description') {
-      if (field.hasError('maxlength')) return 'La description ne doit pas dépasser 500 caractères';
+      if (field.hasError('maxlength')) return 'La description ne doit pas dépasser 500 characters';
     }
 
     // SECTEUR ACTIVITE
     if (fieldName === 'secteurActivite') {
-      if (field.hasError('maxlength')) return 'Le secteur ne doit pas dépasser 100 caractères';
+      if (field.hasError('maxlength')) return 'Le secteur ne doit pas dépasser 100 characters';
     }
 
     // STATUT JURIDIQUE
     if (fieldName === 'statutJuridique') {
-      if (field.hasError('maxlength')) return 'Le statut ne doit pas dépasser 50 caractères';
+      if (field.hasError('maxlength')) return 'Le statut ne doit pas dépasser 50 characters';
     }
 
     // NIF
@@ -143,7 +143,7 @@ export class AddEntrepriseComponent implements OnInit{
 
     // REGISTRE COMMERCE
     if (fieldName === 'registreCommerce') {
-      if (field.hasError('maxlength')) return 'Le RC ne doit pas dépasser 30 caractères';
+      if (field.hasError('maxlength')) return 'Le RC ne doit pas dépasser 30 characters';
     }
 
     // SITE WEB
@@ -178,7 +178,7 @@ export class AddEntrepriseComponent implements OnInit{
           this.router.navigate(['/entreprise/listEntreprise']);
         },
         error: (err) => {
-          console.error("❌ Erreur lors de la création:", err);
+          console.error("❌ Error during creation:", err);
           this.notification.error('Erreur lors de la création de l\'entreprise');
         }
       });

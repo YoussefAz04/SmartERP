@@ -12,14 +12,14 @@
           <i class="feather icon-shopping-bag"></i>
         </div>
         <div>
-          <h1>Factures d'Achat</h1>
+          <h1>Purchase Invoices</h1>
           <p class="subtitle">Gestion complète de vos factures d'achat</p>
         </div>
       </div>
       <div class="header-actions">
         <button class="btn-header btn-refresh" (click)="getAllFactureAchat()" [disabled]="isLoading">
           <i class="feather icon-refresh-cw" [class.spinning]="isLoading"></i>
-          <span>Actualiser</span>
+          <span>Refresh</span>
         </button>
       </div>
     </div>
@@ -32,28 +32,28 @@
     <div class="stat-icon"><i class="feather icon-layers"></i></div>
     <div class="stat-info">
       <span class="stat-value">{{ filteredList.length }}</span>
-      <span class="stat-label">Total Factures</span>
+      <span class="stat-label">Total Invoices</span>
     </div>
   </div>
   <div class="stat-card stat-amount">
     <div class="stat-icon"><i class="feather icon-dollar-sign"></i></div>
     <div class="stat-info">
       <span class="stat-value">{{ getTotalAmount() | number:'1.2-2' }} DT</span>
-      <span class="stat-label">Montant Total TTC</span>
+      <span class="stat-label">Total amount incl. tax</span>
     </div>
   </div>
   <div class="stat-card stat-pending">
     <div class="stat-icon"><i class="feather icon-clock"></i></div>
     <div class="stat-info">
       <span class="stat-value">{{ getPendingCount() }}</span>
-      <span class="stat-label">En Attente</span>
+      <span class="stat-label">Pending</span>
     </div>
   </div>
   <div class="stat-card stat-paid">
     <div class="stat-icon"><i class="feather icon-check-circle"></i></div>
     <div class="stat-info">
       <span class="stat-value">{{ getPaidCount() }}</span>
-      <span class="stat-label">Payées</span>
+      <span class="stat-label">Paid</span>
     </div>
   </div>
 </div>
@@ -62,22 +62,22 @@
 <div class="search-filter-section">
   <div class="search-box">
     <i class="feather icon-search"></i>
-    <input type="text" 
-           placeholder="Rechercher par référence, mode de paiement ou statut..." 
-           [(ngModel)]="searchTerm" 
+    <input type="text"
+           placeholder="Search par reference, mode de paiement ou statut..."
+           [(ngModel)]="searchTerm"
            (input)="onSearch(searchTerm)"
            class="search-input">
     <button class="search-clear" *ngIf="searchTerm" (click)="searchTerm = ''; onSearch('')">
       <i class="feather icon-x"></i>
     </button>
   </div>
-  
+
   <div class="batch-actions" *ngIf="selectedFactures.size > 0">
-    <button class="btn-batch-export" 
-            (click)="exportMultipleToPdf()" 
-            title="Exporter les factures sélectionnées">
+    <button class="btn-batch-export"
+            (click)="exportMultipleToPdf()"
+            title="Export les factures sélectionnées">
       <i class="feather icon-download"></i>
-      Exporter ({{ selectedFactures.size }})
+      Export ({{ selectedFactures.size }})
     </button>
   </div>
 </div>
@@ -87,7 +87,7 @@
   <div class="card-header-modern">
     <h5 class="card-title">
       <i class="feather icon-list"></i>
-      {{ filteredList.length }} Facture(s)
+      {{ filteredList.length }} Invoice(s)
     </h5>
     <span class="count-badge" [ngClass]="{'badge-info': filteredList.length > 0, 'badge-warning': filteredList.length === 0}">
       {{ filteredList.length }}
@@ -110,56 +110,56 @@
         <tr>
           <th class="checkbox-col">
             <label class="custom-checkbox">
-              <input type="checkbox" 
+              <input type="checkbox"
                      [checked]="selectAll"
                      (change)="toggleSelectAll($any($event.target).checked)">
               <span class="checkmark"></span>
             </label>
           </th>
-          <th (click)="onSort('dateAchat')" class="sortable" title="Cliquer pour trier">
-            Date Achat
-            <i class="feather icon-chevron-up" 
+          <th (click)="onSort('dateAchat')" class="sortable" title="Click to sort">
+            Purchase date
+            <i class="feather icon-chevron-up"
                [hidden]="!(sortBy === 'dateAchat' && sortOrder === 'asc')"></i>
-            <i class="feather icon-chevron-down" 
+            <i class="feather icon-chevron-down"
                [hidden]="!(sortBy === 'dateAchat' && sortOrder === 'desc')"></i>
-            <i class="feather icon-minus" 
+            <i class="feather icon-minus"
                [hidden]="sortBy === 'dateAchat'"></i>
           </th>
-          <th (click)="onSort('referance')" class="sortable" title="Cliquer pour trier">
-            Référence
-            <i class="feather icon-chevron-up" 
+          <th (click)="onSort('referance')" class="sortable" title="Click to sort">
+            Reference
+            <i class="feather icon-chevron-up"
                [hidden]="!(sortBy === 'referance' && sortOrder === 'asc')"></i>
-            <i class="feather icon-chevron-down" 
+            <i class="feather icon-chevron-down"
                [hidden]="!(sortBy === 'referance' && sortOrder === 'desc')"></i>
-            <i class="feather icon-minus" 
+            <i class="feather icon-minus"
                [hidden]="sortBy === 'referance'"></i>
           </th>
-          <th>Fournisseur</th>
-          <th (click)="onSort('montantTTC')" class="sortable" title="Cliquer pour trier">
-            Montant TTC
-            <i class="feather icon-chevron-up" 
+          <th>Supplier</th>
+          <th (click)="onSort('montantTTC')" class="sortable" title="Click to sort">
+            Amount incl. tax
+            <i class="feather icon-chevron-up"
                [hidden]="!(sortBy === 'montantTTC' && sortOrder === 'asc')"></i>
-            <i class="feather icon-chevron-down" 
+            <i class="feather icon-chevron-down"
                [hidden]="!(sortBy === 'montantTTC' && sortOrder === 'desc')"></i>
-            <i class="feather icon-minus" 
+            <i class="feather icon-minus"
                [hidden]="sortBy === 'montantTTC'"></i>
           </th>
-          <th>Montant HT</th>
-          <th>Montant TVA</th>
-          <th>Mode Paiement</th>
-          <th class="status-col">Statut</th>
-          <th>Commande</th>
+          <th>Amount excl. tax</th>
+          <th>VAT amount</th>
+          <th>Payment method</th>
+          <th class="status-col">Status</th>
+          <th>Order</th>
           <th class="actions-col">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let facture of filteredList; let i = index" 
-            class="table-row" 
+        <tr *ngFor="let facture of filteredList; let i = index"
+            class="table-row"
             [class.selected]="isFactureSelected(facture.id)"
             [style.animation-delay]="i * 0.04 + 's'">
           <td class="checkbox-col">
             <label class="custom-checkbox">
-              <input type="checkbox" 
+              <input type="checkbox"
                      [checked]="isFactureSelected(facture.id)"
                      (change)="toggleSelectFacture(facture.id)">
               <span class="checkmark"></span>
@@ -206,7 +206,7 @@
             <a *ngIf="facture.commandeAchat?.reference"
                class="commande-link"
                [routerLink]="['/commande-achat/list']"
-               [title]="'Voir la commande ' + facture.commandeAchat?.reference">
+               [title]="'View order ' + facture.commandeAchat?.reference">
               <i class="feather icon-shopping-cart"></i>
               {{ facture.commandeAchat?.reference }}
             </a>
@@ -214,33 +214,33 @@
           </td>
           <td class="actions-cell">
             <div class="action-buttons-row">
-              <button class="btn-action view" 
-                      (click)="viewFacture(facture.id)" 
-                      *ngIf="permissionAchat?.view" 
-                      title="Voir les détails"
-                      matTooltip="Voir les détails">
+              <button class="btn-action view"
+                      (click)="viewFacture(facture.id)"
+                      *ngIf="permissionAchat?.view"
+                      title="View details"
+                      matTooltip="View details">
                 <i class="feather icon-eye"></i>
               </button>
-              <button class="btn-action download" 
-                      (click)="exportToPdf(facture)" 
-                      title="Télécharger en PDF"
-                      matTooltip="Télécharger PDF">
+              <button class="btn-action download"
+                      (click)="exportToPdf(facture)"
+                      title="Phoneécharger en PDF"
+                      matTooltip="Phoneécharger PDF">
                 <i class="feather icon-download"></i>
               </button>
-              <button class="btn-action edit" 
-                      (click)="viewFacture(facture.id)" 
-                      *ngIf="permissionAchat?.update" 
-                      title="Modifier la facture"
-                      matTooltip="Modifier">
+              <button class="btn-action edit"
+                      (click)="viewFacture(facture.id)"
+                      *ngIf="permissionAchat?.update"
+                      title="Edit la facture"
+                      matTooltip="Edit">
                 <i class="feather icon-edit-2"></i>
               </button>
-              <button class="btn-action delete" 
-                      (click)="deleteFacture(facture.id)" 
-                      *ngIf="permissionAchat?.delete" 
+              <button class="btn-action delete"
+                      (click)="deleteFacture(facture.id)"
+                      *ngIf="permissionAchat?.delete"
                       [disabled]="deletingIds.has(facture.id!)"
-                      title="Supprimer"
-                      matTooltip="Supprimer">
-                <i class="feather" 
+                      title="Delete"
+                      matTooltip="Delete">
+                <i class="feather"
                    [ngClass]="deletingIds.has(facture.id!) ? 'icon-loader spinning' : 'icon-trash-2'"></i>
               </button>
             </div>

@@ -1,8 +1,8 @@
-<h2 mat-dialog-title>Assigner Rôle</h2>
+<h2 mat-dialog-title>Assigner Role</h2>
 
 <mat-dialog-content>
   <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Sélectionnez un rôle</mat-label>
+    <mat-label>Select a role</mat-label>
     <mat-select [(ngModel)]="selectedRoleId" name="roleId">
       <mat-option *ngFor="let role of roles" [value]="role.id">
         {{ role.name }}{{ role.roleType ? ' (' + role.roleType + ')' : '' }}
@@ -12,8 +12,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Annuler</button>
+  <button mat-button (click)="cancel()">Cancel</button>
   <button mat-raised-button color="primary" (click)="assignRole()" [disabled]="!selectedRoleId">
-    Assigner Rôle
+    Assigner Role
   </button>
 </mat-dialog-actions>

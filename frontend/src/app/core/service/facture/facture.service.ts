@@ -104,8 +104,8 @@ export class FactureService {
 
     // ── STATUS WATERMARK (lightest layer, drawn first) ────────────────────────
     const watermarkLabel =
-      statut.includes('PAYEE')    ? 'PAYÉE'    :
-      statut.includes('ANNUL')    ? 'ANNULÉE'  :
+      statut.includes('PAYEE')    ? 'PAID'    :
+      statut.includes('ANNUL')    ? 'CANCELED'  :
       statut.includes('PARTIEL')  ? 'PARTIELLE': null;
     if (watermarkLabel) {
       doc.setFontSize(64);
@@ -191,8 +191,8 @@ export class FactureService {
     doc.setFontSize(6.5);
     doc.setFont('helvetica', 'bold');
     const statutLabelsA: Record<string, string> = {
-      'PAYEE': 'PAYÉE', 'EN_ATTENTE': 'EN ATTENTE',
-      'ANNULEE': 'ANNULÉE', 'PARTIELLEMENT_PAYEE': 'PART. PAYÉE'
+      'PAYEE': 'PAID', 'EN_ATTENTE': 'EN ATTENTE',
+      'ANNULEE': 'CANCELED', 'PARTIELLEMENT_PAYEE': 'PART. PAID'
     };
     const statutDisplay = statutLabelsA[factureData.statut || ''] || statut;
     doc.text(statutDisplay, W - 34.5, 38.2, { align: 'center' });
@@ -204,7 +204,7 @@ export class FactureService {
     const lX   = mg;
     const lW   = 88;
 
-    // LEFT PANEL — ÉMETTEUR
+    // LEFT PANEL — ISSUER
     doc.setFillColor(247, 249, 253);
     doc.setDrawColor(hR, hG, hB);
     doc.setLineWidth(0.3);
@@ -215,7 +215,7 @@ export class FactureService {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text('ÉMETTEUR', lX + 5, pTop + 6.5);
+    doc.text('ISSUER', lX + 5, pTop + 6.5);
 
     doc.setTextColor(22, 28, 48);
     doc.setFontSize(10.5);
@@ -226,7 +226,7 @@ export class FactureService {
     const emLines = [
       this.entreprise.adresse || '',
       this.entreprise.email    || '',
-      tel ? `Tél : ${tel}` : '',
+      tel ? `Phone : ${tel}` : '',
       this.entreprise.siteWeb  || ''
     ].filter(l => l.trim() !== '');
     doc.setFontSize(8);
@@ -250,7 +250,7 @@ export class FactureService {
     doc.text('INFORMATIONS FACTURE', rX + 5, pTop + 6.5);
 
     const invoiceFields: Array<{ label: string; value: string }> = [
-      { label: 'N° Facture',  value: factureData.referance || '—' },
+      { label: 'Invoice No.',  value: factureData.referance || '—' },
       { label: 'Date',        value: dateStr },
       { label: 'Paiement',    value: factureData.modePaiement || '—' }
     ];
@@ -294,7 +294,7 @@ export class FactureService {
       factureData.fournisseur?.nom || 'Fournisseur non renseigné',
       factureData.fournisseur?.adresse || '',
       factureData.fournisseur?.email || '',
-      factureData.fournisseur?.telephone ? `Tél : ${factureData.fournisseur.telephone}` : '',
+      factureData.fournisseur?.telephone ? `Phone : ${factureData.fournisseur.telephone}` : '',
       [factureData.fournisseur?.ville, factureData.fournisseur?.pays].filter(Boolean).join(', '),
       factureData.fournisseur?.numeroIdentificationFiscale
         ? `NIF : ${factureData.fournisseur.numeroIdentificationFiscale}` : '',
@@ -328,7 +328,7 @@ export class FactureService {
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(hR, hG, hB);
-    doc.text('DÉTAIL DES ARTICLES', mg, tableStartY - 3);
+    doc.text('ITEM DETAILS', mg, tableStartY - 3);
     doc.setTextColor(0, 0, 0);
 
     const rawDetails = factureData.detaisFactureAchat;
@@ -371,7 +371,7 @@ export class FactureService {
 
     autoTable(doc, {
       startY: tableStartY,
-      head: [['#', 'Désignation', 'Qté', 'Prix HT', 'TVA', 'Montant HT', 'Total TTC']],
+      head: [['#', 'Description', 'Qty', 'Price excl. tax', 'TVA', 'Amount excl. tax', 'Total incl. tax']],
       body: rows.length > 0 ? rows : [['—', '—', '—', '—', '—', '—', '—']],
       margin: { left: mg, right: mg },
       theme: 'grid',
@@ -516,7 +516,7 @@ export class FactureService {
     doc.setFontSize(6.5);
     doc.setTextColor(195, 212, 235);
     doc.text(
-      `Document généré le ${new Date().toLocaleString('fr-FR')}`,
+      `Document generated on ${new Date().toLocaleString('fr-FR')}`,
       W - mg, 284, { align: 'right' }
     );
     doc.setTextColor(0, 0, 0);
