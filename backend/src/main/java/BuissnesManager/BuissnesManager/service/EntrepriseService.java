@@ -149,8 +149,10 @@ public class EntrepriseService {
     }
 
     public void assignerUserToEntreprise(String username,String nom){
-        Entreprise entreprise = entrepriseRepository.findByNom(nom).orElse(null);
-        User user =userRepo.findByUsername(username).orElse(null);
+        Entreprise entreprise = entrepriseRepository.findByNom(nom)
+                .orElseThrow(() -> new IllegalArgumentException("Entreprise not found: " + nom));
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         user.setEntreprise(entreprise);
         userRepo.save(user);
     }

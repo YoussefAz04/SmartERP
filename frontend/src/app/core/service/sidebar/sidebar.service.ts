@@ -379,6 +379,30 @@ generateSidebarData(modules: ModuleTittle[]) {
           }
         ]
       });
+    }
+
+    if (userRole === 'ADMIN' || userRole === 'EMPLOYEE') {
+      result.push({
+        tittle: 'Customer Service',
+        showAsTab: false,
+        separateRoute: false,
+        hasSubRoute: false,
+        showSubRoute: true,
+        menu: [
+          {
+            menuValue: 'After-Sales Service',
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'headphones',
+            route: 'sav',
+            base1: 'sav',
+            subMenus: []
+          }
+        ]
+      });
+    }
+
+    if (userRole === 'ADMIN') {
       result.push({
         tittle: 'Administration',
         showAsTab: false,

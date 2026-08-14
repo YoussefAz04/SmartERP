@@ -88,10 +88,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //  Public endpoints - NO authentication required
                         .requestMatchers(
-                                "/test/**",
                                 "/api/auth/**",
                                 "/auth/**",
-                                "/entreprise/**",
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",

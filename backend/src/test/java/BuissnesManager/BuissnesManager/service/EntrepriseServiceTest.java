@@ -58,6 +58,7 @@ class EntrepriseServiceTest {
     @Mock private ClientRepo clientRepo;
     @Mock private CategorieArticleRepository categorieArticleRepository;
     @Mock private MesureRepository mesureRepository;
+    @Mock private AuditLogService auditLogService;
 
     @InjectMocks
     private EntrepriseService service;

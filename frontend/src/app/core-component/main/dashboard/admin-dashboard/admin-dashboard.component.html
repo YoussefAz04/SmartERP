@@ -18,18 +18,20 @@
     <div class="db-header__inner">
       <div class="db-header__left">
         <span class="db-header__eyebrow">
-          Operational Dashboard
+          {{ 'dashboard.header.operational' | translate }}
         </span>
         <h1 class="db-header__title">
-          <span class="enterprise-name-title">{{ entrepriseName || 'Mon Tableau de Bord' }}</span>
+          <span class="enterprise-name-title">
+            {{ entrepriseName || ('dashboard.header.fallbackTitle' | translate) }}
+          </span>
         </h1>
         <p class="db-header__sub">
 
-          Welcome, <strong>{{ userName }}</strong>
+          {{ 'dashboard.header.welcome' | translate }}, <strong>{{ userName }}</strong>
           <span class="header-divider" aria-hidden="true">•</span>
           <span class="today-pill">
             <i class="feather icon-clock"></i>
-            {{ today | date: 'EEEE d MMM yyyy' }}
+            {{ formattedToday }}
           </span>
         </p>
       </div>
@@ -37,7 +39,7 @@
         <div class="meta-pill header-live-pill">
           <span class="live-dot" aria-hidden="true"></span>
           <i class="feather icon-activity"></i>
-          <span>Live Activity</span>
+          <span>{{ 'dashboard.header.liveActivity' | translate }}</span>
         </div>
 
       </div>
@@ -49,32 +51,32 @@
     <a class="quick-action quick-action--indigo slide-up" routerLink="/client/addClient" style="animation-delay:0.10s">
       <span class="quick-action__icon"><i class="feather icon-user-plus"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">New customer</span>
-        <span class="quick-action__hint">Add a customer</span>
+        <span class="quick-action__label">{{ 'dashboard.quickActions.customer.title' | translate }}</span>
+        <span class="quick-action__hint">{{ 'dashboard.quickActions.customer.hint' | translate }}</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--amber slide-up" routerLink="/fournisseur/addFournisseur" style="animation-delay:0.16s">
       <span class="quick-action__icon"><i class="feather icon-truck"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">New supplier</span>
-        <span class="quick-action__hint">Register a supplier</span>
+        <span class="quick-action__label">{{ 'dashboard.quickActions.supplier.title' | translate }}</span>
+        <span class="quick-action__hint">{{ 'dashboard.quickActions.supplier.hint' | translate }}</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--emerald slide-up" routerLink="/article-achat/add" style="animation-delay:0.22s">
       <span class="quick-action__icon"><i class="feather icon-package"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">Add a product</span>
-        <span class="quick-action__hint">Create a stock product</span>
+        <span class="quick-action__label">{{ 'dashboard.quickActions.product.title' | translate }}</span>
+        <span class="quick-action__hint">{{ 'dashboard.quickActions.product.hint' | translate }}</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
     <a class="quick-action quick-action--violet slide-up" routerLink="/commande-vente/add" style="animation-delay:0.28s">
       <span class="quick-action__icon"><i class="feather icon-file-plus"></i></span>
       <div class="quick-action__content">
-        <span class="quick-action__label">New order</span>
-        <span class="quick-action__hint">Enter a sales order</span>
+        <span class="quick-action__label">{{ 'dashboard.quickActions.order.title' | translate }}</span>
+        <span class="quick-action__hint">{{ 'dashboard.quickActions.order.hint' | translate }}</span>
       </div>
       <i class="feather icon-chevron-right quick-action__arrow"></i>
     </a>
@@ -92,7 +94,7 @@
             <i class="feather icon-users"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--up">
-            <i class="feather icon-trending-up"></i> Active
+            <i class="feather icon-trending-up"></i> {{ 'dashboard.stats.active' | translate }}
           </span>
         </div>
         <div class="stat-card__body">
@@ -102,10 +104,10 @@
             </ng-container>
             <ng-template #skeleton><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Total Customers</div>
+          <div class="stat-card__label">{{ 'dashboard.stats.totalCustomers' | translate }}</div>
         </div>
         <a class="stat-card__link" routerLink="/client/listClient">
-          View all <i class="feather icon-arrow-right"></i>
+          {{ 'dashboard.stats.viewAll' | translate }} <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -117,7 +119,7 @@
             <i class="feather icon-truck"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--neutral">
-            <i class="feather icon-refresh-cw"></i> Referenced
+            <i class="feather icon-refresh-cw"></i> {{ 'dashboard.stats.referenced' | translate }}
           </span>
         </div>
         <div class="stat-card__body">
@@ -127,10 +129,10 @@
             </ng-container>
             <ng-template #skelF><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Suppliers</div>
+          <div class="stat-card__label">{{ 'dashboard.stats.suppliers' | translate }}</div>
         </div>
         <a class="stat-card__link" routerLink="/fournisseur/listFournisseur">
-          View all <i class="feather icon-arrow-right"></i>
+          {{ 'dashboard.stats.viewAll' | translate }} <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -142,7 +144,7 @@
             <i class="feather icon-package"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--up">
-            <i class="feather icon-box"></i> In catalog
+            <i class="feather icon-box"></i> {{ 'dashboard.stats.inCatalog' | translate }}
           </span>
         </div>
         <div class="stat-card__body">
@@ -152,10 +154,10 @@
             </ng-container>
             <ng-template #skelA><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Products in Stock</div>
+          <div class="stat-card__label">{{ 'dashboard.stats.productsInStock' | translate }}</div>
         </div>
         <a class="stat-card__link" routerLink="/article-achat/listArticleAchat">
-          View all <i class="feather icon-arrow-right"></i>
+          {{ 'dashboard.stats.viewAll' | translate }} <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -167,7 +169,7 @@
             <i class="feather icon-file-text"></i>
           </div>
           <span class="stat-card__trend stat-card__trend--violet">
-            <i class="feather icon-check-circle"></i> Active
+            <i class="feather icon-check-circle"></i> {{ 'dashboard.stats.active' | translate }}
           </span>
         </div>
         <div class="stat-card__body">
@@ -177,10 +179,10 @@
             </ng-container>
             <ng-template #skelC><span class="skel skel--num"></span></ng-template>
           </div>
-          <div class="stat-card__label">Orders</div>
+          <div class="stat-card__label">{{ 'dashboard.stats.orders' | translate }}</div>
         </div>
         <a class="stat-card__link" routerLink="/commande-vente">
-          View all <i class="feather icon-arrow-right"></i>
+          {{ 'dashboard.stats.viewAll' | translate }} <i class="feather icon-arrow-right"></i>
         </a>
       </div>
 
@@ -193,9 +195,11 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-users"></i>
-        Customers Recent
+        {{ 'dashboard.sections.recentCustomers' | translate }}
       </div>
-      <a class="view-all-link" routerLink="/client/listClient">View tous les clients →</a>
+      <a class="view-all-link" routerLink="/client/listClient">
+        {{ 'dashboard.sections.allCustomers' | translate }} &rarr;
+      </a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingClients" class="skel-rows">
@@ -203,20 +207,20 @@
       </div>
       <div *ngIf="!loadingClients && errorClients" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Error while loading customers</span>
-        <button class="btn-retry" (click)="retryLoad()">Retry</button>
+        <span>{{ 'dashboard.states.errorCustomers' | translate }}</span>
+        <button class="btn-retry" (click)="retryLoad()">{{ 'dashboard.states.retry' | translate }}</button>
       </div>
       <div *ngIf="!loadingClients && !errorClients && recentClients.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> No customer found
+        <i class="feather icon-inbox"></i> {{ 'dashboard.states.noCustomer' | translate }}
       </div>
       <div *ngIf="!loadingClients && !errorClients && recentClients.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th class="col-action">Actions</th>
+              <th>{{ 'dashboard.table.name' | translate }}</th>
+              <th>{{ 'dashboard.table.email' | translate }}</th>
+              <th>{{ 'dashboard.table.phone' | translate }}</th>
+              <th class="col-action">{{ 'dashboard.table.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -231,7 +235,7 @@
               <td class="text-muted">{{ c.telephone }}</td>
               <td class="col-action">
                 <div class="action-btns">
-                  <button class="btn-icon btn-view" title="View" (click)="navigateTo('/client/listClient')">
+                  <button class="btn-icon btn-view" [title]="'dashboard.table.view' | translate" (click)="navigateTo('/client/listClient')">
                     <i class="feather icon-eye"></i>
                   </button>
                 </div>
@@ -250,9 +254,11 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-truck"></i>
-        Suppliers Recent
+        {{ 'dashboard.sections.recentSuppliers' | translate }}
       </div>
-      <a class="view-all-link" routerLink="/fournisseur/listFournisseur">View tous les fournisseurs →</a>
+      <a class="view-all-link" routerLink="/fournisseur/listFournisseur">
+        {{ 'dashboard.sections.allSuppliers' | translate }} &rarr;
+      </a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingFournisseurs" class="skel-rows">
@@ -260,20 +266,20 @@
       </div>
       <div *ngIf="!loadingFournisseurs && errorFournisseurs" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Error while loading suppliers</span>
-        <button class="btn-retry" (click)="retryLoad()">Retry</button>
+        <span>{{ 'dashboard.states.errorSuppliers' | translate }}</span>
+        <button class="btn-retry" (click)="retryLoad()">{{ 'dashboard.states.retry' | translate }}</button>
       </div>
       <div *ngIf="!loadingFournisseurs && !errorFournisseurs && recentFournisseurs.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> No supplier found
+        <i class="feather icon-inbox"></i> {{ 'dashboard.states.noSupplier' | translate }}
       </div>
       <div *ngIf="!loadingFournisseurs && !errorFournisseurs && recentFournisseurs.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>City</th>
-              <th class="col-action">Actions</th>
+              <th>{{ 'dashboard.table.name' | translate }}</th>
+              <th>{{ 'dashboard.table.phone' | translate }}</th>
+              <th>{{ 'dashboard.table.city' | translate }}</th>
+              <th class="col-action">{{ 'dashboard.table.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -288,7 +294,7 @@
               <td class="text-muted">{{ f.ville }}</td>
               <td class="col-action">
                 <div class="action-btns">
-                  <button class="btn-icon btn-view" title="View" (click)="navigateTo('/fournisseur/listFournisseur')">
+                  <button class="btn-icon btn-view" [title]="'dashboard.table.view' | translate" (click)="navigateTo('/fournisseur/listFournisseur')">
                     <i class="feather icon-eye"></i>
                   </button>
                 </div>
@@ -307,9 +313,11 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-package"></i>
-        Products in Stock
+        {{ 'dashboard.sections.stockProducts' | translate }}
       </div>
-      <a class="view-all-link" routerLink="/article-achat/listArticleAchat">View tous les articles →</a>
+      <a class="view-all-link" routerLink="/article-achat/listArticleAchat">
+        {{ 'dashboard.sections.allProducts' | translate }} &rarr;
+      </a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingArticles" class="skel-rows">
@@ -317,19 +325,19 @@
       </div>
       <div *ngIf="!loadingArticles && errorArticles" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Error while loading products</span>
-        <button class="btn-retry" (click)="retryLoad()">Retry</button>
+        <span>{{ 'dashboard.states.errorProducts' | translate }}</span>
+        <button class="btn-retry" (click)="retryLoad()">{{ 'dashboard.states.retry' | translate }}</button>
       </div>
       <div *ngIf="!loadingArticles && !errorArticles && recentArticles.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> No product found
+        <i class="feather icon-inbox"></i> {{ 'dashboard.states.noProduct' | translate }}
       </div>
       <div *ngIf="!loadingArticles && !errorArticles && recentArticles.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Product</th>
-              <th>Quantity</th>
-              <th>Stock Status</th>
+              <th>{{ 'dashboard.table.product' | translate }}</th>
+              <th>{{ 'dashboard.table.quantity' | translate }}</th>
+              <th>{{ 'dashboard.table.stockStatus' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -354,9 +362,9 @@
                       [class.badge--low-stock]="a.stockStatus === 'LOW_STOCK'"
                       [class.badge--out-of-stock]="a.stockStatus === 'OUT_OF_STOCK'">
                   <ng-container [ngSwitch]="a.stockStatus">
-                    <ng-container *ngSwitchCase="'IN_STOCK'">In Stock</ng-container>
-                    <ng-container *ngSwitchCase="'LOW_STOCK'">Low Stock</ng-container>
-                    <ng-container *ngSwitchDefault>Out of Stock</ng-container>
+                    <ng-container *ngSwitchCase="'IN_STOCK'">{{ 'dashboard.stock.inStock' | translate }}</ng-container>
+                    <ng-container *ngSwitchCase="'LOW_STOCK'">{{ 'dashboard.stock.lowStock' | translate }}</ng-container>
+                    <ng-container *ngSwitchDefault>{{ 'dashboard.stock.outOfStock' | translate }}</ng-container>
                   </ng-container>
                 </span>
               </td>
@@ -374,9 +382,11 @@
     <div class="db-card__header">
       <div class="db-card__title">
         <i class="feather icon-file-text"></i>
-        Orders Recent
+        {{ 'dashboard.sections.recentOrders' | translate }}
       </div>
-      <a class="view-all-link" routerLink="/commande-vente">View alles les commandes →</a>
+      <a class="view-all-link" routerLink="/commande-vente">
+        {{ 'dashboard.sections.allOrders' | translate }} &rarr;
+      </a>
     </div>
     <div class="db-card__body">
       <div *ngIf="loadingCommandes" class="skel-rows">
@@ -384,21 +394,21 @@
       </div>
       <div *ngIf="!loadingCommandes && errorCommandes" class="error-state">
         <i class="feather icon-alert-circle"></i>
-        <span>Error while loading orders</span>
-        <button class="btn-retry" (click)="retryLoad()">Retry</button>
+        <span>{{ 'dashboard.states.errorOrders' | translate }}</span>
+        <button class="btn-retry" (click)="retryLoad()">{{ 'dashboard.states.retry' | translate }}</button>
       </div>
       <div *ngIf="!loadingCommandes && !errorCommandes && recentCommandes.length === 0" class="empty-state">
-        <i class="feather icon-inbox"></i> No order found
+        <i class="feather icon-inbox"></i> {{ 'dashboard.states.noOrder' | translate }}
       </div>
       <div *ngIf="!loadingCommandes && !errorCommandes && recentCommandes.length > 0" class="table-wrap">
         <table class="modern-table">
           <thead>
             <tr>
-              <th>Reference</th>
-              <th>Customer</th>
-              <th>Amount incl. tax</th>
-              <th>Date</th>
-              <th>Status</th>
+              <th>{{ 'dashboard.table.reference' | translate }}</th>
+              <th>{{ 'dashboard.table.customer' | translate }}</th>
+              <th>{{ 'dashboard.table.amountInclTax' | translate }}</th>
+              <th>{{ 'dashboard.table.date' | translate }}</th>
+              <th>{{ 'dashboard.table.status' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -411,7 +421,7 @@
               <td class="text-muted">{{ cmd.dateCommande | date:'dd/MM/yyyy' }}</td>
               <td>
                 <span class="status-badge" [ngClass]="getCommandeStatusClass(cmd.statut)">
-                  {{ getCommandeStatusLabel(cmd.statut) }}
+                  {{ getCommandeStatusLabelKey(cmd.statut) | translate }}
                 </span>
               </td>
             </tr>

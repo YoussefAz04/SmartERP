@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuditLog, AuditLogService } from '../../core/service/audit-log/audit-log.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-audit-log',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './audit-log.component.html',
   styleUrl: './audit-log.component.scss',
 })
@@ -22,52 +23,10 @@ export class AuditLogComponent implements OnInit, OnDestroy {
   filterDateTo = '';
   private destroy$ = new Subject<void>();
 
-  readonly actionLabels: Record<string, string> = {
-    LOGIN: 'Connexion',
-    USER_CREATED: 'Création utilisateur',
-    USER_UPDATED: 'Modification utilisateur',
-    USER_DELETED: 'Suppression utilisateur',
-    USER_STATUS_CHANGED: 'Statut utilisateur',
-    PERMISSION_MODIFIED: 'Modification permissions',
-    COMMANDE_VENTE_CREEE: 'Création commande vente',
-    COMMANDE_VENTE_VALIDEE: 'Validation commande vente',
-    COMMANDE_VENTE_MODIFIEE: 'Modification commande vente',
-    COMMANDE_VENTE_SUPPRIMEE: 'Suppression commande vente',
-    COMMANDE_VENTE_ANNULEE: 'Annulation commande vente',
-    COMMANDE_VENTE_LIVREE: 'Livraison commande vente',
-    COMMANDE_ACHAT_CREEE: 'Création commande achat',
-    COMMANDE_ACHAT_VALIDEE: 'Validation commande achat',
-    COMMANDE_ACHAT_MODIFIEE: 'Modification commande achat',
-    COMMANDE_ACHAT_SUPPRIMEE: 'Suppression commande achat',
-    COMMANDE_ACHAT_ANNULEE: 'Annulation commande achat',
-    COMMANDE_ACHAT_RECUE: 'Réception commande achat',
-    STOCK_MOUVEMENT: 'Mouvement de stock',
-    STOCK_CREE: 'Création stock',
-    STOCK_MODIFIE: 'Modification stock',
-    STOCK_SUPPRIME: 'Suppression stock',
-    ARTICLE_CREATED: 'Création article',
-    ARTICLE_UPDATED: 'Modification article',
-    ARTICLE_DELETED: 'Suppression article',
-    CLIENT_CREATED: 'Création client',
-    CLIENT_UPDATED: 'Modification client',
-    CLIENT_DELETED: 'Suppression client',
-    FOURNISSEUR_CREATED: 'Création fournisseur',
-    FOURNISSEUR_UPDATED: 'Modification fournisseur',
-    FOURNISSEUR_DELETED: 'Suppression fournisseur',
-    FACTURE_VENTE_CREATED: 'Création facture vente',
-    FACTURE_VENTE_UPDATED: 'Modification facture vente',
-    FACTURE_VENTE_VALIDATED: 'Validation facture vente',
-    FACTURE_VENTE_CANCELLED: 'Annulation facture vente',
-    FACTURE_VENTE_DELETED: 'Suppression facture vente',
-    FACTURE_ACHAT_UPDATED: 'Modification facture achat',
-    FACTURE_ACHAT_DELETED: 'Suppression facture achat',
-    ENTREPRISE_CREEE: 'Création entreprise',
-    ENTREPRISE_MODIFIEE: 'Modification entreprise',
-    ENTREPRISE_DESACTIVEE: 'Désactivation entreprise',
-    ENTREPRISE_ACTIVEE: 'Activation entreprise',
-  };
-
-  constructor(private auditLogService: AuditLogService) {}
+  constructor(
+    private auditLogService: AuditLogService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.loadLogs();
@@ -141,8 +100,8 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     return [...new Set(this.logs.map(l => l.action))].sort();
   }
 
-  getActionLabel(action: string): string {
-    return this.actionLabels[action] || action;
+  getActionLabelKey(action: string): string {
+    return `auditLog.actions.${action}`;
   }
 
   getActionBadgeClass(action: string): string {
@@ -243,7 +202,8 @@ export class AuditLogComponent implements OnInit, OnDestroy {
 
   formatDate(dateStr: string): string {
     if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
+    const locale = this.translate.currentLang === 'fr' ? 'fr-FR' : 'en-US';
+    return new Date(dateStr).toLocaleDateString(locale, {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit', second: '2-digit'
     });

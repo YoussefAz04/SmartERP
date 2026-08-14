@@ -30,6 +30,8 @@
     "@fullcalendar/timegrid": "^6.1.9",
     "@fullcalendar/web-component": "^6.1.9",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "@popperjs/core": "^2.11.8",
     "angular-feather": "^6.5.1",
     "apexcharts": "^5.3.1",

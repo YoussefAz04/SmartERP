@@ -3,7 +3,6 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.entity.CaracteristiqueFactureEntreprise;
 import BuissnesManager.BuissnesManager.entity.Entreprise;
 import BuissnesManager.BuissnesManager.security.AuthorizationUtil;
-import BuissnesManager.BuissnesManager.security.JWTUtil;
 import BuissnesManager.BuissnesManager.service.EntrepriseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/entreprise")
@@ -27,9 +28,7 @@ public class EntrepriseController {
     @Autowired
     private AuthorizationUtil authorizationUtil;
 
-    @Autowired
-    private JWTUtil jwtUtil;
-
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<?> ajouterEntreprise(@RequestBody Entreprise entreprise) {
         try {
@@ -55,25 +54,12 @@ public class EntrepriseController {
         }
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("@authorizationUtil.isAdminOfEnterprise(#id)")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateEntreprise(
             @PathVariable Long id,
-            @RequestBody Entreprise entrepriseDetails,
-            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+            @RequestBody Entreprise entrepriseDetails) {
         try {
-            // ADMIN can only update their own enterprise
-            if (authorizationUtil.isAdmin()) {
-                Long tokenEnterpriseId = extractEnterpriseId(authHeader);
-                if (tokenEnterpriseId == null) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                            .body("Invalid or missing authentication token");
-                }
-                if (!tokenEnterpriseId.equals(id)) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                            .body("ADMIN can only update their own enterprise");
-                }
-            }
             Entreprise updatedEntreprise = entrepriseService.updateEntreprise(id, entrepriseDetails);
             return ResponseEntity.ok(updatedEntreprise);
         } catch (RuntimeException e) {
@@ -81,17 +67,7 @@ public class EntrepriseController {
         }
     }
 
-    private Long extractEnterpriseId(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return null;
-        }
-        try {
-            return jwtUtil.getEnterpriseIdFromToken(authHeader.substring(7));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PostMapping("/assignerUserToEntreprise")
     public ResponseEntity<?> assignerUserToEntreprise(@RequestParam String username, @RequestParam String nom) {
         try {
@@ -128,9 +104,17 @@ public class EntrepriseController {
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllEntreprise() {
         try {
+            if (!authorizationUtil.isSuperAdmin()) {
+                Long entrepriseId = authorizationUtil.getCurrentEnterpriseId();
+                if (entrepriseId == null) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Enterprise context required");
+                }
+                return ResponseEntity.ok(List.of(entrepriseService.getById(entrepriseId)));
+            }
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getAllEntreprise());
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvee");
@@ -147,18 +131,24 @@ public class EntrepriseController {
         }
     }
 
+    @PreAuthorize("@authorizationUtil.canAccessEnterprise(#id)")
     @GetMapping("/getById/{id}")
     public ResponseEntity<?> getEntrepriseById(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.getById(id));
-        } catch (EmptyResultDataAccessException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entreprise non trouvee");
         }
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PostMapping("/ajouterCaracteristiqueFactureEntreprise")
     public ResponseEntity<?> ajouterCaracteristiqueFactureEntreprise(@RequestBody CaracteristiqueFactureEntreprise caracteristiqueFactureEntreprise) {
         try {
+            if (caracteristiqueFactureEntreprise.getEntreprise() == null
+                    || !authorizationUtil.isAdminOfEnterprise(caracteristiqueFactureEntreprise.getEntreprise().getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied for this enterprise");
+            }
             return ResponseEntity.status(HttpStatus.OK).body(entrepriseService.addCaracteristiqueFactureEntreprise(caracteristiqueFactureEntreprise));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

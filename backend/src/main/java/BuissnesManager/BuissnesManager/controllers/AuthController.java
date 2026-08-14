@@ -10,7 +10,6 @@ import BuissnesManager.BuissnesManager.entity.RefreshToken;
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.RoleType;
 import BuissnesManager.BuissnesManager.entity.User;
-import BuissnesManager.BuissnesManager.repository.EntrepriseRepo;
 import BuissnesManager.BuissnesManager.repository.RefreshTokenRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
@@ -67,9 +66,6 @@ public class AuthController {
 
     @Autowired
     private RoleRepo roleRepo;
-
-    @Autowired
-    private EntrepriseRepo entrepriseRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -179,6 +175,10 @@ public class AuthController {
         if (!request.getEmail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format");
         }
+        if (request.getEnterpriseId() != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Enterprise assignment requires an administrator");
+        }
 
         // Check for duplicate username
         if (userRepo.findByUsername(request.getUsername()).isPresent()) {
@@ -196,18 +196,6 @@ public class AuthController {
             newUser.setEmail(request.getEmail());
             newUser.setPassword(passwordEncoder.encode(request.getPassword()));
             newUser.setEnabled(true);
-
-            // Assign enterprise if provided
-            if (request.getEnterpriseId() != null) {
-                Entreprise entreprise = entrepriseRepo.findById(request.getEnterpriseId())
-                        .orElse(null);
-                if (entreprise != null) {
-                    newUser.setEntreprise(entreprise);
-                    System.out.println("✅ User assigned to enterprise: " + entreprise.getNom());
-                } else {
-                    System.out.println("⚠️ Enterprise not found with id: " + request.getEnterpriseId());
-                }
-            }
 
             // Assign default USER role
             Role userRole = roleRepo.findByName("USER")

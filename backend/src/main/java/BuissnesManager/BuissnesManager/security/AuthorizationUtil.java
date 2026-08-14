@@ -59,7 +59,7 @@ public class AuthorizationUtil {
         if (isSuperAdmin()) {
             return true;
         }
-        Long tokenEnterpriseId = getEnterpriseIdFromCurrentRequest();
+        Long tokenEnterpriseId = getCurrentEnterpriseId();
         return tokenEnterpriseId != null && tokenEnterpriseId.equals(enterpriseId);
     }
 
@@ -73,7 +73,7 @@ public class AuthorizationUtil {
         if (!isAdmin()) {
             return false;
         }
-        Long tokenEnterpriseId = getEnterpriseIdFromCurrentRequest();
+        Long tokenEnterpriseId = getCurrentEnterpriseId();
         return tokenEnterpriseId != null && tokenEnterpriseId.equals(enterpriseId);
     }
 
@@ -91,18 +91,32 @@ public class AuthorizationUtil {
                 .anyMatch(a -> a.equals(authority));
     }
 
-    private Long getEnterpriseIdFromCurrentRequest() {
+    public Long getCurrentEnterpriseId() {
         try {
+            Long contextEnterpriseId = JWTFilter.getCurrentEnterpriseId();
+            if (contextEnterpriseId != null) {
+                return contextEnterpriseId;
+            }
+
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attrs == null) {
+            if (attrs != null) {
+                HttpServletRequest request = attrs.getRequest();
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    Long tokenEnterpriseId = jwtUtil.getEntrepriseIdFromToken(authHeader.substring(7));
+                    if (tokenEnterpriseId != null) {
+                        return tokenEnterpriseId;
+                    }
+                }
+            }
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
                 return null;
             }
-            HttpServletRequest request = attrs.getRequest();
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return null;
-            }
-            return jwtUtil.getEntrepriseIdFromToken(authHeader.substring(7));
+            return userRepo.findByUsername(auth.getName())
+                    .map(user -> user.getEntreprise() != null ? user.getEntreprise().getId() : null)
+                    .orElse(null);
         } catch (Exception e) {
             return null;
         }

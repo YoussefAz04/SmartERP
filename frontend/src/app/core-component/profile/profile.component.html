@@ -1,305 +1,309 @@
-<!-- Page header -->
-<div class="profile-page-header">
-  <div>
-    <h4 class="profile-page-title">Mon Profil</h4>
-    <p class="profile-page-subtitle">Manage your user account information</p>
-  </div>
-</div>
+<section class="profile-shell">
+  <div class="profile-hero">
+    <div class="profile-hero-copy">
+      <span class="profile-eyebrow">
+        <i class="feather icon-user-check"></i>
+        Account center
+      </span>
+      <h1>Mon Profil</h1>
+      <p>Manage your identity, company access, and security preferences from one place.</p>
+    </div>
 
-<!-- Loading -->
-<ng-container *ngIf="isLoading">
-  <div class="profile-loading">
-    <div class="profile-loading-spinner">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Chargement...</span>
+    <div class="profile-hero-status" *ngIf="user">
+      <span class="status-dot" [class.is-active]="user.enabled"></span>
+      <div>
+        <strong>{{ user.enabled ? 'Active account' : 'Inactive account' }}</strong>
+        <span>{{ primaryRole }}</span>
       </div>
-      <p class="mt-3 text-muted">Chargement du profil…</p>
     </div>
   </div>
-</ng-container>
 
-<!-- Main layout -->
-<div class="profile-layout" *ngIf="!isLoading && user">
-
-  <!-- ── LEFT: identity card ─────────────────────────────────────── -->
-  <div class="profile-identity-col">
-    <div class="profile-card-wrap">
-
-      <!-- Gradient banner -->
-      <div class="profile-banner">
-        <div class="profile-banner-pattern"></div>
-      </div>
-
-      <!-- Avatar (overlaps banner) -->
-      <div class="profile-avatar-ring">
-        <div class="profile-avatar">
-          <span *ngIf="initials">{{ initials }}</span>
-          <i class="feather icon-user" *ngIf="!initials"></i>
+  <ng-container *ngIf="isLoading">
+    <div class="profile-loading">
+      <div class="profile-loading-spinner">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
+        <p>Loading profile...</p>
       </div>
+    </div>
+  </ng-container>
 
-      <!-- Content below avatar -->
-      <div class="profile-card-body">
-        <h5 class="profile-username">{{ user.username }}</h5>
-        <p class="profile-email">{{ user.email }}</p>
-
-        <!-- Badges -->
-        <div class="profile-badges">
-          <span class="profile-badge profile-badge-role" *ngFor="let role of roles">{{ role }}</span>
-          <span class="profile-badge" [ngClass]="user.enabled ? 'profile-badge-active' : 'profile-badge-inactive'">
-            <span class="profile-badge-dot"></span>
-            {{ user.enabled ? 'Actif' : 'Inactif' }}
+  <div class="profile-layout" *ngIf="!isLoading && user">
+    <aside class="profile-identity-col">
+      <div class="profile-card-wrap">
+        <div class="profile-banner">
+          <span class="profile-banner-chip">
+            <i class="feather icon-shield"></i>
+            Verified session
           </span>
         </div>
 
-        <!-- Meta info -->
-        <div class="profile-meta-list">
-          <div class="profile-meta-item" *ngIf="entrepriseName">
-            <span class="profile-meta-icon"><i class="feather icon-briefcase"></i></span>
-            <span>{{ entrepriseName }}</span>
-          </div>
-          <div class="profile-meta-item" *ngIf="user.phone">
-            <span class="profile-meta-icon"><i class="feather icon-phone"></i></span>
-            <span>{{ user.phone }}</span>
-          </div>
-          <div class="profile-meta-item" *ngIf="user.id">
-            <span class="profile-meta-icon"><i class="feather icon-hash"></i></span>
-            <span class="text-muted">ID: {{ user.id }}</span>
+        <div class="profile-avatar-ring">
+          <div class="profile-avatar">
+            <span *ngIf="initials">{{ initials }}</span>
+            <i class="feather icon-user" *ngIf="!initials"></i>
           </div>
         </div>
 
-        <!-- Logout -->
-        <button type="button" class="profile-logout-btn" (click)="logout()">
-          <i class="feather icon-log-out"></i>
-          <span>Sign out</span>
-        </button>
+        <div class="profile-card-body">
+          <h2 class="profile-username">{{ user.username }}</h2>
+          <p class="profile-email">{{ user.email }}</p>
+
+          <div class="profile-badges">
+            <span class="profile-badge profile-badge-role" *ngFor="let role of roles">{{ role }}</span>
+            <span class="profile-badge" [ngClass]="user.enabled ? 'profile-badge-active' : 'profile-badge-inactive'">
+              <span class="profile-badge-dot"></span>
+              {{ user.enabled ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+
+          <div class="profile-meta-list">
+            <div class="profile-meta-item" *ngIf="entrepriseName">
+              <span class="profile-meta-icon"><i class="feather icon-briefcase"></i></span>
+              <div>
+                <span>Company</span>
+                <strong>{{ entrepriseName }}</strong>
+              </div>
+            </div>
+            <div class="profile-meta-item" *ngIf="user.phone">
+              <span class="profile-meta-icon"><i class="feather icon-phone"></i></span>
+              <div>
+                <span>Phone</span>
+                <strong>{{ user.phone }}</strong>
+              </div>
+            </div>
+            <div class="profile-meta-item" *ngIf="user.id">
+              <span class="profile-meta-icon"><i class="feather icon-hash"></i></span>
+              <div>
+                <span>User ID</span>
+                <strong>#{{ user.id }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="profile-logout-btn" (click)="logout()">
+            <i class="feather icon-log-out"></i>
+            <span>Sign out</span>
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
+    </aside>
 
-  <!-- ── RIGHT: editable form ───────────────────────────────────── -->
-  <div class="profile-form-col">
-    <div class="profile-form-card">
-
-      <!-- Card header -->
-      <div class="profile-form-header">
-        <div class="profile-form-header-left">
-          <span class="profile-form-header-icon"><i class="feather icon-edit-3"></i></span>
+    <main class="profile-form-col">
+      <div class="profile-summary-grid">
+        <div class="profile-summary-item">
+          <span><i class="feather icon-lock"></i></span>
           <div>
-            <h5 class="profile-form-title">Informations du compte</h5>
-            <p class="profile-form-subtitle">Modifiez vos informations personnelles</p>
+            <strong>{{ canEdit ? 'Editable profile' : 'Read only' }}</strong>
+            <small>{{ canEdit ? 'You can update account details' : 'Contact an admin for changes' }}</small>
           </div>
         </div>
-        <span class="profile-readonly-badge" *ngIf="!canEdit">
-          <i class="feather icon-lock me-1"></i>Lecture seule
-        </span>
+        <div class="profile-summary-item">
+          <span><i class="feather icon-briefcase"></i></span>
+          <div>
+            <strong>{{ entrepriseName || 'No company' }}</strong>
+            <small>Current workspace</small>
+          </div>
+        </div>
+        <div class="profile-summary-item">
+          <span><i class="feather icon-key"></i></span>
+          <div>
+            <strong>Password security</strong>
+            <small>Update your access credentials</small>
+          </div>
+        </div>
       </div>
 
-      <div class="profile-form-body">
-        <form #profileForm="ngForm" (ngSubmit)="onSubmit(profileForm)" novalidate>
-          <div class="profile-fields-grid">
-
-            <!-- Username -->
-            <div class="profile-field-group">
-              <label for="username" class="profile-field-label">
-                <i class="feather icon-user"></i>Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                class="profile-field-input"
-                [(ngModel)]="user.username"
-                [disabled]="!canEdit || isSubmitting"
-                required
-                minlength="3"
-                #usernameField="ngModel"
-              />
-              <div class="profile-field-error"
-                   *ngIf="usernameField.invalid && (usernameField.dirty || usernameField.touched)">
-                <i class="feather icon-alert-circle"></i>
-                Username is required (minimum 3 characters).
-              </div>
+      <div class="profile-form-card">
+        <div class="profile-form-header">
+          <div class="profile-form-header-left">
+            <span class="profile-form-header-icon"><i class="feather icon-edit-3"></i></span>
+            <div>
+              <h2 class="profile-form-title">Informations du compte</h2>
+              <p class="profile-form-subtitle">Update the details used across SmartERP.</p>
             </div>
-
-            <!-- Email -->
-            <div class="profile-field-group">
-              <label for="email" class="profile-field-label">
-                <i class="feather icon-mail"></i>Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                class="profile-field-input"
-                [(ngModel)]="user.email"
-                [disabled]="!canEdit || isSubmitting"
-                required
-                email
-                #emailField="ngModel"
-              />
-              <div class="profile-field-error"
-                   *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)">
-                <i class="feather icon-alert-circle"></i>Address email invalide.
-              </div>
-            </div>
-
-            <!-- Phone -->
-            <div class="profile-field-group">
-              <label for="phone" class="profile-field-label">
-                <i class="feather icon-phone"></i>Phone
-              </label>
-              <input
-                type="text"
-                id="phone"
-                name="phone"
-                class="profile-field-input"
-                [(ngModel)]="user.phone"
-                [disabled]="!canEdit || isSubmitting"
-              />
-            </div>
-
-            <!-- Role (read-only) -->
-            <div class="profile-field-group">
-              <label class="profile-field-label">
-                <i class="feather icon-shield"></i>Role
-              </label>
-              <input
-                type="text"
-                class="profile-field-input profile-field-readonly"
-                [value]="primaryRole"
-                disabled
-              />
-            </div>
-
-            <!-- Entreprise (read-only) -->
-            <div class="profile-field-group" *ngIf="entrepriseName">
-              <label class="profile-field-label">
-                <i class="feather icon-briefcase"></i>Company
-              </label>
-              <input
-                type="text"
-                class="profile-field-input profile-field-readonly"
-                [value]="entrepriseName"
-                disabled
-              />
-            </div>
-
-            <!-- Account status (read-only) -->
-            <div class="profile-field-group">
-              <label class="profile-field-label">
-                <i class="feather icon-activity"></i>Status du compte
-              </label>
-              <div class="profile-status-field" [class.profile-status-active]="user.enabled" [class.profile-status-inactive]="!user.enabled">
-                <span class="profile-status-dot"></span>
-                {{ user.enabled ? 'Actif' : 'Inactif' }}
-              </div>
-            </div>
-
           </div>
+          <span class="profile-readonly-badge" *ngIf="!canEdit">
+            <i class="feather icon-lock"></i>
+            Lecture seule
+          </span>
+        </div>
 
-          <!-- Actions -->
-          <div class="profile-form-actions" *ngIf="canEdit">
-            <button
-              type="button"
-              class="profile-btn-cancel"
-              (click)="cancel()"
-              [disabled]="isSubmitting"
-            >
+        <div class="profile-form-body">
+          <form #profileForm="ngForm" (ngSubmit)="onSubmit(profileForm)" novalidate>
+            <div class="profile-fields-grid">
+              <div class="profile-field-group">
+                <label for="username" class="profile-field-label">
+                  <i class="feather icon-user"></i> Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  class="profile-field-input"
+                  [(ngModel)]="user.username"
+                  [disabled]="!canEdit || isSubmitting"
+                  required
+                  minlength="3"
+                  #usernameField="ngModel"
+                />
+                <div class="profile-field-error" *ngIf="usernameField.invalid && (usernameField.dirty || usernameField.touched)">
+                  <i class="feather icon-alert-circle"></i>
+                  Username is required, minimum 3 characters.
+                </div>
+              </div>
+
+              <div class="profile-field-group">
+                <label for="email" class="profile-field-label">
+                  <i class="feather icon-mail"></i> Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="profile-field-input"
+                  [(ngModel)]="user.email"
+                  [disabled]="!canEdit || isSubmitting"
+                  required
+                  email
+                  #emailField="ngModel"
+                />
+                <div class="profile-field-error" *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)">
+                  <i class="feather icon-alert-circle"></i>
+                  Invalid email address.
+                </div>
+              </div>
+
+              <div class="profile-field-group">
+                <label for="phone" class="profile-field-label">
+                  <i class="feather icon-phone"></i> Phone
+                </label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  class="profile-field-input"
+                  [(ngModel)]="user.phone"
+                  [disabled]="!canEdit || isSubmitting"
+                />
+              </div>
+
+              <div class="profile-field-group">
+                <label class="profile-field-label">
+                  <i class="feather icon-shield"></i> Role
+                </label>
+                <input type="text" class="profile-field-input profile-field-readonly" [value]="primaryRole" disabled />
+              </div>
+
+              <div class="profile-field-group" *ngIf="entrepriseName">
+                <label class="profile-field-label">
+                  <i class="feather icon-briefcase"></i> Company
+                </label>
+                <input type="text" class="profile-field-input profile-field-readonly" [value]="entrepriseName" disabled />
+              </div>
+
+              <div class="profile-field-group">
+                <label class="profile-field-label">
+                  <i class="feather icon-activity"></i> Account status
+                </label>
+                <div class="profile-status-field" [class.profile-status-active]="user.enabled" [class.profile-status-inactive]="!user.enabled">
+                  <span class="profile-status-dot"></span>
+                  {{ user.enabled ? 'Actif' : 'Inactif' }}
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-form-actions" *ngIf="canEdit">
+              <button type="button" class="profile-btn-cancel" (click)="cancel()" [disabled]="isSubmitting">
+                Cancel
+              </button>
+              <button type="submit" class="profile-btn-save" [disabled]="profileForm.invalid || isSubmitting">
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <i class="feather icon-save" *ngIf="!isSubmitting"></i>
+                Save changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="profile-form-card profile-password-card" [class.is-open]="showPasswordForm">
+        <div class="profile-form-header">
+          <div class="profile-form-header-left">
+            <span class="profile-form-header-icon"><i class="feather icon-lock"></i></span>
+            <div>
+              <h2 class="profile-form-title">Changer le mot de passe</h2>
+              <p class="profile-form-subtitle">Keep your account secure with a strong password.</p>
+            </div>
+          </div>
+          <button type="button" class="profile-icon-action" (click)="togglePasswordForm()" [attr.aria-label]="showPasswordForm ? 'Close password form' : 'Edit password'">
+            <i class="feather" [ngClass]="showPasswordForm ? 'icon-x' : 'icon-edit-2'"></i>
+          </button>
+        </div>
+
+        <div class="profile-form-body" *ngIf="showPasswordForm">
+          <div class="profile-fields-grid profile-password-grid">
+            <div class="profile-field-group">
+              <label for="currentPassword" class="profile-field-label">
+                <i class="feather icon-lock"></i> Current password
+              </label>
+              <input
+                type="password"
+                id="currentPassword"
+                name="currentPassword"
+                class="profile-field-input"
+                [(ngModel)]="currentPassword"
+                [disabled]="isChangingPassword"
+                placeholder="Current password"
+              />
+            </div>
+            <div class="profile-field-group">
+              <label for="newPassword" class="profile-field-label">
+                <i class="feather icon-key"></i> New password
+              </label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                class="profile-field-input"
+                [(ngModel)]="newPassword"
+                [disabled]="isChangingPassword"
+                placeholder="Minimum 6 characters"
+              />
+            </div>
+            <div class="profile-field-group">
+              <label for="confirmPassword" class="profile-field-label">
+                <i class="feather icon-check-circle"></i> Confirm password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                class="profile-field-input"
+                [(ngModel)]="confirmPassword"
+                [disabled]="isChangingPassword"
+                placeholder="Repeat the new password"
+              />
+            </div>
+          </div>
+          <div class="profile-form-actions">
+            <button type="button" class="profile-btn-cancel" (click)="togglePasswordForm()" [disabled]="isChangingPassword">
               Cancel
             </button>
-            <button
-              type="submit"
-              class="profile-btn-save"
-              [disabled]="profileForm.invalid || isSubmitting"
-            >
-              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              <i class="feather icon-save me-2" *ngIf="!isSubmitting"></i>
-              Save
+            <button type="button" class="profile-btn-save" (click)="onChangePassword()" [disabled]="isChangingPassword">
+              <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <i class="feather icon-check" *ngIf="!isChangingPassword"></i>
+              Update password
             </button>
           </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- ── Change Password Card ───────────────────────────────────────── -->
-    <div class="profile-form-card" style="margin-top: 20px;">
-      <div class="profile-form-header">
-        <div class="profile-form-header-left">
-          <span class="profile-form-header-icon"><i class="feather icon-lock"></i></span>
-          <div>
-            <h5 class="profile-form-title">Changer le mot de passe</h5>
-            <p class="profile-form-subtitle">Secure your account with a new password</p>
-          </div>
-        </div>
-        <button type="button" class="profile-btn-cancel" (click)="togglePasswordForm()">
-          {{ showPasswordForm ? 'Close' : 'Edit' }}
-        </button>
-      </div>
-
-      <div class="profile-form-body" *ngIf="showPasswordForm">
-        <div class="profile-fields-grid">
-          <div class="profile-field-group">
-            <label for="currentPassword" class="profile-field-label">
-              <i class="feather icon-lock"></i>Password actuel
-            </label>
-            <input
-              type="password"
-              id="currentPassword"
-              name="currentPassword"
-              class="profile-field-input"
-              [(ngModel)]="currentPassword"
-              [disabled]="isChangingPassword"
-              placeholder="••••••••"
-            />
-          </div>
-          <div class="profile-field-group">
-            <label for="newPassword" class="profile-field-label">
-              <i class="feather icon-key"></i>Nouveau mot de passe
-            </label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              class="profile-field-input"
-              [(ngModel)]="newPassword"
-              [disabled]="isChangingPassword"
-              placeholder="Minimum 6 characters"
-            />
-          </div>
-          <div class="profile-field-group">
-            <label for="confirmPassword" class="profile-field-label">
-              <i class="feather icon-check-circle"></i>Confirmer le mot de passe
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              class="profile-field-input"
-              [(ngModel)]="confirmPassword"
-              [disabled]="isChangingPassword"
-              placeholder="Repeat the new password"
-            />
-          </div>
-        </div>
-        <div class="profile-form-actions">
-          <button type="button" class="profile-btn-cancel" (click)="togglePasswordForm()" [disabled]="isChangingPassword">
-            Cancel
-          </button>
-          <button type="button" class="profile-btn-save" (click)="onChangePassword()" [disabled]="isChangingPassword">
-            <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            <i class="feather icon-check me-2" *ngIf="!isChangingPassword"></i>
-            Update
-          </button>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 
-</div>
-
-<!-- Error fallback -->
-<div class="profile-error-alert" *ngIf="!isLoading && !user">
-  <i class="feather icon-alert-triangle me-2"></i>
-  Impossible de charger votre profil. Veuillez vous reconnecter.
-</div>
+  <div class="profile-error-alert" *ngIf="!isLoading && !user">
+    <i class="feather icon-alert-triangle"></i>
+    Impossible de charger votre profil. Veuillez vous reconnecter.
+  </div>
+</section>

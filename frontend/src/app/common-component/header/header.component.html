@@ -22,7 +22,7 @@
         <div class="logo-name">
           <span class="logo-text-smart">Smart</span><span class="logo-text-erp">ERP</span>
         </div>
-        <span class="logo-tagline">Business Manager</span>
+        <span class="logo-tagline">{{ 'app.businessManager' | translate }}</span>
       </div>
     </div>
   </a>
@@ -36,7 +36,7 @@
           #searchInput
           type="text"
           class="search-input"
-          placeholder="Search clients, articles, commandes..."
+          [placeholder]="'header.search.placeholder' | translate"
           [(ngModel)]="searchQuery"
           (input)="onSearchInput(searchQuery)"
           (blur)="onSearchBlur()"
@@ -71,21 +71,28 @@
             <div class="empty-icon-wrap">
               <i class="feather icon-search"></i>
             </div>
-            <p class="empty-title">No results for "{{ searchQuery }}"</p>
-            <p class="empty-hint">Try a name, reference, or email</p>
+            <p class="empty-title">
+              {{ 'header.search.noResults' | translate:{ query: searchQuery } }}
+            </p>
+            <p class="empty-hint">{{ 'header.search.hint' | translate }}</p>
           </div>
 
           <!-- Grouped results -->
           <div class="dropdown-groups" *ngIf="!isSearching && searchResults.length > 0">
             <div class="results-header">
-              <span class="results-count">{{ searchResults.length }} result{{ searchResults.length > 1 ? 's' : '' }}</span>
-              <span class="results-nav-hint"><kbd>↑</kbd><kbd>↓</kbd> naviguer &nbsp;<kbd>↵</kbd> ouvrir</span>
+              <span class="results-count">
+                {{ 'header.search.resultCount' | translate:{ count: searchResults.length } }}
+              </span>
+              <span class="results-nav-hint">
+                <kbd>↑</kbd><kbd>↓</kbd> {{ 'header.search.navigate' | translate }}
+                &nbsp;<kbd>↵</kbd> {{ 'header.search.open' | translate }}
+              </span>
             </div>
 
             <div class="result-group" *ngFor="let group of groupedResults">
               <div class="result-group-header">
                 <i class="feather {{ group.icon }}"></i>
-                <span>{{ group.label }}</span>
+                <span>{{ group.label | translate }}</span>
                 <span class="group-count">{{ group.results.length }}</span>
               </div>
               <ul class="results-list">
@@ -117,7 +124,7 @@
 
       <!-- Theme Toggle -->
       <button class="icon-btn theme-toggle-btn"
-        [title]="lightMode ? 'Dark mode' : 'Light mode'"
+        [title]="lightMode ? ('header.darkMode' | translate) : ('header.lightMode' | translate)"
         type="button"
         (click)="changeThemeMode(lightMode ? 'dark_mode' : 'light_mode')">
         <i class="feather" [ngClass]="lightMode ? 'icon-moon' : 'icon-sun'"></i>
@@ -129,7 +136,7 @@
           (click)="toggleNotifications()"
           [class.has-badge]="unreadCount > 0"
           type="button"
-          title="Notifications">
+          [title]="'header.notifications.title' | translate">
           <i class="feather icon-bell"></i>
           <span class="badge-count" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
         </button>
@@ -137,8 +144,10 @@
         <!-- Notifications Dropdown -->
         <div class="dropdown-panel notifications-dropdown animate-dropdown" *ngIf="showNotifications">
           <div class="dropdown-header">
-            <h6 class="dropdown-title">Notifications</h6>
-            <button class="mark-read-btn" (click)="markAllRead()" type="button" *ngIf="unreadCount > 0">Mark all read</button>
+            <h6 class="dropdown-title">{{ 'header.notifications.title' | translate }}</h6>
+            <button class="mark-read-btn" (click)="markAllRead()" type="button" *ngIf="unreadCount > 0">
+              {{ 'header.notifications.markAllRead' | translate }}
+            </button>
           </div>
 
           <div class="dropdown-content">
@@ -166,14 +175,15 @@
               </li>
               <li *ngIf="notifications.length === 0" class="empty-state">
                 <i class="feather icon-bell-off"></i>
-                <p>No notifications yet</p>
+                <p>{{ 'header.notifications.empty' | translate }}</p>
               </li>
             </ul>
           </div>
 
           <div class="dropdown-footer" *ngIf="notifications.length > 0">
             <a [routerLink]="routes.activities" class="view-all-link">
-              View all <i class="feather icon-arrow-right"></i>
+              {{ 'header.notifications.viewAll' | translate }}
+              <i class="feather icon-arrow-right"></i>
             </a>
           </div>
         </div>
@@ -211,21 +221,49 @@
                 <i class="feather icon-briefcase"></i> {{ entrepriseName }}
               </p>
               <p class="profile-org" *ngIf="isSuperAdmin && !entrepriseName" style="color:#f59e0b;">
-                <i class="feather icon-alert-circle"></i> No company selected
+                <i class="feather icon-alert-circle"></i>
+                {{ 'header.profile.noCompany' | translate }}
               </p>
             </div>
           </div>
 
           <div class="profile-menu">
+            <div class="profile-language">
+              <div class="profile-language-label">
+                <i class="feather icon-globe"></i>
+                <span>{{ 'header.profile.language' | translate }}</span>
+              </div>
+              <div
+                class="language-switch"
+                role="group"
+                [attr.aria-label]="'header.profile.language' | translate">
+                <button
+                  type="button"
+                  [class.active]="currentLanguage === 'en'"
+                  [attr.aria-pressed]="currentLanguage === 'en'"
+                  (click)="changeLanguage('en')">
+                  EN
+                </button>
+                <button
+                  type="button"
+                  [class.active]="currentLanguage === 'fr'"
+                  [attr.aria-pressed]="currentLanguage === 'fr'"
+                  (click)="changeLanguage('fr')">
+                  FR
+                </button>
+              </div>
+            </div>
+
+            <div class="menu-divider"></div>
             <a [routerLink]="routes.profile" class="profile-menu-item">
               <i class="feather icon-user"></i>
-              <span>My Profile</span>
+              <span>{{ 'header.profile.myProfile' | translate }}</span>
             </a>
 
             <div class="menu-divider"></div>
             <button class="profile-menu-item logout" (click)="logout()" type="button">
               <i class="feather icon-log-out"></i>
-              <span>Logout</span>
+              <span>{{ 'header.profile.logout' | translate }}</span>
             </button>
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SpinnerService } from './core/core.index';
+import { LanguageService } from './core/service/language/language.service';
 
 
 @Component({
@@ -21,7 +22,13 @@ export class AppComponent implements OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private router: Router, private spinner: SpinnerService) {
+  constructor(
+    private router: Router,
+    private spinner: SpinnerService,
+    private languageService: LanguageService
+  ) {
+    this.languageService.init();
+
     // Single subscription to router events – the previous code subscribed
     // twice and did the same work for every navigation, doubling overhead.
     this.router.events

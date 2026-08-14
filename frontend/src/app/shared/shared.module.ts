@@ -34,6 +34,7 @@ import { TimepickerActions, TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { DatePipe } from '@angular/common';
 import { FeatherModule } from 'angular-feather';
 import { Tool } from 'angular-feather/icons';
+import { TranslateModule } from '@ngx-translate/core';
 
 const icons = {
   Tool
@@ -69,6 +70,7 @@ const icons = {
     NgxMatIntlTelInputComponent,
     CountUpModule,
     TimepickerModule,
+    TranslateModule,
     
     FeatherModule.pick(icons)
 
@@ -101,7 +103,8 @@ const icons = {
     NgxMatIntlTelInputComponent,
     CountUpModule,
     TimepickerModule,
-    FeatherModule
+    FeatherModule,
+    TranslateModule
   ],
   providers: [
     DataService,

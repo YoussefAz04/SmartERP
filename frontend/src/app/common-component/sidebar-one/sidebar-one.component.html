@@ -5,18 +5,20 @@
         @for (mainTittle of side_bar_data; track mainTittle) {
         <li class="submenu-open">
           <h6 class="submenu-hdr">
-            <span class="hdr-text">{{ mainTittle.tittle }}</span>
+            <span class="hdr-text">{{ mainTittle.tittle | translate }}</span>
           </h6>
           <ul>
             @for (menu of mainTittle?.menu; track menu) {
               @if (menu?.hasSubRoute === false) {
                 <li class="nav-item">
                   <a class="nav-link" [routerLink]="menu?.route" routerLinkActive="active"
-                    [routerLinkActiveOptions]="{ exact: true }">
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    [attr.title]="menu?.menuValue | translate"
+                    [attr.aria-label]="menu?.menuValue | translate">
                     <span class="nav-icon-wrap">
                       <i class="feather" [class]="'icon-' + menu.icon"></i>
                     </span>
-                    <span class="nav-label">{{ menu?.menuValue }}</span>
+                    <span class="nav-label">{{ menu?.menuValue | translate }}</span>
                   </a>
                 </li>
               }
@@ -24,11 +26,13 @@
                 <li class="submenu nav-item">
                   <a class="nav-link" href="javascript:void(0)" (click)="expandSubMenus(menu)"
                     [ngClass]="{ 'subdrop': menu.showSubRoute === true }"
+                    [attr.title]="menu.menuValue | translate"
+                    [attr.aria-label]="menu.menuValue | translate"
                     [class.active]="base === menu.base1 || base === menu.base || (menu.page && page === menu.page)">
                     <span class="nav-icon-wrap">
                       <i class="feather" [class]="'icon-' + menu.icon"></i>
                     </span>
-                    <span class="nav-label">{{ menu.menuValue }}</span>
+                    <span class="nav-label">{{ menu.menuValue | translate }}</span>
                     <span class="menu-arrow">
                       <i class="feather icon-chevron-down arrow-icon"></i>
                     </span>
@@ -38,7 +42,7 @@
                       <li class="submenu-item">
                         <a [routerLink]="subMenus.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="submenu-link">
                           <span class="submenu-dot"></span>
-                          <span>{{ subMenus.menuValue }}</span>
+                          <span>{{ subMenus.menuValue | translate }}</span>
                         </a>
                       </li>
                     }
@@ -49,11 +53,13 @@
                 <li class="submenu nav-item">
                   <a class="nav-link" href="javascript:void(0);" (click)="openMenu(menu)"
                     [ngClass]="{'subdrop' : openMenuItem === menu}"
+                    [attr.title]="menu.menuValue | translate"
+                    [attr.aria-label]="menu.menuValue | translate"
                     [class.active]="base === menu.base">
                     <span class="nav-icon-wrap">
                       <i class="feather" [class]="'icon-' + menu.icon"></i>
                     </span>
-                    <span class="nav-label">{{ menu.menuValue }}</span>
+                    <span class="nav-label">{{ menu.menuValue | translate }}</span>
                     <span class="menu-arrow">
                       <i class="feather icon-chevron-down arrow-icon"></i>
                     </span>
@@ -64,7 +70,7 @@
                         <li class="submenu-item">
                           <a [routerLink]="subMenus.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="submenu-link">
                             <span class="submenu-dot"></span>
-                            <span>{{ subMenus.menuValue }}</span>
+                            <span>{{ subMenus.menuValue | translate }}</span>
                           </a>
                         </li>
                       }
@@ -74,7 +80,7 @@
                             [class.active]="page === subMenus.page1 || page === subMenus.page2 || page === subMenus.page3 || page === subMenus.page4 || page === subMenus.page5 || page === subMenus.page6 || page === subMenus.page7 || page === subMenus.page8"
                             (click)="openSubmenuOne(subMenus)" [ngClass]="{'subdrop' : openSubmenuOneItem === subMenus}">
                             <span class="submenu-dot"></span>
-                            <span>{{ subMenus.menuValue }}</span>
+                            <span>{{ subMenus.menuValue | translate }}</span>
                             <span class="menu-arrow">
                               <i class="feather icon-chevron-right arrow-icon-sm"></i>
                             </span>
@@ -84,7 +90,7 @@
                               <li class="submenu-item">
                                 <a [routerLink]="subMenuTwo.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="submenu-link">
                                   <span class="submenu-dot"></span>
-                                  <span>{{ subMenuTwo.menuValue }}</span>
+                                  <span>{{ subMenuTwo.menuValue | translate }}</span>
                                 </a>
                               </li>
                             }

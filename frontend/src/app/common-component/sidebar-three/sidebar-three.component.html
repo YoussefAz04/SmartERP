@@ -9,7 +9,7 @@
             [class.subdrop]="opendSubMenu[0] === mainTittle.tittle"
             >
             <i class="feather" [class]="'icon-' + mainTittle.featherIcon"></i>
-            <span> {{ mainTittle.tittle }}</span>
+            <span> {{ mainTittle.tittle | translate }}</span>
             <span class="menu-arrow"></span>
           </a>
           <ul
@@ -27,7 +27,7 @@
                     [class.active]="mainMenus.activeRoute === activePath"
                     >
                     <i class="feather" [class]="'icon-' + mainMenus.featherIcon"></i>
-                    <span>{{ mainMenus.tittle }}</span>
+                    <span>{{ mainMenus.tittle | translate }}</span>
                   </a>
                 </li>
               }
@@ -41,7 +41,7 @@
                     (click)="showSubMenu(mainMenus.tittle)"
                     >
                     <i class="feather" [class]="'icon-' + mainMenus.featherIcon"></i>
-                    <span>{{ mainMenus.tittle }}</span>
+                    <span>{{ mainMenus.tittle | translate }}</span>
                     <span class="menu-arrow"></span>
                   </a>
                   <ul routerLinkActive="active"
@@ -56,7 +56,7 @@
                         <a
                           [routerLink]="subDropMenus.route"
                           routerLinkActive="active"
-                          >{{ subDropMenus.tittle }}</a
+                          >{{ subDropMenus.tittle | translate }}</a
                           >
                         </li>
                       }
@@ -82,7 +82,7 @@
                   [class.subdrop]="opendSubMenu[0] === mainTittle.tittle"
                   >
                   <i class="feather" [class]="'icon-' + mainTittle.featherIcon"></i>
-                  <span>{{ mainTittle.tittle }}</span>
+                  <span>{{ mainTittle.tittle | translate }}</span>
                   <span class="menu-arrow"></span>
                 </a>
                 <ul
@@ -99,7 +99,7 @@
                           [class.active]="mainMenus.activeRoute === activePath"
                           >
                           <i class="feather" [class]="'icon-' + mainMenus.featherIcon"></i>
-                          <span>{{ mainMenus.tittle }}</span>
+                          <span>{{ mainMenus.tittle | translate }}</span>
                         </a>
                       </li>
                     }
@@ -113,7 +113,7 @@
                           (click)="showSubMenu(mainMenus.tittle)"
                           >
                           <i class="feather" [class]="'icon-' + mainMenus.featherIcon"></i>
-                          <span>{{ mainMenus.tittle }}</span>
+                          <span>{{ mainMenus.tittle | translate }}</span>
                           <span class="menu-arrow"></span>
                         </a>
                         <ul
@@ -127,7 +127,7 @@
                               <a
                                 [routerLink]="subDropMenus.route"
                                 routerLinkActive="active"
-                                >{{ subDropMenus.tittle }}</a
+                                >{{ subDropMenus.tittle | translate }}</a
                                 >
                               </li>
                             }

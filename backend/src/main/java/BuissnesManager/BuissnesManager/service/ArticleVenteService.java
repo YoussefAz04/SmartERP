@@ -36,6 +36,9 @@ public class ArticleVenteService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     public List<ArticleVente> getAllArticlesVente() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
@@ -73,6 +76,10 @@ public class ArticleVenteService {
             if (articleAchat.getEntreprise() != null) {
                 notificationService.createArticleVenteAddedNotification(saved, articleAchat.getEntreprise());
             }
+            auditLogService.log("ARTICLE_VENTE_CREATED",
+                    "Article de vente cree: nom=" + saved.getNom()
+                            + ", id=" + saved.getId()
+                            + ", articleAchatId=" + articleAchatId);
             return saved;
         } catch (DataIntegrityViolationException e) {
             throw new RuntimeException("Impossible de créer l'ArticleVente: contrainte d'intégrité violée. Vérifiez que l'article avec id=" + articleAchatId + " existe.", e);
@@ -102,14 +109,19 @@ public class ArticleVenteService {
                     .orElseThrow(() -> new RuntimeException("Client non trouvé avec id: " + clientId));
             existing.setClient(managedClient);
         }
-        return articleVenteRepo.save(existing);
+        ArticleVente saved = articleVenteRepo.save(existing);
+        auditLogService.log("ARTICLE_VENTE_UPDATED",
+                "Article de vente modifie: nom=" + saved.getNom()
+                        + ", id=" + saved.getId());
+        return saved;
     }
 
     @Transactional
     public void deleteArticleVente(Long id) {
-        if (!articleVenteRepo.existsById(id)) {
-            throw new RuntimeException("ArticleVente non trouvé avec id: " + id);
-        }
+        ArticleVente existing = articleVenteRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("ArticleVente non trouvé avec id: " + id));
         articleVenteRepo.deleteById(id);
+        auditLogService.log("ARTICLE_VENTE_DELETED",
+                "Article de vente supprime: nom=" + existing.getNom() + ", id=" + id);
     }
 }

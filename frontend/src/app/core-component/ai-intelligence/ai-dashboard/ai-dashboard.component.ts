@@ -537,6 +537,13 @@ export class AiDashboardComponent implements OnInit {
     this.activeModal = null;
   }
 
+  scrollToRecommendations(): void {
+    document.getElementById('recommendations')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }
+
   navigateFromRecommendation(rec: Recommendation): void {
     switch (rec.type) {
       case 'ML_RISQUE_STOCK':

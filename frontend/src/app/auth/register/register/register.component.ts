@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { routes } from 'src/app/core/helpers/routes';
 import { AuthService } from 'src/app/auth/service/auth.service';
@@ -60,7 +60,7 @@ export class RegisterComponent implements OnInit {
     return '';
   }
 
-  passwordMatchValidator(group: FormGroup): { [key: string]: any } | null {
+  passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
     
@@ -120,7 +120,9 @@ export class RegisterComponent implements OnInit {
         console.error('❌ Registration error:', error);
         this.isLoading = false;
         
-        if (error.error?.message) {
+        if (typeof error.error === 'string') {
+          this.errorMessage = error.error;
+        } else if (error.error?.message) {
           this.errorMessage = error.error.message;
         } else if (error.error?.status === 'error') {
           this.errorMessage = error.error.message;

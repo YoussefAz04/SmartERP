@@ -5,14 +5,14 @@
       <i class="feather icon-shield"></i>
     </div>
     <div class="al-header-text">
-      <h1>Audit Log</h1>
-      <p>Historique des actions importantes du système</p>
+      <h1>{{ 'auditLog.title' | translate }}</h1>
+      <p>{{ 'auditLog.subtitle' | translate }}</p>
     </div>
   </div>
   <div class="al-header-right">
     <div class="al-stats-badge">
       <i class="feather icon-activity"></i>
-      <span>{{ filteredLogs.length }} entrée{{ filteredLogs.length !== 1 ? 's' : '' }}</span>
+      <span>{{ 'auditLog.entryCount' | translate:{ count: filteredLogs.length } }}</span>
     </div>
   </div>
 </div>
@@ -25,7 +25,7 @@
       <input
         type="search"
         class="al-search-input"
-        placeholder="Search par utilisateur, détail…"
+        [placeholder]="'auditLog.searchPlaceholder' | translate"
         [(ngModel)]="searchText"
         (ngModelChange)="applyFilters()"
       />
@@ -34,9 +34,9 @@
       <div class="al-action-select">
         <i class="feather icon-filter al-select-icon"></i>
         <select class="al-select" [(ngModel)]="selectedAction" (ngModelChange)="applyFilters()">
-          <option value="">Toutes les actions</option>
+          <option value="">{{ 'auditLog.allActions' | translate }}</option>
           <option *ngFor="let action of uniqueActions" [value]="action">
-            {{ getActionLabel(action) }}
+            {{ getActionLabelKey(action) | translate }}
           </option>
         </select>
       </div>
@@ -48,11 +48,11 @@
             class="al-date-input"
             [(ngModel)]="filterDateFrom"
             (ngModelChange)="applyFilters()"
-            title="Date de début"
-            aria-label="Filtrer à partir du"
+            [title]="'auditLog.dateFrom' | translate"
+            [attr.aria-label]="'auditLog.dateFrom' | translate"
           />
         </div>
-        <span class="al-date-sep">–</span>
+        <span class="al-date-sep">-</span>
         <div class="al-date-input-wrap">
           <i class="feather icon-calendar al-date-cal-icon"></i>
           <input
@@ -60,8 +60,8 @@
             class="al-date-input"
             [(ngModel)]="filterDateTo"
             (ngModelChange)="applyFilters()"
-            title="Date de fin"
-            aria-label="Filtrer jusqu'au"
+            [title]="'auditLog.dateTo' | translate"
+            [attr.aria-label]="'auditLog.dateTo' | translate"
           />
         </div>
       </div>
@@ -70,7 +70,7 @@
         class="al-btn-reset"
         *ngIf="hasActiveFilters"
         (click)="resetFilters()"
-        title="Reset les filtres"
+        [title]="'auditLog.resetFilters' | translate"
       >
         <i class="feather icon-x"></i>
       </button>
@@ -80,7 +80,7 @@
   <!-- Loading -->
   <div *ngIf="isLoading" class="al-empty-state">
     <div class="al-spinner"></div>
-    <p>Chargement du journal…</p>
+    <p>{{ 'auditLog.loading' | translate }}</p>
   </div>
 
   <!-- Empty -->
@@ -88,8 +88,8 @@
     <div class="al-empty-icon">
       <i class="feather icon-clipboard"></i>
     </div>
-    <h3>Aucune entrée trouvée</h3>
-    <p>Try adjusting your search or filter criteria.</p>
+    <h3>{{ 'auditLog.emptyTitle' | translate }}</h3>
+    <p>{{ 'auditLog.emptyHint' | translate }}</p>
   </div>
 
   <!-- Table -->
@@ -97,10 +97,10 @@
     <table class="al-table">
       <thead>
         <tr>
-          <th class="al-th-date">Date</th>
-          <th class="al-th-action">Action</th>
-          <th>User</th>
-          <th>Détails</th>
+          <th class="al-th-date">{{ 'auditLog.table.date' | translate }}</th>
+          <th class="al-th-action">{{ 'auditLog.table.action' | translate }}</th>
+          <th>{{ 'auditLog.table.user' | translate }}</th>
+          <th>{{ 'auditLog.table.details' | translate }}</th>
           <th>IP</th>
         </tr>
       </thead>
@@ -113,7 +113,7 @@
           <td class="al-td-action">
             <span class="al-action-badge" [ngClass]="getActionBadgeClass(log.action)">
               <i class="feather" [ngClass]="getActionIcon(log.action)"></i>
-              {{ getActionLabel(log.action) }}
+              {{ getActionLabelKey(log.action) | translate }}
             </span>
           </td>
           <td class="al-td-user">
@@ -121,14 +121,14 @@
               <div class="al-avatar">{{ log.username.charAt(0).toUpperCase() }}</div>
               <span>{{ log.username }}</span>
             </div>
-            <ng-template #noUser><span class="al-dash">—</span></ng-template>
+            <ng-template #noUser><span class="al-dash">-</span></ng-template>
           </td>
-          <td class="al-td-details">{{ log.details || '—' }}</td>
+          <td class="al-td-details">{{ log.details || '-' }}</td>
           <td class="al-td-ip">
             <span class="al-ip-badge" *ngIf="log.ipAddress; else noIp">
               <i class="feather icon-wifi"></i> {{ log.ipAddress }}
             </span>
-            <ng-template #noIp><span class="al-dash">—</span></ng-template>
+            <ng-template #noIp><span class="al-dash">-</span></ng-template>
           </td>
         </tr>
       </tbody>

@@ -1,0 +1,446 @@
+<div class="sav-page">
+  <header class="sav-header">
+    <div>
+      <span class="sav-eyebrow">{{ 'sav.eyebrow' | translate }}</span>
+      <h1>{{ 'sav.title' | translate }}</h1>
+      <p>{{ 'sav.subtitle' | translate }}</p>
+    </div>
+    <div class="sav-header-actions">
+      <button type="button" class="sav-btn sav-btn-light" (click)="loadData()">
+        <i class="feather icon-refresh-cw"></i>
+        {{ 'common.refresh' | translate }}
+      </button>
+      <button type="button" class="sav-btn sav-btn-primary" (click)="openCreateForm()">
+        <i class="feather icon-plus"></i>
+        {{ 'sav.actions.newTicket' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <section class="sav-stats" aria-label="SAV overview">
+    <div class="sav-stat">
+      <i class="feather icon-inbox"></i>
+      <span>{{ 'sav.stats.total' | translate }}</span>
+      <strong>{{ stats.total }}</strong>
+    </div>
+    <div class="sav-stat sav-stat-open">
+      <i class="feather icon-circle"></i>
+      <span>{{ 'sav.status.OUVERT' | translate }}</span>
+      <strong>{{ stats.open }}</strong>
+    </div>
+    <div class="sav-stat sav-stat-progress">
+      <i class="feather icon-loader"></i>
+      <span>{{ 'sav.status.EN_COURS' | translate }}</span>
+      <strong>{{ stats.inProgress }}</strong>
+    </div>
+    <div class="sav-stat sav-stat-overdue">
+      <i class="feather icon-alert-triangle"></i>
+      <span>{{ 'sav.stats.overdue' | translate }}</span>
+      <strong>{{ stats.overdue }}</strong>
+    </div>
+    <div class="sav-stat sav-stat-unassigned">
+      <i class="feather icon-user-x"></i>
+      <span>{{ 'sav.stats.unassigned' | translate }}</span>
+      <strong>{{ stats.unassigned }}</strong>
+    </div>
+    <div class="sav-stat sav-stat-done">
+      <i class="feather icon-check-circle"></i>
+      <span>{{ 'sav.stats.finished' | translate }}</span>
+      <strong>{{ stats.resolved + stats.closed }}</strong>
+    </div>
+  </section>
+
+  <section class="sav-workflow-overview">
+    <div class="sav-workflow-heading">
+      <i class="feather icon-git-commit"></i>
+      <div><strong>{{ 'sav.workflow.title' | translate }}</strong><span>{{ 'sav.workflow.subtitle' | translate }}</span></div>
+    </div>
+    <div class="sav-workflow-track">
+      <div *ngFor="let status of ['OUVERT','QUALIFICATION','EN_ATTENTE_PRODUIT','DIAGNOSTIC','EN_ATTENTE_ACCORD','EN_REPARATION','PRET_RESTITUTION','RESOLU']; let i = index" class="sav-workflow-step">
+        <span>{{ i + 1 }}</span><small>{{ 'sav.status.' + status | translate }}</small>
+      </div>
+    </div>
+  </section>
+
+  <div class="sav-alert" *ngIf="errorMessage">
+    <i class="feather icon-alert-circle"></i>
+    <span>{{ errorMessage | translate }}</span>
+    <button type="button" (click)="errorMessage = ''" [title]="'sav.actions.close' | translate">
+      <i class="feather icon-x"></i>
+    </button>
+  </div>
+
+  <section class="sav-form-panel" *ngIf="showForm">
+    <div class="sav-form-header">
+      <div>
+        <span>{{ editingTicket?.reference || ('sav.form.newReference' | translate) }}</span>
+        <h2>{{ (editingTicket ? 'sav.form.editTitle' : 'sav.form.createTitle') | translate }}</h2>
+      </div>
+      <button type="button" class="sav-icon-btn" (click)="closeForm()" [title]="'sav.actions.close' | translate">
+        <i class="feather icon-x"></i>
+      </button>
+    </div>
+
+    <form class="sav-form" (ngSubmit)="saveTicket()">
+      <div class="sav-form-section-title">
+        <i class="feather icon-message-circle"></i>
+        <span>{{ 'sav.form.sections.request' | translate }}</span>
+      </div>
+
+      <label class="sav-field-span-2">
+        <span>{{ 'sav.form.subject' | translate }} *</span>
+        <input type="text" name="subject" [(ngModel)]="form.subject" required maxlength="180" />
+      </label>
+      <label>
+        <span>{{ 'sav.form.client' | translate }}</span>
+        <select name="clientId" [(ngModel)]="form.clientId" (ngModelChange)="onClientChange()">
+          <option [ngValue]="null">{{ 'sav.form.noClient' | translate }}</option>
+          <option *ngFor="let client of clients" [ngValue]="client.id">{{ getClientName(client) }}</option>
+        </select>
+      </label>
+      <label>
+        <span>{{ 'sav.form.contactChannel' | translate }}</span>
+        <select name="contactChannel" [(ngModel)]="form.contactChannel">
+          <option *ngFor="let channel of contactChannels" [ngValue]="channel">{{ 'sav.channel.' + channel | translate }}</option>
+        </select>
+      </label>
+      <label class="sav-field-wide">
+        <span>{{ 'sav.form.description' | translate }}</span>
+        <textarea name="description" rows="3" [(ngModel)]="form.description" maxlength="2000"></textarea>
+      </label>
+
+      <div class="sav-form-section-title">
+        <i class="feather icon-package"></i>
+        <span>{{ 'sav.form.sections.product' | translate }}</span>
+      </div>
+      <label class="sav-field-span-2">
+        <span>{{ 'sav.form.originalSale' | translate }}</span>
+        <select name="selectedSaleKey" [(ngModel)]="selectedSaleKey" (ngModelChange)="onSaleChange()" [disabled]="!form.clientId || isSalesLoading">
+          <option value="">{{ (isSalesLoading ? 'sav.form.loadingSales' : 'sav.form.noVerifiedSale') | translate }}</option>
+          <option *ngFor="let sale of eligibleSales" [value]="sale.orderId + ':' + sale.articleVenteId">
+            {{ sale.orderReference }} · {{ sale.orderDate | date:'dd/MM/yyyy' }} · {{ sale.articleName }} × {{ sale.quantity }}
+          </option>
+        </select>
+        <small>{{ 'sav.form.saleHint' | translate }}</small>
+      </label>
+      <label class="sav-field-span-2">
+        <span>{{ 'sav.form.product' | translate }}</span>
+        <select name="articleVenteId" [(ngModel)]="form.articleVenteId" [disabled]="!!selectedSaleKey">
+          <option [ngValue]="null">{{ 'sav.form.noProduct' | translate }}</option>
+          <option *ngFor="let article of filteredArticles" [ngValue]="article.id">{{ article.nom }}{{ article.sku ? ' - ' + article.sku : '' }}</option>
+        </select>
+      </label>
+      <label>
+        <span>{{ 'sav.form.serialNumber' | translate }}</span>
+        <input type="text" name="serialNumber" [(ngModel)]="form.serialNumber" maxlength="100" />
+      </label>
+      <label>
+        <span>{{ 'sav.form.type' | translate }}</span>
+        <select name="type" [(ngModel)]="form.type">
+          <option *ngFor="let type of types" [ngValue]="type">{{ 'sav.type.' + type | translate }}</option>
+        </select>
+      </label>
+      <label>
+        <span>{{ 'sav.form.purchaseDate' | translate }}</span>
+        <input type="date" name="purchaseDate" [(ngModel)]="form.purchaseDate" />
+      </label>
+      <label>
+        <span>{{ 'sav.form.warrantyMonths' | translate }}</span>
+        <input type="number" min="0" max="120" name="warrantyMonths" [(ngModel)]="form.warrantyMonths" />
+      </label>
+
+      <div class="sav-form-section-title">
+        <i class="feather icon-clipboard"></i>
+        <span>{{ 'sav.form.sections.processing' | translate }}</span>
+      </div>
+      <label>
+        <span>{{ 'sav.form.priority' | translate }}</span>
+        <select name="priority" [(ngModel)]="form.priority" (ngModelChange)="onPriorityChange()">
+          <option *ngFor="let priority of priorities" [ngValue]="priority">{{ 'sav.priority.' + priority | translate }}</option>
+        </select>
+      </label>
+      <label>
+        <span>{{ 'sav.form.assignedTo' | translate }}</span>
+        <select name="assignedToUserId" [(ngModel)]="form.assignedToUserId">
+          <option [ngValue]="null">{{ 'sav.form.unassigned' | translate }}</option>
+          <option *ngFor="let agent of agents" [ngValue]="agent.id">{{ agent.username }}</option>
+        </select>
+      </label>
+      <label class="sav-field-span-2">
+        <span>{{ 'sav.form.status' | translate }}</span>
+        <div class="sav-readonly-field"><i class="feather icon-lock"></i>{{ 'sav.status.' + (form.status || 'OUVERT') | translate }}</div>
+        <small>{{ 'sav.form.workflowHint' | translate }}</small>
+      </label>
+      <label>
+        <span>{{ 'sav.form.dueDate' | translate }}</span>
+        <input type="date" name="dueDate" [(ngModel)]="form.dueDate" />
+        <small>{{ 'sav.form.slaHint' | translate }}</small>
+      </label>
+      <label class="sav-field-span-2">
+        <span>{{ 'sav.form.diagnostic' | translate }}</span>
+        <textarea name="diagnostic" rows="3" [(ngModel)]="form.diagnostic" maxlength="2000"></textarea>
+      </label>
+      <label class="sav-field-span-2">
+        <span>{{ 'sav.form.resolution' | translate }}</span>
+        <textarea name="resolution" rows="3" [(ngModel)]="form.resolution" maxlength="2000"></textarea>
+      </label>
+      <label class="sav-field-span-2">
+        <span>{{ 'sav.form.resolutionType' | translate }}</span>
+        <select name="resolutionType" [(ngModel)]="form.resolutionType">
+          <option [ngValue]="undefined">{{ 'sav.form.noResolutionType' | translate }}</option>
+          <option *ngFor="let resolutionType of resolutionTypes" [ngValue]="resolutionType">{{ 'sav.resolutionType.' + resolutionType | translate }}</option>
+        </select>
+      </label>
+      <label>
+        <span>{{ 'sav.form.estimatedCost' | translate }}</span>
+        <input type="number" min="0" step="0.01" name="estimatedCost" [(ngModel)]="form.estimatedCost" />
+      </label>
+      <label>
+        <span>{{ 'sav.form.actualCost' | translate }}</span>
+        <div class="sav-readonly-field">{{ (form.actualCost || 0) | number:'1.2-2' }} TND</div>
+        <small>{{ 'sav.form.actualCostHint' | translate }}</small>
+      </label>
+
+      <div class="sav-form-actions">
+        <button type="button" class="sav-btn sav-btn-secondary" (click)="closeForm()">{{ 'sav.actions.cancel' | translate }}</button>
+        <button type="submit" class="sav-btn sav-btn-primary" [disabled]="isSaving">
+          <i class="feather icon-save"></i>
+          {{ (isSaving ? 'sav.actions.saving' : 'sav.actions.save') | translate }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="sav-list-card">
+    <div class="sav-list-header">
+      <div>
+        <h2>{{ 'sav.list.title' | translate }}</h2>
+        <span>{{ 'sav.list.count' | translate:{ count: filteredTickets.length } }}</span>
+      </div>
+      <button type="button" class="sav-filter-reset" (click)="resetFilters()">
+        <i class="feather icon-x-circle"></i>{{ 'sav.filters.reset' | translate }}
+      </button>
+    </div>
+    <div class="sav-toolbar">
+      <div class="sav-search">
+        <i class="feather icon-search"></i>
+        <input type="search" [placeholder]="'sav.filters.search' | translate" [(ngModel)]="searchText" (ngModelChange)="applyFilters()" />
+      </div>
+      <select [(ngModel)]="selectedStatus" (ngModelChange)="applyFilters()">
+        <option value="">{{ 'sav.filters.allStatuses' | translate }}</option>
+        <option *ngFor="let status of statuses" [value]="status">{{ 'sav.status.' + status | translate }}</option>
+      </select>
+      <select [(ngModel)]="selectedType" (ngModelChange)="applyFilters()">
+        <option value="">{{ 'sav.filters.allTypes' | translate }}</option>
+        <option *ngFor="let type of types" [value]="type">{{ 'sav.type.' + type | translate }}</option>
+      </select>
+      <select [(ngModel)]="selectedPriority" (ngModelChange)="applyFilters()">
+        <option value="">{{ 'sav.filters.allPriorities' | translate }}</option>
+        <option *ngFor="let priority of priorities" [value]="priority">{{ 'sav.priority.' + priority | translate }}</option>
+      </select>
+      <select [(ngModel)]="selectedAgent" (ngModelChange)="applyFilters()">
+        <option value="">{{ 'sav.filters.allAgents' | translate }}</option>
+        <option value="UNASSIGNED">{{ 'sav.form.unassigned' | translate }}</option>
+        <option *ngFor="let agent of agents" [value]="agent.id">{{ agent.username }}</option>
+      </select>
+    </div>
+
+    <div class="sav-empty" *ngIf="isLoading">
+      <div class="sav-spinner"></div>
+      <p>{{ 'sav.states.loading' | translate }}</p>
+    </div>
+    <div class="sav-empty" *ngIf="!isLoading && filteredTickets.length === 0">
+      <i class="feather icon-headphones"></i>
+      <h3>{{ 'sav.states.emptyTitle' | translate }}</h3>
+      <p>{{ 'sav.states.emptyHint' | translate }}</p>
+    </div>
+
+    <div class="sav-table-wrap" *ngIf="!isLoading && filteredTickets.length > 0">
+      <table class="sav-table">
+        <thead>
+          <tr>
+            <th>{{ 'sav.table.ticket' | translate }}</th>
+            <th>{{ 'sav.table.customerProduct' | translate }}</th>
+            <th>{{ 'sav.table.assignment' | translate }}</th>
+            <th>{{ 'sav.table.priority' | translate }}</th>
+            <th>{{ 'sav.table.status' | translate }}</th>
+            <th>{{ 'sav.table.dueDate' | translate }}</th>
+            <th class="sav-actions-column">{{ 'sav.table.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ticket of filteredTickets; trackBy: trackById" [class.is-overdue]="ticket.overdue">
+            <td>
+              <button type="button" class="sav-ticket-link" (click)="openDetails(ticket)">{{ ticket.reference }}</button>
+              <strong>{{ ticket.subject }}</strong>
+              <span>{{ 'sav.type.' + ticket.type | translate }}</span>
+            </td>
+            <td>
+              <strong>{{ ticket.clientName || '-' }}</strong>
+              <span>{{ ticket.articleVenteName || '-' }}</span>
+              <span class="sav-warranty" *ngIf="ticket.warrantyEndDate" [class.is-covered]="ticket.underWarranty">
+                <i class="feather" [class.icon-shield]="ticket.underWarranty" [class.icon-alert-circle]="!ticket.underWarranty"></i>
+                {{ (ticket.underWarranty ? 'sav.warranty.covered' : 'sav.warranty.expired') | translate }}
+              </span>
+            </td>
+            <td>
+              <strong>{{ ticket.assignedToUsername || ('sav.form.unassigned' | translate) }}</strong>
+              <span>{{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </td>
+            <td><span [class]="getPriorityClass(ticket.priority)">{{ 'sav.priority.' + ticket.priority | translate }}</span></td>
+            <td><span [class]="getStatusClass(ticket.status)">{{ 'sav.status.' + ticket.status | translate }}</span></td>
+            <td>
+              <strong [class.sav-overdue-text]="ticket.overdue">{{ ticket.dueDate ? (ticket.dueDate | date:'dd/MM/yyyy') : '-' }}</strong>
+              <span *ngIf="ticket.overdue">{{ 'sav.states.overdue' | translate }}</span>
+            </td>
+            <td>
+              <div class="sav-row-actions">
+                <button type="button" class="sav-icon-btn" (click)="openDetails(ticket)" [title]="'sav.actions.view' | translate"><i class="feather icon-eye"></i></button>
+                <button type="button" class="sav-icon-btn" (click)="openEditForm(ticket)" [title]="'sav.actions.edit' | translate"><i class="feather icon-edit-2"></i></button>
+                <button type="button" class="sav-icon-btn danger" (click)="deleteTicket(ticket)" [title]="'sav.actions.delete' | translate"><i class="feather icon-trash-2"></i></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<div class="sav-detail-backdrop" *ngIf="selectedTicket" (click)="closeDetails()"></div>
+<aside class="sav-detail-panel" *ngIf="selectedTicket as ticket">
+  <div class="sav-detail-header">
+    <div>
+      <span>{{ ticket.reference }}</span>
+      <h2>{{ ticket.subject }}</h2>
+    </div>
+    <button type="button" class="sav-icon-btn" (click)="closeDetails()" [title]="'sav.actions.close' | translate"><i class="feather icon-x"></i></button>
+  </div>
+
+  <div class="sav-detail-badges">
+    <span [class]="getStatusClass(ticket.status)">{{ 'sav.status.' + ticket.status | translate }}</span>
+    <span [class]="getPriorityClass(ticket.priority)">{{ 'sav.priority.' + ticket.priority | translate }}</span>
+    <span class="sav-overdue-badge" *ngIf="ticket.overdue"><i class="feather icon-alert-triangle"></i>{{ 'sav.states.overdue' | translate }}</span>
+  </div>
+
+  <div class="sav-detail-actions">
+    <button type="button" class="sav-btn sav-btn-secondary" (click)="openEditForm(ticket); closeDetails()"><i class="feather icon-edit-2"></i>{{ 'sav.actions.edit' | translate }}</button>
+  </div>
+
+  <div class="sav-detail-scroll">
+    <section class="sav-next-step-card" *ngIf="getPrimaryActions(ticket).length || ticket.status === 'EN_ATTENTE_ACCORD'">
+      <div>
+        <span>{{ 'sav.workflow.currentStage' | translate }}</span>
+        <strong>{{ 'sav.status.' + ticket.status | translate }}</strong>
+        <p>{{ 'sav.workflow.guidance.' + ticket.status | translate }}</p>
+      </div>
+      <div class="sav-next-step-actions" *ngIf="ticket.status !== 'EN_ATTENTE_ACCORD'">
+        <button type="button" class="sav-btn sav-btn-primary" *ngFor="let action of getPrimaryActions(ticket)" (click)="changeStatus(ticket, action.status)" [disabled]="!!getActionRequirement(ticket, action.status)">
+          <i class="feather" [ngClass]="'icon-' + action.icon"></i>{{ 'sav.workflow.actions.' + action.key | translate }}
+        </button>
+      </div>
+      <div class="sav-approval-actions" *ngIf="ticket.status === 'EN_ATTENTE_ACCORD'">
+        <button type="button" class="sav-btn sav-btn-success" (click)="decideApproval('ACCEPTE')"><i class="feather icon-check"></i>{{ 'sav.workflow.actions.approve' | translate }}</button>
+        <button type="button" class="sav-btn sav-btn-danger" (click)="decideApproval('REFUSE')"><i class="feather icon-x"></i>{{ 'sav.workflow.actions.refuse' | translate }}</button>
+      </div>
+      <p class="sav-workflow-requirement" *ngIf="getPrimaryActions(ticket)[0] as action">
+        <ng-container *ngIf="getActionRequirement(ticket, action.status) as requirement"><i class="feather icon-info"></i>{{ requirement | translate }}</ng-container>
+      </p>
+    </section>
+
+    <section class="sav-detail-section">
+      <h3>{{ 'sav.details.request' | translate }}</h3>
+      <div class="sav-detail-grid">
+        <div><span>{{ 'sav.form.client' | translate }}</span><strong>{{ ticket.clientName || '-' }}</strong></div>
+        <div><span>{{ 'sav.form.contactChannel' | translate }}</span><strong>{{ ticket.contactChannel ? ('sav.channel.' + ticket.contactChannel | translate) : '-' }}</strong></div>
+        <div><span>{{ 'sav.form.product' | translate }}</span><strong>{{ ticket.articleVenteName || '-' }}</strong></div>
+        <div><span>{{ 'sav.form.originalSale' | translate }}</span><strong class="sav-verified-sale" *ngIf="ticket.saleVerified"><i class="feather icon-check-circle"></i>{{ ticket.commandeVenteReference }}</strong><strong *ngIf="!ticket.saleVerified">-</strong></div>
+        <div><span>{{ 'sav.form.serialNumber' | translate }}</span><strong>{{ ticket.serialNumber || '-' }}</strong></div>
+        <div><span>{{ 'sav.form.assignedTo' | translate }}</span><strong>{{ ticket.assignedToUsername || ('sav.form.unassigned' | translate) }}</strong></div>
+        <div><span>{{ 'sav.form.dueDate' | translate }}</span><strong>{{ ticket.dueDate ? (ticket.dueDate | date:'dd/MM/yyyy') : '-' }}</strong></div>
+      </div>
+      <p class="sav-detail-copy">{{ ticket.description || ('common.notAvailable' | translate) }}</p>
+    </section>
+
+    <section class="sav-detail-section">
+      <div class="sav-section-heading">
+        <h3>{{ 'sav.details.interventions' | translate }}</h3>
+        <span>{{ 'sav.details.interventionCount' | translate:{ count: interventions.length } }}</span>
+      </div>
+
+      <div class="sav-intervention-form" *ngIf="isInterventionStage(ticket)">
+        <label class="sav-intervention-description">
+          <span>{{ 'sav.intervention.description' | translate }}</span>
+          <textarea rows="2" [(ngModel)]="interventionForm.description" [placeholder]="'sav.intervention.descriptionPlaceholder' | translate"></textarea>
+        </label>
+        <label><span>{{ 'sav.intervention.technician' | translate }}</span><select [(ngModel)]="interventionForm.technicianUserId"><option [ngValue]="null">{{ 'sav.form.unassigned' | translate }}</option><option *ngFor="let agent of agents" [ngValue]="agent.id">{{ agent.username }}</option></select></label>
+        <label><span>{{ 'sav.intervention.duration' | translate }}</span><input type="number" min="1" [(ngModel)]="interventionForm.durationMinutes" /></label>
+        <label><span>{{ 'sav.intervention.laborCost' | translate }}</span><input type="number" min="0" step="0.01" [(ngModel)]="interventionForm.laborCost" /></label>
+        <label><span>{{ 'sav.intervention.partsCost' | translate }}</span><input type="number" min="0" step="0.01" [(ngModel)]="interventionForm.partsCost" /></label>
+        <button type="button" class="sav-btn sav-btn-primary" (click)="addIntervention()" [disabled]="isAddingIntervention || !interventionForm.description.trim() || interventionForm.durationMinutes <= 0">
+          <i class="feather icon-plus"></i>{{ 'sav.actions.addIntervention' | translate }}
+        </button>
+      </div>
+
+      <div class="sav-intervention-list" *ngIf="interventions.length">
+        <article *ngFor="let intervention of interventions">
+          <div class="sav-intervention-icon"><i class="feather icon-tool"></i></div>
+          <div>
+            <strong>{{ intervention.description }}</strong>
+            <span>{{ intervention.technicianUsername || '-' }} · {{ intervention.performedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            <small>{{ intervention.durationMinutes }} min · {{ intervention.totalCost | number:'1.2-2' }} TND</small>
+          </div>
+        </article>
+      </div>
+      <p class="sav-history-empty" *ngIf="!interventions.length">{{ 'sav.details.noInterventions' | translate }}</p>
+    </section>
+
+    <section class="sav-detail-section" *ngIf="ticket.purchaseDate || ticket.warrantyEndDate">
+      <h3>{{ 'sav.details.warranty' | translate }}</h3>
+      <div class="sav-warranty-summary" [class.is-covered]="ticket.underWarranty">
+        <i class="feather icon-shield"></i>
+        <div>
+          <strong>{{ (ticket.underWarranty ? 'sav.warranty.covered' : 'sav.warranty.expired') | translate }}</strong>
+          <span>{{ 'sav.warranty.until' | translate:{ date: (ticket.warrantyEndDate | date:'dd/MM/yyyy') } }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sav-detail-section">
+      <h3>{{ 'sav.details.processing' | translate }}</h3>
+      <div class="sav-detail-text-block"><span>{{ 'sav.form.diagnostic' | translate }}</span><p>{{ ticket.diagnostic || '-' }}</p></div>
+      <div class="sav-detail-text-block"><span>{{ 'sav.form.resolution' | translate }}</span><p>{{ ticket.resolution || '-' }}</p></div>
+      <div class="sav-detail-text-block"><span>{{ 'sav.form.resolutionType' | translate }}</span><p>{{ ticket.resolutionType ? ('sav.resolutionType.' + ticket.resolutionType | translate) : '-' }}</p></div>
+      <div class="sav-cost-row">
+        <div><span>{{ 'sav.form.estimatedCost' | translate }}</span><strong>{{ (ticket.estimatedCost || 0) | number:'1.2-2' }} TND</strong></div>
+        <div><span>{{ 'sav.form.actualCost' | translate }}</span><strong>{{ (ticket.actualCost || 0) | number:'1.2-2' }} TND</strong></div>
+      </div>
+    </section>
+
+    <section class="sav-detail-section">
+      <h3>{{ 'sav.details.internalNote' | translate }}</h3>
+      <div class="sav-note-composer">
+        <textarea rows="2" [(ngModel)]="noteText" [placeholder]="'sav.details.notePlaceholder' | translate"></textarea>
+        <button type="button" class="sav-btn sav-btn-primary" (click)="addNote()" [disabled]="isAddingNote || !noteText.trim()">
+          <i class="feather icon-send"></i>{{ 'sav.actions.addNote' | translate }}
+        </button>
+      </div>
+    </section>
+
+    <section class="sav-detail-section">
+      <h3>{{ 'sav.details.history' | translate }}</h3>
+      <div class="sav-history-loading" *ngIf="isHistoryLoading"><div class="sav-spinner"></div></div>
+      <div class="sav-timeline" *ngIf="!isHistoryLoading">
+        <div class="sav-timeline-item" *ngFor="let item of history">
+          <div class="sav-timeline-icon"><i class="feather" [ngClass]="'icon-' + getHistoryIcon(item.type)"></i></div>
+          <div>
+            <strong>{{ 'sav.history.' + item.type | translate }}</strong>
+            <p>{{ item.message }}</p>
+            <span>{{ item.createdByUsername || 'System' }} · {{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+        <p class="sav-history-empty" *ngIf="history.length === 0">{{ 'sav.details.noHistory' | translate }}</p>
+      </div>
+    </section>
+  </div>
+</aside>

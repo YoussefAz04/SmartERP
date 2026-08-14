@@ -5,7 +5,6 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password/forgo
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SigninComponent } from './signin/signin/signin.component';
 import { RegisterComponent } from './register/register/register.component';
-import { RegisterEntrepriseStepperComponent } from './register-entreprise-stepper/register-entreprise-stepper.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'signin', pathMatch: 'full' },
@@ -29,10 +28,6 @@ const routes: Routes = [
       {
         path: 'signin',
         component: SigninComponent,
-      },
-      {
-        path: 'stepperCompany',
-        component: RegisterEntrepriseStepperComponent,
       },
     ],
   },

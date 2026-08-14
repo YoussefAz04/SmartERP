@@ -145,6 +145,14 @@ const routes: Routes = [
           import('./notifications/notifications.component').then((m) => m.NotificationsComponent),
       },
       {
+        // SAV: after-sales service tickets are enterprise business data
+        path: 'sav',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
+        loadComponent: () =>
+          import('./sav/sav.component').then((m) => m.SavComponent),
+      },
+      {
         // Audit log: accessible by SUPER_ADMIN and ADMIN
         path: 'audit-log',
         canActivate: [RoleGuard],

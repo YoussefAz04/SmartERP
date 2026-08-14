@@ -9,6 +9,10 @@ import { routes } from 'src/app/core/helpers/routes';
 import { ResponseDto } from "../../model/reponseDto.model";
 import { AuthService } from "../../auth/service/auth.service";
 import { HeaderService, SearchResult, Notification } from './header.service';
+import {
+  AppLanguage,
+  LanguageService,
+} from 'src/app/core/service/language/language.service';
 
 export interface SearchResultGroup {
   type: string;
@@ -56,6 +60,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public entrepriseName = '';
   public showProfile = false;
   public isSuperAdmin = false;
+  public currentLanguage: AppLanguage = 'en';
 
   // Page tracking
   public activePath = '';
@@ -73,7 +78,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private webStorage: WebstorageService,
     private settings: SettingsService,
     private authService: AuthService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private languageService: LanguageService
   ) {
     this.activePath = this.router.url.split('/')[2];
     // Track only the active path on navigation. The previous code re-decoded
@@ -94,6 +100,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.settings.themeMode.pipe(takeUntil(this.destroy$)).subscribe((mode: string) => {
       this.lightMode = mode !== 'dark_mode';
     });
+
+    this.languageService.currentLanguage$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((language) => {
+        this.currentLanguage = language;
+      });
 
     this.getUserAuthData();
     this.setupSearch();
@@ -292,6 +304,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   toggleProfile(): void {
     this.showProfile = !this.showProfile;
     this.showNotifications = false;
+  }
+
+  changeLanguage(language: AppLanguage): void {
+    this.languageService.use(language);
   }
 
   logout(): void {

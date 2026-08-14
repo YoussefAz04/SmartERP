@@ -43,6 +43,9 @@ public class ArticleAchatService {
     @Autowired
     private EnterpriseSecurityUtil enterpriseSecurityUtil;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     public List<ArticleAchatResponseDto> getAllArticlesAchat() {
         Long entrepriseId = enterpriseSecurityUtil.getContextEnterpriseId();
         if (entrepriseId == null) {
@@ -83,7 +86,12 @@ public class ArticleAchatService {
                 throw new RuntimeException("Enterprise context is required to create an article.");
             }
         }
-        return articleRepository.save(article);
+        Article saved = articleRepository.save(article);
+        auditLogService.log("ARTICLE_ACHAT_CREATED",
+                "Article d'achat cree: nom=" + saved.getNom()
+                        + ", id=" + saved.getId()
+                        + ", reference=" + saved.getReference());
+        return saved;
     }
 
     @Transactional
@@ -91,7 +99,12 @@ public class ArticleAchatService {
         Article existing = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + id));
         mapToArticle(updated, existing);
-        return articleRepository.save(existing);
+        Article saved = articleRepository.save(existing);
+        auditLogService.log("ARTICLE_ACHAT_UPDATED",
+                "Article d'achat modifie: nom=" + saved.getNom()
+                        + ", id=" + saved.getId()
+                        + ", reference=" + saved.getReference());
+        return saved;
     }
 
     private Article mapToArticle(ArticleAchat source, Article target) {
@@ -164,9 +177,8 @@ public class ArticleAchatService {
 
     @Transactional
     public void deleteArticleAchat(Long id) {
-        if (!articleRepository.existsById(id)) {
-            throw new RuntimeException("ArticleAchat non trouvé avec id: " + id);
-        }
+        Article existing = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ArticleAchat non trouvé avec id: " + id));
 
         List<String> blockers = new ArrayList<>();
 
@@ -192,5 +204,9 @@ public class ArticleAchatService {
         }
 
         articleRepository.deleteById(id);
+        auditLogService.log("ARTICLE_ACHAT_DELETED",
+                "Article d'achat supprime: nom=" + existing.getNom()
+                        + ", id=" + id
+                        + ", reference=" + existing.getReference());
     }
 }

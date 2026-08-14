@@ -9,6 +9,10 @@ import {
   RecentCommandeSummary,
   RecentFournisseurSummary,
 } from 'src/app/core/service/dashboard/dashboard.service';
+import {
+  AppLanguage,
+  LanguageService,
+} from 'src/app/core/service/language/language.service';
 
 export interface DashboardStats {
   totalClients: number;
@@ -38,6 +42,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   public entrepriseName = '';
   public entrepriseId: number | null = null;
   public today: Date = new Date();
+  public currentLanguage: AppLanguage = 'en';
 
   // Stats for count-up cards
   public stats: DashboardStats = { totalClients: 0, totalFournisseurs: 0, totalArticles: 0, totalCommandes: 0 };
@@ -66,11 +71,29 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private dashboardService: DashboardService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
+    this.languageService.currentLanguage$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((language) => {
+        this.currentLanguage = language;
+      });
     this.loadEnterpriseContext();
     this.loadAllData();
+  }
+
+  get formattedToday(): string {
+    return new Intl.DateTimeFormat(
+      this.currentLanguage === 'fr' ? 'fr-FR' : 'en-US',
+      {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }
+    ).format(this.today);
   }
 
   ngOnDestroy(): void {
@@ -197,16 +220,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  getCommandeStatusLabel(statut: string | undefined): string {
+  getCommandeStatusLabelKey(statut: string | undefined): string {
     switch ((statut || '').toUpperCase()) {
-      case 'LIVRE': return 'Livré';
-      case 'VALIDEE': return 'Validée';
-      case 'DONE': return 'Terminé';
-      case 'EN_ATTENTE': return 'En Attente';
-      case 'PENDING': return 'En Attente';
+      case 'LIVRE': return 'dashboard.orderStatus.delivered';
+      case 'VALIDEE': return 'dashboard.orderStatus.validated';
+      case 'DONE': return 'dashboard.orderStatus.completed';
+      case 'EN_ATTENTE':
+      case 'PENDING': return 'dashboard.orderStatus.pending';
       case 'ANNULEE':
-      case 'CANCELLED': return 'Canceled';
-      default: return statut || '—';
+      case 'CANCELLED': return 'dashboard.orderStatus.cancelled';
+      default: return statut || 'common.notAvailable';
     }
   }
 

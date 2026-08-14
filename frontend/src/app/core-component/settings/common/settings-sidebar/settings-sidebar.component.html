@@ -8,13 +8,13 @@
             <li class="submenu" [ngClass]="{'subdrop': menu.expanded}" (click)="toggleSubMenu(menu)">
               <a href="javascript:void(0);" [class.active]="page === menu.page">
                 <i [class]="menu.icon"></i>
-                <span>{{ menu.title }}</span>
+                <span>{{ menu.title | translate }}</span>
                 <span class="menu-arrow"></span>
               </a>
               <ul [ngClass]="{'d-block': menu.expanded, 'd-none': !menu.expanded}">
                 @for (subMenu of menu.subMenu; track subMenu) {
                 <li>
-                  <a [routerLink]="subMenu.routes" routerLinkActive="active">{{ subMenu.title }}</a>
+                  <a [routerLink]="subMenu.routes" routerLinkActive="active">{{ subMenu.title | translate }}</a>
                 </li>
                 }
               </ul>
