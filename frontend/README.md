@@ -1,27 +1,78 @@
-# Template
+# SmartERP Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.0.
+This folder contains the Angular frontend of SmartERP.
 
-## Development server
+The frontend is responsible for the user interface, dashboards, forms, charts, multilingual labels, notifications, and communication with the Spring Boot backend API.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Technology Stack
 
-## Code scaffolding
+- Angular 17
+- TypeScript
+- Angular Router
+- Angular Forms
+- Angular Material
+- Bootstrap
+- PrimeNG
+- ApexCharts
+- SweetAlert2
+- ngx-translate
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Project Structure
+
+- `src/app/auth`: authentication pages and login logic.
+- `src/app/common-component`: shared layout components such as header and sidebars.
+- `src/app/core`: Angular services, guards, helpers, and technical logic.
+- `src/app/core-component`: main ERP pages and business modules.
+- `src/app/model`: TypeScript models used by the frontend.
+- `src/app/shared`: reusable modules, utilities, notifications, and shared helpers.
+- `src/assets/i18n`: English and French translation files.
+
+## Development Server
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the Angular development server:
+
+```bash
+npm start
+```
+
+Open the application at:
+
+```text
+http://localhost:4200
+```
+
+The application reloads automatically when source files change.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Generate a production build:
 
-## Running unit tests
+```bash
+npm run build
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The build output is generated in the `dist/` directory.
 
-## Running end-to-end tests
+## Tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Run unit tests:
 
-## Further help
+```bash
+npm test
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Backend Connection
+
+The frontend communicates with the Spring Boot backend through Angular services located mainly in:
+
+```text
+src/app/core/service
+```
+
+Authenticated requests include the JWT token so the backend can verify the connected user, role, permissions, and company.
