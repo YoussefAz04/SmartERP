@@ -19,6 +19,7 @@
           "options": {
             "allowedCommonJsDependencies": [
               "canvg",
+              "apexcharts",
               "html2canvas",
               "file-saver",
               "sweetalert2",
