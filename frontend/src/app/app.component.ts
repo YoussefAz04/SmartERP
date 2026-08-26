@@ -9,6 +9,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SpinnerService } from './core/core.index';
 import { LanguageService } from './core/service/language/language.service';
+import { SettingsService } from './core/service/settings/settings.service';
 
 
 @Component({
@@ -25,7 +26,8 @@ export class AppComponent implements OnDestroy {
   constructor(
     private router: Router,
     private spinner: SpinnerService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private settingsService: SettingsService
   ) {
     this.languageService.init();
 

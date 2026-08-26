@@ -1,13 +1,14 @@
 {
-  "name": "template",
-  "version": "0.0.0",
+  "name": "smarterp-frontend",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "check:i18n": "node scripts/check-translations.cjs"
   },
   "private": true,
   "dependencies": {

@@ -432,6 +432,337 @@
     },
     "confirmDelete": "Delete ticket {{reference}}? This also deletes its history."
   },
+  "ai": {
+    "title": "AI Intelligence",
+    "live": "Live analysis",
+    "headline": "Decision Intelligence",
+    "subtitle": "Forecast performance, monitor business signals, and turn insights into action.",
+    "dateAria": "Analysis date",
+    "refreshAria": "Refresh AI analysis",
+    "refreshing": "Refreshing",
+    "refresh": "Refresh data",
+    "loading": {
+      "title": "Building your intelligence dashboard",
+      "subtitle": "Analyzing sales, stock, and forecasting signals..."
+    },
+    "error": {
+      "title": "Analytics could not be loaded",
+      "subtitle": "Check the backend connection, then try again.",
+      "retry": "Try again"
+    },
+    "forecast": {
+      "nextMonth": "Next month forecast",
+      "openDiagnostics": "Open forecast diagnostics",
+      "modelConfidence": "Model confidence",
+      "predictiveOutlook": "Predictive outlook",
+      "salesForecast": "Sales forecast",
+      "subtitle": "Expected revenue trajectory with upper and lower confidence bounds.",
+      "viewDetails": "View model details",
+      "nextMonthShort": "Next month",
+      "next3Months": "Next 3 months",
+      "next6Months": "Next 6 months"
+    },
+    "confidence": {
+      "veryHigh": "Very high",
+      "high": "High",
+      "medium": "Medium",
+      "needsWork": "Needs strengthening"
+    },
+    "hero": {
+      "bestMonth": "Best month",
+      "currentYearPeak": "Current year peak",
+      "priorityActions": "Priority actions",
+      "requireAttention": "Require attention"
+    },
+    "overview": {
+      "kicker": "Business pulse",
+      "title": "Executive overview",
+      "insights": "{{count}} insights generated"
+    },
+    "kpi": {
+      "totalRevenue": "Total revenue",
+      "vsS1": "vs S1",
+      "salesOrders": "Sales orders",
+      "average": "average",
+      "productsInStock": "Products in stock",
+      "stockAlerts": "{{count}} stock alert(s)",
+      "stockHealthy": "Stock levels healthy",
+      "recommendations": "Recommendations",
+      "priorityActions": "{{count}} priority action(s)",
+      "noUrgentAction": "No urgent action"
+    },
+    "analytics": {
+      "kicker": "Performance analytics",
+      "title": "Revenue and product momentum",
+      "subtitle": "Track monthly movement and understand which products drive the business.",
+      "currentYear": "Current year",
+      "monthlySales": "Monthly sales",
+      "monthlySalesSubtitle": "Actual revenue compared with the underlying trend",
+      "best": "Best",
+      "totalRevenue": "Total revenue",
+      "monthlyAverage": "Monthly average",
+      "revenueLeaders": "Revenue leaders",
+      "revenueLeadersSubtitle": "Top five products by contribution",
+      "noProductData": "No product data yet",
+      "noProductDataSubtitle": "Product performance will appear after sales are recorded."
+    },
+    "products": {
+      "kicker": "Product intelligence",
+      "title": "Product performance",
+      "subtitle": "Ranked by sales activity, revenue contribution, and commercial velocity.",
+      "analyzed": "{{count}} products analyzed",
+      "rank": "Rank",
+      "product": "Product",
+      "quantitySold": "Quantity sold",
+      "revenue": "Revenue",
+      "revenueShare": "Revenue share",
+      "performance": "Performance",
+      "noData": "No product intelligence available",
+      "noDataSubtitle": "Product rankings will appear once enough sales history is available."
+    },
+    "recommendations": {
+      "kicker": "AI action center",
+      "title": "Strategic recommendations",
+      "subtitle": "Prioritized actions generated from your sales, purchasing, and stock signals."
+    },
+    "priority": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "info": "Info"
+    },
+    "performanceLabel": {
+      "TOP": "Top",
+      "BON": "Good",
+      "LENT": "Slow",
+      "GOOD": "Good",
+      "SLOW": "Slow"
+    },
+    "charts": {
+      "sales": {
+        "actual": "Actual sales",
+        "trend": "Trend"
+      },
+      "forecast": {
+        "actual": "Actual",
+        "forecast": "Forecast",
+        "upper": "Upper bound",
+        "lower": "Lower bound"
+      },
+      "total": "Total"
+    },
+    "actions": {
+      "view": "View",
+      "stock": "View stock",
+      "adjustStock": "Adjust stock",
+      "orders": "View orders",
+      "products": "View products",
+      "suppliers": "View suppliers",
+      "createPurchaseOrder": "Create purchase order"
+    },
+    "recommendationTypes": {
+      "ML_RISQUE_STOCK": "ML stock risk",
+      "STOCK_CRITIQUE": "Critical stock",
+      "VALEUR_STOCK": "Stock value",
+      "STOCK_FAIBLE": "Low stock",
+      "VENTES_FAIBLES": "Weak sales",
+      "TENDANCE_CROISSANCE": "Growth trend",
+      "PANIER_MOYEN_BAISSE": "Average basket down",
+      "PANIER_MOYEN_HAUSSE": "Average basket up",
+      "TAUX_ANNULATION": "Cancellation rate",
+      "PRODUIT_STAR": "Star product",
+      "OPPORTUNITE": "Opportunity",
+      "CATEGORIE_DOMINANTE": "Dominant category",
+      "MARGE_FAIBLE": "Low margin",
+      "MARGE_CORRECTE": "Healthy margin",
+      "BONNE_PERFORMANCE": "Good performance",
+      "RATIO_ACHATS": "Purchase ratio",
+      "LIVRAISON_RETARD": "Delivery delay",
+      "LIVRAISON_OK": "Delivery quality",
+      "DIVERSIFICATION_FOURNISSEUR": "Supplier diversification",
+      "FOURNISSEUR_PERFORMANT": "Supplier performance",
+      "CASH_FLOW": "Cash flow",
+      "CONCENTRATION_CLIENT": "Customer concentration",
+      "DONNEES_INSUFFISANTES": "Insufficient data"
+    },
+    "recommendationText": {
+      "ML_RISQUE_STOCK": {
+        "title": "Stockout risk{{subject}}",
+        "description": "The model detected a stockout risk for this product. Check available stock, supplier lead time, and reorder quantity."
+      },
+      "STOCK_CRITIQUE": {
+        "title": "Stockout detected",
+        "description": "At least one product is out of stock. Create a supplier order quickly to avoid lost sales."
+      },
+      "STOCK_FAIBLE": {
+        "title": "Low stock alert",
+        "description": "Some products are below their alert threshold. Restock them before they reach zero."
+      },
+      "VALEUR_STOCK": {
+        "title": "Stock value to monitor",
+        "description": "Inventory value needs attention. Review slow-moving stock and purchasing priorities."
+      },
+      "VENTES_FAIBLES": {
+        "title": "Sales below target",
+        "description": "Current sales are below the expected pace. Follow up with customers and review commercial actions."
+      },
+      "TENDANCE_CROISSANCE": {
+        "title": "Strong sales trend",
+        "description": "Sales are growing faster than usual. Secure stock availability and supplier capacity."
+      },
+      "PANIER_MOYEN_BAISSE": {
+        "title": "Average basket decreasing",
+        "description": "The average order value is falling. Use bundles or complementary products to increase basket value."
+      },
+      "PANIER_MOYEN_HAUSSE": {
+        "title": "Average basket improving",
+        "description": "Average order value is improving. Keep promoting high-value combinations."
+      },
+      "TAUX_ANNULATION": {
+        "title": "Cancellation rate to review",
+        "description": "Order cancellations need attention. Review availability, delivery delays, and customer follow-up."
+      },
+      "PRODUIT_STAR": {
+        "title": "High-potential product{{subject}}",
+        "description": "This product is performing strongly. Keep enough stock and promote it with complementary products."
+      },
+      "OPPORTUNITE": {
+        "title": "Sales opportunity{{subject}}",
+        "description": "This product can still grow. Highlight it in sales actions and monitor its stock."
+      },
+      "CATEGORIE_DOMINANTE": {
+        "title": "Dominant category",
+        "description": "One category is driving a large share of sales. Use it to guide purchasing and product strategy."
+      },
+      "MARGE_FAIBLE": {
+        "title": "Low margin",
+        "description": "Margin is too low. Review purchase prices, selling prices, and low-profit products."
+      },
+      "MARGE_CORRECTE": {
+        "title": "Healthy margin",
+        "description": "Margin is acceptable. Continue improving supplier prices and product profitability."
+      },
+      "BONNE_PERFORMANCE": {
+        "title": "Very good performance",
+        "description": "Profitability is strong. Maintain purchasing discipline and keep monitoring best sellers."
+      },
+      "RATIO_ACHATS": {
+        "title": "Purchase ratio to monitor",
+        "description": "Purchasing volume should stay aligned with sales demand and stock turnover."
+      },
+      "LIVRAISON_RETARD": {
+        "title": "Supplier delivery delay",
+        "description": "Some deliveries are late. Review supplier reliability and expected reception dates."
+      },
+      "LIVRAISON_OK": {
+        "title": "Supplier delivery quality",
+        "description": "Delivery performance is healthy. Keep monitoring delays and supplier consistency."
+      },
+      "DIVERSIFICATION_FOURNISSEUR": {
+        "title": "Supplier diversification",
+        "description": "Avoid depending on a single supplier. Add alternatives for strategic products."
+      },
+      "FOURNISSEUR_PERFORMANT": {
+        "title": "Strong supplier performance",
+        "description": "A supplier is performing well. Use this information for purchasing decisions."
+      },
+      "CASH_FLOW": {
+        "title": "Cash flow signal",
+        "description": "Purchases and sales timing may affect cash flow. Review payment and ordering rhythm."
+      },
+      "CONCENTRATION_CLIENT": {
+        "title": "Customer concentration",
+        "description": "A large share of revenue depends on a small number of customers. Diversify the customer base."
+      },
+      "DONNEES_INSUFFISANTES": {
+        "title": "More data needed",
+        "description": "The system needs more sales, purchases, and stock history to generate stronger recommendations."
+      }
+    },
+    "comparison": {
+      "title": "Period comparison",
+      "subtitle": "MTD and YTD performance tracking",
+      "mtdTitle": "Current month vs Previous",
+      "mtdSubtitle": "Monthly tracking - MTD vs previous",
+      "currentMonth": "This month",
+      "previousMonth": "Previous month",
+      "previous": "Previous",
+      "sales": "Sales",
+      "purchases": "Purchases",
+      "grossMarginMtd": "Gross margin MTD",
+      "ordersMtd": "Orders MTD",
+      "ytdTitle": "Annual overview (YTD)",
+      "ytdSubtitle": "Sales - Purchases - Cumulative margin",
+      "currentYear": "This year",
+      "previousYear": "Previous year",
+      "salesYtd": "Sales YTD",
+      "purchasesYtd": "Purchases YTD",
+      "marginYtd": "Margin YTD",
+      "grossMarginYtd": "Gross margin YTD",
+      "revenueShare": "of revenue",
+      "ordersYtd": "Orders YTD",
+      "salesOrdersYtd": "Sales orders YTD",
+      "purchaseOrdersYtd": "Purchase orders YTD",
+      "ordersUnit": "orders",
+      "new": "NEW"
+    },
+    "modal": {
+      "export": "Export",
+      "exportCsv": "Export CSV",
+      "close": "Close",
+      "noData": "No data available",
+      "titles": {
+        "revenue": "Revenue details",
+        "orders": "Order details",
+        "products": "Product details",
+        "forecast": "Forecast details"
+      },
+      "tabs": {
+        "topProducts": "Top products",
+        "topCustomers": "Top customers",
+        "status": "Status",
+        "overview": "Overview",
+        "stockLevels": "Stock levels",
+        "movements": "Movements",
+        "forecasts": "Forecasts",
+        "accuracy": "Accuracy"
+      },
+      "sections": {
+        "topProductsRevenue": "Top products by revenue",
+        "topCustomersRevenue": "Top customers by revenue",
+        "statusBreakdown": "Breakdown by status",
+        "overview": "Overview",
+        "stockLevels": "Stock levels",
+        "topProductsSold": "Top products sold",
+        "salesForecasts": "Sales forecasts",
+        "modelAccuracy": "Model accuracy",
+        "mlDiagnostics": "ML diagnostics"
+      },
+      "fields": {
+        "product": "Product",
+        "customer": "Customer",
+        "revenue": "Revenue",
+        "totalOrders": "Total orders",
+        "avgOrderValue": "Average order value",
+        "totalProducts": "Total products (SKUs)",
+        "lowStockAlerts": "Low stock alerts",
+        "outOfStockItems": "Out of stock items",
+        "totalStockValue": "Total stock value",
+        "qtySold": "Qty sold",
+        "reliabilityScore": "Reliability score",
+        "selectedModel": "Selected model",
+        "mape": "MAPE (Cross-validation)",
+        "smape": "sMAPE (Cross-validation)",
+        "rmse": "RMSE (Cross-validation)"
+      },
+      "accuracy": {
+        "high": "High reliability - Forecasts are very reliable",
+        "moderate": "Moderate reliability - Use with caution",
+        "low": "Low reliability - Insufficient data"
+      }
+    }
+  },
   "Clients": "Clients",
   "Articles": "Products",
   "Fournisseurs": "Suppliers",

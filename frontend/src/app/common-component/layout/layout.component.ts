@@ -31,8 +31,7 @@ export class LayoutComponent {
   }
 
   public changeThemeMode(theme: string): void {
-    this.settings.themeMode.next(theme);
-    localStorage.setItem('themeMode', theme);
+    this.settings.changeThemeMode(theme);
   }
   public changeLayoutMode(layout: string): void {
     this.settings.layoutMode.next(layout);

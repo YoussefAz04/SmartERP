@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ComparisonMetrics, PeriodComparison } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
 
 @Component({
@@ -8,6 +9,8 @@ import { ComparisonMetrics, PeriodComparison } from 'src/app/core/service/ai-int
 })
 export class ComparisonMetricsComponent {
   @Input() comparison!: ComparisonMetrics;
+
+  constructor(private translate: TranslateService) {}
 
   /** Format a currency value, keeping the sign for negatives and the 2-decimal precision for small ones. */
   formatCurrency(value: number | null | undefined): string {
@@ -61,7 +64,7 @@ export class ComparisonMetricsComponent {
   /** Build a human-readable change label, e.g. "+12.4 %" or "NOUV." when there is no previous. */
   changeLabel(p: PeriodComparison | null | undefined): string {
     if (!p) return '—';
-    if (this.isNew(p)) return 'NOUV.';
+    if (this.isNew(p)) return this.translate.instant('ai.comparison.new');
     const v = p.changePercent ?? 0;
     const sign = v >= 0 ? '+' : '';
     // When the value is at the cap boundary, signal that it is truncated.

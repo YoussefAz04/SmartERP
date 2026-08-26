@@ -224,37 +224,52 @@ If there is enough historical data, the system can use a machine learning approa
 
 ## Configuration
 
-The main backend configuration file is:
+The backend reads configuration from environment variables. The tracked defaults are suitable only for local development and contain no private email or production credentials.
 
-```text
-backend/src/main/resources/application.properties
+| Variable | Purpose | Local default |
+| --- | --- | --- |
+| `DB_URL` | SQL Server JDBC URL | `jdbc:sqlserver://localhost:1433;databaseName=BusinessManager;...` |
+| `DB_USERNAME` | SQL Server user | `sa` |
+| `DB_PASSWORD` | SQL Server password | `1234` |
+| `JWT_SECRET` | JWT signing key, at least 32 characters | Development-only key |
+| `FRONTEND_URL` | Allowed frontend origin and reset-password URL | `http://localhost:4200` |
+| `COOKIE_SECURE` | Sends authentication cookies over HTTPS only | `false` |
+| `MAIL_USERNAME` | SMTP account used for password-reset emails | Empty |
+| `MAIL_PASSWORD` | SMTP app password | Empty |
+
+The complete list is available in `backend/.env.example`. Spring Boot does not load `.env` files automatically; provide the values through your shell, IDE run configuration, or hosting platform. For example, in PowerShell:
+
+```powershell
+$env:DB_PASSWORD = "your-sql-server-password"
+$env:JWT_SECRET = "replace-this-with-a-long-random-secret"
+$env:MAIL_USERNAME = "your-email@example.com"
+$env:MAIL_PASSWORD = "your-smtp-app-password"
 ```
 
-Before running the project, configure:
+For production, also activate the hardened profile with `SPRING_PROFILES_ACTIVE=prod`. It validates the database schema, requires HTTPS cookies, hides internal error details, and disables public Swagger endpoints.
 
-- SQL Server URL.
-- Database name.
-- SQL Server username and password.
-- Mail settings if email sending is enabled.
-- JWT secret.
-- Frontend URL.
-
-Important: values stored in this file are intended for local development or demonstration. For a real production environment, passwords and secrets should be replaced with secure environment variables.
+Never commit real passwords, JWT secrets, SMTP app passwords, access tokens, or `.env` files.
 
 ## Running the Backend
 
 Prerequisites:
 
 - Java 17 installed.
-- Maven installed.
 - SQL Server running.
 - Database created.
 
-Commands:
+Commands on Windows:
+
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+Commands on macOS or Linux:
 
 ```bash
 cd backend
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 By default, the backend starts at:
@@ -267,6 +282,22 @@ If Springdoc is enabled, API documentation can be opened at:
 
 ```text
 http://localhost:8020/swagger-ui/index.html
+```
+
+## Automated Checks
+
+GitHub Actions runs the backend tests, verifies that the English and French translation files contain the same keys, and builds the Angular production application on every pull request and push to `main` or `master`.
+
+Run the same checks locally before pushing:
+
+```powershell
+cd backend
+.\mvnw.cmd test
+
+cd ..\frontend
+npm ci
+npm run check:i18n
+npm run build
 ```
 
 ## Running the Frontend

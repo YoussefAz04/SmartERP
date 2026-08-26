@@ -432,6 +432,337 @@
     },
     "confirmDelete": "Supprimer le ticket {{reference}} ? Son historique sera aussi supprimé."
   },
+  "ai": {
+    "title": "Intelligence IA",
+    "live": "Analyse en direct",
+    "headline": "Tableau de decision intelligent",
+    "subtitle": "Prevoir les performances, surveiller les signaux metier et transformer les analyses en actions.",
+    "dateAria": "Date d'analyse",
+    "refreshAria": "Actualiser l'analyse IA",
+    "refreshing": "Actualisation",
+    "refresh": "Actualiser",
+    "loading": {
+      "title": "Creation du tableau intelligent",
+      "subtitle": "Analyse des ventes, du stock et des signaux de prevision..."
+    },
+    "error": {
+      "title": "Impossible de charger les analyses",
+      "subtitle": "Verifiez la connexion au backend, puis reessayez.",
+      "retry": "Reessayer"
+    },
+    "forecast": {
+      "nextMonth": "Prevision du mois prochain",
+      "openDiagnostics": "Ouvrir les diagnostics de prevision",
+      "modelConfidence": "Fiabilite du modele",
+      "predictiveOutlook": "Vision predictive",
+      "salesForecast": "Prevision des ventes",
+      "subtitle": "Evolution attendue du chiffre d'affaires avec bornes de confiance haute et basse.",
+      "viewDetails": "Voir les details du modele",
+      "nextMonthShort": "Mois prochain",
+      "next3Months": "3 prochains mois",
+      "next6Months": "6 prochains mois"
+    },
+    "confidence": {
+      "veryHigh": "Tres elevee",
+      "high": "Elevee",
+      "medium": "Moyenne",
+      "needsWork": "A renforcer"
+    },
+    "hero": {
+      "bestMonth": "Meilleur mois",
+      "currentYearPeak": "Pic de l'annee en cours",
+      "priorityActions": "Actions prioritaires",
+      "requireAttention": "A traiter"
+    },
+    "overview": {
+      "kicker": "Pulse metier",
+      "title": "Vue executive",
+      "insights": "{{count}} analyses generees"
+    },
+    "kpi": {
+      "totalRevenue": "Chiffre d'affaires total",
+      "vsS1": "vs S1",
+      "salesOrders": "Commandes de vente",
+      "average": "en moyenne",
+      "productsInStock": "Produits en stock",
+      "stockAlerts": "{{count}} alerte(s) stock",
+      "stockHealthy": "Stock sain",
+      "recommendations": "Recommandations",
+      "priorityActions": "{{count}} action(s) prioritaire(s)",
+      "noUrgentAction": "Aucune action urgente"
+    },
+    "analytics": {
+      "kicker": "Analyse des performances",
+      "title": "Revenus et dynamique produits",
+      "subtitle": "Suivre l'evolution mensuelle et identifier les produits qui portent l'activite.",
+      "currentYear": "Annee en cours",
+      "monthlySales": "Ventes mensuelles",
+      "monthlySalesSubtitle": "Revenu reel compare a la tendance generale",
+      "best": "Meilleur",
+      "totalRevenue": "Chiffre d'affaires total",
+      "monthlyAverage": "Moyenne mensuelle",
+      "revenueLeaders": "Produits leaders",
+      "revenueLeadersSubtitle": "Top cinq produits par contribution",
+      "noProductData": "Aucune donnee produit",
+      "noProductDataSubtitle": "La performance produit apparaitra apres l'enregistrement des ventes."
+    },
+    "products": {
+      "kicker": "Intelligence produits",
+      "title": "Performance des produits",
+      "subtitle": "Classement selon les ventes, le revenu et la vitesse commerciale.",
+      "analyzed": "{{count}} produits analyses",
+      "rank": "Rang",
+      "product": "Produit",
+      "quantitySold": "Quantite vendue",
+      "revenue": "Revenu",
+      "revenueShare": "Part du revenu",
+      "performance": "Performance",
+      "noData": "Aucune intelligence produit disponible",
+      "noDataSubtitle": "Le classement apparaitra quand l'historique de ventes sera suffisant."
+    },
+    "recommendations": {
+      "kicker": "Centre d'action IA",
+      "title": "Recommandations strategiques",
+      "subtitle": "Actions priorisees a partir des ventes, des achats et du stock."
+    },
+    "priority": {
+      "critical": "Critique",
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse",
+      "info": "Info"
+    },
+    "performanceLabel": {
+      "TOP": "Top",
+      "BON": "Bon",
+      "LENT": "Lent",
+      "GOOD": "Bon",
+      "SLOW": "Lent"
+    },
+    "charts": {
+      "sales": {
+        "actual": "Ventes reelles",
+        "trend": "Tendance"
+      },
+      "forecast": {
+        "actual": "Reel",
+        "forecast": "Prevision",
+        "upper": "Borne haute",
+        "lower": "Borne basse"
+      },
+      "total": "Total"
+    },
+    "actions": {
+      "view": "Voir",
+      "stock": "Voir le stock",
+      "adjustStock": "Ajuster le stock",
+      "orders": "Voir les commandes",
+      "products": "Voir les produits",
+      "suppliers": "Voir les fournisseurs",
+      "createPurchaseOrder": "Creer une commande d'achat"
+    },
+    "recommendationTypes": {
+      "ML_RISQUE_STOCK": "Risque stock ML",
+      "STOCK_CRITIQUE": "Stock critique",
+      "VALEUR_STOCK": "Valeur du stock",
+      "STOCK_FAIBLE": "Stock faible",
+      "VENTES_FAIBLES": "Ventes faibles",
+      "TENDANCE_CROISSANCE": "Tendance de croissance",
+      "PANIER_MOYEN_BAISSE": "Panier moyen en baisse",
+      "PANIER_MOYEN_HAUSSE": "Panier moyen en hausse",
+      "TAUX_ANNULATION": "Taux d'annulation",
+      "PRODUIT_STAR": "Produit star",
+      "OPPORTUNITE": "Opportunite",
+      "CATEGORIE_DOMINANTE": "Categorie dominante",
+      "MARGE_FAIBLE": "Marge faible",
+      "MARGE_CORRECTE": "Marge correcte",
+      "BONNE_PERFORMANCE": "Bonne performance",
+      "RATIO_ACHATS": "Ratio d'achats",
+      "LIVRAISON_RETARD": "Retard de livraison",
+      "LIVRAISON_OK": "Livraison correcte",
+      "DIVERSIFICATION_FOURNISSEUR": "Diversification fournisseur",
+      "FOURNISSEUR_PERFORMANT": "Fournisseur performant",
+      "CASH_FLOW": "Tresorerie",
+      "CONCENTRATION_CLIENT": "Concentration client",
+      "DONNEES_INSUFFISANTES": "Donnees insuffisantes"
+    },
+    "recommendationText": {
+      "ML_RISQUE_STOCK": {
+        "title": "Risque de rupture{{subject}}",
+        "description": "Le modele a detecte un risque de rupture pour ce produit. Verifiez le stock disponible, le delai fournisseur et la quantite a commander."
+      },
+      "STOCK_CRITIQUE": {
+        "title": "Rupture de stock detectee",
+        "description": "Au moins un produit est en rupture. Creez rapidement une commande fournisseur pour eviter les ventes perdues."
+      },
+      "STOCK_FAIBLE": {
+        "title": "Alerte stock faible",
+        "description": "Certains produits sont sous le seuil d'alerte. Reapprovisionnez-les avant qu'ils arrivent a zero."
+      },
+      "VALEUR_STOCK": {
+        "title": "Valeur du stock a surveiller",
+        "description": "La valeur du stock necessite un suivi. Analysez les articles lents et les priorites d'achat."
+      },
+      "VENTES_FAIBLES": {
+        "title": "Ventes sous l'objectif",
+        "description": "Les ventes actuelles sont inferieures au rythme attendu. Relancez les clients et revoyez les actions commerciales."
+      },
+      "TENDANCE_CROISSANCE": {
+        "title": "Forte tendance de vente",
+        "description": "Les ventes progressent plus vite que d'habitude. Assurez la disponibilite du stock et la capacite fournisseur."
+      },
+      "PANIER_MOYEN_BAISSE": {
+        "title": "Panier moyen en baisse",
+        "description": "La valeur moyenne des commandes baisse. Utilisez des packs ou produits complementaires pour l'augmenter."
+      },
+      "PANIER_MOYEN_HAUSSE": {
+        "title": "Panier moyen en hausse",
+        "description": "La valeur moyenne des commandes s'ameliore. Continuez a promouvoir les combinaisons a forte valeur."
+      },
+      "TAUX_ANNULATION": {
+        "title": "Taux d'annulation a revoir",
+        "description": "Les annulations doivent etre analysees. Verifiez la disponibilite, les retards et le suivi client."
+      },
+      "PRODUIT_STAR": {
+        "title": "Produit a fort potentiel{{subject}}",
+        "description": "Ce produit performe bien. Gardez un stock suffisant et proposez-le avec des produits complementaires."
+      },
+      "OPPORTUNITE": {
+        "title": "Opportunite de vente{{subject}}",
+        "description": "Ce produit peut encore progresser. Mettez-le en avant dans les actions commerciales et surveillez son stock."
+      },
+      "CATEGORIE_DOMINANTE": {
+        "title": "Categorie dominante",
+        "description": "Une categorie porte une grande partie des ventes. Utilisez-la pour orienter les achats et la strategie produit."
+      },
+      "MARGE_FAIBLE": {
+        "title": "Marge faible",
+        "description": "La marge est trop faible. Revoyez les prix d'achat, les prix de vente et les produits peu rentables."
+      },
+      "MARGE_CORRECTE": {
+        "title": "Marge correcte",
+        "description": "La marge est acceptable. Continuez a ameliorer les prix fournisseurs et la rentabilite produit."
+      },
+      "BONNE_PERFORMANCE": {
+        "title": "Tres bonne performance",
+        "description": "La rentabilite est forte. Gardez une bonne discipline d'achat et suivez les meilleurs produits."
+      },
+      "RATIO_ACHATS": {
+        "title": "Ratio d'achats a surveiller",
+        "description": "Le volume d'achat doit rester coherent avec la demande et la rotation du stock."
+      },
+      "LIVRAISON_RETARD": {
+        "title": "Retard de livraison fournisseur",
+        "description": "Certaines livraisons sont en retard. Analysez la fiabilite fournisseur et les dates de reception prevues."
+      },
+      "LIVRAISON_OK": {
+        "title": "Qualite de livraison fournisseur",
+        "description": "La performance de livraison est saine. Continuez a suivre les delais et la regularite fournisseur."
+      },
+      "DIVERSIFICATION_FOURNISSEUR": {
+        "title": "Diversification fournisseur",
+        "description": "Evitez de dependre d'un seul fournisseur. Ajoutez des alternatives pour les produits strategiques."
+      },
+      "FOURNISSEUR_PERFORMANT": {
+        "title": "Fournisseur performant",
+        "description": "Un fournisseur performe bien. Utilisez cette information pour guider les achats."
+      },
+      "CASH_FLOW": {
+        "title": "Signal de tresorerie",
+        "description": "Le rythme des achats et ventes peut impacter la tresorerie. Verifiez les paiements et commandes."
+      },
+      "CONCENTRATION_CLIENT": {
+        "title": "Concentration client",
+        "description": "Une grande part du revenu depend de peu de clients. Diversifiez la base client."
+      },
+      "DONNEES_INSUFFISANTES": {
+        "title": "Plus de donnees necessaires",
+        "description": "Le systeme a besoin de plus d'historique de ventes, achats et stock pour generer de meilleures recommandations."
+      }
+    },
+    "comparison": {
+      "title": "Comparaison des periodes",
+      "subtitle": "Suivi des performances MTD et YTD",
+      "mtdTitle": "Mois en cours vs precedent",
+      "mtdSubtitle": "Suivi mensuel - MTD vs precedent",
+      "currentMonth": "Ce mois",
+      "previousMonth": "Mois precedent",
+      "previous": "Precedent",
+      "sales": "Ventes",
+      "purchases": "Achats",
+      "grossMarginMtd": "Marge brute MTD",
+      "ordersMtd": "Commandes MTD",
+      "ytdTitle": "Bilan annuel (YTD)",
+      "ytdSubtitle": "Ventes - Achats - Marge cumulee",
+      "currentYear": "Cette annee",
+      "previousYear": "Annee precedente",
+      "salesYtd": "Ventes YTD",
+      "purchasesYtd": "Achats YTD",
+      "marginYtd": "Marge YTD",
+      "grossMarginYtd": "Marge brute YTD",
+      "revenueShare": "du CA",
+      "ordersYtd": "Commandes YTD",
+      "salesOrdersYtd": "Commandes vente YTD",
+      "purchaseOrdersYtd": "Commandes achat YTD",
+      "ordersUnit": "commandes",
+      "new": "NOUV."
+    },
+    "modal": {
+      "export": "Exporter",
+      "exportCsv": "Exporter CSV",
+      "close": "Fermer",
+      "noData": "Aucune donnee disponible",
+      "titles": {
+        "revenue": "Details du revenu",
+        "orders": "Details des commandes",
+        "products": "Details des produits",
+        "forecast": "Details des previsions"
+      },
+      "tabs": {
+        "topProducts": "Top produits",
+        "topCustomers": "Top clients",
+        "status": "Statut",
+        "overview": "Vue d'ensemble",
+        "stockLevels": "Niveaux de stock",
+        "movements": "Mouvements",
+        "forecasts": "Previsions",
+        "accuracy": "Precision"
+      },
+      "sections": {
+        "topProductsRevenue": "Top produits par revenu",
+        "topCustomersRevenue": "Top clients par revenu",
+        "statusBreakdown": "Repartition par statut",
+        "overview": "Vue d'ensemble",
+        "stockLevels": "Niveaux de stock",
+        "topProductsSold": "Top produits vendus",
+        "salesForecasts": "Previsions des ventes",
+        "modelAccuracy": "Precision du modele",
+        "mlDiagnostics": "Diagnostics ML"
+      },
+      "fields": {
+        "product": "Produit",
+        "customer": "Client",
+        "revenue": "Revenu",
+        "totalOrders": "Total commandes",
+        "avgOrderValue": "Valeur moyenne commande",
+        "totalProducts": "Total produits (SKUs)",
+        "lowStockAlerts": "Alertes stock faible",
+        "outOfStockItems": "Articles en rupture",
+        "totalStockValue": "Valeur totale du stock",
+        "qtySold": "Qte vendue",
+        "reliabilityScore": "Score de fiabilite",
+        "selectedModel": "Modele selectionne",
+        "mape": "MAPE (validation croisee)",
+        "smape": "sMAPE (validation croisee)",
+        "rmse": "RMSE (validation croisee)"
+      },
+      "accuracy": {
+        "high": "Fiabilite elevee - Les previsions sont tres fiables",
+        "moderate": "Fiabilite moderee - A utiliser avec prudence",
+        "low": "Fiabilite faible - Donnees insuffisantes"
+      }
+    }
+  },
   "Clients": "Clients",
   "Articles": "Articles",
   "Fournisseurs": "Fournisseurs",

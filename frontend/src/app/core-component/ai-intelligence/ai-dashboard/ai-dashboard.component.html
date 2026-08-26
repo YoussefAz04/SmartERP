@@ -5,22 +5,22 @@
       <div class="header-copy">
         <div class="header-eyebrow">
           <span class="eyebrow-icon"><i class="fas fa-microchip"></i></span>
-          AI Intelligence
-          <span class="live-status"><span class="live-dot"></span>Live analysis</span>
+          {{ 'ai.title' | translate }}
+          <span class="live-status"><span class="live-dot"></span>{{ 'ai.live' | translate }}</span>
         </div>
-        <h1>Decision Intelligence</h1>
-        <p>Forecast performance, monitor business signals, and turn insights into action.</p>
+        <h1>{{ 'ai.headline' | translate }}</h1>
+        <p>{{ 'ai.subtitle' | translate }}</p>
       </div>
 
       <div class="header-actions">
-        <span class="date-chip">
+        <span class="date-chip" [attr.aria-label]="'ai.dateAria' | translate">
           <i class="far fa-calendar-alt"></i>
           {{ today | date: 'd MMMM yyyy' }}
         </span>
         <button class="btn-refresh" type="button" (click)="refresh()" [disabled]="isRefreshing"
-                aria-label="Refresh AI analysis">
+                [attr.aria-label]="'ai.refreshAria' | translate">
           <i class="fas fa-sync-alt" [class.fa-spin]="isRefreshing"></i>
-          <span>{{ isRefreshing ? 'Refreshing' : 'Refresh data' }}</span>
+          <span>{{ isRefreshing ? ('ai.refreshing' | translate) : ('ai.refresh' | translate) }}</span>
         </button>
       </div>
     </div>
@@ -29,15 +29,15 @@
       <button class="forecast-focus" type="button" (click)="openModal('forecast')">
         <span class="forecast-focus-icon"><i class="fas fa-chart-line"></i></span>
         <span class="forecast-focus-copy">
-          <span class="forecast-label">Next month forecast</span>
+          <span class="forecast-label">{{ 'ai.forecast.nextMonth' | translate }}</span>
           <strong>{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} <small>TND</small></strong>
-          <span class="forecast-caption">Open forecast diagnostics <i class="fas fa-arrow-right"></i></span>
+          <span class="forecast-caption">{{ 'ai.forecast.openDiagnostics' | translate }} <i class="fas fa-arrow-right"></i></span>
         </span>
       </button>
 
       <div class="confidence-panel">
         <div class="confidence-heading">
-          <span>Model confidence</span>
+          <span>{{ 'ai.forecast.modelConfidence' | translate }}</span>
           <strong>{{ dashboard.forecast.confidenceScore | number:'1.0-0' }}%</strong>
         </div>
         <div class="confidence-track" role="progressbar"
@@ -49,15 +49,15 @@
       </div>
 
       <div class="hero-stat">
-        <span>Best month</span>
-        <strong>{{ dashboard.salesAnalysis.bestMonth }}</strong>
-        <small>Current year peak</small>
+        <span>{{ 'ai.hero.bestMonth' | translate }}</span>
+        <strong>{{ formatPeriodLabel(dashboard.salesAnalysis.bestMonth) }}</strong>
+        <small>{{ 'ai.hero.currentYearPeak' | translate }}</small>
       </div>
 
       <div class="hero-stat">
-        <span>Priority actions</span>
+        <span>{{ 'ai.hero.priorityActions' | translate }}</span>
         <strong>{{ criticalRecs.length + highRecs.length }}</strong>
-        <small>Require attention</small>
+        <small>{{ 'ai.hero.requireAttention' | translate }}</small>
       </div>
     </div>
   </header>
@@ -66,8 +66,8 @@
     <div class="ai-spinner">
       <div class="spinner-ring"></div>
       <div>
-        <strong>Building your intelligence dashboard</strong>
-        <p>Analyzing sales, stock, and forecasting signals...</p>
+        <strong>{{ 'ai.loading.title' | translate }}</strong>
+        <p>{{ 'ai.loading.subtitle' | translate }}</p>
       </div>
     </div>
   </div>
@@ -75,11 +75,11 @@
   <div *ngIf="error && !loading" class="ai-error">
     <span class="error-icon"><i class="fas fa-exclamation-triangle"></i></span>
     <div>
-      <strong>Analytics could not be loaded</strong>
-      <p>Check the backend connection, then try again.</p>
+      <strong>{{ 'ai.error.title' | translate }}</strong>
+      <p>{{ 'ai.error.subtitle' | translate }}</p>
     </div>
     <button class="btn-retry" type="button" (click)="loadDashboard()">
-      <i class="fas fa-redo"></i> Try again
+      <i class="fas fa-redo"></i> {{ 'ai.error.retry' | translate }}
     </button>
   </div>
 
@@ -87,12 +87,12 @@
     <section class="overview-section" aria-labelledby="overview-title">
       <div class="section-heading compact-heading">
         <div>
-          <span class="section-kicker">Business pulse</span>
-          <h2 id="overview-title">Executive overview</h2>
+          <span class="section-kicker">{{ 'ai.overview.kicker' | translate }}</span>
+          <h2 id="overview-title">{{ 'ai.overview.title' | translate }}</h2>
         </div>
         <span class="analysis-count">
           <i class="fas fa-lightbulb"></i>
-          {{ dashboard.recommendations.length }} insights generated
+          {{ 'ai.overview.insights' | translate:{ count: dashboard.recommendations.length } }}
         </span>
       </div>
 
@@ -100,11 +100,11 @@
         <button class="kpi-card kpi-revenue" type="button" (click)="openModal('revenue')">
           <span class="kpi-icon"><i class="fas fa-coins"></i></span>
           <span class="kpi-body">
-            <span class="kpi-label">Total revenue</span>
+            <span class="kpi-label">{{ 'ai.kpi.totalRevenue' | translate }}</span>
             <strong class="kpi-value">{{ formatCurrency(dashboard.kpiSummary.totalRevenue) }} <small>TND</small></strong>
             <span class="kpi-trend" [ngClass]="growthClass">
               <i class="fas" [ngClass]="dashboard.salesAnalysis.growthRate >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'"></i>
-              {{ dashboard.salesAnalysis.growthRate | number:'1.1-1' }}% vs S1
+              {{ dashboard.salesAnalysis.growthRate | number:'1.1-1' }}% {{ 'ai.kpi.vsS1' | translate }}
             </span>
           </span>
           <span class="kpi-open"><i class="fas fa-arrow-up-right-from-square"></i></span>
@@ -113,9 +113,9 @@
         <button class="kpi-card kpi-orders" type="button" (click)="openModal('orders')">
           <span class="kpi-icon"><i class="fas fa-cart-shopping"></i></span>
           <span class="kpi-body">
-            <span class="kpi-label">Sales orders</span>
+            <span class="kpi-label">{{ 'ai.kpi.salesOrders' | translate }}</span>
             <strong class="kpi-value">{{ dashboard.kpiSummary.totalOrders | number }}</strong>
-            <span class="kpi-trend text-muted">{{ formatCurrency(dashboard.kpiSummary.avgOrderValue) }} TND average</span>
+            <span class="kpi-trend text-muted">{{ formatCurrency(dashboard.kpiSummary.avgOrderValue) }} TND {{ 'ai.kpi.average' | translate }}</span>
           </span>
           <span class="kpi-open"><i class="fas fa-arrow-up-right-from-square"></i></span>
         </button>
@@ -123,13 +123,13 @@
         <button class="kpi-card kpi-products" type="button" (click)="openModal('products')">
           <span class="kpi-icon"><i class="fas fa-boxes-stacked"></i></span>
           <span class="kpi-body">
-            <span class="kpi-label">Products in stock</span>
+            <span class="kpi-label">{{ 'ai.kpi.productsInStock' | translate }}</span>
             <strong class="kpi-value">{{ dashboard.kpiSummary.totalProducts | number }}</strong>
             <span class="kpi-trend text-warning" *ngIf="dashboard.kpiSummary.lowStockAlerts > 0">
-              <i class="fas fa-triangle-exclamation"></i> {{ dashboard.kpiSummary.lowStockAlerts }} stock alerts
+              <i class="fas fa-triangle-exclamation"></i> {{ 'ai.kpi.stockAlerts' | translate:{ count: dashboard.kpiSummary.lowStockAlerts } }}
             </span>
             <span class="kpi-trend text-success" *ngIf="dashboard.kpiSummary.lowStockAlerts === 0">
-              <i class="fas fa-circle-check"></i> Stock levels healthy
+              <i class="fas fa-circle-check"></i> {{ 'ai.kpi.stockHealthy' | translate }}
             </span>
           </span>
           <span class="kpi-open"><i class="fas fa-arrow-up-right-from-square"></i></span>
@@ -138,13 +138,13 @@
         <button class="kpi-card kpi-recommendations" type="button" (click)="scrollToRecommendations()">
           <span class="kpi-icon"><i class="fas fa-list-check"></i></span>
           <span class="kpi-body">
-            <span class="kpi-label">Recommendations</span>
+            <span class="kpi-label">{{ 'ai.kpi.recommendations' | translate }}</span>
             <strong class="kpi-value">{{ dashboard.recommendations.length }}</strong>
             <span class="kpi-trend text-attention" *ngIf="criticalRecs.length + highRecs.length > 0">
-              <i class="fas fa-bell"></i> {{ criticalRecs.length + highRecs.length }} priority actions
+              <i class="fas fa-bell"></i> {{ 'ai.kpi.priorityActions' | translate:{ count: criticalRecs.length + highRecs.length } }}
             </span>
             <span class="kpi-trend text-success" *ngIf="criticalRecs.length + highRecs.length === 0">
-              <i class="fas fa-circle-check"></i> No urgent action
+              <i class="fas fa-circle-check"></i> {{ 'ai.kpi.noUrgentAction' | translate }}
             </span>
           </span>
           <span class="kpi-open"><i class="fas fa-arrow-down"></i></span>
@@ -160,11 +160,11 @@
     <section class="analytics-section" aria-labelledby="performance-title">
       <div class="section-heading">
         <div>
-          <span class="section-kicker">Performance analytics</span>
-          <h2 id="performance-title">Revenue and product momentum</h2>
-          <p>Track monthly movement and understand which products drive the business.</p>
+          <span class="section-kicker">{{ 'ai.analytics.kicker' | translate }}</span>
+          <h2 id="performance-title">{{ 'ai.analytics.title' | translate }}</h2>
+          <p>{{ 'ai.analytics.subtitle' | translate }}</p>
         </div>
-        <span class="section-period"><i class="far fa-calendar"></i> Current year</span>
+        <span class="section-period"><i class="far fa-calendar"></i> {{ 'ai.analytics.currentYear' | translate }}</span>
       </div>
 
       <div class="charts-row">
@@ -173,11 +173,11 @@
             <div class="panel-title">
               <span class="panel-icon panel-icon-blue"><i class="fas fa-chart-column"></i></span>
               <div>
-                <h3>Monthly sales</h3>
-                <p>Actual revenue compared with the underlying trend</p>
+                <h3>{{ 'ai.analytics.monthlySales' | translate }}</h3>
+                <p>{{ 'ai.analytics.monthlySalesSubtitle' | translate }}</p>
               </div>
             </div>
-            <span class="meta-badge best-month"><i class="fas fa-crown"></i> Best: {{ dashboard.salesAnalysis.bestMonth }}</span>
+            <span class="meta-badge best-month"><i class="fas fa-crown"></i> {{ 'ai.analytics.best' | translate }}: {{ formatPeriodLabel(dashboard.salesAnalysis.bestMonth) }}</span>
           </div>
           <div class="chart-body">
             <apx-chart
@@ -199,8 +199,8 @@
             </apx-chart>
           </div>
           <div class="panel-metrics">
-            <div><span>Total revenue</span><strong>{{ formatCurrency(dashboard.salesAnalysis.totalRevenue) }} TND</strong></div>
-            <div><span>Monthly average</span><strong>{{ formatCurrency(dashboard.salesAnalysis.averageMonthlyRevenue) }} TND</strong></div>
+            <div><span>{{ 'ai.analytics.totalRevenue' | translate }}</span><strong>{{ formatCurrency(dashboard.salesAnalysis.totalRevenue) }} TND</strong></div>
+            <div><span>{{ 'ai.analytics.monthlyAverage' | translate }}</span><strong>{{ formatCurrency(dashboard.salesAnalysis.averageMonthlyRevenue) }} TND</strong></div>
           </div>
         </article>
 
@@ -209,8 +209,8 @@
             <div class="panel-title">
               <span class="panel-icon panel-icon-amber"><i class="fas fa-trophy"></i></span>
               <div>
-                <h3>Revenue leaders</h3>
-                <p>Top five products by contribution</p>
+                <h3>{{ 'ai.analytics.revenueLeaders' | translate }}</h3>
+                <p>{{ 'ai.analytics.revenueLeadersSubtitle' | translate }}</p>
               </div>
             </div>
           </div>
@@ -231,8 +231,8 @@
             </apx-chart>
             <div *ngIf="!productChartOptions.series?.length" class="no-data">
               <i class="fas fa-chart-pie"></i>
-              <strong>No product data yet</strong>
-              <span>Product performance will appear after sales are recorded.</span>
+              <strong>{{ 'ai.analytics.noProductData' | translate }}</strong>
+              <span>{{ 'ai.analytics.noProductDataSubtitle' | translate }}</span>
             </div>
           </div>
         </article>
@@ -245,31 +245,31 @@
           <div class="panel-title">
             <span class="panel-icon panel-icon-green"><i class="fas fa-wand-magic-sparkles"></i></span>
             <div>
-              <span class="section-kicker">Predictive outlook</span>
-              <h2 id="forecast-title">Sales forecast</h2>
-              <p>Expected revenue trajectory with upper and lower confidence bounds.</p>
+              <span class="section-kicker">{{ 'ai.forecast.predictiveOutlook' | translate }}</span>
+              <h2 id="forecast-title">{{ 'ai.forecast.salesForecast' | translate }}</h2>
+              <p>{{ 'ai.forecast.subtitle' | translate }}</p>
             </div>
           </div>
           <button class="forecast-details-button" type="button" (click)="openModal('forecast')">
-            View model details <i class="fas fa-arrow-right"></i>
+            {{ 'ai.forecast.viewDetails' | translate }} <i class="fas fa-arrow-right"></i>
           </button>
         </div>
 
         <div class="forecast-kpis">
           <div class="forecast-kpi primary-forecast">
-            <span class="fkpi-label">Next month</span>
+            <span class="fkpi-label">{{ 'ai.forecast.nextMonthShort' | translate }}</span>
             <strong class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNextMonth) }} <small>TND</small></strong>
           </div>
           <div class="forecast-kpi">
-            <span class="fkpi-label">Next 3 months</span>
+            <span class="fkpi-label">{{ 'ai.forecast.next3Months' | translate }}</span>
             <strong class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext3Months) }} <small>TND</small></strong>
           </div>
           <div class="forecast-kpi">
-            <span class="fkpi-label">Next 6 months</span>
+            <span class="fkpi-label">{{ 'ai.forecast.next6Months' | translate }}</span>
             <strong class="fkpi-value">{{ formatCurrency(dashboard.forecast.predictedNext6Months) }} <small>TND</small></strong>
           </div>
           <div class="forecast-kpi confidence-kpi">
-            <span class="fkpi-label">Model confidence</span>
+            <span class="fkpi-label">{{ 'ai.forecast.modelConfidence' | translate }}</span>
             <strong class="fkpi-value">{{ dashboard.forecast.confidenceScore | number:'1.0-0' }}%</strong>
             <span>{{ confidenceLevelLabel }}</span>
           </div>
@@ -301,24 +301,24 @@
           <div class="panel-title">
             <span class="panel-icon panel-icon-violet"><i class="fas fa-star"></i></span>
             <div>
-              <span class="section-kicker">Product intelligence</span>
-              <h2 id="products-title">Product performance</h2>
-              <p>Ranked by sales activity, revenue contribution, and commercial velocity.</p>
+              <span class="section-kicker">{{ 'ai.products.kicker' | translate }}</span>
+              <h2 id="products-title">{{ 'ai.products.title' | translate }}</h2>
+              <p>{{ 'ai.products.subtitle' | translate }}</p>
             </div>
           </div>
-          <span class="table-count">{{ dashboard.productIntelligence.topProducts.length }} products analyzed</span>
+          <span class="table-count">{{ 'ai.products.analyzed' | translate:{ count: dashboard.productIntelligence.topProducts.length } }}</span>
         </div>
 
         <div class="table-scroll" *ngIf="dashboard.productIntelligence.topProducts?.length">
           <table class="intel-table">
             <thead>
               <tr>
-                <th>Rank</th>
-                <th>Product</th>
-                <th>Quantity sold</th>
-                <th>Revenue</th>
-                <th>Revenue share</th>
-                <th>Performance</th>
+                <th>{{ 'ai.products.rank' | translate }}</th>
+                <th>{{ 'ai.products.product' | translate }}</th>
+                <th>{{ 'ai.products.quantitySold' | translate }}</th>
+                <th>{{ 'ai.products.revenue' | translate }}</th>
+                <th>{{ 'ai.products.revenueShare' | translate }}</th>
+                <th>{{ 'ai.products.performance' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -333,15 +333,15 @@
                     <strong>{{ p.revenueShare | number:'1.1-1' }}%</strong>
                   </div>
                 </td>
-                <td><span class="perf-label" [ngClass]="'perf-' + p.performanceLabel">{{ p.performanceLabel }}</span></td>
+                <td><span class="perf-label" [ngClass]="'perf-' + p.performanceLabel">{{ getProductPerformanceLabel(p.performanceLabel) }}</span></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div *ngIf="!dashboard.productIntelligence.topProducts?.length" class="no-data">
           <i class="fas fa-box-open"></i>
-          <strong>No product intelligence available</strong>
-          <span>Product rankings will appear once enough sales history is available.</span>
+          <strong>{{ 'ai.products.noData' | translate }}</strong>
+          <span>{{ 'ai.products.noDataSubtitle' | translate }}</span>
         </div>
       </article>
     </section>
@@ -350,15 +350,15 @@
              aria-labelledby="recommendations-title">
       <div class="section-heading recommendations-heading">
         <div>
-          <span class="section-kicker">AI action center</span>
-          <h2 id="recommendations-title">Strategic recommendations</h2>
-          <p>Prioritized actions generated from your sales, purchasing, and stock signals.</p>
+          <span class="section-kicker">{{ 'ai.recommendations.kicker' | translate }}</span>
+          <h2 id="recommendations-title">{{ 'ai.recommendations.title' | translate }}</h2>
+          <p>{{ 'ai.recommendations.subtitle' | translate }}</p>
         </div>
         <div class="rec-summary-chips">
-          <span class="rec-chip rec-chip-critical" *ngIf="criticalRecs.length"><span></span>Critical {{ criticalRecs.length }}</span>
-          <span class="rec-chip rec-chip-high" *ngIf="highRecs.length"><span></span>High {{ highRecs.length }}</span>
-          <span class="rec-chip rec-chip-medium" *ngIf="mediumRecs.length"><span></span>Medium {{ mediumRecs.length }}</span>
-          <span class="rec-chip rec-chip-info" *ngIf="infoRecs.length"><span></span>Info {{ infoRecs.length }}</span>
+          <span class="rec-chip rec-chip-critical" *ngIf="criticalRecs.length"><span></span>{{ 'ai.priority.critical' | translate }} {{ criticalRecs.length }}</span>
+          <span class="rec-chip rec-chip-high" *ngIf="highRecs.length"><span></span>{{ 'ai.priority.high' | translate }} {{ highRecs.length }}</span>
+          <span class="rec-chip rec-chip-medium" *ngIf="mediumRecs.length"><span></span>{{ 'ai.priority.medium' | translate }} {{ mediumRecs.length }}</span>
+          <span class="rec-chip rec-chip-info" *ngIf="infoRecs.length"><span></span>{{ 'ai.priority.info' | translate }} {{ infoRecs.length }}</span>
         </div>
       </div>
 
@@ -373,11 +373,11 @@
           </div>
           <div class="rec-content">
             <span class="rec-type" [title]="rec.type">{{ formatRecType(rec.type) }}</span>
-            <h3 class="rec-title">{{ rec.title }}</h3>
-            <p class="rec-desc">{{ rec.description }}</p>
+            <h3 class="rec-title">{{ getRecommendationTitle(rec) }}</h3>
+            <p class="rec-desc">{{ getRecommendationDescription(rec) }}</p>
           </div>
           <button class="btn-action" type="button" (click)="navigateFromRecommendation(rec)">
-            <span>{{ rec.actionLabel }}</span><i class="fas fa-arrow-right"></i>
+            <span>{{ getRecommendationActionLabel(rec.actionLabel) }}</span><i class="fas fa-arrow-right"></i>
           </button>
         </article>
       </div>

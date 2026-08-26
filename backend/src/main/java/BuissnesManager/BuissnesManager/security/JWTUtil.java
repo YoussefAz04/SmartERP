@@ -20,7 +20,7 @@ public class JWTUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTUtil.class);
 
-    @Value("${security.jwt.secret:mySecretKeyForJWTTokenGenerationAndValidationPurposesOnly1234567890}")
+    @Value("${security.jwt.secret}")
     private String secret;
 
     @Value("${security.jwt.expiration:86400000}")  // 24 hours in milliseconds

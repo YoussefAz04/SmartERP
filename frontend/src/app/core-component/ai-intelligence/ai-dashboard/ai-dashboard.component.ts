@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -53,7 +55,7 @@ export type DonutChartOptions = {
   templateUrl: './ai-dashboard.component.html',
   styleUrl: './ai-dashboard.component.scss',
 })
-export class AiDashboardComponent implements OnInit {
+export class AiDashboardComponent implements OnInit, OnDestroy {
   public dashboard: AiDashboard | null = null;
   public loading = true;
   public error = false;
@@ -68,6 +70,7 @@ export class AiDashboardComponent implements OnInit {
 
   /** Shared chart font stack — keeps charts visually consistent. */
   private readonly chartFontFamily = 'Inter, Poppins, "Segoe UI", sans-serif';
+  private langSub?: Subscription;
 
   /** Compact axis label formatter (e.g. 1.2M, 850k, 42). */
   private formatAxisValue(v: number): string {
@@ -79,13 +82,26 @@ export class AiDashboardComponent implements OnInit {
   /** Localised TND tooltip formatter for chart series values. */
   private formatTooltipValue(v: number | null | undefined): string {
     if (v == null) return '—';
-    return v.toLocaleString('fr-FR') + ' TND';
+    return v.toLocaleString(this.currentLocale) + ' TND';
   }
 
-  constructor(private aiService: AiIntelligenceService, private router: Router) {}
+  constructor(
+    private aiService: AiIntelligenceService,
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      if (this.dashboard) {
+        this.buildCharts();
+      }
+    });
     this.loadDashboard();
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
   }
 
   loadDashboard(): void {
@@ -122,14 +138,14 @@ export class AiDashboardComponent implements OnInit {
   buildSalesChart(): void {
     const sales = this.dashboard?.salesAnalysis;
     if (!sales) return;
-    const months = sales.monthlySales.map((m) => m.month);
+    const months = sales.monthlySales.map((m) => this.formatPeriodLabel(m.month));
     const values = sales.monthlySales.map((m) => Math.round(m.amount));
     const trend = sales.trendLine.map((v) => Math.round(v));
 
     this.salesChartOptions = {
       series: [
-        { name: 'Ventes Réelles', type: 'column', data: values },
-        { name: 'Tendance', type: 'area', data: trend },
+        { name: this.t('ai.charts.sales.actual'), type: 'column', data: values },
+        { name: this.t('ai.charts.sales.trend'), type: 'area', data: trend },
       ],
       chart: {
         height: 360,
@@ -220,7 +236,7 @@ export class AiDashboardComponent implements OnInit {
         hover: { size: 7 },
       },
       tooltip: {
-        theme: 'light',
+        theme: this.chartTheme,
         shared: true,
         intersect: false,
         style: { fontSize: '13px', fontFamily: this.chartFontFamily },
@@ -232,7 +248,7 @@ export class AiDashboardComponent implements OnInit {
   buildForecastChart(): void {
     const forecast = this.dashboard?.forecast;
     if (!forecast?.forecastPoints?.length) return;
-    const periods = forecast.forecastPoints.map((p) => p.period);
+    const periods = forecast.forecastPoints.map((p) => this.formatPeriodLabel(p.period));
     const actual = forecast.forecastPoints.map((p) => (p.actual != null ? Math.round(p.actual) : null));
     const fore = forecast.forecastPoints.map((p) => Math.round(p.forecast || 0));
     const upper = forecast.forecastPoints.map((p) => Math.round(p.upperBound || 0));
@@ -240,10 +256,10 @@ export class AiDashboardComponent implements OnInit {
 
     this.forecastChartOptions = {
       series: [
-        { name: 'Réel', type: 'line', data: actual },
-        { name: 'Prévision', type: 'line', data: fore },
-        { name: 'Borne Haute', type: 'area', data: upper },
-        { name: 'Borne Basse', type: 'area', data: lower },
+        { name: this.t('ai.charts.forecast.actual'), type: 'line', data: actual },
+        { name: this.t('ai.charts.forecast.forecast'), type: 'line', data: fore },
+        { name: this.t('ai.charts.forecast.upper'), type: 'area', data: upper },
+        { name: this.t('ai.charts.forecast.lower'), type: 'area', data: lower },
       ],
       chart: {
         height: 360,
@@ -317,7 +333,7 @@ export class AiDashboardComponent implements OnInit {
         hover: { size: 8 },
       },
       tooltip: {
-        theme: 'light',
+        theme: this.chartTheme,
         shared: true,
         intersect: false,
         style: { fontSize: '13px', fontFamily: this.chartFontFamily },
@@ -349,7 +365,7 @@ export class AiDashboardComponent implements OnInit {
     const totalSeries = seriesValues.reduce((acc, v) => acc + v, 0);
     const isCurrency = hasRevenue;
     const formatCenter = (v: number) =>
-      isCurrency ? this.formatCurrency(v) + ' TND' : v.toLocaleString('fr-FR');
+      isCurrency ? this.formatCurrency(v) + ' TND' : v.toLocaleString(this.currentLocale);
 
     this.productChartOptions = {
       series: seriesValues,
@@ -434,7 +450,7 @@ export class AiDashboardComponent implements OnInit {
               total: {
                 show: true,
                 showAlways: false,
-                label: 'Total',
+                label: this.t('ai.charts.total'),
                 fontSize: '12px',
                 fontWeight: 700,
                 color: '#94a3b8',
@@ -445,7 +461,7 @@ export class AiDashboardComponent implements OnInit {
         },
       },
       tooltip: {
-        theme: 'light',
+        theme: this.chartTheme,
         style: { fontSize: '13px', fontFamily: this.chartFontFamily },
         y: {
           formatter: (v: number) => formatCenter(v),
@@ -470,11 +486,11 @@ export class AiDashboardComponent implements OnInit {
 
   getPriorityLabel(priority: string): string {
     switch (priority) {
-      case 'CRITIQUE': return 'Critique';
-      case 'HAUTE': return 'Haute';
-      case 'MOYENNE': return 'Moyenne';
-      case 'BASSE': return 'Basse';
-      default: return 'Info';
+      case 'CRITIQUE': return this.t('ai.priority.critical');
+      case 'HAUTE': return this.t('ai.priority.high');
+      case 'MOYENNE': return this.t('ai.priority.medium');
+      case 'BASSE': return this.t('ai.priority.low');
+      default: return this.t('ai.priority.info');
     }
   }
 
@@ -485,6 +501,10 @@ export class AiDashboardComponent implements OnInit {
    */
   formatRecType(type: string | null | undefined): string {
     if (!type) { return ''; }
+    const translated = this.t(`ai.recommendationTypes.${type}`);
+    if (translated && translated !== `ai.recommendationTypes.${type}`) {
+      return translated;
+    }
     return type
       .replace(/[_-]+/g, ' ')
       .toLowerCase()
@@ -514,10 +534,123 @@ export class AiDashboardComponent implements OnInit {
 
   get confidenceLevelLabel(): string {
     const score = this.dashboard?.forecast?.confidenceScore ?? 0;
-    if (score >= 80) return 'Très élevée';
-    if (score >= 65) return 'Élevée';
-    if (score >= 45) return 'Moyenne';
-    return 'À renforcer';
+    if (score >= 80) return this.t('ai.confidence.veryHigh');
+    if (score >= 65) return this.t('ai.confidence.high');
+    if (score >= 45) return this.t('ai.confidence.medium');
+    return this.t('ai.confidence.needsWork');
+  }
+
+  getProductPerformanceLabel(label: string | null | undefined): string {
+    if (!label) return '';
+    const translated = this.t(`ai.performanceLabel.${label}`);
+    return translated !== `ai.performanceLabel.${label}` ? translated : label;
+  }
+
+  getRecommendationTitle(rec: Recommendation): string {
+    const key = `ai.recommendationText.${rec.type}.title`;
+    const subject = this.extractRecommendationSubject(rec);
+    const translated = this.t(key, { subject: subject ? ` - ${subject}` : '' });
+    return translated !== key ? translated : rec.title;
+  }
+
+  getRecommendationDescription(rec: Recommendation): string {
+    const key = `ai.recommendationText.${rec.type}.description`;
+    const translated = this.t(key);
+    return translated !== key ? translated : rec.description;
+  }
+
+  getRecommendationActionLabel(label: string | null | undefined): string {
+    if (!label) return this.t('ai.actions.view');
+    const normalized = label
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    if (normalized.includes('ajuster') || normalized.includes('adjust')) return this.t('ai.actions.adjustStock');
+    if (normalized.includes('stock')) return this.t('ai.actions.stock');
+    if (normalized.includes('commande') || normalized.includes('order')) return this.t('ai.actions.orders');
+    if (normalized.includes('produit') || normalized.includes('product')) return this.t('ai.actions.products');
+    if (normalized.includes('fournisseur') || normalized.includes('supplier')) return this.t('ai.actions.suppliers');
+    return this.t('ai.actions.view');
+  }
+
+  formatPeriodLabel(label: string | null | undefined): string {
+    if (!label) return '';
+    const lang = (this.translate.currentLang || this.translate.defaultLang) === 'fr' ? 'fr' : 'en';
+    const monthMap: Record<string, { en: string; fr: string }> = {
+      jan: { en: 'January', fr: 'Janvier' },
+      janv: { en: 'January', fr: 'Janvier' },
+      january: { en: 'January', fr: 'Janvier' },
+      janvier: { en: 'January', fr: 'Janvier' },
+      feb: { en: 'February', fr: 'Fevrier' },
+      fev: { en: 'February', fr: 'Fevrier' },
+      february: { en: 'February', fr: 'Fevrier' },
+      fevrier: { en: 'February', fr: 'Fevrier' },
+      mar: { en: 'March', fr: 'Mars' },
+      march: { en: 'March', fr: 'Mars' },
+      mars: { en: 'March', fr: 'Mars' },
+      apr: { en: 'April', fr: 'Avril' },
+      april: { en: 'April', fr: 'Avril' },
+      avril: { en: 'April', fr: 'Avril' },
+      may: { en: 'May', fr: 'Mai' },
+      mai: { en: 'May', fr: 'Mai' },
+      jun: { en: 'June', fr: 'Juin' },
+      june: { en: 'June', fr: 'Juin' },
+      juin: { en: 'June', fr: 'Juin' },
+      jul: { en: 'July', fr: 'Juillet' },
+      july: { en: 'July', fr: 'Juillet' },
+      juillet: { en: 'July', fr: 'Juillet' },
+      aug: { en: 'August', fr: 'Aout' },
+      august: { en: 'August', fr: 'Aout' },
+      aout: { en: 'August', fr: 'Aout' },
+      sep: { en: 'September', fr: 'Septembre' },
+      sept: { en: 'September', fr: 'Septembre' },
+      september: { en: 'September', fr: 'Septembre' },
+      septembre: { en: 'September', fr: 'Septembre' },
+      oct: { en: 'October', fr: 'Octobre' },
+      october: { en: 'October', fr: 'Octobre' },
+      octobre: { en: 'October', fr: 'Octobre' },
+      nov: { en: 'November', fr: 'Novembre' },
+      november: { en: 'November', fr: 'Novembre' },
+      novembre: { en: 'November', fr: 'Novembre' },
+      dec: { en: 'December', fr: 'Decembre' },
+      december: { en: 'December', fr: 'Decembre' },
+      decembre: { en: 'December', fr: 'Decembre' },
+    };
+
+    return label.replace(/[A-Za-zÀ-ÿ.]+/g, (part) => {
+      const normalized = part
+        .replace('.', '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return monthMap[normalized]?.[lang] || part;
+    });
+  }
+
+  private extractRecommendationSubject(rec: Recommendation): string {
+    const title = rec.title || '';
+    const titleParts = title.split(/\s[-–—]\s/);
+    if (titleParts.length > 1) {
+      return titleParts[titleParts.length - 1].trim();
+    }
+
+    const description = rec.description || '';
+    const quoted = description.match(/"([^"]+)"/) || description.match(/«\s*([^»]+)\s*»/);
+    return quoted?.[1]?.trim() || '';
+  }
+
+  get currentLocale(): string {
+    return (this.translate.currentLang || this.translate.defaultLang) === 'fr' ? 'fr-FR' : 'en-US';
+  }
+
+  get chartTheme(): 'light' | 'dark' {
+    const body = document.body;
+    return body.classList.contains('dark-mode') || body.classList.contains('dark') ? 'dark' : 'light';
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.translate.instant(key, params);
   }
 
   formatCurrency(value: number): string {

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, EventEmitter, HostListener, Input, OnChanges, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { KpiDetails } from 'src/app/core/service/ai-intelligence/ai-intelligence.service';
 
 export type KpiModalType = 'revenue' | 'orders' | 'products' | 'forecast' | null;
@@ -15,6 +16,8 @@ export class KpiDetailModalComponent implements OnChanges {
   @Output() closed = new EventEmitter<void>();
 
   activeTab = 0;
+
+  constructor(private translate: TranslateService) {}
 
   ngOnChanges(): void {
     this.activeTab = 0;
@@ -48,10 +51,10 @@ export class KpiDetailModalComponent implements OnChanges {
 
   get modalTitle(): string {
     switch (this.modalType) {
-      case 'revenue': return 'Revenue Details';
-      case 'orders': return 'Order Details';
-      case 'products': return 'Product Details';
-      case 'forecast': return 'Détails des Forecasts';
+      case 'revenue': return this.t('ai.modal.titles.revenue');
+      case 'orders': return this.t('ai.modal.titles.orders');
+      case 'products': return this.t('ai.modal.titles.products');
+      case 'forecast': return this.t('ai.modal.titles.forecast');
       default: return '';
     }
   }
@@ -68,10 +71,10 @@ export class KpiDetailModalComponent implements OnChanges {
 
   get tabs(): string[] {
     switch (this.modalType) {
-      case 'revenue': return ['Top Produits', 'Top Clients'];
-      case 'orders': return ['Statut', 'Vue d\'ensemble'];
-      case 'products': return ['Stock Levels', 'Movements'];
-      case 'forecast': return ['Forecasts', 'Accuracy'];
+      case 'revenue': return [this.t('ai.modal.tabs.topProducts'), this.t('ai.modal.tabs.topCustomers')];
+      case 'orders': return [this.t('ai.modal.tabs.status'), this.t('ai.modal.tabs.overview')];
+      case 'products': return [this.t('ai.modal.tabs.stockLevels'), this.t('ai.modal.tabs.movements')];
+      case 'forecast': return [this.t('ai.modal.tabs.forecasts'), this.t('ai.modal.tabs.accuracy')];
       default: return [];
     }
   }
@@ -122,5 +125,9 @@ export class KpiDetailModalComponent implements OnChanges {
     link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
+  }
+
+  private t(key: string): string {
+    return this.translate.instant(key);
   }
 }

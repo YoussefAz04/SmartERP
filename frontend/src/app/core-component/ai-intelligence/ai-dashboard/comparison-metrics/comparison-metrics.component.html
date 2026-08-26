@@ -7,8 +7,8 @@
         <i class="fas fa-chart-bar"></i>
       </div>
       <div>
-        <h2>Comparaison des Périodes</h2>
-        <p>Suivi des performances MTD & YTD</p>
+        <h2>{{ 'ai.comparison.title' | translate }}</h2>
+        <p>{{ 'ai.comparison.subtitle' | translate }}</p>
       </div>
     </div>
   </div>
@@ -24,8 +24,8 @@
           <i class="fas fa-calendar-day"></i>
         </div>
         <div class="cmp-card-title">
-          <span class="cmp-card-title__main">Mois en cours vs Précédent</span>
-          <span class="cmp-card-title__sub">Suivi mensuel — MTD vs LTD</span>
+          <span class="cmp-card-title__main">{{ 'ai.comparison.mtdTitle' | translate }}</span>
+          <span class="cmp-card-title__sub">{{ 'ai.comparison.mtdSubtitle' | translate }}</span>
         </div>
         <span class="cmp-badge cmp-badge--mtd">MTD</span>
       </div>
@@ -34,14 +34,14 @@
       <div class="cmp-hero">
         <div class="cmp-hero__numbers">
           <div class="cmp-hero__current">
-            <span class="cmp-hero__current-label">Ce mois</span>
+            <span class="cmp-hero__current-label">{{ 'ai.comparison.currentMonth' | translate }}</span>
             <span class="cmp-hero__current-value">
               {{ formatCurrency(comparison.mtdVsLtd.current) }}<small> TND</small>
             </span>
           </div>
           <div class="cmp-hero__vs">vs</div>
           <div class="cmp-hero__previous">
-            <span class="cmp-hero__prev-label">Mois précédent</span>
+            <span class="cmp-hero__prev-label">{{ 'ai.comparison.previousMonth' | translate }}</span>
             <span class="cmp-hero__prev-value">
               {{ formatCurrency(comparison.mtdVsLtd.previous) }}<small> TND</small>
             </span>
@@ -67,7 +67,7 @@
         <div class="cmp-track">
           <div class="cmp-track__head">
             <span class="cmp-track__label">
-              <i [ngClass]="salesIconClass(comparison.mtdVsLtd)"></i> Ventes
+              <i [ngClass]="salesIconClass(comparison.mtdVsLtd)"></i> {{ 'ai.comparison.sales' | translate }}
             </span>
             <span class="cmp-trend-pill" [ngClass]="badgeClass(comparison.mtdVsLtd)"
                   [class.cmp-trend-pill--new]="isNew(comparison.mtdVsLtd)">
@@ -77,7 +77,7 @@
           <div class="cmp-track__bars">
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--current"></span>
-              <span class="cmp-track__name">Ce mois</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.currentMonth' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--current"
                      [style.width.%]="getProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)"></div>
@@ -88,7 +88,7 @@
             </div>
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--prev"></span>
-              <span class="cmp-track__name">Précédent</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.previous' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--prev"
                      [style.width.%]="getPreviousProgressWidth(comparison.mtdVsLtd.current, comparison.mtdVsLtd.previous)"></div>
@@ -104,7 +104,7 @@
         <div class="cmp-track" *ngIf="comparison.purchaseMtdVsLtd">
           <div class="cmp-track__head">
             <span class="cmp-track__label">
-              <i [ngClass]="purchaseIconClass(comparison.purchaseMtdVsLtd)"></i> Achats
+              <i [ngClass]="purchaseIconClass(comparison.purchaseMtdVsLtd)"></i> {{ 'ai.comparison.purchases' | translate }}
             </span>
             <span class="cmp-trend-pill" [ngClass]="badgeClass(comparison.purchaseMtdVsLtd, true)"
                   [class.cmp-trend-pill--new]="isNew(comparison.purchaseMtdVsLtd)">
@@ -114,7 +114,7 @@
           <div class="cmp-track__bars">
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--purchase"></span>
-              <span class="cmp-track__name">Ce mois</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.currentMonth' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--purchase"
                      [style.width.%]="getProgressWidth(comparison.purchaseMtdVsLtd.current, comparison.purchaseMtdVsLtd.previous)"></div>
@@ -125,7 +125,7 @@
             </div>
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--prev"></span>
-              <span class="cmp-track__name">Précédent</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.previous' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--prev"
                      [style.width.%]="getPreviousProgressWidth(comparison.purchaseMtdVsLtd.current, comparison.purchaseMtdVsLtd.previous)"></div>
@@ -143,7 +143,7 @@
         <div class="cmp-tile cmp-tile--margin" *ngIf="comparison.marginMtdVsLtd">
           <div class="cmp-tile__icon"><i class="fas fa-percentage"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Marge Brute MTD</span>
+            <span class="cmp-tile__label">{{ 'ai.comparison.grossMarginMtd' | translate }}</span>
             <span class="cmp-tile__value" [ngClass]="getMtdMarginClass()">
               {{ formatCurrency(comparison.marginMtdVsLtd.current) }}<small> TND</small>
             </span>
@@ -157,7 +157,7 @@
         <div class="cmp-tile cmp-tile--orders" *ngIf="comparison.orderCountMtdVsLtd">
           <div class="cmp-tile__icon"><i class="fas fa-receipt"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Orders MTD</span>
+            <span class="cmp-tile__label">{{ 'ai.comparison.ordersMtd' | translate }}</span>
             <span class="cmp-tile__value text-primary">
               {{ comparison.orderCountMtdVsLtd.current | number:'1.0-0' }}
             </span>
@@ -180,8 +180,8 @@
           <i class="fas fa-calendar-check"></i>
         </div>
         <div class="cmp-card-title">
-          <span class="cmp-card-title__main">Bilan Annuel (YTD)</span>
-          <span class="cmp-card-title__sub">Ventes · Achats · Marge cumulés</span>
+          <span class="cmp-card-title__main">{{ 'ai.comparison.ytdTitle' | translate }}</span>
+          <span class="cmp-card-title__sub">{{ 'ai.comparison.ytdSubtitle' | translate }}</span>
         </div>
         <span class="cmp-badge cmp-badge--ytd">YTD</span>
       </div>
@@ -190,14 +190,14 @@
       <div class="cmp-hero cmp-hero--ytd">
         <div class="cmp-hero__numbers">
           <div class="cmp-hero__current">
-            <span class="cmp-hero__current-label">Cette année</span>
+            <span class="cmp-hero__current-label">{{ 'ai.comparison.currentYear' | translate }}</span>
             <span class="cmp-hero__current-value cmp-hero__current-value--ytd">
               {{ formatCurrency(comparison.ytdVsLastYear.current) }}<small> TND</small>
             </span>
           </div>
           <div class="cmp-hero__vs">vs</div>
           <div class="cmp-hero__previous">
-            <span class="cmp-hero__prev-label">Année précédente</span>
+            <span class="cmp-hero__prev-label">{{ 'ai.comparison.previousYear' | translate }}</span>
             <span class="cmp-hero__prev-value">
               {{ formatCurrency(comparison.ytdVsLastYear.previous) }}<small> TND</small>
             </span>
@@ -223,7 +223,7 @@
         <div class="cmp-track">
           <div class="cmp-track__head">
             <span class="cmp-track__label">
-              <i [ngClass]="salesIconClass(comparison.ytdVsLastYear)"></i> Ventes YTD
+              <i [ngClass]="salesIconClass(comparison.ytdVsLastYear)"></i> {{ 'ai.comparison.salesYtd' | translate }}
             </span>
             <span class="cmp-trend-pill" [ngClass]="badgeClass(comparison.ytdVsLastYear)"
                   [class.cmp-trend-pill--new]="isNew(comparison.ytdVsLastYear)">
@@ -233,7 +233,7 @@
           <div class="cmp-track__bars">
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--ytd"></span>
-              <span class="cmp-track__name">Cette année</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.currentYear' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--ytd"
                      [style.width.%]="getProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)"></div>
@@ -244,7 +244,7 @@
             </div>
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--prev"></span>
-              <span class="cmp-track__name">Précédente</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.previousYear' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--prev"
                      [style.width.%]="getPreviousProgressWidth(comparison.ytdVsLastYear.current, comparison.ytdVsLastYear.previous)"></div>
@@ -260,7 +260,7 @@
         <div class="cmp-track" *ngIf="comparison.purchaseYtd">
           <div class="cmp-track__head">
             <span class="cmp-track__label">
-              <i [ngClass]="purchaseIconClass(comparison.purchaseYtd)"></i> Achats YTD
+              <i [ngClass]="purchaseIconClass(comparison.purchaseYtd)"></i> {{ 'ai.comparison.purchasesYtd' | translate }}
             </span>
             <span class="cmp-trend-pill" [ngClass]="badgeClass(comparison.purchaseYtd, true)"
                   [class.cmp-trend-pill--new]="isNew(comparison.purchaseYtd)">
@@ -270,7 +270,7 @@
           <div class="cmp-track__bars">
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--purchase"></span>
-              <span class="cmp-track__name">Cette année</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.currentYear' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--purchase"
                      [style.width.%]="getProgressWidth(comparison.purchaseYtd.current, comparison.purchaseYtd.previous)"></div>
@@ -281,7 +281,7 @@
             </div>
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--prev"></span>
-              <span class="cmp-track__name">Précédente</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.previousYear' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--prev"
                      [style.width.%]="getPreviousProgressWidth(comparison.purchaseYtd.current, comparison.purchaseYtd.previous)"></div>
@@ -297,7 +297,7 @@
         <div class="cmp-track" *ngIf="comparison.marginYtdVsLastYear">
           <div class="cmp-track__head">
             <span class="cmp-track__label">
-              <i [ngClass]="marginIconClass(comparison.marginYtdVsLastYear)"></i> Marge YTD
+              <i [ngClass]="marginIconClass(comparison.marginYtdVsLastYear)"></i> {{ 'ai.comparison.marginYtd' | translate }}
             </span>
             <span class="cmp-trend-pill" [ngClass]="badgeClass(comparison.marginYtdVsLastYear)"
                   [class.cmp-trend-pill--new]="isNew(comparison.marginYtdVsLastYear)">
@@ -309,7 +309,7 @@
               <span class="cmp-track__dot"
                     [class.cmp-track__dot--ytd]="comparison.marginYtdVsLastYear.current >= 0"
                     [class.cmp-track__dot--neg]="comparison.marginYtdVsLastYear.current < 0"></span>
-              <span class="cmp-track__name">Cette année</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.currentYear' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar"
                      [class.cmp-track__bar--ytd]="comparison.marginYtdVsLastYear.current >= 0"
@@ -323,7 +323,7 @@
             </div>
             <div class="cmp-track__row">
               <span class="cmp-track__dot cmp-track__dot--prev"></span>
-              <span class="cmp-track__name">Précédente</span>
+              <span class="cmp-track__name">{{ 'ai.comparison.previousYear' | translate }}</span>
               <div class="cmp-track__bar-wrap">
                 <div class="cmp-track__bar cmp-track__bar--prev"
                      [style.width.%]="getPreviousProgressWidth(comparison.marginYtdVsLastYear.current, comparison.marginYtdVsLastYear.previous)"></div>
@@ -341,19 +341,19 @@
         <div class="cmp-tile cmp-tile--margin">
           <div class="cmp-tile__icon"><i class="fas fa-percentage"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Marge Brute YTD</span>
+            <span class="cmp-tile__label">{{ 'ai.comparison.grossMarginYtd' | translate }}</span>
             <span class="cmp-tile__value" [ngClass]="getMarginClass()">
               {{ formatCurrency(comparison.grossMarginYtd ?? 0) }}<small> TND</small>
             </span>
             <span class="cmp-tile__sub" [ngClass]="getMarginClass()">
-              {{ getMarginPercent() | number:'1.1-1' }}% du CA
+              {{ getMarginPercent() | number:'1.1-1' }}% {{ 'ai.comparison.revenueShare' | translate }}
             </span>
           </div>
         </div>
         <div class="cmp-tile cmp-tile--orders" *ngIf="comparison.orderCountYtdVsLastYear">
           <div class="cmp-tile__icon"><i class="fas fa-receipt"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Orders YTD</span>
+            <span class="cmp-tile__label">{{ 'ai.comparison.ordersYtd' | translate }}</span>
             <span class="cmp-tile__value text-primary">
               {{ comparison.orderCountYtdVsLastYear.current | number:'1.0-0' }}
             </span>
@@ -367,17 +367,17 @@
         <div class="cmp-tile cmp-tile--sales" *ngIf="!comparison.orderCountYtdVsLastYear">
           <div class="cmp-tile__icon"><i class="fas fa-cart-shopping"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Cmdes Vente YTD</span>
+            <span class="cmp-tile__label">{{ 'ai.comparison.salesOrdersYtd' | translate }}</span>
             <span class="cmp-tile__value text-primary">{{ comparison.salesOrderCountYtd ?? 0 | number }}</span>
-            <span class="cmp-tile__sub text-muted">commandes</span>
+            <span class="cmp-tile__sub text-muted">{{ 'ai.comparison.ordersUnit' | translate }}</span>
           </div>
         </div>
         <div class="cmp-tile cmp-tile--purchase">
           <div class="cmp-tile__icon"><i class="fas fa-truck-fast"></i></div>
           <div class="cmp-tile__body">
-            <span class="cmp-tile__label">Cmdes Achat YTD</span>
+            <span class="cmp-tile__label">{{ 'ai.comparison.purchaseOrdersYtd' | translate }}</span>
             <span class="cmp-tile__value text-info">{{ comparison.purchaseOrderCountYtd ?? 0 | number }}</span>
-            <span class="cmp-tile__sub text-muted">commandes</span>
+            <span class="cmp-tile__sub text-muted">{{ 'ai.comparison.ordersUnit' | translate }}</span>
           </div>
         </div>
       </div>

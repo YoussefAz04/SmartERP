@@ -3078,3 +3078,337 @@ body.dark-select :where(.apexcharts-tooltip-title) {
 // facture). Loaded last so it layers on top of per-page SCSS.
 // =================================================================
 @import "/src/assets/scss/ui-refresh";
+
+// =================================================================
+// Final app-wide dark theme overrides
+// Keep this after ui-refresh so the selected theme wins on every page.
+// =================================================================
+:root,
+body {
+  --app-bg: #f4f7fb;
+  --app-surface: #ffffff;
+  --app-surface-soft: #f8fafc;
+  --app-surface-muted: #eef2f7;
+  --app-border: #e2e8f0;
+  --app-text: #0f172a;
+  --app-muted: #64748b;
+  --app-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  --app-input-bg: #ffffff;
+  --app-input-border: #cbd5e1;
+  --app-table-head: #f1f5f9;
+  --app-row-hover: rgba(79, 70, 229, 0.08);
+}
+
+:root.dark,
+body.dark,
+body.dark-mode,
+body.dark-select,
+[data-theme='dark'],
+[data-theme-mode='dark'],
+[data-layout-mode='dark_mode'] {
+  --app-bg: #0f172a;
+  --app-surface: #182033;
+  --app-surface-soft: #1f293d;
+  --app-surface-muted: #26324a;
+  --app-border: #334155;
+  --app-text: #e5e7eb;
+  --app-muted: #94a3b8;
+  --app-shadow: 0 20px 46px rgba(0, 0, 0, 0.34);
+  --app-input-bg: #111827;
+  --app-input-border: #3b465f;
+  --app-table-head: #1f293d;
+  --app-row-hover: rgba(99, 102, 241, 0.16);
+  color-scheme: dark;
+}
+
+body.dark,
+body.dark-mode,
+body.dark-select {
+  background: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+
+body.dark :where(.main-wrapper, .page-wrapper, .content, .page-wrapper-new),
+body.dark-mode :where(.main-wrapper, .page-wrapper, .content, .page-wrapper-new),
+body.dark-select :where(.main-wrapper, .page-wrapper, .content, .page-wrapper-new) {
+  background: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+
+body.dark :where(
+  .dashboard-shell,
+  .profile-shell,
+  .sav-page,
+  .ai-module-wrapper,
+  .settings-wrapper,
+  .settings-content,
+  .table-responsive,
+  .table-list-card,
+  .card,
+  .modern-card,
+  .db-card,
+  .custom-card,
+  .profile-card-wrap,
+  .profile-form-card,
+  .profile-summary-item,
+  .sav-stat,
+  .sav-form-panel,
+  .sav-list-card,
+  .sav-detail-panel,
+  .sav-workflow-overview,
+  .data-panel,
+  .kpi-card,
+  .product-intelligence,
+  .recommendation-card,
+  .quick-action,
+  .stat-card,
+  .modal-content,
+  .dropdown-menu,
+  .dropdown-panel,
+  .mat-mdc-card,
+  .p-component,
+  .p-datatable,
+  .p-dialog
+),
+body.dark-mode :where(
+  .dashboard-shell,
+  .profile-shell,
+  .sav-page,
+  .ai-module-wrapper,
+  .settings-wrapper,
+  .settings-content,
+  .table-responsive,
+  .table-list-card,
+  .card,
+  .modern-card,
+  .db-card,
+  .custom-card,
+  .profile-card-wrap,
+  .profile-form-card,
+  .profile-summary-item,
+  .sav-stat,
+  .sav-form-panel,
+  .sav-list-card,
+  .sav-detail-panel,
+  .sav-workflow-overview,
+  .data-panel,
+  .kpi-card,
+  .product-intelligence,
+  .recommendation-card,
+  .quick-action,
+  .stat-card,
+  .modal-content,
+  .dropdown-menu,
+  .dropdown-panel,
+  .mat-mdc-card,
+  .p-component,
+  .p-datatable,
+  .p-dialog
+),
+body.dark-select :where(
+  .dashboard-shell,
+  .profile-shell,
+  .sav-page,
+  .ai-module-wrapper,
+  .settings-wrapper,
+  .settings-content,
+  .table-responsive,
+  .table-list-card,
+  .card,
+  .modern-card,
+  .db-card,
+  .custom-card,
+  .profile-card-wrap,
+  .profile-form-card,
+  .profile-summary-item,
+  .sav-stat,
+  .sav-form-panel,
+  .sav-list-card,
+  .sav-detail-panel,
+  .sav-workflow-overview,
+  .data-panel,
+  .kpi-card,
+  .product-intelligence,
+  .recommendation-card,
+  .quick-action,
+  .stat-card,
+  .modal-content,
+  .dropdown-menu,
+  .dropdown-panel,
+  .mat-mdc-card,
+  .p-component,
+  .p-datatable,
+  .p-dialog
+) {
+  background-color: var(--app-surface) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+  box-shadow: var(--app-shadow);
+}
+
+body.dark :where(.db-header, .ai-command-header, .sav-header, .profile-hero),
+body.dark-mode :where(.db-header, .ai-command-header, .sav-header, .profile-hero),
+body.dark-select :where(.db-header, .ai-command-header, .sav-header, .profile-hero) {
+  background:
+    linear-gradient(120deg, rgba(10, 15, 30, 0.98), rgba(30, 41, 73, 0.96)) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.36) !important;
+}
+
+body.dark :where(
+  h1, h2, h3, h4, h5, h6,
+  .page-title,
+  .section-heading,
+  .profile-form-title,
+  .profile-username,
+  .sav-form-section-title,
+  .sav-workflow-heading,
+  .kpi-value,
+  .stat-card__value,
+  .quick-action__label,
+  .db-header__title
+),
+body.dark-mode :where(
+  h1, h2, h3, h4, h5, h6,
+  .page-title,
+  .section-heading,
+  .profile-form-title,
+  .profile-username,
+  .sav-form-section-title,
+  .sav-workflow-heading,
+  .kpi-value,
+  .stat-card__value,
+  .quick-action__label,
+  .db-header__title
+),
+body.dark-select :where(
+  h1, h2, h3, h4, h5, h6,
+  .page-title,
+  .section-heading,
+  .profile-form-title,
+  .profile-username,
+  .sav-form-section-title,
+  .sav-workflow-heading,
+  .kpi-value,
+  .stat-card__value,
+  .quick-action__label,
+  .db-header__title
+) {
+  color: var(--app-text) !important;
+}
+
+body.dark :where(
+  p, small, label, td, th,
+  .text-muted,
+  .profile-email,
+  .profile-form-subtitle,
+  .kpi-label,
+  .kpi-trend,
+  .section-kicker,
+  .quick-action__hint,
+  .stat-card__label,
+  .sav-eyebrow,
+  .forecast-label,
+  .forecast-caption
+),
+body.dark-mode :where(
+  p, small, label, td, th,
+  .text-muted,
+  .profile-email,
+  .profile-form-subtitle,
+  .kpi-label,
+  .kpi-trend,
+  .section-kicker,
+  .quick-action__hint,
+  .stat-card__label,
+  .sav-eyebrow,
+  .forecast-label,
+  .forecast-caption
+),
+body.dark-select :where(
+  p, small, label, td, th,
+  .text-muted,
+  .profile-email,
+  .profile-form-subtitle,
+  .kpi-label,
+  .kpi-trend,
+  .section-kicker,
+  .quick-action__hint,
+  .stat-card__label,
+  .sav-eyebrow,
+  .forecast-label,
+  .forecast-caption
+) {
+  color: var(--app-muted) !important;
+}
+
+body.dark :where(input, textarea, select, .form-control, .form-select, .profile-field-input, .sav-form input, .sav-form textarea, .sav-form select, .search-input),
+body.dark-mode :where(input, textarea, select, .form-control, .form-select, .profile-field-input, .sav-form input, .sav-form textarea, .sav-form select, .search-input),
+body.dark-select :where(input, textarea, select, .form-control, .form-select, .profile-field-input, .sav-form input, .sav-form textarea, .sav-form select, .search-input) {
+  background-color: var(--app-input-bg) !important;
+  border-color: var(--app-input-border) !important;
+  color: var(--app-text) !important;
+}
+
+body.dark :where(input, textarea, .form-control, .search-input)::placeholder,
+body.dark-mode :where(input, textarea, .form-control, .search-input)::placeholder,
+body.dark-select :where(input, textarea, .form-control, .search-input)::placeholder {
+  color: #64748b !important;
+}
+
+body.dark :where(.table, table, .sav-table, .p-datatable-table),
+body.dark-mode :where(.table, table, .sav-table, .p-datatable-table),
+body.dark-select :where(.table, table, .sav-table, .p-datatable-table) {
+  --bs-table-bg: var(--app-surface);
+  --bs-table-color: var(--app-text);
+  --bs-table-border-color: var(--app-border);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+  --bs-table-hover-bg: var(--app-row-hover);
+  background-color: var(--app-surface) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+}
+
+body.dark :where(.table thead th, table thead th, .sav-table thead th, .p-datatable-thead > tr > th),
+body.dark-mode :where(.table thead th, table thead th, .sav-table thead th, .p-datatable-thead > tr > th),
+body.dark-select :where(.table thead th, table thead th, .sav-table thead th, .p-datatable-thead > tr > th) {
+  background-color: var(--app-table-head) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+}
+
+body.dark :where(.table tbody td, table tbody td, .sav-table tbody td, .p-datatable-tbody > tr > td),
+body.dark-mode :where(.table tbody td, table tbody td, .sav-table tbody td, .p-datatable-tbody > tr > td),
+body.dark-select :where(.table tbody td, table tbody td, .sav-table tbody td, .p-datatable-tbody > tr > td) {
+  background-color: transparent !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+}
+
+body.dark :where(.table tbody tr:hover, table tbody tr:hover, .sav-table tbody tr:hover, .p-datatable-tbody > tr:hover),
+body.dark-mode :where(.table tbody tr:hover, table tbody tr:hover, .sav-table tbody tr:hover, .p-datatable-tbody > tr:hover),
+body.dark-select :where(.table tbody tr:hover, table tbody tr:hover, .sav-table tbody tr:hover, .p-datatable-tbody > tr:hover) {
+  background-color: var(--app-row-hover) !important;
+}
+
+body.dark :where(.bg-white, .bg-light, .profile-meta-item, .profile-status-field, .sav-readonly-field, .sav-search, .confidence-panel, .hero-stat),
+body.dark-mode :where(.bg-white, .bg-light, .profile-meta-item, .profile-status-field, .sav-readonly-field, .sav-search, .confidence-panel, .hero-stat),
+body.dark-select :where(.bg-white, .bg-light, .profile-meta-item, .profile-status-field, .sav-readonly-field, .sav-search, .confidence-panel, .hero-stat) {
+  background-color: var(--app-surface-soft) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+}
+
+body.dark :where(.border, .border-top, .border-bottom, .border-start, .border-end, hr),
+body.dark-mode :where(.border, .border-top, .border-bottom, .border-start, .border-end, hr),
+body.dark-select :where(.border, .border-top, .border-bottom, .border-start, .border-end, hr) {
+  border-color: var(--app-border) !important;
+}
+
+body.dark :where(.apexcharts-tooltip, .apexcharts-xaxistooltip, .apexcharts-yaxistooltip),
+body.dark-mode :where(.apexcharts-tooltip, .apexcharts-xaxistooltip, .apexcharts-yaxistooltip),
+body.dark-select :where(.apexcharts-tooltip, .apexcharts-xaxistooltip, .apexcharts-yaxistooltip) {
+  background: var(--app-surface) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text) !important;
+}

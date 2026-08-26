@@ -22,13 +22,12 @@ export class SettingsService {
   );
 
   constructor(@Inject(DOCUMENT) private document: Document) {
-    this.applyThemeMode(this.themeMode.value);
+    this.themeMode.subscribe((theme) => this.applyThemeMode(theme));
   }
 
   public changeThemeMode(theme: string): void {
     this.themeMode.next(theme);
     localStorage.setItem('themeMode', theme);
-    this.applyThemeMode(theme);
   }
   public changeLayoutMode(layout: string): void {
     this.layoutMode.next(layout);
@@ -46,8 +45,15 @@ export class SettingsService {
 
     body.classList.toggle('dark-mode', isDark);
     body.classList.toggle('dark-select', isDark);
+    body.classList.toggle('dark', isDark);
     root.classList.toggle('dark-mode', isDark);
+    root.classList.toggle('dark', isDark);
     root.dataset['theme'] = isDark ? 'dark' : 'light';
+    root.dataset['themeMode'] = isDark ? 'dark' : 'light';
+    root.dataset['layoutMode'] = isDark ? 'dark_mode' : 'light_mode';
+    body.dataset['theme'] = isDark ? 'dark' : 'light';
+    body.dataset['themeMode'] = isDark ? 'dark' : 'light';
+    body.dataset['layoutMode'] = isDark ? 'dark_mode' : 'light_mode';
   }
 }
 
