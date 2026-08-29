@@ -1,4 +1,6 @@
+import { runtimeApiUrl } from './runtime-config';
+
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8020'
+  apiUrl: runtimeApiUrl('http://localhost:8020')
 };

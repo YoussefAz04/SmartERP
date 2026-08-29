@@ -5,6 +5,10 @@
 -- Login:
 --   username: admin.soutenance
 --   password: 1234
+--   username: vente.demo / password: demo123
+--   username: stock.demo / password: demo123
+--   username: admin.technova / password: demo123
+--   username: admin.atlas / password: demo123
 --
 -- Important:
 --   Run the backend once before executing this script so Hibernate can create
@@ -42,8 +46,15 @@ BEGIN TRY
     BEGIN TRANSACTION;
 
     DECLARE @entId BIGINT = 9901;
+    DECLARE @techEntId BIGINT = 9902;
+    DECLARE @atlasEntId BIGINT = 9903;
     DECLARE @adminUserId BIGINT = 9901;
+    DECLARE @salesUserId BIGINT = 9902;
+    DECLARE @stockUserId BIGINT = 9903;
+    DECLARE @techAdminUserId BIGINT = 9910;
+    DECLARE @atlasAdminUserId BIGINT = 9911;
     DECLARE @adminRoleId BIGINT;
+    DECLARE @employeeRoleId BIGINT;
     DECLARE @now DATETIME2(6) = SYSDATETIME();
 
     -- ------------------------------------------------------------
@@ -159,30 +170,34 @@ BEGIN TRY
            OR code IN ('INFO', 'IMPR', 'BUREAU', 'CAISSE') AND entreprise_id = @entId;
 
     IF OBJECT_ID('refresh_tokens', 'U') IS NOT NULL
-        DELETE FROM refresh_tokens WHERE user_id = @adminUserId;
+        DELETE FROM refresh_tokens
+        WHERE user_id IN (@adminUserId, @salesUserId, @stockUserId, @techAdminUserId, @atlasAdminUserId);
 
     IF OBJECT_ID('user_roles', 'U') IS NOT NULL
         DELETE FROM user_roles
-        WHERE user_id = @adminUserId
+        WHERE user_id IN (@adminUserId, @salesUserId, @stockUserId, @techAdminUserId, @atlasAdminUserId)
            OR user_id IN (
                 SELECT id FROM App_User
                 WHERE username = 'admin.soutenance'
                    OR email = 'admin.soutenance@demo.tn'
-                   OR entreprise_id = @entId
+                   OR entreprise_id IN (@entId, @techEntId, @atlasEntId)
            );
 
     IF OBJECT_ID('permission', 'U') IS NOT NULL
-        DELETE FROM permission WHERE user_id = @adminUserId;
+        DELETE FROM permission
+        WHERE user_id IN (@adminUserId, @salesUserId, @stockUserId, @techAdminUserId, @atlasAdminUserId);
 
     IF OBJECT_ID('App_User', 'U') IS NOT NULL
         DELETE FROM App_User
-        WHERE id = @adminUserId
+        WHERE id IN (@adminUserId, @salesUserId, @stockUserId, @techAdminUserId, @atlasAdminUserId)
            OR username = 'admin.soutenance'
            OR email = 'admin.soutenance@demo.tn'
-           OR entreprise_id = @entId;
+           OR entreprise_id IN (@entId, @techEntId, @atlasEntId);
 
     IF OBJECT_ID('entreprise', 'U') IS NOT NULL
-        DELETE FROM entreprise WHERE id = @entId OR nom = 'Entreprise Demo Soutenance';
+        DELETE FROM entreprise
+        WHERE id IN (@entId, @techEntId, @atlasEntId)
+           OR nom IN ('Entreprise Demo Soutenance', 'TechNova Services', 'Atlas Retail Tunisia');
 
     -- ------------------------------------------------------------
     -- Role ADMIN required by JWT / @PreAuthorize("hasRole('ADMIN')").
@@ -203,6 +218,112 @@ BEGIN TRY
     WHERE UPPER(name) = 'ADMIN'
     ORDER BY CASE WHEN name = 'ADMIN' THEN 0 ELSE 1 END, id;
 
+    IF NOT EXISTS (SELECT 1 FROM roles WHERE UPPER(name) = 'EMPLOYEE')
+    BEGIN
+        INSERT INTO roles (name, created_on, role_type)
+        VALUES ('EMPLOYEE', CAST(GETDATE() AS DATE), 'EMPLOYEE');
+    END
+    ELSE
+    BEGIN
+        UPDATE roles SET role_type = 'EMPLOYEE'
+        WHERE UPPER(name) = 'EMPLOYEE' AND (role_type IS NULL OR role_type <> 'EMPLOYEE');
+    END
+
+    SELECT TOP 1 @employeeRoleId = id
+    FROM roles
+    WHERE UPPER(name) = 'EMPLOYEE'
+    ORDER BY CASE WHEN name = 'EMPLOYEE' THEN 0 ELSE 1 END, id;
+
+    -- ------------------------------------------------------------
+    -- Navigation modules used by the Angular sidebar.
+    -- ------------------------------------------------------------
+    MERGE module_tittle AS target
+    USING (VALUES
+        (CAST(1 AS BIGINT), 'Parametrage'),
+        (CAST(100 AS BIGINT), 'gestion de Client'),
+        (CAST(200 AS BIGINT), 'gestion de Fournisseur'),
+        (CAST(300 AS BIGINT), 'gestion Article'),
+        (CAST(400 AS BIGINT), 'gestion Achat'),
+        (CAST(500 AS BIGINT), 'gestion Vente')
+    ) AS source (id, module_tittle)
+    ON target.id = source.id
+    WHEN MATCHED THEN UPDATE SET module_tittle = source.module_tittle
+    WHEN NOT MATCHED THEN INSERT (id, module_tittle)
+        VALUES (source.id, source.module_tittle);
+
+    MERGE module AS target
+    USING (VALUES
+        (CAST(1 AS BIGINT), 'gestion entreprise', CAST(1 AS BIT), CAST(1 AS BIGINT)),
+        (CAST(2 AS BIGINT), 'gestion users', CAST(1 AS BIT), CAST(1 AS BIGINT)),
+        (CAST(100 AS BIGINT), 'gestion de Client', CAST(1 AS BIT), CAST(100 AS BIGINT)),
+        (CAST(101 AS BIGINT), 'gestion de Categorie Client', CAST(1 AS BIT), CAST(100 AS BIGINT)),
+        (CAST(200 AS BIGINT), 'gestion de Fournisseur', CAST(1 AS BIT), CAST(200 AS BIGINT)),
+        (CAST(201 AS BIGINT), 'gestion de Categorie Fournisseur', CAST(1 AS BIT), CAST(200 AS BIGINT)),
+        (CAST(300 AS BIGINT), 'gestion Article Achat', CAST(1 AS BIT), CAST(300 AS BIGINT)),
+        (CAST(301 AS BIGINT), 'gestion Article Vente', CAST(1 AS BIT), CAST(300 AS BIGINT)),
+        (CAST(302 AS BIGINT), 'gestion Stock', CAST(1 AS BIT), CAST(300 AS BIGINT)),
+        (CAST(400 AS BIGINT), 'Commande Achat', CAST(1 AS BIT), CAST(400 AS BIGINT)),
+        (CAST(401 AS BIGINT), 'Facture Achat', CAST(1 AS BIT), CAST(400 AS BIGINT)),
+        (CAST(500 AS BIGINT), 'Commande Vente', CAST(1 AS BIT), CAST(500 AS BIGINT)),
+        (CAST(501 AS BIGINT), 'Facture Vente', CAST(1 AS BIT), CAST(500 AS BIGINT))
+    ) AS source (id, title, status, module_tittle_id)
+    ON target.id = source.id
+    WHEN MATCHED THEN UPDATE SET
+        title = source.title,
+        status = source.status,
+        module_tittle_id = source.module_tittle_id
+    WHEN NOT MATCHED THEN INSERT (id, title, status, module_tittle_id)
+        VALUES (source.id, source.title, source.status, source.module_tittle_id);
+
+    MERGE sous_module AS target
+    USING (VALUES
+        (CAST(1 AS BIGINT), 'Entreprise', 'entreprise/listEntreprise', CAST(1 AS BIGINT)),
+        (CAST(2 AS BIGINT), 'Users', 'user-management/users', CAST(2 AS BIGINT)),
+        (CAST(3 AS BIGINT), 'Roles & Permissions', 'user-management/roles-permissions', CAST(2 AS BIGINT)),
+        (CAST(100 AS BIGINT), 'Clients', 'client/listClient', CAST(100 AS BIGINT)),
+        (CAST(101 AS BIGINT), 'Categories Clients', 'client/listCategorieClient', CAST(101 AS BIGINT)),
+        (CAST(200 AS BIGINT), 'Suppliers', 'fournisseur/listFournisseur', CAST(200 AS BIGINT)),
+        (CAST(201 AS BIGINT), 'Supplier Categories', 'fournisseur/listCategorieFournisseur', CAST(201 AS BIGINT)),
+        (CAST(300 AS BIGINT), 'Purchase Products', 'article-achat/listArticleAchat', CAST(300 AS BIGINT)),
+        (CAST(301 AS BIGINT), 'Sales Products', 'article-vente/listArticleVente', CAST(301 AS BIGINT)),
+        (CAST(302 AS BIGINT), 'Stock', 'stock/listStockDashboard', CAST(302 AS BIGINT)),
+        (CAST(400 AS BIGINT), 'Purchase Orders', 'commande-achat/list', CAST(400 AS BIGINT)),
+        (CAST(401 AS BIGINT), 'Purchase Invoices', 'facture/listFactureAchat', CAST(401 AS BIGINT)),
+        (CAST(500 AS BIGINT), 'Sales Orders', 'commande-vente/list', CAST(500 AS BIGINT)),
+        (CAST(501 AS BIGINT), 'Sales Invoices', 'facture/listFactureVente', CAST(501 AS BIGINT))
+    ) AS source (id, titre_sous_module, link, module_id)
+    ON target.id = source.id
+    WHEN MATCHED THEN UPDATE SET
+        titre_sous_module = source.titre_sous_module,
+        link = source.link,
+        module_id = source.module_id
+    WHEN NOT MATCHED THEN INSERT (id, titre_sous_module, link, module_id)
+        VALUES (source.id, source.titre_sous_module, source.link, source.module_id);
+
+    DELETE FROM permission WHERE role_id = @adminRoleId AND user_id IS NULL;
+    INSERT INTO permission (
+        id, can_create, can_delete, can_update, can_view, module_id, role_id, user_id
+    )
+    SELECT NEXT VALUE FOR permission_seq, 1, 1, 1, 1, module_id, @adminRoleId, NULL
+    FROM (VALUES
+        (1), (2), (100), (101), (200), (201), (300), (301), (302),
+        (400), (401), (500), (501)
+    ) AS admin_modules (module_id);
+
+    DECLARE @nextModuleTitleId BIGINT = (SELECT ISNULL(MAX(id), 0) + 1 FROM module_tittle);
+    DECLARE @nextModuleId BIGINT = (SELECT ISNULL(MAX(id), 0) + 1 FROM module);
+    DECLARE @nextSubModuleId BIGINT = (SELECT ISNULL(MAX(id), 0) + 1 FROM sous_module);
+    DECLARE @sequenceSql NVARCHAR(200);
+    SET @sequenceSql = N'ALTER SEQUENCE module_tittle_seq RESTART WITH '
+        + CONVERT(NVARCHAR(20), @nextModuleTitleId);
+    EXEC sp_executesql @sequenceSql;
+    SET @sequenceSql = N'ALTER SEQUENCE module_seq RESTART WITH '
+        + CONVERT(NVARCHAR(20), @nextModuleId);
+    EXEC sp_executesql @sequenceSql;
+    SET @sequenceSql = N'ALTER SEQUENCE sous_module_seq RESTART WITH '
+        + CONVERT(NVARCHAR(20), @nextSubModuleId);
+    EXEC sp_executesql @sequenceSql;
+
     -- ------------------------------------------------------------
     -- Enterprise and admin user.
     -- ------------------------------------------------------------
@@ -212,15 +333,28 @@ BEGIN TRY
         numero_identification_fiscale, registre_commerce, site_web, date_creation,
         date_derniere_modification, email, adresse, telephone, active, created_at, updated_at
     )
-    VALUES (
-        @entId, 'Entreprise Demo Soutenance', 'Entreprise Demo Soutenance SARL',
-        'Entreprise de demonstration pour la soutenance technique Business Manager.',
-        'Distribution informatique et fournitures professionnelles', 'SARL',
-        '9901990/A/M/000', 'B99019902026', 'https://demo-soutenance.local',
-        '2021-03-15', @now, 'contact@demo-soutenance.tn',
-        '12 Avenue Habib Bourguiba, Tunis 1001', '+216 71 990 901',
-        1, @now, @now
-    );
+    VALUES
+        (@entId, 'Entreprise Demo Soutenance', 'Entreprise Demo Soutenance SARL',
+         'Entreprise de demonstration complete pour SmartERP.',
+         'Distribution informatique et fournitures professionnelles', 'SARL',
+         '9901990/A/M/000', 'B99019902026', 'https://demo-soutenance.local',
+         '2021-03-15', @now, 'contact@demo-soutenance.tn',
+         '12 Avenue Habib Bourguiba, Tunis 1001', '+216 71 990 901',
+         1, @now, @now),
+        (@techEntId, 'TechNova Services', 'TechNova Services SARL',
+         'Societe tunisienne de services informatiques et maintenance.',
+         'Services informatiques', 'SARL',
+         '9902990/A/M/000', 'B99029902023', 'https://technova.demo.local',
+         '2023-02-10', @now, 'contact@technova.demo.tn',
+         'Les Berges du Lac 1, Tunis 1053', '+216 71 990 902',
+         1, @now, @now),
+        (@atlasEntId, 'Atlas Retail Tunisia', 'Atlas Retail Tunisia SA',
+         'Reseau de points de vente et distribution regionale.',
+         'Commerce et distribution', 'SA',
+         '9903990/A/M/000', 'B99039902022', 'https://atlas-retail.demo.local',
+         '2022-09-01', @now, 'contact@atlas-retail.demo.tn',
+         'Route de Gremda km 4, Sfax 3000', '+216 74 990 903',
+         1, @now, @now);
     SET IDENTITY_INSERT entreprise OFF;
 
     SET IDENTITY_INSERT App_User ON;
@@ -228,14 +362,47 @@ BEGIN TRY
         id, email, username, password, enabled, image_url, phone,
         entreprise_id, created_at, updated_at
     )
-    VALUES (
-        @adminUserId, 'admin.soutenance@demo.tn', 'admin.soutenance', '1234',
-        1, '', '+216 55 123 400', @entId, @now, @now
-    );
+    VALUES
+        (@adminUserId, 'admin.soutenance@demo.tn', 'admin.soutenance', '1234',
+         1, '', '+216 55 123 400', @entId, @now, @now),
+        (@salesUserId, 'vente.demo@demo.tn', 'vente.demo', 'demo123',
+         1, '', '+216 55 123 401', @entId, @now, @now),
+        (@stockUserId, 'stock.demo@demo.tn', 'stock.demo', 'demo123',
+         1, '', '+216 55 123 402', @entId, @now, @now),
+        (@techAdminUserId, 'admin@technova.demo.tn', 'admin.technova', 'demo123',
+         1, '', '+216 55 123 410', @techEntId, @now, @now),
+        (@atlasAdminUserId, 'admin@atlas-retail.demo.tn', 'admin.atlas', 'demo123',
+         1, '', '+216 55 123 411', @atlasEntId, @now, @now);
     SET IDENTITY_INSERT App_User OFF;
 
     INSERT INTO user_roles (user_id, role_id)
-    VALUES (@adminUserId, @adminRoleId);
+    VALUES
+        (@adminUserId, @adminRoleId),
+        (@salesUserId, @employeeRoleId),
+        (@stockUserId, @employeeRoleId),
+        (@techAdminUserId, @adminRoleId),
+        (@atlasAdminUserId, @adminRoleId);
+
+    -- Sales employee: customers, sales products, stock visibility, sales orders and invoices.
+    INSERT INTO permission (
+        id, can_create, can_delete, can_update, can_view, module_id, role_id, user_id
+    ) VALUES
+        (NEXT VALUE FOR permission_seq, 1, 0, 1, 1, 100, NULL, @salesUserId),
+        (NEXT VALUE FOR permission_seq, 0, 0, 0, 1, 301, NULL, @salesUserId),
+        (NEXT VALUE FOR permission_seq, 0, 0, 0, 1, 302, NULL, @salesUserId),
+        (NEXT VALUE FOR permission_seq, 1, 0, 1, 1, 500, NULL, @salesUserId),
+        (NEXT VALUE FOR permission_seq, 1, 0, 1, 1, 501, NULL, @salesUserId);
+
+    -- Stock employee: suppliers, purchase products, stock, purchase orders and invoices.
+    INSERT INTO permission (
+        id, can_create, can_delete, can_update, can_view, module_id, role_id, user_id
+    ) VALUES
+        (NEXT VALUE FOR permission_seq, 0, 0, 0, 1, 200, NULL, @stockUserId),
+        (NEXT VALUE FOR permission_seq, 0, 0, 0, 1, 201, NULL, @stockUserId),
+        (NEXT VALUE FOR permission_seq, 1, 0, 1, 1, 300, NULL, @stockUserId),
+        (NEXT VALUE FOR permission_seq, 1, 0, 1, 1, 302, NULL, @stockUserId),
+        (NEXT VALUE FOR permission_seq, 1, 0, 1, 1, 400, NULL, @stockUserId),
+        (NEXT VALUE FOR permission_seq, 1, 0, 1, 1, 401, NULL, @stockUserId);
 
     -- ------------------------------------------------------------
     -- Referential data.
@@ -663,8 +830,8 @@ BEGIN TRY
 
     SET IDENTITY_INSERT facture_de_vente ON;
     INSERT INTO facture_de_vente (
-        id, referance, date_achat, montant_total, montantht, montanttva,
-        montantttc, remise, mode_paiement, statut, description, chemin_fichier,
+        id, referance, date_achat, montant_total, montant_ht, montant_tva,
+        montant_ttc, remise, mode_paiement, statut, description, chemin_fichier,
         client_id, commande_vente_id, entreprise_id
     ) VALUES
         (9901, 'FV-DEMO-202507-001', '2025-07-18', 12126.10, 10190.00, 1936.10, 12126.10, 0.00, 'VIREMENT', 'PAYEE', 'Facture vente CV-DEMO-202507-001', NULL, 9901, 9901, @entId),
@@ -696,6 +863,9 @@ BEGIN TRY
     IF COL_LENGTH('facture_de_vente', 'montant_ht') IS NOT NULL
        AND COL_LENGTH('facture_de_vente', 'montant_tva') IS NOT NULL
        AND COL_LENGTH('facture_de_vente', 'montant_ttc') IS NOT NULL
+       AND COL_LENGTH('facture_de_vente', 'montantht') IS NOT NULL
+       AND COL_LENGTH('facture_de_vente', 'montanttva') IS NOT NULL
+       AND COL_LENGTH('facture_de_vente', 'montantttc') IS NOT NULL
     BEGIN
         EXEC sp_executesql N'
             UPDATE facture_de_vente
@@ -762,6 +932,10 @@ BEGIN TRY
 
     PRINT 'Demo soutenance seed inserted successfully.';
     PRINT 'Login: username=admin.soutenance / password=1234';
+    PRINT 'Login: username=vente.demo / password=demo123';
+    PRINT 'Login: username=stock.demo / password=demo123';
+    PRINT 'Login: username=admin.technova / password=demo123';
+    PRINT 'Login: username=admin.atlas / password=demo123';
 END TRY
 BEGIN CATCH
     IF @@TRANCOUNT > 0

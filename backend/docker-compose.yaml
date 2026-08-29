@@ -1,32 +1,124 @@
+name: smarterp
+
 services:
-  postgres:
-    container_name: postgres-sql-BusinessManager
-    image: postgres
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      POSTGRES_USER: sayari
-      POSTGRES_PASSWORD: sayari
-      PGDATA: /var/lib/postgresql/data
-      POSTGRES_DB: BusinessManager
-    volumes:
-      - postgres:/data/postgres
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:-SmartERP_Local_2026!}
     ports:
-      - 5432:5432
-    networks:
-      - spring-demo
+      - "${DB_PORT:-1433}:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          SQLCMDPASSWORD="$${MSSQL_SA_PASSWORD}"
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -Q "SELECT 1" >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
     restart: unless-stopped
 
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      SQLCMDPASSWORD: ${DB_PASSWORD:-SmartERP_Local_2026!}
+    entrypoint: /opt/mssql-tools18/bin/sqlcmd
+    command:
+      - -S
+      - sqlserver
+      - -U
+      - sa
+      - -C
+      - -Q
+      - >-
+        IF DB_ID(N'BusinessManager') IS NULL
+        BEGIN
+          CREATE DATABASE [BusinessManager];
+        END
+    restart: "no"
+
   mail-dev:
-    container_name: mail-dev-BusinessManager
-    image: maildev/maildev
+    image: maildev/maildev:2.2.1
     ports:
-      - 1080:1080
-      - 1025:1025
-    networks:
-      - spring-demo
+      - "1080:1080"
+      - "1025:1025"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+      mail-dev:
+        condition: service_started
+    environment:
+      DB_URL: jdbc:sqlserver://sqlserver:1433;databaseName=BusinessManager;encrypt=true;trustServerCertificate=true
+      DB_USERNAME: sa
+      DB_PASSWORD: ${DB_PASSWORD:-SmartERP_Local_2026!}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+      JWT_SECRET: ${JWT_SECRET:-SmartERP_Docker_Local_Secret_Change_Before_Deployment_2026}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:4200}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
+      BOOTSTRAP_ADMIN_USERNAME: ${BOOTSTRAP_ADMIN_USERNAME:-admin}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@gmail.com}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-admin123}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      MAIL_HOST: mail-dev
+      MAIL_PORT: 1025
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_SMTP_AUTH: "false"
+      MAIL_STARTTLS_ENABLE: "false"
+    ports:
+      - "8020:8020"
+    restart: unless-stopped
+
+  demo-seed:
+    profiles: ["demo"]
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      SQLCMDPASSWORD: ${DB_PASSWORD:-SmartERP_Local_2026!}
+    volumes:
+      - ./src/main/resources/data/demo_soutenance_seed.sql:/seed/demo_soutenance_seed.sql:ro
+    entrypoint: /opt/mssql-tools18/bin/sqlcmd
+    command:
+      - -S
+      - sqlserver
+      - -U
+      - sa
+      - -C
+      - -d
+      - BusinessManager
+      - -b
+      - -i
+      - /seed/demo_soutenance_seed.sql
+    restart: "no"
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      API_URL: ${API_URL:-http://localhost:8020}
+    ports:
+      - "4200:80"
     restart: unless-stopped
 
 volumes:
-  postgres:
-
-networks:
-  spring-demo:
+  sqlserver-data:

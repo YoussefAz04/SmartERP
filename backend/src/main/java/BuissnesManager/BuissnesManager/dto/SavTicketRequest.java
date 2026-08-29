@@ -7,6 +7,7 @@ import BuissnesManager.BuissnesManager.entity.SavApprovalStatus;
 import BuissnesManager.BuissnesManager.entity.SavResolutionType;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class SavTicketRequest {
+    @NotBlank(message = "Subject is required")
     private String subject;
     private String description;
     private String diagnostic;

@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.security;
 import BuissnesManager.BuissnesManager.entity.Role;
 import BuissnesManager.BuissnesManager.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ public class JWTUtil {
     private long expiration;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -75,15 +77,24 @@ public class JWTUtil {
      */
     public Claims extractClaims(String token) {
         try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
+            return validateAndExtractClaims(token);
+        } catch (JwtException | IllegalArgumentException e) {
             logger.error("❌ Invalid JWT token: {}", e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Verifies the signature and expiration, then returns the claims in one parse.
+     * Unlike {@link #extractClaims(String)}, this method deliberately propagates
+     * JWT errors so the HTTP filter can return a proper 401 response.
+     */
+    public Claims validateAndExtractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     /**
@@ -101,10 +112,8 @@ public class JWTUtil {
         Claims claims = extractClaims(token);
         if (claims != null && claims.containsKey("enterpriseId")) {
             Object id = claims.get("enterpriseId");
-            if (id instanceof Long) {
-                return (Long) id;
-            } else if (id instanceof Integer) {
-                return ((Integer) id).longValue();
+            if (id instanceof Number number) {
+                return number.longValue();
             }
         }
         return null;
@@ -117,8 +126,8 @@ public class JWTUtil {
         Claims claims = extractClaims(token);
         if (claims != null && claims.containsKey("roles")) {
             Object rolesObj = claims.get("roles");
-            if (rolesObj instanceof List) {
-                return (List<String>) rolesObj;
+            if (rolesObj instanceof List<?> roles) {
+                return roles.stream().map(String::valueOf).toList();
             }
         }
         return new ArrayList<>();

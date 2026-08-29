@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/clients")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ClientController {
 
     @Autowired
@@ -27,7 +27,7 @@ public class ClientController {
     //  ADD CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping("/addClient/{idCategorie}")
-    public ResponseEntity<Client> addClient(@RequestBody Client client, @PathVariable Long idCategorie) {
+    public ResponseEntity<Client> addClient(@Valid @RequestBody Client client, @PathVariable Long idCategorie) {
         try {
             Client newClient = clientService.addClient(client, idCategorie);
             return ResponseEntity.ok(newClient);
@@ -97,7 +97,7 @@ public class ClientController {
     //  UPDATE CLIENT
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/updateClient/{id}")
-    public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client client,
+    public ResponseEntity<Client> updateClient(@PathVariable Long id, @Valid @RequestBody Client client,
             @RequestParam(required = false) Long idCategorie) {
         try {
             client.setId(id);

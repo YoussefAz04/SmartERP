@@ -20,6 +20,7 @@ import BuissnesManager.BuissnesManager.service.PermissionService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,6 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AuthController {
 
     /** Access-token cookie TTL in seconds (matches JWT expiration: 8 hours). */
@@ -231,7 +231,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     @Transactional
-    public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse httpResponse) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request, HttpServletResponse httpResponse) {
         System.out.println(" Login endpoint hit for username: " + request.getUsername());
         
         List<PermissionDto> permissionDtoList = new ArrayList<>();

@@ -17,7 +17,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/entreprise")
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class EntrepriseController {
 
     private static final Logger logger = LoggerFactory.getLogger(EntrepriseController.class);

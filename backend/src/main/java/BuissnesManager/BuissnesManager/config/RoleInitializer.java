@@ -5,11 +5,13 @@ import BuissnesManager.BuissnesManager.entity.RoleType;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
+@Order(1)
 public class RoleInitializer implements CommandLineRunner {
 
     @Autowired

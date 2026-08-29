@@ -233,7 +233,12 @@ The backend reads configuration from environment variables. The tracked defaults
 | `DB_PASSWORD` | SQL Server password | `1234` |
 | `JWT_SECRET` | JWT signing key, at least 32 characters | Development-only key |
 | `FRONTEND_URL` | Allowed frontend origin and reset-password URL | `http://localhost:4200` |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated frontend origins allowed by the API | `http://localhost:4200` |
+| `BOOTSTRAP_ADMIN_USERNAME` | Initial super-admin username for a new database | `admin` |
+| `BOOTSTRAP_ADMIN_EMAIL` | Initial super-admin email for a new database | `admin@gmail.com` |
+| `BOOTSTRAP_ADMIN_PASSWORD` | Initial super-admin password; change it outside local development | `admin123` |
 | `COOKIE_SECURE` | Sends authentication cookies over HTTPS only | `false` |
+| `API_URL` | Backend URL loaded by the containerized frontend at runtime | `http://localhost:8020` |
 | `MAIL_USERNAME` | SMTP account used for password-reset emails | Empty |
 | `MAIL_PASSWORD` | SMTP app password | Empty |
 
@@ -283,6 +288,74 @@ If Springdoc is enabled, API documentation can be opened at:
 ```text
 http://localhost:8020/swagger-ui/index.html
 ```
+
+The backend health endpoint is available at:
+
+```text
+http://localhost:8020/actuator/health
+```
+
+Only health information is publicly accessible. Other application endpoints remain protected by JWT authentication.
+
+## Running with Docker
+
+The Docker setup starts Microsoft SQL Server, creates the `BusinessManager` database, starts a local MailDev inbox, builds the Spring Boot API, and serves the Angular application with Nginx.
+
+1. Create your local environment file and replace the example database and JWT secrets:
+
+```powershell
+cd backend
+Copy-Item .env.example .env
+```
+
+2. Start the complete stack:
+
+```powershell
+docker compose up --build -d
+```
+
+3. Open the services:
+
+| Service | URL |
+| --- | --- |
+| SmartERP | `http://localhost:4200` |
+| Backend health | `http://localhost:8020/actuator/health` |
+| Swagger, local profile only | `http://localhost:8020/swagger-ui/index.html` |
+| MailDev inbox | `http://localhost:1080` |
+
+On a newly created Docker database, sign in with `admin` / `admin123`. Set
+`BOOTSTRAP_ADMIN_USERNAME`, `BOOTSTRAP_ADMIN_EMAIL`, and
+`BOOTSTRAP_ADMIN_PASSWORD` in `backend/.env` before the first startup to use
+different bootstrap credentials. Existing accounts from a SQL Server installed
+directly on Windows are not copied into the Docker database automatically.
+
+Load or refresh the complete demonstration enterprise with:
+
+```powershell
+docker compose --profile demo run --rm demo-seed
+```
+
+The demonstration logins are `admin.soutenance` / `1234`, `vente.demo` /
+`demo123`, `stock.demo` / `demo123`, `admin.technova` / `demo123`, and
+`admin.atlas` / `demo123`. The seed includes three companies; the main company
+contains customers, suppliers, twenty products with stock, purchase and sales
+orders, invoices, and twelve months of activity. Rerunning the command replaces
+only the demonstration company data.
+
+View container status and logs with:
+
+```powershell
+docker compose ps
+docker compose logs -f backend
+```
+
+Stop the stack without deleting database data:
+
+```powershell
+docker compose down
+```
+
+The frontend image reads `API_URL` when its container starts, so the same image can target a different backend without rebuilding Angular. For deployment, configure `API_URL`, `FRONTEND_URL`, `CORS_ALLOWED_ORIGINS`, `COOKIE_SECURE=true`, a strong `JWT_SECRET`, and production database credentials through the hosting platform.
 
 ## Automated Checks
 

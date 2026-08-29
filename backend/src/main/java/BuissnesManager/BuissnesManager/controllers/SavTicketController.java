@@ -10,12 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sav")
-@CrossOrigin(origins = "http://localhost:4200")
 public class SavTicketController {
 
     @Autowired
@@ -104,7 +104,7 @@ public class SavTicketController {
     @PostMapping("/{id}/interventions")
     public ResponseEntity<?> addIntervention(
             @PathVariable Long id,
-            @RequestBody SavInterventionRequest request) {
+            @Valid @RequestBody SavInterventionRequest request) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(savTicketService.addIntervention(id, request));
@@ -143,7 +143,7 @@ public class SavTicketController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PostMapping
-    public ResponseEntity<?> createTicket(@RequestBody SavTicketRequest request) {
+    public ResponseEntity<?> createTicket(@Valid @RequestBody SavTicketRequest request) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(savTicketService.createTicket(request));
         } catch (IllegalArgumentException e) {
@@ -155,7 +155,7 @@ public class SavTicketController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTicket(@PathVariable Long id, @RequestBody SavTicketRequest request) {
+    public ResponseEntity<?> updateTicket(@PathVariable Long id, @Valid @RequestBody SavTicketRequest request) {
         try {
             return ResponseEntity.ok(savTicketService.updateTicket(id, request));
         } catch (IllegalArgumentException e) {

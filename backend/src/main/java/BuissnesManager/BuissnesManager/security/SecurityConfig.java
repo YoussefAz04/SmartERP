@@ -1,6 +1,7 @@
 package BuissnesManager.BuissnesManager.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,27 +30,37 @@ public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
-    @Autowired(required = false)
-    private JWTFilter jwtFilter;
+    private final JWTFilter jwtFilter;
+    private final PasswordEncoder passwordEncoder;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public SecurityConfig(JWTFilter jwtFilter,
+                          PasswordEncoder passwordEncoder,
+                          CustomUserDetailsService customUserDetailsService) {
+        this.jwtFilter = jwtFilter;
+        this.passwordEncoder = passwordEncoder;
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    @Value("${app.cors.allowed-origins:http://localhost:4200}")
+    private String allowedOriginsProperty;
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow frontend origin
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+        List<String> allowedOrigins = Arrays.stream(allowedOriginsProperty.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isEmpty())
+                .toList();
+
+        config.setAllowedOrigins(allowedOrigins);
 
         //  EXPLICITLY ALLOW DELETE METHOD
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
 
         // Allow all headers including Authorization
-        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedHeaders(List.of("*"));
 
         // Expose Authorization header and Set-Cookie in response
         config.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Set-Cookie"));
@@ -61,7 +72,7 @@ public class SecurityConfig {
         config.setMaxAge(3600L);
 
         logger.info(" CORS Configuration:");
-        logger.info("   - Allowed Origins: http://localhost:4200");
+        logger.info("   - Allowed Origins: {}", allowedOrigins);
         logger.info("   - Allowed Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD");
         logger.info("   - Allowed Headers: *");
         logger.info("   - Allow Credentials: true");
@@ -93,7 +104,10 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/actuator/health",
+                                "/actuator/health/**",
+                                "/actuator/info"
                         ).permitAll()
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
@@ -102,15 +116,29 @@ public class SecurityConfig {
                 // Use stateless sessions (no cookies)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // Return stable JSON errors instead of HTML/default servlet responses.
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(
+                                    "{\"error\":\"UNAUTHORIZED\",\"message\":\"Authentication is required\"}");
+                        })
+                        .accessDeniedHandler((request, response, exception) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(
+                                    "{\"error\":\"FORBIDDEN\",\"message\":\"Insufficient permissions\"}");
+                        })
                 );
 
         // Add JWT filter BEFORE the UsernamePasswordAuthenticationFilter
-        if (jwtFilter != null) {
-            logger.info(" JWT Filter added to filter chain");
-            http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        } else {
-            logger.warn("  JWT Filter NOT found!");
-        }
+        logger.info(" JWT Filter added to filter chain");
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         
         logger.info(" Security Configuration Complete");

@@ -1,12 +1,12 @@
 package BuissnesManager.BuissnesManager.security;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,11 @@ public class JWTFilter extends OncePerRequestFilter {
         return enterpriseIdThreadLocal.get();
     }
 
-    @Autowired(required = false)
-    private JWTUtil jwtUtil;
+    private final JWTUtil jwtUtil;
+
+    public JWTFilter(JWTUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -51,7 +55,10 @@ public class JWTFilter extends OncePerRequestFilter {
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/swagger-resources") ||
                 path.startsWith("/webjars") ||
-                path.startsWith("/v3/api-docs");
+                path.startsWith("/v3/api-docs") ||
+                path.equals("/actuator/health") ||
+                path.startsWith("/actuator/health/") ||
+                path.equals("/actuator/info");
 
         if (isPublic) {
             logger.debug(" [JWTFilter] SKIPPING JWT validation for PUBLIC path: {}", path);
@@ -91,45 +98,43 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        logger.info(" [JWTFilter] Processing protected endpoint: {}", path);
+        logger.debug(" [JWTFilter] Processing protected endpoint: {}", path);
 
         try {
             String token = extractToken(request);
 
             if (token != null) {
-                String username = jwtUtil.extractUsername(token);
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    if (jwtUtil.validateToken(token, username)) {
-                        List<String> roles = jwtUtil.extractRoles(token);
-                        
-                        Long enterpriseId = jwtUtil.getEnterpriseIdFromToken(token);
-                        logger.info(" [JWTFilter] Enterprise ID from token: {}", enterpriseId);
-                        
-                        if (enterpriseId != null) {
-                            enterpriseIdThreadLocal.set(enterpriseId);
-                            request.setAttribute("enterpriseId", enterpriseId);
-                            logger.info(" [JWTFilter] Set ThreadLocal enterprise ID: {}", enterpriseId);
-                        } else {
-                            logger.warn(" [JWTFilter] No enterprise ID found in token for user: {}", username);
-                        }
-                        
-                        List<SimpleGrantedAuthority> authorities = roles.stream()
-                                .map(r -> {
-                                    String upper = r.toUpperCase();
-                                    return new SimpleGrantedAuthority(upper.startsWith("ROLE_") ? upper : "ROLE_" + upper);
-                                })
-                                .collect(Collectors.toList());
-                        
-                        UsernamePasswordAuthenticationToken authToken =
-                                new UsernamePasswordAuthenticationToken(username, null, authorities);
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                        logger.info(" [JWTFilter] Authentication set for user: {} with roles: {}", username, roles);
+                Claims claims = jwtUtil.validateAndExtractClaims(token);
+                String username = claims.getSubject();
+                if (username == null || username.isBlank()) {
+                    sendUnauthorized(response, "JWT token has no subject");
+                    return;
+                }
+
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    List<String> roles = extractRoles(claims);
+                    Long enterpriseId = extractEnterpriseId(claims);
+
+                    if (enterpriseId != null) {
+                        enterpriseIdThreadLocal.set(enterpriseId);
+                        request.setAttribute("enterpriseId", enterpriseId);
+                        logger.debug(" [JWTFilter] Enterprise context set for request: {}", enterpriseId);
                     } else {
-                        logger.warn(" [JWTFilter] Invalid token for path: {}", path);
-                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-                        return;
+                        logger.debug(" [JWTFilter] Token has no enterprise context for user: {}", username);
                     }
+
+                    List<SimpleGrantedAuthority> authorities = roles.stream()
+                            .map(r -> {
+                                String upper = r.toUpperCase();
+                                return new SimpleGrantedAuthority(upper.startsWith("ROLE_") ? upper : "ROLE_" + upper);
+                            })
+                            .collect(Collectors.toList());
+
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    logger.debug(" [JWTFilter] Authentication set for user: {}", username);
                 }
             } else {
                 // No token provided – continue without authentication.
@@ -138,9 +143,9 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        } catch (JWTVerificationException e) {
-            logger.error(" [JWTFilter] JWT verification failed: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT verification failed");
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.warn(" [JWTFilter] JWT verification failed for path {}: {}", path, e.getMessage());
+            sendUnauthorized(response, "Invalid or expired JWT token");
         } catch (Exception e) {
             logger.error(" [JWTFilter] Unexpected error: {}", e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Authentication error");
@@ -148,5 +153,25 @@ public class JWTFilter extends OncePerRequestFilter {
             // Always clear ThreadLocal to prevent memory leaks in thread pools
             enterpriseIdThreadLocal.remove();
         }
+    }
+
+    private List<String> extractRoles(Claims claims) {
+        Object value = claims.get("roles");
+        if (!(value instanceof List<?> rawRoles)) {
+            return new ArrayList<>();
+        }
+        return rawRoles.stream().map(String::valueOf).toList();
+    }
+
+    private Long extractEnterpriseId(Claims claims) {
+        Object value = claims.get("enterpriseId");
+        return value instanceof Number number ? number.longValue() : null;
+    }
+
+    private void sendUnauthorized(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"error\":\"UNAUTHORIZED\",\"message\":\"" + message + "\"}");
     }
 }

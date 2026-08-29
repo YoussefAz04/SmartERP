@@ -27,6 +27,8 @@ jobs:
           cache-dependency-path: backend/pom.xml
       - name: Run tests
         run: ./mvnw --batch-mode test
+      - name: Validate Docker Compose configuration
+        run: docker compose config --quiet
 
   frontend:
     name: Frontend checks
