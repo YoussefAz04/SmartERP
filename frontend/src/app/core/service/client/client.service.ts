@@ -17,32 +17,10 @@ export class ClientService {
 
   constructor(private http: HttpClient) { }
 
-  // Get token from localStorage
   private getHeaders(): HttpHeaders {
-    const token = this.getToken();
-    let headers = new HttpHeaders({
+    return new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    } else {
-    }
-    
-    return headers;
-  }
-
-  private getToken(): string | null {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        return user.token || null;
-      } catch (error) {
-        return null;
-      }
-    }
-    return null;
   }
 
   // ✅ ADD CLIENT

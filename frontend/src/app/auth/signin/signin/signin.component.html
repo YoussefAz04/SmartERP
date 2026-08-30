@@ -22,8 +22,8 @@
         <span class="brand-name"><span class="brand-smart">Smart</span><span class="brand-erp">ERP</span></span>
       </div>
 
-      <h1 class="card-title">Welcome!</h1>
-      <p class="card-subtitle">Sign in to access your workspace</p>
+      <h1 class="card-title">{{ 'auth.signin.welcome' | translate }}</h1>
+      <p class="card-subtitle">{{ 'auth.signin.subtitle' | translate }}</p>
     </div>
 
     <!-- Form -->
@@ -31,7 +31,7 @@
 
       <!-- Username -->
       <div class="field-group">
-        <label class="field-label" for="username">Username</label>
+        <label class="field-label" for="username">{{ 'auth.signin.username' | translate }}</label>
         <div class="input-wrap" [class.is-error]="f['username'].invalid && f['username'].touched">
           <i class="fas fa-user input-icon"></i>
           <input
@@ -39,17 +39,17 @@
             id="username"
             formControlName="username"
             class="field-input"
-            placeholder="Enter your username"
+            [placeholder]="'auth.signin.usernamePlaceholder' | translate"
             autocomplete="username">
         </div>
         <span class="field-error-msg" *ngIf="f['username'].invalid && f['username'].touched">
-          <i class="fas fa-circle-exclamation"></i> Username is required
+          <i class="fas fa-circle-exclamation"></i> {{ 'auth.signin.usernameRequired' | translate }}
         </span>
       </div>
 
       <!-- Password -->
       <div class="field-group">
-        <label class="field-label" for="password">Password</label>
+        <label class="field-label" for="password">{{ 'auth.signin.password' | translate }}</label>
         <div class="input-wrap" [class.is-error]="f['password'].invalid && f['password'].touched">
           <i class="fas fa-lock input-icon"></i>
           <input
@@ -62,13 +62,13 @@
           <button
             type="button"
             class="toggle-pw"
-            [attr.aria-label]="password[0] ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+            [attr.aria-label]="(password[0] ? 'auth.signin.hidePassword' : 'auth.signin.showPassword') | translate"
             (click)="togglePassword(0)">
             <i class="fas" [class.fa-eye]="!password[0]" [class.fa-eye-slash]="password[0]"></i>
           </button>
         </div>
         <span class="field-error-msg" *ngIf="f['password'].invalid && f['password'].touched">
-          <i class="fas fa-circle-exclamation"></i> Password is required
+          <i class="fas fa-circle-exclamation"></i> {{ 'auth.signin.passwordRequired' | translate }}
         </span>
       </div>
 
@@ -83,16 +83,16 @@
         <label class="checkbox-label">
           <input type="checkbox" class="checkbox-native" [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
           <span class="checkbox-box"></span>
-          <span class="checkbox-text">Remember me</span>
+          <span class="checkbox-text">{{ 'auth.signin.rememberMe' | translate }}</span>
         </label>
-        <a class="link-forgot" [routerLink]="routes.forgotPassword">Forgot password?</a>
+        <a class="link-forgot" [routerLink]="routes.forgotPassword">{{ 'auth.signin.forgotPassword' | translate }}</a>
       </div>
 
       <!-- Submit -->
       <button type="submit" class="btn-submit" [disabled]="loading"
-              [attr.aria-label]="loading ? 'Signing in' : 'Sign in'">
+              [attr.aria-label]="(loading ? 'auth.signin.signingIn' : 'auth.signin.signIn') | translate">
         <span *ngIf="loading" class="btn-spinner" role="status" aria-hidden="true"></span>
-        <span class="btn-label">{{ loading ? 'Signing in...' : 'Sign in' }}</span>
+        <span class="btn-label">{{ (loading ? 'auth.signin.signingIn' : 'auth.signin.signIn') | translate }}</span>
         <i *ngIf="!loading" class="fas fa-arrow-right btn-arrow"></i>
       </button>
 
@@ -100,7 +100,7 @@
 
     <!-- Footer -->
     <p class="card-footer-note">
-      <i class="fas fa-shield-halved"></i> Secure login - SmartERP &copy; 2025
+      <i class="fas fa-shield-halved"></i> {{ 'auth.signin.secureLogin' | translate }} - SmartERP &copy; 2025
     </p>
 
   </div>

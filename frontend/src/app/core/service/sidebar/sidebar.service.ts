@@ -121,6 +121,10 @@ export class SidebarService {
     // so this one-shot HTTP + module-load subscription does not cause a memory leak.
     this.refreshCurrentUserPermissions().pipe(
       switchMap(() => this.getAllModuleTitles()),
+      catchError(error => {
+        console.error('SidebarService: module navigation could not be loaded', error);
+        return of([] as ModuleTittle[]);
+      }),
       take(1)
     ).subscribe(modules => {
       this.generateSidebarData(modules);
@@ -382,6 +386,25 @@ generateSidebarData(modules: ModuleTittle[]) {
     }
 
     if (userRole === 'ADMIN' || userRole === 'EMPLOYEE') {
+      result.push({
+        tittle: 'finance.sidebar.section',
+        showAsTab: false,
+        separateRoute: false,
+        hasSubRoute: false,
+        showSubRoute: true,
+        menu: [
+          {
+            menuValue: 'finance.sidebar.title',
+            hasSubRoute: false,
+            showSubRoute: false,
+            icon: 'credit-card',
+            route: 'finance',
+            base1: 'finance',
+            subMenus: []
+          }
+        ]
+      });
+
       result.push({
         tittle: 'Customer Service',
         showAsTab: false,

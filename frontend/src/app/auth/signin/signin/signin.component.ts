@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Validators } from "@angular/forms";
 import { PermissionDto } from "../../../model/permissionDto.model";
 import { ModuleService } from "../../../core/service/Module/module.service";
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-signin',
@@ -24,7 +25,8 @@ export class SigninComponent implements OnInit {
     private router: Router, 
     private fb: FormBuilder,
     private authService: AuthService,
-    private moduleService: ModuleService
+    private moduleService: ModuleService,
+    private translate: TranslateService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -54,7 +56,7 @@ export class SigninComponent implements OnInit {
     this.loginForm.markAllAsTouched();
 
     if (!this.loginForm.valid) {
-      this.errorMessage = 'Veuillez renseigner votre nom d\'utilisateur et mot de passe';
+      this.errorMessage = this.translate.instant('auth.errors.requiredCredentials');
       return;
     }
 
@@ -80,16 +82,10 @@ export class SigninComponent implements OnInit {
             // ignore storage errors
           }
 
-          // SAVE TOKEN TO AUTH SERVICE FIRST (so interceptor can use it)
-          const token = response.token;
-          if (token) {
-            this.authService.setToken(token);
-          }
-
-          // SAVE TO LOCALSTORAGE
+          // Store only non-sensitive session metadata. Authentication tokens
+          // remain in HttpOnly cookies and are never exposed to JavaScript.
           localStorage.removeItem("myLSkey");
           localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify({
-            token: response.token,
             name: response.name,
             username: response.username,
             userId: response.id,
@@ -130,7 +126,7 @@ export class SigninComponent implements OnInit {
         } catch (err) {
           console.error('❌ Error saving session:', err);
           this.loading = false;
-          this.errorMessage = 'An error occurred. Please try again.';
+          this.errorMessage = this.translate.instant('auth.errors.generic');
         }
       },
       error: (error: any) => {
@@ -139,16 +135,19 @@ export class SigninComponent implements OnInit {
         const serverMessage = typeof error?.error === 'string' ? error.error : error?.error?.message;
         switch (code) {
           case 'INVALID_USERNAME':
-            this.errorMessage = 'Nom d\'utilisateur invalide';
+            this.errorMessage = this.translate.instant('auth.errors.invalidUsername');
             break;
           case 'INVALID_PASSWORD':
-            this.errorMessage = 'Mot de passe invalide';
+            this.errorMessage = this.translate.instant('auth.errors.invalidPassword');
             break;
           case 'ACCOUNT_DISABLED':
-            this.errorMessage = 'Compte inactif. Veuillez contacter votre administrateur.';
+            this.errorMessage = this.translate.instant('auth.errors.accountDisabled');
+            break;
+          case 'TOO_MANY_LOGIN_ATTEMPTS':
+            this.errorMessage = this.translate.instant('auth.errors.tooManyAttempts');
             break;
           default:
-            this.errorMessage = serverMessage || 'Invalid credentials. Please try again.';
+            this.errorMessage = serverMessage || this.translate.instant('auth.errors.invalidCredentials');
         }
       }
     });

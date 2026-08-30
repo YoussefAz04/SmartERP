@@ -14,26 +14,7 @@ export class FournisseurService {
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const token = this.getToken();
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    } else {
-    }
-    return headers;
-  }
-
-  private getToken(): string | null {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        return user.token || null;
-      } catch (error) {
-        return null;
-      }
-    }
-    return null;
+    return new HttpHeaders({ 'Content-Type': 'application/json' });
   }
 
   // ✅ ADD FOURNISSEUR

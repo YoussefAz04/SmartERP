@@ -1,0 +1,169 @@
+<main class="finance-page">
+  <header class="finance-header">
+    <div>
+      <span class="finance-eyebrow">{{ 'finance.eyebrow' | translate }}</span>
+      <h1>{{ 'finance.title' | translate }}</h1>
+      <p>{{ 'finance.subtitle' | translate }}</p>
+    </div>
+    <button type="button" class="btn btn-secondary" (click)="loadData()" [title]="'common.refresh' | translate">
+      <i class="feather icon-refresh-cw"></i><span>{{ 'common.refresh' | translate }}</span>
+    </button>
+  </header>
+
+  <nav class="finance-tabs" aria-label="Finance views">
+    <button *ngFor="let tab of ['overview','payments','returns','statements']"
+            type="button" [class.active]="activeTab === tab" (click)="activeTab = $any(tab)">
+      <i class="feather" [ngClass]="{
+        'icon-bar-chart-2': tab === 'overview', 'icon-credit-card': tab === 'payments',
+        'icon-rotate-ccw': tab === 'returns', 'icon-file-text': tab === 'statements'
+      }"></i>
+      {{ 'finance.tabs.' + tab | translate }}
+    </button>
+  </nav>
+
+  <div class="finance-alert error" *ngIf="errorMessage">
+    <i class="feather icon-alert-circle"></i>
+    <span>{{ (errorMessage.startsWith('finance.') ? (errorMessage | translate) : errorMessage) }}</span>
+    <button type="button" (click)="errorMessage = ''" title="Close"><i class="feather icon-x"></i></button>
+  </div>
+  <div class="finance-alert success" *ngIf="successMessage">
+    <i class="feather icon-check-circle"></i><span>{{ successMessage | translate }}</span>
+    <button type="button" (click)="successMessage = ''" title="Close"><i class="feather icon-x"></i></button>
+  </div>
+
+  <div class="finance-loading" *ngIf="isLoading">
+    <span class="spinner"></span>{{ 'finance.messages.loading' | translate }}
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <section *ngIf="activeTab === 'overview'" class="finance-view">
+      <div class="metric-grid">
+        <article class="metric receivable">
+          <span><i class="feather icon-arrow-down-left"></i>{{ 'finance.metrics.receivable' | translate }}</span>
+          <strong>{{ summary.accountsReceivable | number:'1.2-2' }} TND</strong>
+          <small>{{ summary.overdueCustomerInvoices }} {{ 'finance.metrics.overdueInvoices' | translate }}</small>
+        </article>
+        <article class="metric payable">
+          <span><i class="feather icon-arrow-up-right"></i>{{ 'finance.metrics.payable' | translate }}</span>
+          <strong>{{ summary.accountsPayable | number:'1.2-2' }} TND</strong>
+          <small>{{ summary.overdueSupplierInvoices }} {{ 'finance.metrics.overdueInvoices' | translate }}</small>
+        </article>
+        <article class="metric overdue-in">
+          <span><i class="feather icon-clock"></i>{{ 'finance.metrics.overdueReceivable' | translate }}</span>
+          <strong>{{ summary.overdueReceivable | number:'1.2-2' }} TND</strong>
+          <small>{{ 'finance.metrics.requiresAction' | translate }}</small>
+        </article>
+        <article class="metric overdue-out">
+          <span><i class="feather icon-alert-triangle"></i>{{ 'finance.metrics.overduePayable' | translate }}</span>
+          <strong>{{ summary.overduePayable | number:'1.2-2' }} TND</strong>
+          <small>{{ 'finance.metrics.requiresAction' | translate }}</small>
+        </article>
+      </div>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div><h2>{{ 'finance.overview.attention' | translate }}</h2><p>{{ 'finance.overview.attentionHint' | translate }}</p></div>
+          <span class="count-badge">{{ summary.overdueCustomerInvoices + summary.overdueSupplierInvoices }}</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>{{ 'finance.table.invoice' | translate }}</th><th>{{ 'finance.table.party' | translate }}</th>
+              <th>{{ 'finance.table.type' | translate }}</th><th>{{ 'finance.table.dueDate' | translate }}</th>
+              <th class="num">{{ 'finance.table.balance' | translate }}</th><th>{{ 'finance.table.status' | translate }}</th>
+            </tr></thead>
+            <tbody>
+              <tr *ngFor="let invoice of salesInvoices.concat(purchaseInvoices) | slice:0:8">
+                <td><strong>{{ invoice.invoiceReference }}</strong></td><td>{{ invoice.partyName }}</td>
+                <td>{{ 'finance.documentType.' + invoice.documentType | translate }}</td>
+                <td>{{ invoice.dueDate ? (invoice.dueDate | date:'dd/MM/yyyy') : '—' }}</td>
+                <td class="num">{{ invoice.balance | number:'1.2-2' }} TND</td>
+                <td><span class="status" [class.danger]="invoice.overdue">{{ invoice.overdue ? ('finance.status.overdue' | translate) : ('finance.status.' + invoice.status | translate) }}</span></td>
+              </tr>
+              <tr *ngIf="salesInvoices.length + purchaseInvoices.length === 0"><td colspan="6" class="empty">{{ 'finance.messages.noInvoices' | translate }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section *ngIf="activeTab === 'payments'" class="finance-view split-view">
+      <form class="panel form-panel" (ngSubmit)="savePayment()">
+        <div class="panel-heading"><div><h2>{{ 'finance.payment.new' | translate }}</h2><p>{{ 'finance.payment.hint' | translate }}</p></div><i class="feather icon-credit-card panel-icon"></i></div>
+        <div class="segmented">
+          <button type="button" [class.active]="paymentType === 'SALES'" (click)="paymentType = 'SALES'; onPaymentTypeChange()">{{ 'finance.documentType.SALES' | translate }}</button>
+          <button type="button" [class.active]="paymentType === 'PURCHASE'" (click)="paymentType = 'PURCHASE'; onPaymentTypeChange()">{{ 'finance.documentType.PURCHASE' | translate }}</button>
+        </div>
+        <label><span>{{ 'finance.form.invoice' | translate }} *</span>
+          <select name="paymentInvoice" [(ngModel)]="paymentForm.invoiceId" (ngModelChange)="onPaymentInvoiceChange()" required>
+            <option [ngValue]="null">{{ 'finance.form.selectInvoice' | translate }}</option>
+            <option *ngFor="let invoice of paymentInvoices" [ngValue]="invoice.invoiceId">{{ invoice.invoiceReference }} · {{ invoice.partyName }} · {{ invoice.balance | number:'1.2-2' }} TND</option>
+          </select>
+        </label>
+        <div class="form-grid">
+          <label><span>{{ 'finance.form.amount' | translate }} *</span><input type="number" name="amount" min="0.01" step="0.01" [(ngModel)]="paymentForm.amount" required></label>
+          <label><span>{{ 'finance.form.paymentDate' | translate }} *</span><input type="date" name="paymentDate" [(ngModel)]="paymentForm.paymentDate" required></label>
+          <label><span>{{ 'finance.form.method' | translate }}</span><select name="method" [(ngModel)]="paymentForm.paymentMethod"><option *ngFor="let method of paymentMethods" [value]="method">{{ 'finance.paymentMethod.' + method | translate }}</option></select></label>
+          <label><span>{{ 'finance.form.dueDate' | translate }}</span><div class="inline-control"><input type="date" name="dueDate" [(ngModel)]="dueDate"><button type="button" (click)="saveDueDate()" [disabled]="!dueDate || !selectedPaymentInvoice" [title]="'finance.actions.saveDueDate' | translate"><i class="feather icon-calendar"></i></button></div></label>
+        </div>
+        <label><span>{{ 'finance.form.notes' | translate }}</span><textarea name="paymentNotes" rows="3" maxlength="500" [(ngModel)]="paymentForm.notes"></textarea></label>
+        <div class="balance-preview" *ngIf="selectedPaymentInvoice as invoice">
+          <span>{{ 'finance.payment.currentBalance' | translate }} <strong>{{ invoice.balance | number:'1.2-2' }} TND</strong></span>
+          <span>{{ 'finance.payment.afterPayment' | translate }} <strong>{{ (invoice.balance - paymentForm.amount > 0 ? invoice.balance - paymentForm.amount : 0) | number:'1.2-2' }} TND</strong></span>
+        </div>
+        <button class="btn btn-primary" type="submit" [disabled]="isSaving"><i class="feather icon-check"></i>{{ 'finance.actions.recordPayment' | translate }}</button>
+      </form>
+
+      <section class="panel history-panel">
+        <div class="panel-heading"><div><h2>{{ 'finance.payment.history' | translate }}</h2><p>{{ 'finance.payment.historyHint' | translate }}</p></div><span class="count-badge">{{ payments.length }}</span></div>
+        <div class="history-list">
+          <article *ngFor="let payment of payments">
+            <div class="history-icon"><i class="feather icon-dollar-sign"></i></div>
+            <div class="history-main"><strong>{{ payment.reference }}</strong><span>{{ payment.invoiceReference }} · {{ payment.paymentDate | date:'dd/MM/yyyy' }}</span></div>
+            <div class="history-amount"><strong>{{ payment.amount | number:'1.2-2' }} TND</strong><span class="status" [class.cancelled]="payment.status === 'CANCELLED'">{{ 'finance.paymentStatus.' + payment.status | translate }}</span></div>
+            <button *ngIf="payment.status === 'CONFIRMED'" type="button" class="icon-btn danger" (click)="cancelPayment(payment)" [title]="'finance.actions.cancelPayment' | translate"><i class="feather icon-x-circle"></i></button>
+          </article>
+          <div class="empty" *ngIf="payments.length === 0">{{ 'finance.messages.noPayments' | translate }}</div>
+        </div>
+      </section>
+    </section>
+
+    <section *ngIf="activeTab === 'returns'" class="finance-view">
+      <form class="panel return-form" (ngSubmit)="createReturn()">
+        <div class="panel-heading"><div><h2>{{ 'finance.return.new' | translate }}</h2><p>{{ 'finance.return.workflowHint' | translate }}</p></div><i class="feather icon-rotate-ccw panel-icon"></i></div>
+        <div class="segmented compact">
+          <button type="button" [class.active]="returnType === 'CUSTOMER_RETURN'" (click)="returnType = 'CUSTOMER_RETURN'; onReturnTypeChange()">{{ 'finance.returnType.CUSTOMER_RETURN' | translate }}</button>
+          <button type="button" [class.active]="returnType === 'SUPPLIER_RETURN'" (click)="returnType = 'SUPPLIER_RETURN'; onReturnTypeChange()">{{ 'finance.returnType.SUPPLIER_RETURN' | translate }}</button>
+        </div>
+        <div class="form-grid return-meta">
+          <label><span>{{ 'finance.form.invoice' | translate }} *</span><select name="returnInvoice" [(ngModel)]="returnForm.invoiceId" (ngModelChange)="onReturnInvoiceChange()" required><option [ngValue]="null">{{ 'finance.form.selectInvoice' | translate }}</option><option *ngFor="let invoice of returnInvoices" [ngValue]="invoice.invoiceId">{{ invoice.invoiceReference }} · {{ invoice.partyName }}</option></select></label>
+          <label><span>{{ 'finance.form.returnDate' | translate }} *</span><input type="date" name="returnDate" [(ngModel)]="returnForm.returnDate" required></label>
+          <label class="wide"><span>{{ 'finance.form.reason' | translate }} *</span><input type="text" name="reason" maxlength="500" [(ngModel)]="returnForm.reason" required></label>
+        </div>
+        <div class="return-lines" *ngIf="returnLines.length">
+          <div class="return-line head"><span></span><span>{{ 'finance.table.product' | translate }}</span><span>{{ 'finance.table.soldPurchased' | translate }}</span><span>{{ 'finance.table.alreadyReturned' | translate }}</span><span>{{ 'finance.table.returnable' | translate }}</span><span>{{ 'finance.table.returnQuantity' | translate }}</span></div>
+          <label class="return-line" *ngFor="let line of returnLines">
+            <input type="checkbox" [(ngModel)]="line.selected" [name]="'selected-' + line.orderLineId">
+            <strong>{{ line.articleName }}</strong><span>{{ line.invoicedQuantity }}</span><span>{{ line.alreadyReturned }}</span><span>{{ line.returnableQuantity }}</span>
+            <input type="number" min="1" step="1" [max]="line.returnableQuantity" [(ngModel)]="line.quantity" [name]="'qty-' + line.orderLineId" [disabled]="!line.selected">
+          </label>
+        </div>
+        <p class="empty" *ngIf="returnForm.invoiceId && returnLines.length === 0">{{ 'finance.messages.noReturnableLines' | translate }}</p>
+        <button class="btn btn-primary" type="submit" [disabled]="isSaving"><i class="feather icon-save"></i>{{ 'finance.actions.createDraft' | translate }}</button>
+      </form>
+
+      <section class="panel">
+        <div class="panel-heading"><div><h2>{{ 'finance.return.history' | translate }}</h2><p>{{ 'finance.return.historyHint' | translate }}</p></div><span class="count-badge">{{ returns.length }}</span></div>
+        <div class="table-wrap"><table><thead><tr><th>{{ 'finance.table.returnReference' | translate }}</th><th>{{ 'finance.table.invoice' | translate }}</th><th>{{ 'finance.table.type' | translate }}</th><th>{{ 'finance.table.date' | translate }}</th><th class="num">{{ 'finance.table.total' | translate }}</th><th>{{ 'finance.table.creditNote' | translate }}</th><th>{{ 'finance.table.status' | translate }}</th><th>{{ 'finance.table.actions' | translate }}</th></tr></thead>
+          <tbody><tr *ngFor="let item of returns"><td><strong>{{ item.reference }}</strong><small>{{ item.reason }}</small></td><td>{{ item.invoiceReference }}</td><td>{{ 'finance.returnType.' + item.returnType | translate }}</td><td>{{ item.returnDate | date:'dd/MM/yyyy' }}</td><td class="num">{{ item.amountTotal | number:'1.2-2' }} TND</td><td>{{ item.creditNoteReference || '—' }}</td><td><span class="status" [class.validated]="item.status === 'VALIDATED'" [class.cancelled]="item.status === 'CANCELLED'">{{ 'finance.returnStatus.' + item.status | translate }}</span></td><td><div class="row-actions" *ngIf="item.status === 'DRAFT'"><button type="button" class="icon-btn validate" (click)="validateReturn(item)" [title]="'finance.actions.validate' | translate"><i class="feather icon-check"></i></button><button type="button" class="icon-btn danger" (click)="cancelReturn(item)" [title]="'finance.actions.cancel' | translate"><i class="feather icon-x"></i></button></div></td></tr>
+          <tr *ngIf="returns.length === 0"><td colspan="8" class="empty">{{ 'finance.messages.noReturns' | translate }}</td></tr></tbody></table></div>
+      </section>
+    </section>
+
+    <section *ngIf="activeTab === 'statements'" class="finance-view panel">
+      <div class="panel-heading statement-heading"><div><h2>{{ 'finance.statement.title' | translate }}</h2><p>{{ 'finance.statement.hint' | translate }}</p></div><div class="statement-tools"><div class="segmented compact"><button type="button" [class.active]="statementType === 'SALES'" (click)="statementType = 'SALES'">{{ 'finance.statement.customers' | translate }}</button><button type="button" [class.active]="statementType === 'PURCHASE'" (click)="statementType = 'PURCHASE'">{{ 'finance.statement.suppliers' | translate }}</button></div><label class="search"><i class="feather icon-search"></i><input type="search" [(ngModel)]="statementSearch" [placeholder]="'finance.statement.search' | translate"></label><button type="button" class="btn btn-secondary export-btn" (click)="exportStatementCsv()" [disabled]="statementInvoices.length === 0"><i class="feather icon-download"></i>{{ 'finance.actions.exportCsv' | translate }}</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>{{ 'finance.table.invoice' | translate }}</th><th>{{ 'finance.table.party' | translate }}</th><th>{{ 'finance.table.dueDate' | translate }}</th><th class="num">{{ 'finance.table.gross' | translate }}</th><th class="num">{{ 'finance.table.credits' | translate }}</th><th class="num">{{ 'finance.table.paid' | translate }}</th><th class="num">{{ 'finance.table.balance' | translate }}</th><th>{{ 'finance.table.status' | translate }}</th></tr></thead>
+        <tbody><tr *ngFor="let invoice of statementInvoices" [class.overdue-row]="invoice.overdue"><td><strong>{{ invoice.invoiceReference }}</strong></td><td>{{ invoice.partyName }}</td><td>{{ invoice.dueDate ? (invoice.dueDate | date:'dd/MM/yyyy') : '—' }}</td><td class="num">{{ invoice.grossAmount | number:'1.2-2' }}</td><td class="num credit">{{ invoice.creditedAmount | number:'1.2-2' }}</td><td class="num paid">{{ invoice.paidAmount | number:'1.2-2' }}</td><td class="num"><strong>{{ invoice.balance | number:'1.2-2' }} TND</strong></td><td><span class="status" [class.danger]="invoice.overdue">{{ invoice.overdue ? ('finance.status.overdue' | translate) : ('finance.status.' + invoice.status | translate) }}</span></td></tr><tr *ngIf="statementInvoices.length === 0"><td colspan="8" class="empty">{{ 'finance.messages.noInvoices' | translate }}</td></tr></tbody></table></div>
+    </section>
+  </ng-container>
+</main>

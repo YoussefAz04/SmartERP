@@ -4,5 +4,7 @@ public enum TypeMouvement {
     ENTREE,
     SORTIE,
     AJUSTEMENT,
-    RESERVATION
+    RESERVATION,
+    RETOUR_CLIENT,
+    RETOUR_FOURNISSEUR
 }

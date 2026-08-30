@@ -7,7 +7,6 @@ public class Response {
     private String username;
     private String email;
     private String name;
-    private String token;
     private boolean enabled;
     private List<String> roles;
     private List<?> permission;
@@ -27,9 +26,6 @@ public class Response {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getToken() { return token; }
-    public void setToken(String token) { this.token = token; }
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }

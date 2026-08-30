@@ -25,6 +25,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("SELECT n FROM Notification n WHERE n.stock.id = :stockId AND n.type = :type AND n.statut = :statut")
     Optional<Notification> findActiveAlert(@Param("stockId") Long stockId, @Param("type") NotificationType type, @Param("statut") NotificationStatus statut);
 
+    Optional<Notification> findFirstByEntrepriseIdAndTypeAndBusinessReferenceAndStatut(
+            Long entrepriseId, NotificationType type, String businessReference, NotificationStatus statut);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Notification n WHERE n.entreprise.id = :entrepriseId")

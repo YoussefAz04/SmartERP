@@ -1,7 +1,9 @@
 package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.entity.FactureDeVente;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +16,10 @@ public interface FactureDeVenteRepo extends JpaRepository<FactureDeVente,Long> {
     List<FactureDeVente> findByEntrepriseId(Long entrepriseId);
     Optional<FactureDeVente> findByCommandeVenteId(Long commandeVenteId);
     List<FactureDeVente> findByClientId(Long clientId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT f FROM FactureDeVente f WHERE f.id = :id")
+    Optional<FactureDeVente> findByIdForUpdate(@Param("id") Long id);
 
     @Query("SELECT f FROM FactureDeVente f " +
            "LEFT JOIN FETCH f.commandeVente cv " +

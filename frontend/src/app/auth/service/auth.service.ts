@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, Observable } from "rxjs";
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { PermissionDto } from "../../model/permissionDto.model";
 import { Entreprise } from "../../model/entreprise.model";
 import { Router } from '@angular/router';
@@ -27,7 +27,6 @@ export interface AuthResponse {
     id: number;
     username: string;
     email: string;
-    token: string;
   };
 }
 
@@ -37,9 +36,6 @@ export interface AuthResponse {
 export class AuthService {
 
   private apiUrl = `${environment.apiUrl}/api/auth`;
-  private tokenSubject = new BehaviorSubject<string | null>(this.getStoredToken());
-  public token$ = this.tokenSubject.asObservable();
-
   constructor(
     private http: HttpClient,
     private router: Router
@@ -73,9 +69,6 @@ export class AuthService {
     localStorage.removeItem('myLSkey');
     sessionStorage.clear();
     
-    this.tokenSubject.next(null);
-
-
     setTimeout(() => {
       this.router.navigate(['/auth/signin']).then((success) => {
         if (success) {
@@ -89,53 +82,18 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    return !!token && !this.isTokenExpired(token);
-  }
-
-  getToken(): string | null {
-    return this.tokenSubject.value;
-  }
-
-  setToken(token: string): void {
-    localStorage.setItem('token', token);
-    localStorage.setItem('authToken', token);
-    this.tokenSubject.next(token);
-  }
-
-  private getStoredToken(): string | null {
-    return localStorage.getItem('token') || localStorage.getItem('authToken');
-  }
-
-  private isTokenExpired(token: string): boolean {
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 3) return true;
-      
-      const payload = JSON.parse(atob(parts[1]));
-      const exp = payload.exp * 1000;
-      return Date.now() >= exp;
-    } catch (error) {
-      return true;
-    }
-  }
-
-  decodeToken(): any {
-    const token = this.getToken();
-    if (!token) return null;
-
-    try {
-      const payload = token.split('.')[1];
-      if (!payload) return null;
-      return JSON.parse(atob(payload));
-    } catch (e) {
-      return null;
-    }
+    return localStorage.getItem('myLSkey') !== null;
   }
 
   getRoles(): string[] {
-    const decoded = this.decodeToken();
-    return decoded?.roles || [];
+    const stored = localStorage.getItem('myLSkey');
+    if (!stored) return [];
+    try {
+      const session = JSON.parse(decodeURIComponent(escape(atob(stored))));
+      return Array.isArray(session.roles) ? session.roles : [];
+    } catch {
+      return [];
+    }
   }
 
   refreshPermissionDtoList(userId: number): Observable<PermissionDto[]> {

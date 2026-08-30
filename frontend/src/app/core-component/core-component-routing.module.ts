@@ -153,6 +153,14 @@ const routes: Routes = [
           import('./sav/sav.component').then((m) => m.SavComponent),
       },
       {
+        // Payments, returns, credit notes and account statements
+        path: 'finance',
+        canActivate: [RoleGuard],
+        data: { requiredRoles: ['ADMIN', 'EMPLOYEE'] },
+        loadComponent: () =>
+          import('./finance/finance.component').then((m) => m.FinanceComponent),
+      },
+      {
         // Audit log: accessible by SUPER_ADMIN and ADMIN
         path: 'audit-log',
         canActivate: [RoleGuard],

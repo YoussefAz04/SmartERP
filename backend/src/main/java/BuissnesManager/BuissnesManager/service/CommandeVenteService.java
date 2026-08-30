@@ -145,11 +145,15 @@ public class CommandeVenteService {
         }
 
         FactureDeVente factureDeVente = new FactureDeVente();
-        factureDeVente.setDateAchat(saved.getDateCommande() != null ? saved.getDateCommande().toString() : LocalDate.now().toString());
+        LocalDate invoiceDate = saved.getDateCommande() != null ? saved.getDateCommande() : LocalDate.now();
+        factureDeVente.setDateAchat(invoiceDate.toString());
+        factureDeVente.setDateEcheance(invoiceDate.plusDays(30));
         factureDeVente.setMontantHT(dto.getMontantHT() != null ? dto.getMontantHT().doubleValue() : 0.0);
         factureDeVente.setMontantTVA(dto.getMontantTVA() != null ? dto.getMontantTVA().doubleValue() : 0.0);
         factureDeVente.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
         factureDeVente.setMontantTotal(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
+        factureDeVente.setMontantPaye(BigDecimal.ZERO);
+        factureDeVente.setSoldeRestant(dto.getMontantTTC() != null ? dto.getMontantTTC() : BigDecimal.ZERO);
         factureDeVente.setStatut("EN_ATTENTE");
         factureDeVente.setModePaiement("A_DEFINIR");
         factureDeVente.setDescription("Facture générée depuis la commande " + saved.getReference());
@@ -519,10 +523,13 @@ public class CommandeVenteService {
         FactureDeVente facture = factureDeVenteRepository.findByCommandeVenteId(id)
                 .orElse(new FactureDeVente());
         facture.setDateAchat(LocalDate.now().toString());
+        facture.setDateEcheance(LocalDate.now().plusDays(30));
         facture.setMontantHT(totalHT);
         facture.setMontantTVA(totalTVA);
         facture.setMontantTTC(totalTTC);
         facture.setMontantTotal(totalTTC);
+        facture.setMontantPaye(BigDecimal.ZERO);
+        facture.setSoldeRestant(BigDecimal.valueOf(totalTTC));
         facture.setStatut("EN_ATTENTE");
         facture.setDescription("Facture générée automatiquement depuis la commande " + commande.getReference());
         facture.setClient(commande.getClient());

@@ -2,7 +2,7 @@
 
 SmartERP is a web-based ERP application built as a final-year project. It helps small and medium-sized businesses manage their daily operations while using business data to support better decision-making.
 
-The project includes user management, roles and permissions, customers, suppliers, purchase products, sales products, purchase orders, sales orders, invoices, stock management, notifications, audit logs, after-sales service, and an AI intelligence module for sales analysis, forecasting, and purchase recommendations.
+The project includes user management, roles and permissions, customers, suppliers, purchase products, sales products, purchase orders, sales orders, invoices, payments, returns, credit notes, stock management, notifications, audit logs, after-sales service, and an AI intelligence module for sales analysis, forecasting, and purchase recommendations.
 
 ## Project Objective
 
@@ -15,6 +15,8 @@ SmartERP allows users to:
 - Manage customers, suppliers, purchase products, and sales products.
 - Create purchase orders and sales orders.
 - Generate purchase and sales invoices.
+- Record partial payments and track customer and supplier balances.
+- Process returns and issue credit notes with automatic stock corrections.
 - Track stock quantities and stock movements.
 - Receive important notifications such as low-stock alerts.
 - Review audit logs for traceability.
@@ -96,6 +98,7 @@ Important controllers:
 - `AuditLogController`: audit log history.
 - `AnalyticsController`: analytics and AI data.
 - `SavTicketController`: after-sales service ticket workflow.
+- `FinancialController` and `ReturnController`: payments, deadlines, returns, credit notes, and account statements.
 
 ## Frontend Structure
 
@@ -111,7 +114,7 @@ Important folders:
 - `shared`: shared modules, utilities, notifications, and reusable helpers.
 - `assets/i18n`: translation files used by the multilingual system.
 
-The frontend communicates with the backend through Angular services. Requests include the JWT token so the backend can identify the connected user and verify permissions.
+The frontend communicates with the backend through Angular services. The browser sends the secure `HttpOnly` authentication cookie with API requests so the backend can identify the connected user and verify permissions without exposing the access token to JavaScript.
 
 ## Global Workflow
 
@@ -119,8 +122,8 @@ The application works as follows:
 
 1. The user logs in from the Angular interface.
 2. The backend validates the credentials.
-3. If the credentials are correct, the backend generates a JWT token.
-4. The frontend stores and uses this token for the next requests.
+3. If the credentials are correct, the backend generates a JWT token and places it in an `HttpOnly` cookie.
+4. The browser includes this cookie automatically in the next API requests.
 5. For each request, Spring Boot checks the token, role, permissions, and user company.
 6. The service layer executes the required business operation.
 7. Data is read from or saved into SQL Server.
@@ -170,6 +173,21 @@ Each stock record is linked to a product and a company. The system can display:
 Stock movements explain why quantities changed. For example, a purchase operation can increase stock, while a sales operation can decrease stock depending on the configured business rule.
 
 The system can also generate a notification when a product reaches a low-stock threshold.
+
+## Finance, Payments, and Returns
+
+The finance module completes the invoice lifecycle after an invoice is issued. It provides:
+
+- Partial and full customer or supplier payments.
+- Outstanding and overdue balance tracking.
+- Configurable payment deadlines.
+- Customer and supplier account statements with CSV export.
+- Customer and supplier returns linked to the original invoice lines.
+- Credit notes and automatic invoice balance recalculation.
+- Automatic stock corrections and traceable stock movements after return validation.
+- A daily overdue-invoice scan that creates deduplicated notifications for every active company.
+
+Payment, return, invoice, and stock rows are locked during sensitive updates. This prevents concurrent requests from validating the same return twice, creating an overpayment, or applying conflicting stock corrections.
 
 ## Notifications and Audit Logs
 
@@ -238,6 +256,11 @@ The backend reads configuration from environment variables. The tracked defaults
 | `BOOTSTRAP_ADMIN_EMAIL` | Initial super-admin email for a new database | `admin@gmail.com` |
 | `BOOTSTRAP_ADMIN_PASSWORD` | Initial super-admin password; change it outside local development | `admin123` |
 | `COOKIE_SECURE` | Sends authentication cookies over HTTPS only | `false` |
+| `LOGIN_MAX_ATTEMPTS` | Failed login attempts allowed before temporary lockout | `5` |
+| `LOGIN_LOCK_DURATION_MINUTES` | Temporary login lockout duration | `15` |
+| `FINANCE_OVERDUE_SCAN_ENABLED` | Enables the daily overdue-payment scan | `true` |
+| `FINANCE_OVERDUE_SCAN_CRON` | Cron schedule for overdue-payment notifications | `0 15 6 * * *` |
+| `FINANCE_OVERDUE_SCAN_ZONE` | Time zone used by the finance scheduler | `Africa/Tunis` |
 | `API_URL` | Backend URL loaded by the containerized frontend at runtime | `http://localhost:8020` |
 | `MAIL_USERNAME` | SMTP account used for password-reset emails | Empty |
 | `MAIL_PASSWORD` | SMTP app password | Empty |
@@ -357,9 +380,45 @@ docker compose down
 
 The frontend image reads `API_URL` when its container starts, so the same image can target a different backend without rebuilding Angular. For deployment, configure `API_URL`, `FRONTEND_URL`, `CORS_ALLOWED_ORIGINS`, `COOKIE_SECURE=true`, a strong `JWT_SECRET`, and production database credentials through the hosting platform.
 
+## Publishing and Deploying from GitHub
+
+GitHub stores the source code and publishes the application images, but GitHub
+Pages cannot run the Spring Boot API or SQL Server. Deploy the published images
+on a Docker-capable server or cloud container platform.
+
+1. Push the repository to GitHub and confirm that **SmartERP CI** passes.
+2. Create and push a version tag such as `v1.0.0`.
+3. The **Publish SmartERP Images** workflow builds the backend and frontend and
+   publishes them under `ghcr.io/<owner>/<repository>/backend` and
+   `ghcr.io/<owner>/<repository>/frontend`.
+4. In each package's GitHub settings, either make the package public or connect
+   Docker on the deployment host with a fine-grained token that has read access:
+
+   ```bash
+   echo "$GHCR_TOKEN" | docker login ghcr.io -u <github-user> --password-stdin
+   ```
+
+5. On the deployment host, copy `backend/.env.production.example` to an
+   untracked `.env.production` file and replace every example value.
+6. For a new empty database, keep `JPA_DDL_AUTO=update` for the first successful
+   startup. Then change it to `validate` so later deployments cannot modify the
+   schema implicitly.
+7. Start the production stack behind an HTTPS reverse proxy:
+
+```bash
+cd backend
+docker compose --env-file .env.production -f docker-compose.production.yaml up -d
+```
+
+The production Compose file keeps SQL Server on an internal Docker network and
+binds the web ports to `127.0.0.1`. Configure a reverse proxy such as Nginx,
+Caddy, or the hosting platform's ingress to expose the frontend and API over
+HTTPS. The local `docker-compose.yaml`, MailDev service, demo seed, and default
+passwords are intended only for development.
+
 ## Automated Checks
 
-GitHub Actions runs the backend tests, verifies that the English and French translation files contain the same keys, and builds the Angular production application on every pull request and push to `main` or `master`.
+GitHub Actions runs the backend tests, verifies that the English and French translation files contain the same keys, and builds the Angular production application on every pull request and push to `main` or `master`. Dependabot checks npm, Maven, Docker, and GitHub Actions dependencies on a regular schedule and opens focused update pull requests.
 
 Run the same checks locally before pushing:
 
@@ -377,14 +436,15 @@ npm run build
 
 Prerequisites:
 
-- Node.js installed.
-- npm installed.
+- Node.js 20 LTS installed. Newer unsupported majors such as Node 24 may not
+  work with Angular 17's build tools.
+- npm 10 installed.
 
 Commands:
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm start
 ```
 

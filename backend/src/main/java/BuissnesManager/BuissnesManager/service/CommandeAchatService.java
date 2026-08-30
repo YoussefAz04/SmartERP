@@ -300,11 +300,15 @@ public class CommandeAchatService {
         
         FactureAchat factureAchat = new FactureAchat();
         factureAchat.setReferance("FAC-" + saved.getReference());
-        factureAchat.setDateAchat(saved.getDateCommande() != null ? saved.getDateCommande().toString() : LocalDate.now().toString());
+        LocalDate invoiceDate = saved.getDateCommande() != null ? saved.getDateCommande() : LocalDate.now();
+        factureAchat.setDateAchat(invoiceDate.toString());
+        factureAchat.setDateEcheance(invoiceDate.plusDays(30));
         factureAchat.setMontantHT(dto.getMontantHT() != null ? dto.getMontantHT().doubleValue() : 0.0);
         factureAchat.setMontantTVA(dto.getMontantTVA() != null ? dto.getMontantTVA().doubleValue() : 0.0);
         factureAchat.setMontantTTC(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
         factureAchat.setMontantTotal(dto.getMontantTTC() != null ? dto.getMontantTTC().doubleValue() : 0.0);
+        factureAchat.setMontantPaye(BigDecimal.ZERO);
+        factureAchat.setSoldeRestant(dto.getMontantTTC() != null ? dto.getMontantTTC() : BigDecimal.ZERO);
         factureAchat.setStatut("EN_ATTENTE");
         factureAchat.setModePaiement("A_DEFINIR");
         factureAchat.setFournisseur(saved.getFournisseur());
@@ -414,10 +418,14 @@ public class CommandeAchatService {
         facture.setDateAchat(commande.getDateCommande() != null
                 ? commande.getDateCommande().toString()
                 : LocalDate.now().toString());
+        LocalDate invoiceDate = commande.getDateCommande() != null ? commande.getDateCommande() : LocalDate.now();
+        facture.setDateEcheance(invoiceDate.plusDays(30));
         facture.setMontantHT(commande.getMontantHT() != null ? commande.getMontantHT().doubleValue() : 0.0);
         facture.setMontantTVA(commande.getMontantTVA() != null ? commande.getMontantTVA().doubleValue() : 0.0);
         facture.setMontantTTC(commande.getMontantTTC() != null ? commande.getMontantTTC().doubleValue() : 0.0);
         facture.setMontantTotal(commande.getMontantTTC() != null ? commande.getMontantTTC().doubleValue() : 0.0);
+        facture.setMontantPaye(BigDecimal.ZERO);
+        facture.setSoldeRestant(commande.getMontantTTC() != null ? commande.getMontantTTC() : BigDecimal.ZERO);
         facture.setStatut("EN_ATTENTE");
         facture.setModePaiement("A_DEFINIR");
         facture.setFournisseur(commande.getFournisseur());

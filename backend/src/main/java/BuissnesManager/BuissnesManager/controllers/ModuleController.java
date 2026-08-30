@@ -3,6 +3,7 @@ package BuissnesManager.BuissnesManager.controllers;
 import BuissnesManager.BuissnesManager.entity.Module;
 import BuissnesManager.BuissnesManager.entity.ModuleTittle;
 import BuissnesManager.BuissnesManager.entity.SousModule;
+import BuissnesManager.BuissnesManager.dto.SidebarModuleDtos.ModuleTitleResponse;
 import BuissnesManager.BuissnesManager.service.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class ModuleController {
 
     @GetMapping("getAllModulesTittle")
     public ResponseEntity<?> getAllModulesTittle() {
-        List<ModuleTittle> modules = moduleService.getAllModuleTitlle();
+        List<ModuleTitleResponse> modules = moduleService.getAllModuleTitlle();
         return ResponseEntity.ok(modules);
     }
 

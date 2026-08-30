@@ -7,6 +7,101 @@
     "refresh": "Actualiser",
     "notAvailable": "N/D"
   },
+  "auth": {
+    "signin": {
+      "welcome": "Bienvenue !",
+      "subtitle": "Connectez-vous pour accéder à votre espace de travail",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Saisissez votre nom d'utilisateur",
+      "usernameRequired": "Le nom d'utilisateur est obligatoire",
+      "password": "Mot de passe",
+      "passwordRequired": "Le mot de passe est obligatoire",
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "signIn": "Se connecter",
+      "signingIn": "Connexion...",
+      "secureLogin": "Connexion sécurisée"
+    },
+    "errors": {
+      "requiredCredentials": "Saisissez votre nom d'utilisateur et votre mot de passe.",
+      "invalidUsername": "Nom d'utilisateur invalide.",
+      "invalidPassword": "Mot de passe invalide.",
+      "accountDisabled": "Ce compte est inactif. Veuillez contacter votre administrateur.",
+      "tooManyAttempts": "Trop de tentatives de connexion ont échoué. Veuillez réessayer plus tard.",
+      "invalidCredentials": "Identifiants invalides. Veuillez réessayer.",
+      "generic": "Une erreur s'est produite. Veuillez réessayer."
+    }
+  },
+  "finance": {
+    "sidebar": { "section": "Opérations commerciales", "title": "Finance et retours" },
+    "eyebrow": "Opérations financières",
+    "title": "Finance et retours",
+    "subtitle": "Gérez les paiements, échéances, retours, avoirs et soldes des comptes.",
+    "tabs": { "overview": "Synthèse", "payments": "Paiements", "returns": "Retours et avoirs", "statements": "Relevés de comptes" },
+    "metrics": {
+      "receivable": "Créances clients", "payable": "Dettes fournisseurs",
+      "overdueReceivable": "Créances en retard", "overduePayable": "Dettes en retard",
+      "overdueInvoices": "facture(s) en retard", "requiresAction": "Nécessite une action"
+    },
+    "overview": { "attention": "Suivi des factures", "attentionHint": "Soldes et échéances nécessitant un suivi financier." },
+    "documentType": { "SALES": "Factures clients", "PURCHASE": "Factures fournisseurs" },
+    "returnType": { "CUSTOMER_RETURN": "Retour client", "SUPPLIER_RETURN": "Retour fournisseur" },
+    "returnStatus": { "DRAFT": "Brouillon", "VALIDATED": "Validé", "CANCELLED": "Annulé" },
+    "paymentStatus": { "CONFIRMED": "Confirmé", "CANCELLED": "Annulé" },
+    "paymentMethod": { "CASH": "Espèces", "BANK_TRANSFER": "Virement bancaire", "CARD": "Carte", "CHEQUE": "Chèque", "OTHER": "Autre" },
+    "status": {
+      "overdue": "En retard", "EN_ATTENTE": "En attente", "PAYEE": "Payée",
+      "PARTIELLEMENT_PAYEE": "Partiellement payée", "CREDITEE": "Totalement créditée", "ANNULEE": "Annulée"
+    },
+    "payment": {
+      "new": "Enregistrer un paiement", "hint": "Les paiements partiels ou complets actualisent automatiquement le solde.",
+      "history": "Historique des paiements", "historyHint": "Écritures financières confirmées et annulées.",
+      "currentBalance": "Solde actuel", "afterPayment": "Solde après paiement"
+    },
+    "return": {
+      "new": "Préparer un retour", "workflowHint": "Créez un brouillon, contrôlez-le, puis validez le stock et l'avoir.",
+      "history": "Historique des retours", "historyHint": "Les retours validés sont immuables pour garantir la traçabilité."
+    },
+    "statement": {
+      "title": "Relevés des comptes clients et fournisseurs", "hint": "Montant initial, avoirs, paiements et solde restant par facture.",
+      "customers": "Clients", "suppliers": "Fournisseurs", "search": "Rechercher un tiers ou une facture...",
+      "customerFileName": "releve-compte-clients", "supplierFileName": "releve-compte-fournisseurs"
+    },
+    "form": {
+      "invoice": "Facture", "selectInvoice": "Sélectionner une facture", "amount": "Montant",
+      "paymentDate": "Date du paiement", "method": "Mode de paiement", "dueDate": "Échéance du paiement",
+      "notes": "Notes", "returnDate": "Date du retour", "reason": "Motif du retour"
+    },
+    "table": {
+      "invoice": "Facture", "party": "Client / fournisseur", "type": "Type", "dueDate": "Échéance",
+      "balance": "Solde", "status": "Statut", "product": "Article", "soldPurchased": "Facturé",
+      "alreadyReturned": "Retourné", "returnable": "Disponible", "returnQuantity": "Qté retour",
+      "returnReference": "Retour", "date": "Date", "total": "Total", "creditNote": "Avoir",
+      "actions": "Actions", "gross": "Brut", "credits": "Avoirs", "paid": "Payé"
+    },
+    "actions": {
+      "recordPayment": "Enregistrer le paiement", "saveDueDate": "Enregistrer l'échéance", "cancelPayment": "Annuler le paiement",
+      "createDraft": "Créer le brouillon de retour", "validate": "Valider", "cancel": "Annuler", "exportCsv": "Exporter CSV"
+    },
+    "messages": {
+      "loading": "Chargement des données financières...", "loadError": "Impossible de charger les données financières.",
+      "saveError": "L'opération n'a pas pu être terminée.", "invalidPayment": "Saisissez un montant valide ne dépassant pas le solde.",
+      "paymentSaved": "Paiement enregistré et solde de la facture actualisé.", "paymentCancelled": "Paiement annulé et solde restauré.",
+      "dueDateSaved": "Échéance de paiement mise à jour.", "invalidReturn": "Sélectionnez une facture, un motif et au moins une ligne de retour valide.",
+      "returnDraftSaved": "Brouillon créé. Validez-le pour corriger le stock et émettre l'avoir.",
+      "returnValidated": "Retour validé, stock corrigé et avoir émis.", "returnCancelled": "Brouillon de retour annulé.",
+      "noInvoices": "Aucune facture trouvée.", "noPayments": "Aucun paiement enregistré.", "noReturns": "Aucun retour enregistré.",
+      "noReturnableLines": "Cette facture ne contient plus de quantité pouvant être retournée.",
+      "statementExported": "Relevé de compte exporté avec succès."
+    },
+    "confirm": {
+      "cancelPayment": "Annuler ce paiement et restaurer le solde de la facture ?",
+      "validateReturn": "Valider ce retour ? Le stock sera corrigé et un avoir sera émis.",
+      "cancelReturn": "Annuler ce brouillon de retour ?"
+    }
+  },
   "header": {
     "darkMode": "Mode sombre",
     "lightMode": "Mode clair",

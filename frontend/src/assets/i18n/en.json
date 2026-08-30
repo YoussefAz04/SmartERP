@@ -7,6 +7,101 @@
     "refresh": "Refresh",
     "notAvailable": "N/A"
   },
+  "auth": {
+    "signin": {
+      "welcome": "Welcome!",
+      "subtitle": "Sign in to access your workspace",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "usernameRequired": "Username is required",
+      "password": "Password",
+      "passwordRequired": "Password is required",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "secureLogin": "Secure login"
+    },
+    "errors": {
+      "requiredCredentials": "Enter your username and password.",
+      "invalidUsername": "Invalid username.",
+      "invalidPassword": "Invalid password.",
+      "accountDisabled": "This account is inactive. Please contact your administrator.",
+      "tooManyAttempts": "Too many failed login attempts. Please try again later.",
+      "invalidCredentials": "Invalid credentials. Please try again.",
+      "generic": "An error occurred. Please try again."
+    }
+  },
+  "finance": {
+    "sidebar": { "section": "Business Operations", "title": "Finance & Returns" },
+    "eyebrow": "Financial operations",
+    "title": "Finance & Returns",
+    "subtitle": "Manage payments, deadlines, returns, credit notes, and account balances.",
+    "tabs": { "overview": "Overview", "payments": "Payments", "returns": "Returns & credit notes", "statements": "Account statements" },
+    "metrics": {
+      "receivable": "Accounts receivable", "payable": "Accounts payable",
+      "overdueReceivable": "Overdue receivable", "overduePayable": "Overdue payable",
+      "overdueInvoices": "overdue invoice(s)", "requiresAction": "Requires attention"
+    },
+    "overview": { "attention": "Invoice monitoring", "attentionHint": "Balances and deadlines requiring financial follow-up." },
+    "documentType": { "SALES": "Customer invoices", "PURCHASE": "Supplier invoices" },
+    "returnType": { "CUSTOMER_RETURN": "Customer return", "SUPPLIER_RETURN": "Supplier return" },
+    "returnStatus": { "DRAFT": "Draft", "VALIDATED": "Validated", "CANCELLED": "Cancelled" },
+    "paymentStatus": { "CONFIRMED": "Confirmed", "CANCELLED": "Cancelled" },
+    "paymentMethod": { "CASH": "Cash", "BANK_TRANSFER": "Bank transfer", "CARD": "Card", "CHEQUE": "Cheque", "OTHER": "Other" },
+    "status": {
+      "overdue": "Overdue", "EN_ATTENTE": "Pending", "PAYEE": "Paid",
+      "PARTIELLEMENT_PAYEE": "Partially paid", "CREDITEE": "Fully credited", "ANNULEE": "Cancelled"
+    },
+    "payment": {
+      "new": "Record a payment", "hint": "Partial and full payments update the invoice balance automatically.",
+      "history": "Payment history", "historyHint": "Confirmed and cancelled financial entries.",
+      "currentBalance": "Current balance", "afterPayment": "Balance after payment"
+    },
+    "return": {
+      "new": "Prepare a return", "workflowHint": "Create a draft, review it, then validate stock and credit note corrections.",
+      "history": "Return history", "historyHint": "Validated returns are immutable for audit reliability."
+    },
+    "statement": {
+      "title": "Customer and supplier account statements", "hint": "Original amount, credits, payments, and remaining balance per invoice.",
+      "customers": "Customers", "suppliers": "Suppliers", "search": "Search party or invoice...",
+      "customerFileName": "customer-account-statement", "supplierFileName": "supplier-account-statement"
+    },
+    "form": {
+      "invoice": "Invoice", "selectInvoice": "Select an invoice", "amount": "Amount",
+      "paymentDate": "Payment date", "method": "Payment method", "dueDate": "Payment deadline",
+      "notes": "Notes", "returnDate": "Return date", "reason": "Return reason"
+    },
+    "table": {
+      "invoice": "Invoice", "party": "Customer / supplier", "type": "Type", "dueDate": "Due date",
+      "balance": "Balance", "status": "Status", "product": "Product", "soldPurchased": "Invoiced",
+      "alreadyReturned": "Returned", "returnable": "Available", "returnQuantity": "Return qty",
+      "returnReference": "Return", "date": "Date", "total": "Total", "creditNote": "Credit note",
+      "actions": "Actions", "gross": "Gross", "credits": "Credits", "paid": "Paid"
+    },
+    "actions": {
+      "recordPayment": "Record payment", "saveDueDate": "Save deadline", "cancelPayment": "Cancel payment",
+      "createDraft": "Create return draft", "validate": "Validate", "cancel": "Cancel", "exportCsv": "Export CSV"
+    },
+    "messages": {
+      "loading": "Loading financial data...", "loadError": "Financial data could not be loaded.",
+      "saveError": "The operation could not be completed.", "invalidPayment": "Enter a valid amount that does not exceed the balance.",
+      "paymentSaved": "Payment recorded and invoice balance updated.", "paymentCancelled": "Payment cancelled and balance restored.",
+      "dueDateSaved": "Payment deadline updated.", "invalidReturn": "Select an invoice, a reason, and at least one valid return line.",
+      "returnDraftSaved": "Return draft created. Validate it to update stock and issue the credit note.",
+      "returnValidated": "Return validated, stock corrected, and credit note issued.", "returnCancelled": "Return draft cancelled.",
+      "noInvoices": "No invoices found.", "noPayments": "No payments recorded.", "noReturns": "No returns recorded.",
+      "noReturnableLines": "This invoice has no remaining quantity that can be returned.",
+      "statementExported": "Account statement exported successfully."
+    },
+    "confirm": {
+      "cancelPayment": "Cancel this payment and restore the invoice balance?",
+      "validateReturn": "Validate this return? Stock will be corrected and a credit note will be issued.",
+      "cancelReturn": "Cancel this return draft?"
+    }
+  },
   "header": {
     "darkMode": "Dark mode",
     "lightMode": "Light mode",

@@ -14,6 +14,7 @@ import BuissnesManager.BuissnesManager.repository.RefreshTokenRepo;
 import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.UserRepo;
 import BuissnesManager.BuissnesManager.security.JWTUtil;
+import BuissnesManager.BuissnesManager.security.LoginAttemptService;
 import BuissnesManager.BuissnesManager.service.AuditLogService;
 import BuissnesManager.BuissnesManager.service.MailService;
 import BuissnesManager.BuissnesManager.service.PermissionService;
@@ -78,6 +79,9 @@ public class AuthController {
 
     @Autowired
     private MailService mailService;
+
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     /**
      * Base URL of the frontend application; used to build absolute links
@@ -231,14 +235,28 @@ public class AuthController {
      */
     @PostMapping("/login")
     @Transactional
-    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request, HttpServletResponse httpResponse) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request,
+                                   HttpServletRequest httpRequest,
+                                   HttpServletResponse httpResponse) {
         System.out.println(" Login endpoint hit for username: " + request.getUsername());
-        
+
+        String remoteAddress = httpRequest.getRemoteAddr();
+        if (loginAttemptService.isBlocked(request.getUsername(), remoteAddress)) {
+            long retryAfterSeconds = loginAttemptService.retryAfterSeconds(request.getUsername(), remoteAddress);
+            Map<String, String> body = new HashMap<>();
+            body.put("error", "TOO_MANY_LOGIN_ATTEMPTS");
+            body.put("message", "Too many failed login attempts. Please try again later.");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .header("Retry-After", Long.toString(retryAfterSeconds))
+                    .body(body);
+        }
+
         List<PermissionDto> permissionDtoList = new ArrayList<>();
 
         try {
             Optional<User> userOptional = userRepo.findByUsername(request.getUsername());
             if (userOptional.isEmpty()) {
+                loginAttemptService.recordFailure(request.getUsername(), remoteAddress);
                 System.out.println("❌ User not found in database: " + request.getUsername());
                 Map<String, String> body = new HashMap<>();
                 body.put("error", "INVALID_USERNAME");
@@ -268,6 +286,8 @@ public class AuthController {
             User user = userRepo.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found after authentication"));
 
+            loginAttemptService.recordSuccess(request.getUsername(), remoteAddress);
+
             // Transparently upgrade legacy plaintext passwords to BCrypt now that
             // we have verified the raw password is correct.
             if (passwordEncoder.upgradeEncoding(user.getPassword())) {
@@ -296,15 +316,13 @@ public class AuthController {
                 permissionDtoList = userPermissions;
             }
 
-            // Build response — include token in body for backwards compatibility
-            // (the Angular app still reads it from the JSON response to populate
-            //  the in-memory BehaviorSubject / localStorage during migration).
+            // Authentication tokens are only sent through HttpOnly cookies. The
+            // response contains non-sensitive session metadata used by the UI.
             Response response = new Response();
             response.setId(user.getId());
             response.setUsername(user.getUsername());
             response.setEmail(user.getEmail());
             response.setName(user.getUsername());
-            response.setToken(accessToken);
             response.setEnabled(user.isEnabled());
             
             List<String> roleNames = new ArrayList<>();
@@ -365,12 +383,14 @@ public class AuthController {
             body.put("message", "Compte inactif. Veuillez contacter votre administrateur.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
         } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            loginAttemptService.recordFailure(request.getUsername(), remoteAddress);
             System.err.println("❌ Login refused (bad password): " + request.getUsername());
             Map<String, String> body = new HashMap<>();
             body.put("error", "INVALID_PASSWORD");
             body.put("message", "Mot de passe invalide");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
         } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            loginAttemptService.recordFailure(request.getUsername(), remoteAddress);
             System.err.println("❌ Login refused (username not found): " + request.getUsername());
             Map<String, String> body = new HashMap<>();
             body.put("error", "INVALID_USERNAME");
@@ -431,10 +451,7 @@ public class AuthController {
         httpResponse.addCookie(buildRefreshCookie(newRefreshToken.getToken()));
         addSameSiteStrict(httpResponse);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("token", newAccessToken);
-        body.put("username", user.getUsername());
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(Map.of("username", user.getUsername()));
     }
 
     /**

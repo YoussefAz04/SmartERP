@@ -58,6 +58,7 @@ public FactureAchat getById(Long id){
                     existingFacture.setStatut(updatedFacture.getStatut());
                     existingFacture.setDescription(updatedFacture.getDescription());
                     existingFacture.setCheminFichier(updatedFacture.getCheminFichier());
+                    existingFacture.setDateEcheance(updatedFacture.getDateEcheance());
                     FactureAchat saved = factureAchatRepo.save(existingFacture);
                     auditLogService.log("FACTURE_ACHAT_UPDATED",
                             "Facture d'achat mise à jour: ref=" + saved.getReferance()

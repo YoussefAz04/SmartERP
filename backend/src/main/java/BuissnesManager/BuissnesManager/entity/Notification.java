@@ -34,6 +34,9 @@ public class Notification {
     @Column(nullable = false)
     private String message;
 
+    @Column(name = "business_reference", length = 120)
+    private String businessReference;
+
     @Column(name = "quantite_actuelle", precision = 15, scale = 2)
     private BigDecimal quantiteActuelle;
 

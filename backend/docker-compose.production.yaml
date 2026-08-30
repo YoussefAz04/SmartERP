@@ -1,0 +1,104 @@
+name: smarterp-production
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID:-Developer}
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the production environment}
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          SQLCMDPASSWORD="$${MSSQL_SA_PASSWORD}"
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -Q "SELECT 1" >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    restart: unless-stopped
+    networks: [private]
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      SQLCMDPASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the production environment}
+    entrypoint: /opt/mssql-tools18/bin/sqlcmd
+    command:
+      - -S
+      - sqlserver
+      - -U
+      - sa
+      - -C
+      - -Q
+      - >-
+        IF DB_ID(N'BusinessManager') IS NULL
+        BEGIN
+          CREATE DATABASE [BusinessManager];
+        END
+    restart: "no"
+    networks: [private]
+
+  backend:
+    image: ${BACKEND_IMAGE:?Set BACKEND_IMAGE to the published GHCR backend image}
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:sqlserver://sqlserver:1433;databaseName=BusinessManager;encrypt=true;trustServerCertificate=true
+      DB_USERNAME: sa
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the production environment}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:?Set JPA_DDL_AUTO to update for first boot or validate afterwards}
+      JWT_SECRET: ${JWT_SECRET:?Set a strong JWT_SECRET in the production environment}
+      FRONTEND_URL: ${FRONTEND_URL:?Set the public HTTPS frontend URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?Set the allowed HTTPS frontend origin}
+      BOOTSTRAP_ADMIN_USERNAME: ${BOOTSTRAP_ADMIN_USERNAME:-admin}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:?Set the bootstrap administrator email}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:?Set a strong bootstrap administrator password}
+      COOKIE_SECURE: "true"
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
+      MAIL_STARTTLS_ENABLE: ${MAIL_STARTTLS_ENABLE:-true}
+      FINANCE_OVERDUE_SCAN_ENABLED: ${FINANCE_OVERDUE_SCAN_ENABLED:-true}
+      FINANCE_OVERDUE_SCAN_CRON: ${FINANCE_OVERDUE_SCAN_CRON:-0 15 6 * * *}
+      FINANCE_OVERDUE_SCAN_ZONE: ${FINANCE_OVERDUE_SCAN_ZONE:-Africa/Tunis}
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8020}:8020"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8020/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped
+    networks: [private, public]
+
+  frontend:
+    image: ${FRONTEND_IMAGE:?Set FRONTEND_IMAGE to the published GHCR frontend image}
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      API_URL: ${API_URL:?Set the public HTTPS backend URL}
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-4200}:80"
+    restart: unless-stopped
+    networks: [public]
+
+networks:
+  private:
+    internal: true
+  public:
+
+volumes:
+  sqlserver-data:

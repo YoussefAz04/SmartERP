@@ -1,5 +1,6 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.FinancialDtos.InvoiceBalance;
 import BuissnesManager.BuissnesManager.entity.*;
 import BuissnesManager.BuissnesManager.repository.NotificationRepository;
 import org.slf4j.Logger;
@@ -137,6 +138,31 @@ public class NotificationService {
         String message = String.format("NOUVEL ARTICLE DE VENTE: '%s' a été ajouté au catalogue.", name);
         Article article = articleVente.getArticleAchat();
         createNotification(NotificationType.ARTICLE_VENTE_AJOUTE, message, null, null, null, article, entreprise);
+    }
+
+    @Transactional
+    public boolean createOverduePaymentNotification(InvoiceBalance balance, Long entrepriseId) {
+        if (balance == null || entrepriseId == null || !balance.overdue()) return false;
+        NotificationType type = balance.documentType() == FinancialDocumentType.SALES
+                ? NotificationType.PAIEMENT_CLIENT_EN_RETARD
+                : NotificationType.PAIEMENT_FOURNISSEUR_EN_RETARD;
+        String businessReference = balance.documentType().name() + ":" + balance.invoiceId();
+        if (notificationRepository.findFirstByEntrepriseIdAndTypeAndBusinessReferenceAndStatut(
+                entrepriseId, type, businessReference, NotificationStatus.NOUVEAU).isPresent()) {
+            return false;
+        }
+
+        Notification notification = new Notification();
+        notification.setType(type);
+        notification.setStatut(NotificationStatus.NOUVEAU);
+        notification.setBusinessReference(businessReference);
+        notification.setMessage(String.format("PAIEMENT EN RETARD: facture '%s', tiers '%s', solde %s, échéance %s.",
+                balance.invoiceReference(), balance.partyName(), balance.balance(), balance.dueDate()));
+        Entreprise entreprise = new Entreprise();
+        entreprise.setId(entrepriseId);
+        notification.setEntreprise(entreprise);
+        notificationRepository.save(notification);
+        return true;
     }
 
     @Transactional

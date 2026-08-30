@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 public class FactureDeVenteService {
@@ -35,12 +37,22 @@ public class FactureDeVenteService {
 
 
     private static final java.util.Set<String> VALID_STATUTS = java.util.Set.of(
-            "EN_ATTENTE", "PAYEE", "PARTIELLEMENT_PAYEE", "ANNULEE");
+            "EN_ATTENTE", "PAYEE", "PARTIELLEMENT_PAYEE", "CREDITEE", "ANNULEE");
 
     public FactureDeVente ajouterFactureDeVente(FactureDeVente factureDeVente){
        if (factureDeVente.getStatut() == null || factureDeVente.getStatut().isEmpty()
                || !VALID_STATUTS.contains(factureDeVente.getStatut())) {
            factureDeVente.setStatut("EN_ATTENTE");
+       }
+       if (factureDeVente.getDateEcheance() == null) {
+           factureDeVente.setDateEcheance(parseInvoiceDate(factureDeVente.getDateAchat()).plusDays(30));
+       }
+       if (factureDeVente.getMontantPaye() == null) {
+           factureDeVente.setMontantPaye(BigDecimal.ZERO);
+       }
+       if (factureDeVente.getSoldeRestant() == null) {
+           factureDeVente.setSoldeRestant(factureDeVente.getMontantTTC() == null
+                   ? BigDecimal.ZERO : BigDecimal.valueOf(factureDeVente.getMontantTTC()));
        }
 
        DetailsFactureDeVente detail = factureDeVente.getDetaisFactureDeVente();
@@ -55,6 +67,14 @@ public class FactureDeVenteService {
                        + ", montantTTC=" + saved.getMontantTTC()
                        + ", statut=" + saved.getStatut());
        return saved;
+    }
+
+    private LocalDate parseInvoiceDate(String value) {
+        try {
+            return value == null || value.isBlank() ? LocalDate.now() : LocalDate.parse(value);
+        } catch (java.time.format.DateTimeParseException ignored) {
+            return LocalDate.now();
+        }
     }
 
     public List<FactureDeVente> getAllFactures() {
@@ -120,6 +140,7 @@ public class FactureDeVenteService {
                     }
                     existingFacture.setDescription(updatedFacture.getDescription());
                     existingFacture.setCheminFichier(updatedFacture.getCheminFichier());
+                    existingFacture.setDateEcheance(updatedFacture.getDateEcheance());
                     FactureDeVente saved = factureDeVenteRepo.save(existingFacture);
                     auditLogService.log("FACTURE_VENTE_UPDATED",
                             "Facture de vente mise à jour: ref=" + saved.getReferance()

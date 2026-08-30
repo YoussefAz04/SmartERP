@@ -12,28 +12,7 @@ export class EntrepriseService {
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const token = this.getToken();
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    } else {
-      console.warn('⚠️ No token found in localStorage');
-    }
-    return headers;
-  }
-
-  private getToken(): string | null {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        return user.token || null;
-      } catch (error) {
-        console.error('Error parsing token:', error);
-        return null;
-      }
-    }
-    return null;
+    return new HttpHeaders({ 'Content-Type': 'application/json' });
   }
 
   // ✅ GET ALL ENTERPRISES - Matches backend: GET /entreprise/getAll

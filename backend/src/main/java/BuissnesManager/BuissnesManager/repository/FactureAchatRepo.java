@@ -2,17 +2,24 @@ package BuissnesManager.BuissnesManager.repository;
 
 import BuissnesManager.BuissnesManager.dto.FactureAchatListDto;
 import BuissnesManager.BuissnesManager.entity.FactureAchat;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FactureAchatRepo extends JpaRepository<FactureAchat,Long> {
 
     List<FactureAchat> findByEntrepriseId(Long entrepriseId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT f FROM FactureAchat f WHERE f.id = :id")
+    Optional<FactureAchat> findByIdForUpdate(@Param("id") Long id);
 
     @Query("""
             SELECT new BuissnesManager.BuissnesManager.dto.FactureAchatListDto(

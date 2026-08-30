@@ -51,21 +51,7 @@ export class DashboardService {
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const item = localStorage.getItem('myLSkey');
-    let token: string | null = null;
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        token = user.token || null;
-      } catch {
-        token = null;
-      }
-    }
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-    return headers;
+    return new HttpHeaders({ 'Content-Type': 'application/json' });
   }
 
   /**

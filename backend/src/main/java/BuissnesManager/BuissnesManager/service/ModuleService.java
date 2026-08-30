@@ -1,5 +1,8 @@
 package BuissnesManager.BuissnesManager.service;
 
+import BuissnesManager.BuissnesManager.dto.SidebarModuleDtos.ModuleResponse;
+import BuissnesManager.BuissnesManager.dto.SidebarModuleDtos.ModuleTitleResponse;
+import BuissnesManager.BuissnesManager.dto.SidebarModuleDtos.SubModuleResponse;
 import BuissnesManager.BuissnesManager.entity.Module;
 import BuissnesManager.BuissnesManager.entity.ModuleTittle;
 import BuissnesManager.BuissnesManager.entity.RoleType;
@@ -11,6 +14,7 @@ import BuissnesManager.BuissnesManager.repository.RoleRepo;
 import BuissnesManager.BuissnesManager.repository.SousModuleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,8 +41,25 @@ public class ModuleService {
     @Autowired
     private RoleRepo roleRepo ;
 
-    public List<ModuleTittle> getAllModuleTitlle() {
-        return moduleTittleRepo.findAll();
+    @Transactional(readOnly = true)
+    public List<ModuleTitleResponse> getAllModuleTitlle() {
+        return moduleTittleRepo.findAllWithModules().stream()
+                .map(title -> new ModuleTitleResponse(
+                        title.getId(),
+                        title.getModuleTittle(),
+                        title.getModules().stream()
+                                .map(module -> new ModuleResponse(
+                                        module.getId(),
+                                        module.getTitle(),
+                                        module.isStatus(),
+                                        module.getSousModules().stream()
+                                                .map(subModule -> new SubModuleResponse(
+                                                        subModule.getId(),
+                                                        subModule.getTitreSousModule(),
+                                                        subModule.getLink()))
+                                                .toList()))
+                                .toList()))
+                .toList();
     }
 
     public List<Module> getAllModule() {

@@ -1,6 +1,11 @@
 {
   "name": "smarterp-frontend",
   "version": "1.0.0",
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=20 <21",
+    "npm": ">=10 <11"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

@@ -24,27 +24,9 @@ export class AuthInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    // Attach stored Bearer token for backwards compatibility during migration,
-    // and always send cookies (withCredentials) so the httpOnly cookie is included.
-    const item = localStorage.getItem('myLSkey');
-    let token: string | null = null;
-
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        token = user.token || null;
-      } catch {
-        token = null;
-      }
-    }
-
+    // Access and refresh tokens are HttpOnly cookies. Sending credentials is
+    // sufficient and keeps bearer tokens unavailable to JavaScript.
     request = request.clone({ withCredentials: true });
-
-    if (token) {
-      request = request.clone({
-        setHeaders: { Authorization: `Bearer ${token}` },
-      });
-    }
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -84,12 +66,8 @@ export class AuthInterceptor implements HttpInterceptor {
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
       .pipe(
-        switchMap((res: any) => {
+        switchMap(() => {
           this.isRefreshing = false;
-          // Update stored token with the new access token from the response body
-          if (res?.token) {
-            this.updateStoredToken(res.token);
-          }
           this.refreshDone$.next(true);
           return next.handle(this.cloneWithCredentials(request));
         }),
@@ -111,18 +89,4 @@ export class AuthInterceptor implements HttpInterceptor {
     return req.clone({ withCredentials: true });
   }
 
-  private updateStoredToken(newToken: string): void {
-    const item = localStorage.getItem('myLSkey');
-    if (item) {
-      try {
-        const user = JSON.parse(decodeURIComponent(escape(atob(item))));
-        user.token = newToken;
-        localStorage.setItem('myLSkey', btoa(unescape(encodeURIComponent(JSON.stringify(user)))));
-      } catch {
-        // ignore parse errors
-      }
-    }
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('authToken', newToken);
-  }
 }

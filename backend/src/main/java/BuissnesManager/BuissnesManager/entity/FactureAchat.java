@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "facture_achat")
@@ -53,6 +55,15 @@ public class FactureAchat {
 
     @Column(name = "chemin_fichier")
     private String cheminFichier;
+
+    @Column(name = "date_echeance")
+    private LocalDate dateEcheance;
+
+    @Column(name = "montant_paye", precision = 15, scale = 2)
+    private BigDecimal montantPaye;
+
+    @Column(name = "solde_restant", precision = 15, scale = 2)
+    private BigDecimal soldeRestant;
 
     @OneToOne(mappedBy = "factureAchat")
     @JsonIgnoreProperties(value = "factureAchat")
