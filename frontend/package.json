@@ -44,7 +44,7 @@
     "apexcharts": "^3.54.1",
     "bootstrap": "^5.3.3",
     "jspdf": "^3.0.1",
-    "jspdf-autotable": "^5.0.2",
+    "jspdf-autotable": "^5.0.8",
     "libphonenumber-js": "^1.12.10",
     "lightgallery": "^2.7.2",
     "ng-apexcharts": "^1.7.4",
