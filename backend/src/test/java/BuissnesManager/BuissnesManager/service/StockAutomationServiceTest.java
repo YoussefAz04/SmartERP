@@ -108,7 +108,7 @@ class StockAutomationServiceTest {
         ArgumentCaptor<StockMouvement> captor = ArgumentCaptor.forClass(StockMouvement.class);
         verify(stockMouvementRepo).save(captor.capture());
         assertEquals(TypeMouvement.ENTREE, captor.getValue().getTypeMouvement());
-        assertEquals(20, captor.getValue().getQuantite());
+        assertEquals(0, BigDecimal.valueOf(20).compareTo(captor.getValue().getQuantite()));
         assertEquals("REF-001", captor.getValue().getReferenceCommande());
 
         verify(notificationService).createStockAddedNotification(eq(stock), eq(article), eq(entreprise), eq(BigDecimal.valueOf(20)));
@@ -268,7 +268,7 @@ class StockAutomationServiceTest {
         ArgumentCaptor<StockMouvement> captor = ArgumentCaptor.forClass(StockMouvement.class);
         verify(stockMouvementRepo).save(captor.capture());
         assertEquals(TypeMouvement.SORTIE, captor.getValue().getTypeMouvement());
-        assertTrue(captor.getValue().getQuantite() < 0,
+        assertTrue(captor.getValue().getQuantite().compareTo(BigDecimal.ZERO) < 0,
                 "cancellation movements must use a negative quantity to balance ledger");
     }
 

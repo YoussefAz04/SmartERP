@@ -63,6 +63,7 @@ public class StockAutomationService {
 
             stock.setQuantiteDisponible(ancienneQte.add(quantite));
             stock.setQuantiteEntree(ancienneEntree.add(quantite));
+            assertStockNonNegative(stock, article);
             stockRepository.save(stock);
 
             Entreprise entreprise = stock.getEntreprise() != null ? stock.getEntreprise() : article.getEntreprise();
@@ -72,7 +73,7 @@ public class StockAutomationService {
 
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.ENTREE);
-            mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
+            mouvement.setQuantite(quantite);
             mouvement.setReferenceCommande(referenceCommande);
             mouvement.setMotif("Purchase order reception " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
@@ -140,6 +141,7 @@ public class StockAutomationService {
                 stock.setQuantiteDisponible(disponible.subtract(remainder));
             }
             stock.setQuantiteVendue(vendue.add(quantite));
+            assertStockNonNegative(stock, article);
             stockRepository.save(stock);
 
             Entreprise entrepriseForNotif = stock.getEntreprise() != null ? stock.getEntreprise() : article.getEntreprise();
@@ -149,7 +151,7 @@ public class StockAutomationService {
 
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.SORTIE);
-            mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
+            mouvement.setQuantite(quantite);
             mouvement.setReferenceCommande(referenceCommande);
             mouvement.setMotif("Sales order delivery " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
@@ -227,11 +229,12 @@ public class StockAutomationService {
 
             stock.setQuantiteDisponible(disponible.subtract(quantite));
             stock.setQuantiteReserve(reserve.add(quantite));
+            assertStockNonNegative(stock, article);
             stockRepository.save(stock);
 
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.RESERVATION);
-            mouvement.setQuantite((int) Math.round(quantite.doubleValue()));
+            mouvement.setQuantite(quantite);
             mouvement.setReferenceCommande(referenceCommande);
             mouvement.setMotif("Reservation commande vente " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
@@ -274,11 +277,12 @@ public class StockAutomationService {
             BigDecimal toReverse = disponible.min(quantite);
             stock.setQuantiteDisponible(disponible.subtract(toReverse));
             stock.setQuantiteEntree(entree.subtract(entree.min(quantite)));
+            assertStockNonNegative(stock, article);
             stockRepository.save(stock);
 
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.SORTIE);
-            mouvement.setQuantite(-(int) Math.round(toReverse.doubleValue()));
+            mouvement.setQuantite(toReverse.negate());
             mouvement.setReferenceCommande(referenceCommande);
             mouvement.setMotif("Purchase order reception cancellation " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
@@ -321,11 +325,12 @@ public class StockAutomationService {
             BigDecimal toRelease = reserve.min(quantite);
             stock.setQuantiteReserve(reserve.subtract(toRelease));
             stock.setQuantiteDisponible(disponible.add(toRelease));
+            assertStockNonNegative(stock, article);
             stockRepository.save(stock);
 
             StockMouvement mouvement = new StockMouvement();
             mouvement.setTypeMouvement(TypeMouvement.RESERVATION);
-            mouvement.setQuantite(-(int) Math.round(toRelease.doubleValue()));
+            mouvement.setQuantite(toRelease.negate());
             mouvement.setReferenceCommande(referenceCommande);
             mouvement.setMotif("Sales order reservation cancellation " + referenceCommande);
             mouvement.setDateMouvement(LocalDateTime.now());
@@ -337,8 +342,40 @@ public class StockAutomationService {
         }
     }
 
-    public Stock findOrCreateStock(Article article) {
-        List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
+    /**
+     * Defensive guard: prevents persisting a {@link Stock} row whose tracked
+     * counters (disponible / reserve / entree / vendue) would be negative.
+     * Each mutation in this service already caps subtractions, but this
+     * provides a final invariant check so any future code path that forgets
+     * to validate cannot silently corrupt the ledger.
+     */
+    private void assertStockNonNegative(Stock stock, Article article) {
+        String articleLabel = article != null
+                ? (article.getNom() != null ? article.getNom() : ("Article #" + article.getId()))
+                : "?";
+        if (isNegative(stock.getQuantiteDisponible())) {
+            throw new RuntimeException("Quantité disponible négative interdite pour l'article '"
+                    + articleLabel + "' (valeur calculée: " + stock.getQuantiteDisponible() + ")");
+        }
+        if (isNegative(stock.getQuantiteReserve())) {
+            throw new RuntimeException("Quantité réservée négative interdite pour l'article '"
+                    + articleLabel + "' (valeur calculée: " + stock.getQuantiteReserve() + ")");
+        }
+        if (isNegative(stock.getQuantiteEntree())) {
+            throw new RuntimeException("Quantité entrée négative interdite pour l'article '"
+                    + articleLabel + "' (valeur calculée: " + stock.getQuantiteEntree() + ")");
+        }
+        if (isNegative(stock.getQuantiteVendue())) {
+            throw new RuntimeException("Quantité vendue négative interdite pour l'article '"
+                    + articleLabel + "' (valeur calculée: " + stock.getQuantiteVendue() + ")");
+        }
+    }
+
+    private static boolean isNegative(BigDecimal value) {
+        return value != null && value.compareTo(BigDecimal.ZERO) < 0;
+    }
+
+    public Stock findOrCreateStock(Article article) {        List<Stock> stocks = stockRepository.findByArticleAchatId(article.getId());
         if (!stocks.isEmpty()) {
             return stocks.get(0);
         }

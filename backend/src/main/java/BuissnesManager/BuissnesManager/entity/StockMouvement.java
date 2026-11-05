@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,8 +24,8 @@ public class StockMouvement {
     @Column(name = "type_mouvement", nullable = false)
     private TypeMouvement typeMouvement;
 
-    @Column(nullable = false)
-    private Integer quantite;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal quantite;
 
     @Column(name = "reference_commande")
     private String referenceCommande;
